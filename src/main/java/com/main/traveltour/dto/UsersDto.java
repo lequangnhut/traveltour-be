@@ -1,10 +1,13 @@
 package com.main.traveltour.dto;
 
+import com.main.traveltour.entity.Roles;
 import lombok.Data;
 
 import java.io.Serializable;
 import java.sql.Date;
 import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * DTO for {@link com.main.traveltour.entity.Users}
@@ -35,4 +38,6 @@ public class UsersDto implements Serializable {
     Boolean isActive;
 
     String token;
+
+    List<Roles> roles = new ArrayList<>();
 }

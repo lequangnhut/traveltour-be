@@ -8,26 +8,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 @Controller
 public class ViewController {
 
-    @GetMapping({"/sign-in", "/", ""})
-    public String login(@RequestParam(name = "error", required = false) String error, Model model) {
-        if (error != null) {
-            model.addAttribute("error", true);
-        }
-        return "email/sign-in";
-    }
-
-    @GetMapping("/manager/dashboard")
-    public String dashboard() {
-        return "index";
-    }
-
-    @GetMapping("/manager/chat")
-    public String chat() {
-        return "index";
-    }
-
-    @GetMapping("/manager/tour")
-    public String tour() {
-        return "index";
+    @GetMapping("/login-google-success")
+    public String loginGoogleSuccess() {
+        System.out.println("cc");
+        return "redirect:/http://localhost:3000/home";
     }
 }
