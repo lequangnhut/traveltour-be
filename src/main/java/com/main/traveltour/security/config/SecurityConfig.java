@@ -7,6 +7,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.client.endpoint.DefaultAuthorizationCodeTokenResponseClient;
@@ -20,6 +21,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
 @Configuration
+@EnableWebSecurity
 @RequiredArgsConstructor
 public class SecurityConfig {
 
@@ -48,11 +50,8 @@ public class SecurityConfig {
                 .disable()
                 .authorizeHttpRequests(
                         authorize -> authorize
+                                .requestMatchers("/oauth2/authorization/google").permitAll()
                                 .requestMatchers("/api/v1/**").permitAll()
-                ).formLogin(
-                        form -> form
-                                .loginProcessingUrl("/api/v1/auth/admin/login")
-                                .permitAll()
                 ).logout(
                         logout -> logout
                                 .invalidateHttpSession(true)
@@ -62,7 +61,6 @@ public class SecurityConfig {
                                 .permitAll()
                 ).oauth2Login(
                         oauth2 -> oauth2
-                                .loginPage("/login")
                                 .defaultSuccessUrl("/login-google-success")
                                 .authorizationEndpoint()
                                 .baseUri("/oauth2/authorization")

@@ -1,4 +1,4 @@
-package com.main.traveltour;
+package com.main.traveltour.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -14,9 +14,9 @@ public class CorsConfig {
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         CorsConfiguration config = new CorsConfiguration();
         config.setAllowCredentials(true);
-        config.addAllowedOrigin("http://localhost:3000");  // Domain của AngularJS
-        config.addAllowedHeader("*");
-        config.addAllowedMethod("*");
+        config.addAllowedOrigin("http://localhost:3000");  // Allow all origins
+        config.addAllowedMethod("*"); // Allow all HTTP methods (GET, POST, PUT, etc.)
+        config.addAllowedHeader("*"); // Allow all headers
         source.registerCorsConfiguration("/**", config);
         return new CorsFilter(source);
     }
