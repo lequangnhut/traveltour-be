@@ -18,7 +18,6 @@ import org.springframework.security.oauth2.client.web.HttpSessionOAuth2Authoriza
 import org.springframework.security.oauth2.core.endpoint.OAuth2AuthorizationRequest;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
 @Configuration
 @EnableWebSecurity
@@ -42,36 +41,28 @@ public class SecurityConfig {
         return new DefaultAuthorizationCodeTokenResponseClient();
     }
 
-    @Bean
-    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-        http.cors()
-                .and()
-                .csrf()
-                .disable()
-                .authorizeHttpRequests(
-                        authorize -> authorize
-                                .requestMatchers("/oauth2/authorization/google").permitAll()
-                                .requestMatchers("/api/v1/**").permitAll()
-                ).logout(
-                        logout -> logout
-                                .invalidateHttpSession(true)
-                                .clearAuthentication(true)
-                                .logoutRequestMatcher(new AntPathRequestMatcher("/api/v1/auth/admin/logout"))
-                                .deleteCookies("JSESSIONID")
-                                .permitAll()
-                ).oauth2Login(
-                        oauth2 -> oauth2
-                                .defaultSuccessUrl("/login-google-success")
-                                .authorizationEndpoint()
-                                .baseUri("/oauth2/authorization")
-                                .authorizationRequestRepository(getRepository())
-                                .and()
-                                .tokenEndpoint()
-                                .accessTokenResponseClient(getToken())
-                );
-        http.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
-        return http.build();
-    }
+//    @Bean
+//    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+//        http.cors()
+//                .and()
+//                .csrf()
+//                .disable()
+//                .authorizeHttpRequests(
+//                        authorize -> authorize
+//                                .requestMatchers("/api/v1/**").permitAll()
+//                ).oauth2Login(
+//                        oauth2 -> oauth2
+//                                .defaultSuccessUrl("/login-google-success")
+//                                .authorizationEndpoint()
+//                                .baseUri("/oauth2/authorization")
+//                                .authorizationRequestRepository(getRepository())
+//                                .and()
+//                                .tokenEndpoint()
+//                                .accessTokenResponseClient(getToken())
+//                );
+//        http.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
+//        return http.build();
+//    }
 
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration) throws Exception {
