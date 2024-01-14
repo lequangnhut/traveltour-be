@@ -41,28 +41,26 @@ public class SecurityConfig {
         return new DefaultAuthorizationCodeTokenResponseClient();
     }
 
-//    @Bean
-//    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-//        http.cors()
-//                .and()
-//                .csrf()
-//                .disable()
-//                .authorizeHttpRequests(
-//                        authorize -> authorize
-//                                .requestMatchers("/api/v1/**").permitAll()
-//                ).oauth2Login(
-//                        oauth2 -> oauth2
-//                                .defaultSuccessUrl("/login-google-success")
-//                                .authorizationEndpoint()
-//                                .baseUri("/oauth2/authorization")
-//                                .authorizationRequestRepository(getRepository())
-//                                .and()
-//                                .tokenEndpoint()
-//                                .accessTokenResponseClient(getToken())
-//                );
-//        http.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
-//        return http.build();
-//    }
+    @Bean
+    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+        http.csrf()
+                .disable()
+                .authorizeHttpRequests(
+                        authorize -> authorize
+                                .requestMatchers("/api/v1/**").permitAll()
+                ).oauth2Login(
+                        oauth2 -> oauth2
+                                .defaultSuccessUrl("/login-google-success")
+                                .authorizationEndpoint()
+                                .baseUri("/oauth2/authorization")
+                                .authorizationRequestRepository(getRepository())
+                                .and()
+                                .tokenEndpoint()
+                                .accessTokenResponseClient(getToken())
+                );
+        http.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
+        return http.build();
+    }
 
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration) throws Exception {

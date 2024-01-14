@@ -34,4 +34,12 @@ public class TransportationBrands {
     @Basic
     @Column(name = "is_active")
     private Boolean isActive;
+
+    @Basic
+    @Column(name = "transportation_brand_img")
+    private String transportationBrandImg;
+
+    @Basic
+    @Column(name = "transportation_brand_description")
+    private String transportationBrandDescription;
 }

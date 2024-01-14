@@ -50,8 +50,8 @@ public class Users {
     private String phone;
 
     @Basic
-    @Column(name = "nationality")
-    private String nationality;
+    @Column(name = "address")
+    private String address;
 
     @Basic
     @Column(name = "citizen_card")

@@ -65,7 +65,6 @@ public class UsersServiceImpl implements UsersService {
         users.setPassword(passwordEncoder.encode(users.getPassword()));
         users.setToken(RandomUtils.RandomToken(20));
         users.setDateCreated(new Timestamp(System.currentTimeMillis()));
-        users.setNationality("Việt Nam");
 
         Roles role = rolesRepository.findByNameRole("ROLE_CUSTOMER");
         if (role == null) {

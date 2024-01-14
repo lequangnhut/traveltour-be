@@ -58,4 +58,8 @@ public class TourDetails {
     @Basic
     @Column(name = "date_created")
     private Timestamp dateCreated;
+
+    @Basic
+    @Column(name = "tour_detail_description")
+    private String tourDetailDescription;
 }

@@ -26,8 +26,4 @@ public class RoomBeds {
     @Basic
     @Column(name = "bed_type_id")
     private Integer bedTypeId;
-
-    @Basic
-    @Column(name = "amount")
-    private Integer amount;
 }

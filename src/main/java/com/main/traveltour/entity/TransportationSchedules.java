@@ -53,4 +53,16 @@ public class TransportationSchedules {
     @Basic
     @Column(name = "is_active")
     private Boolean isActive;
+
+    @Basic
+    @Column(name = "booked_seat")
+    private Integer bookedSeat;
+
+    @Basic
+    @Column(name = "trip_type")
+    private Boolean tripType;
+
+    @Basic
+    @Column(name = "is_status")
+    private Integer isStatus;
 }
