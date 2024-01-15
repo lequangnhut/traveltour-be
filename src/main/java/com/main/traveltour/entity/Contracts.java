@@ -13,8 +13,8 @@ import java.sql.Timestamp;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "tours", schema = "travel_tour")
-public class Tours {
+@Table(name = "contracts", schema = "travel_tour")
+public class Contracts {
 
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Id
@@ -22,26 +22,10 @@ public class Tours {
     private int id;
 
     @Basic
-    @Column(name = "tour_type_id")
-    private Integer tourTypeId;
-
-    @Basic
-    @Column(name = "tour_name")
-    private String tourName;
-
-    @Basic
-    @Column(name = "tour_img")
-    private String tourImg;
+    @Column(name = "booking_tour_id")
+    private Integer bookingTourId;
 
     @Basic
     @Column(name = "date_created")
     private Timestamp dateCreated;
-
-    @Basic
-    @Column(name = "is_active")
-    private Boolean isActive;
-
-    @Basic
-    @Column(name = "tour_description")
-    private String tourDescription;
 }

@@ -1,6 +1,5 @@
 package com.main.traveltour.entity;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -55,4 +54,8 @@ public class RoomTypes {
     @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     @JoinTable(name = "room_type_utilities", joinColumns = {@JoinColumn(name = "room_type_id", referencedColumnName = "id")}, inverseJoinColumns = {@JoinColumn(name = "room_utilities_id", referencedColumnName = "id")})
     private List<RoomUtilities> roomUtilities = new ArrayList<>();
+
+    @Basic
+    @Column(name = "room_type_description")
+    private String roomTypeDescription;
 }
