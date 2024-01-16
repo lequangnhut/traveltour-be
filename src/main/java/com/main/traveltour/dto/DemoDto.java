@@ -3,7 +3,7 @@ package com.main.traveltour.dto;
 import lombok.Data;
 
 @Data
-public class DemoDTO {
+public class DemoDto {
 
     String name;
 

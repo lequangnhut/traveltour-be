@@ -1,7 +1,7 @@
-package com.main.traveltour.service.impl.cloudinary;
+package com.main.traveltour.service.utils.impl;
 
 import com.cloudinary.Cloudinary;
-import com.main.traveltour.service.cloudinary.FileUpload;
+import com.main.traveltour.service.utils.FileUpload;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;

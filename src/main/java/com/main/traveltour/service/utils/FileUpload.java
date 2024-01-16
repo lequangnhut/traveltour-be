@@ -1,4 +1,4 @@
-package com.main.traveltour.service.cloudinary;
+package com.main.traveltour.service.utils;
 
 import org.springframework.web.multipart.MultipartFile;
 

@@ -1,10 +1,10 @@
-package com.main.traveltour.service.impl;
+package com.main.traveltour.service.utils.impl;
 
 import com.main.traveltour.dto.auth.RegisterDto;
 import com.main.traveltour.entity.Users;
-import com.main.traveltour.service.EmailService;
+import com.main.traveltour.service.utils.EmailService;
 import com.main.traveltour.service.UsersService;
-import com.main.traveltour.service.mail.ThymeleafService;
+import com.main.traveltour.service.utils.ThymeleafService;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,7 +16,6 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import java.nio.charset.StandardCharsets;
-import java.text.SimpleDateFormat;
 import java.util.*;
 
 @Service

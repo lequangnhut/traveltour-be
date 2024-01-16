@@ -46,6 +46,11 @@ public class UsersServiceImpl implements UsersService {
     }
 
     @Override
+    public Users findById(int userId) {
+        return usersRepository.getReferenceById(userId);
+    }
+
+    @Override
     public Users findByEmail(String email) {
         return usersRepository.findUserByEmail(email);
     }
@@ -58,6 +63,26 @@ public class UsersServiceImpl implements UsersService {
     @Override
     public Users findByToken(String token) {
         return usersRepository.findByToken(token);
+    }
+
+    @Override
+    public List<Users> findAllAccountStaff() {
+        return usersRepository.findAllAccountStaffOrderByDateCreatedDESC();
+    }
+
+    @Override
+    public List<Users> findAllAccountAgent() {
+        return usersRepository.findAllAccountAgentOrderByDateCreatedDESC();
+    }
+
+    @Override
+    public List<Users> findDecentralizationStaffByActiveIsTrue() {
+        return usersRepository.findDecentralizationStaffByActiveIsTrue();
+    }
+
+    @Override
+    public List<Users> findDecentralizationAgentByActiveIsTrue() {
+        return usersRepository.findDecentralizationAgentByActiveIsTrue();
     }
 
     @Override
@@ -85,7 +110,7 @@ public class UsersServiceImpl implements UsersService {
     }
 
     @Override
-    public void save(Users users) {
-        usersRepository.save(users);
+    public Users save(Users users) {
+        return usersRepository.save(users);
     }
 }
