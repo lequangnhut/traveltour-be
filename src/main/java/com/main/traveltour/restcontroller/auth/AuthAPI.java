@@ -105,8 +105,7 @@ public class AuthAPI {
     @GetMapping("auth/find-by-email/{email}")
     private UsersDto findByEmail(@PathVariable String email) {
         Users user = userService.findByEmail(email);
-        UsersDto usersDto = EntityDtoUtils.convertToDto(user, UsersDto.class);
-        return usersDto;
+        return EntityDtoUtils.convertToDto(user, UsersDto.class);
     }
 
     /**
