@@ -9,6 +9,8 @@ import com.main.traveltour.security.jwt.JwtUtilities;
 import com.main.traveltour.service.UsersService;
 import com.main.traveltour.utils.RandomUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -61,28 +63,33 @@ public class UsersServiceImpl implements UsersService {
     }
 
     @Override
+    public Users findByCardId(String cardId) {
+        return usersRepository.findByCitizenCard(cardId);
+    }
+
+    @Override
     public Users findByToken(String token) {
         return usersRepository.findByToken(token);
     }
 
     @Override
-    public List<Users> findAllAccountStaff() {
-        return usersRepository.findAllAccountStaffOrderByDateCreatedDESC();
+    public Page<Users> findAllAccountStaff(Pageable pageable) {
+        return usersRepository.findAllAccountStaffOrderByDateCreatedDESC(pageable);
     }
 
     @Override
-    public List<Users> findAllAccountAgent() {
-        return usersRepository.findAllAccountAgentOrderByDateCreatedDESC();
+    public Page<Users> findAllAccountAgent(Pageable pageable) {
+        return usersRepository.findAllAccountAgentOrderByDateCreatedDESC(pageable);
     }
 
     @Override
-    public List<Users> findDecentralizationStaffByActiveIsTrue() {
-        return usersRepository.findDecentralizationStaffByActiveIsTrue();
+    public Page<Users> findDecentralizationStaffByActiveIsTrue(Pageable pageable) {
+        return usersRepository.findDecentralizationStaffByActiveIsTrue(pageable);
     }
 
     @Override
-    public List<Users> findDecentralizationAgentByActiveIsTrue() {
-        return usersRepository.findDecentralizationAgentByActiveIsTrue();
+    public Page<Users> findDecentralizationAgentByActiveIsTrue(Pageable pageable) {
+        return usersRepository.findDecentralizationAgentByActiveIsTrue(pageable);
     }
 
     @Override

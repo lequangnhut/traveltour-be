@@ -5,8 +5,8 @@ import com.main.traveltour.dto.auth.LoginDto;
 import com.main.traveltour.dto.auth.RegisterDto;
 import com.main.traveltour.entity.Users;
 import com.main.traveltour.security.jwt.JwtUtilities;
-import com.main.traveltour.service.utils.EmailService;
 import com.main.traveltour.service.UsersService;
+import com.main.traveltour.service.utils.EmailService;
 import com.main.traveltour.utils.EntityDtoUtils;
 import io.jsonwebtoken.Claims;
 import jakarta.servlet.http.HttpSession;
@@ -129,6 +129,19 @@ public class AuthAPI {
     private Map<String, Boolean> checkDuplicatePhone(@PathVariable String phone) {
         Map<String, Boolean> response = new HashMap<>();
         boolean exists = userService.findByPhone(phone) != null;
+
+        response.put("exists", exists);
+        return response;
+    }
+
+    /**
+     * @return check phone exists
+     * @message Check phone exists in the database
+     */
+    @GetMapping("auth/check-duplicate-card/{cardId}")
+    private Map<String, Boolean> checkDuplicateCardId(@PathVariable String cardId) {
+        Map<String, Boolean> response = new HashMap<>();
+        boolean exists = userService.findByCardId(cardId) != null;
 
         response.put("exists", exists);
         return response;

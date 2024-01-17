@@ -5,6 +5,9 @@ import com.main.traveltour.entity.Users;
 import com.main.traveltour.service.RolesService;
 import com.main.traveltour.service.UsersService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -23,15 +26,15 @@ public class DecentralizationAPI {
     private RolesService rolesService;
 
     @GetMapping("superadmin/decentralization/find-role-staff")
-    private ResponseEntity<List<Users>> getListUserRoleStaff() {
-        List<Users> users = usersService.findDecentralizationStaffByActiveIsTrue();
-        return ResponseEntity.ok(users);
+    private ResponseEntity<Page<Users>> getListUserRoleStaff(@RequestParam(defaultValue = "0") int page) {
+        Page<Users> users = usersService.findDecentralizationStaffByActiveIsTrue(PageRequest.of(page, 10));
+        return new ResponseEntity<>(users, HttpStatus.OK);
     }
 
     @GetMapping("superadmin/decentralization/find-role-agent")
-    private ResponseEntity<List<Users>> getListUserRoleAgent() {
-        List<Users> users = usersService.findDecentralizationAgentByActiveIsTrue();
-        return ResponseEntity.ok(users);
+    private ResponseEntity<Page<Users>> getListUserRoleAgent(@RequestParam(defaultValue = "0") int page) {
+        Page<Users> users = usersService.findDecentralizationAgentByActiveIsTrue(PageRequest.of(page, 10));
+        return new ResponseEntity<>(users, HttpStatus.OK);
     }
 
     @PutMapping("superadmin/decentralization/update-role/{userId}")
