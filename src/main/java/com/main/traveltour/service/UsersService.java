@@ -2,6 +2,8 @@ package com.main.traveltour.service;
 
 import com.main.traveltour.dto.auth.LoginDto;
 import com.main.traveltour.entity.Users;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 import java.util.List;
 
@@ -13,15 +15,17 @@ public interface UsersService {
 
     Users findByPhone(String phoneNumber);
 
+    Users findByCardId(String cardId);
+
     Users findByToken(String token);
 
-    List<Users> findAllAccountStaff();
+    Page<Users> findAllAccountStaff(Pageable pageable);
 
-    List<Users> findAllAccountAgent();
+    Page<Users> findAllAccountAgent(Pageable pageable);
 
-    List<Users> findDecentralizationStaffByActiveIsTrue();
+    Page<Users> findDecentralizationStaffByActiveIsTrue(Pageable pageable);
 
-    List<Users> findDecentralizationAgentByActiveIsTrue();
+    Page<Users> findDecentralizationAgentByActiveIsTrue(Pageable pageable);
 
     void authenticateRegister(Users users);
 

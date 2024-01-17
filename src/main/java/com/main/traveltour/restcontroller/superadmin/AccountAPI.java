@@ -9,6 +9,10 @@ import com.main.traveltour.service.RolesService;
 import com.main.traveltour.service.UsersService;
 import com.main.traveltour.utils.EntityDtoUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
@@ -31,13 +35,15 @@ public class AccountAPI {
     private PasswordEncoder passwordEncoder;
 
     @GetMapping("superadmin/account/find-all-account-staff")
-    private List<Users> findAllAccountStaff() {
-        return usersService.findAllAccountStaff();
+    private ResponseEntity<Page<Users>> findAllAccountStaff(@RequestParam(defaultValue = "0") int page) {
+        Page<Users> items = usersService.findAllAccountStaff(PageRequest.of(page, 10));
+        return new ResponseEntity<>(items, HttpStatus.OK);
     }
 
     @GetMapping("superadmin/account/find-all-account-agent")
-    private List<Users> findAllAccountAgent() {
-        return usersService.findAllAccountAgent();
+    private ResponseEntity<Page<Users>> findAllAccountAgent(@RequestParam(defaultValue = "0") int page) {
+        Page<Users> items = usersService.findAllAccountAgent(PageRequest.of(page, 10));
+        return new ResponseEntity<>(items, HttpStatus.OK);
     }
 
     @GetMapping("superadmin/account/find-by-id/{id}")
@@ -52,9 +58,7 @@ public class AccountAPI {
         Users user = EntityDtoUtils.convertToEntity(accountDto, Users.class);
         List<String> roles = dataAccount.getRoles();
 
-        List<Roles> rolesList = roles.stream()
-                .map(rolesService::findByNameRole)
-                .collect(Collectors.toList());
+        List<Roles> rolesList = roles.stream().map(rolesService::findByNameRole).collect(Collectors.toList());
         user.setRoles(rolesList);
         user.setPassword(passwordEncoder.encode(accountDto.getPassword()));
         user.setAddress("Việt Nam");
