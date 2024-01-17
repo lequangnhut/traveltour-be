@@ -5,7 +5,7 @@ import com.main.traveltour.dto.auth.LoginDto;
 import com.main.traveltour.dto.auth.RegisterDto;
 import com.main.traveltour.entity.Users;
 import com.main.traveltour.security.jwt.JwtUtilities;
-import com.main.traveltour.service.EmailService;
+import com.main.traveltour.service.utils.EmailService;
 import com.main.traveltour.service.UsersService;
 import com.main.traveltour.utils.EntityDtoUtils;
 import io.jsonwebtoken.Claims;

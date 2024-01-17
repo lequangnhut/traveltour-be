@@ -1,4 +1,4 @@
-package com.main.traveltour.service;
+package com.main.traveltour.service.utils;
 
 import com.main.traveltour.dto.auth.RegisterDto;
 

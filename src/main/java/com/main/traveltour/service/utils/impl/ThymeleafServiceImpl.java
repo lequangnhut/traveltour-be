@@ -1,6 +1,6 @@
-package com.main.traveltour.service.impl.mail;
+package com.main.traveltour.service.utils.impl;
 
-import com.main.traveltour.service.mail.ThymeleafService;
+import com.main.traveltour.service.utils.ThymeleafService;
 import org.springframework.context.support.ResourceBundleMessageSource;
 import org.springframework.stereotype.Service;
 import org.thymeleaf.TemplateEngine;

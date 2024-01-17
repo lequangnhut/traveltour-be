@@ -1,4 +1,4 @@
-package com.main.traveltour.service.mail;
+package com.main.traveltour.service.utils;
 
 import java.util.Map;
 
