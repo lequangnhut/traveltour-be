@@ -42,8 +42,8 @@ public class AccountAPI {
 
     @GetMapping("superadmin/account/find-by-id/{id}")
     private UsersDto findById(@PathVariable int id) {
-        Users users = usersService.findById(id);
-        return EntityDtoUtils.convertToDto(users, UsersDto.class);
+        Users user = usersService.findById(id);
+        return EntityDtoUtils.convertToDto(user, UsersDto.class);
     }
 
     @PostMapping("superadmin/account/create-account")
