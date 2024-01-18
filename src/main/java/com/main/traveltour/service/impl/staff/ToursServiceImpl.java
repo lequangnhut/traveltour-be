@@ -22,6 +22,14 @@ public class ToursServiceImpl implements ToursService {
     }
 
     @Override
+    public Page<Tours> findAllWithSearch(String searchTerm, Pageable pageable) {
+        if (searchTerm == null || searchTerm.trim().isEmpty()) {
+            return toursRepository.findAll(pageable);
+        }
+        return toursRepository.findByTourNameContainingIgnoreCase(searchTerm, pageable);
+    }
+
+    @Override
     public Optional<Tours> findById(int tourId) {
         return toursRepository.findById(tourId);
     }
