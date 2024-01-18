@@ -1,4 +1,4 @@
 package com.main.traveltour.restcontroller.staff;
 
-public class demo {
+public class TourTripsAPI {
 }

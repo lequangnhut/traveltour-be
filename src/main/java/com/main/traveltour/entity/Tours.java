@@ -23,7 +23,7 @@ public class Tours {
 
     @Basic
     @Column(name = "tour_type_id")
-    private Integer tourTypeId;
+        private Integer tourTypeId;
 
     @Basic
     @Column(name = "tour_name")
