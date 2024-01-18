@@ -1,8 +1,7 @@
-package com.main.traveltour.dto.agent.transport;
+package com.main.traveltour.dto.agent;
 
 import com.main.traveltour.entity.TransportationBrands;
 import lombok.Data;
-import lombok.Value;
 
 import java.io.Serializable;
 

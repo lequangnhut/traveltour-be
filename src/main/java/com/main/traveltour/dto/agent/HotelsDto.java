@@ -1,10 +1,12 @@
-package com.main.traveltour.dto.agent.hotel;
+package com.main.traveltour.dto.agent;
 
+import com.main.traveltour.entity.PlaceUtilities;
 import lombok.Data;
-import lombok.Value;
 
 import java.io.Serializable;
 import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * DTO for {@link com.main.traveltour.entity.Hotels}
@@ -39,4 +41,6 @@ public class HotelsDto implements Serializable {
     int hotelTypeId;
 
     int agenciesId;
+
+    List<PlaceUtilities> placeUtilities = new ArrayList<>();
 }

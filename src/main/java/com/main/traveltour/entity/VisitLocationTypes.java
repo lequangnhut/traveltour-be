@@ -20,6 +20,6 @@ public class VisitLocationTypes {
     private int id;
 
     @Basic
-    @Column(name = "visit_location_name")
-    private String visitLocationName;
+    @Column(name = "visit_location_type_name")
+    private String visitLocationTypeName;
 }
