@@ -78,9 +78,9 @@ public class AccountAPI {
         if (containsAgentRole) {
             Agencies agencies = new Agencies();
             agencies.setUserId(user.getId());
-            agencies.setAddress("Việt Nam");
+            agencies.setDateCreated(new Timestamp(System.currentTimeMillis()));
             agencies.setIsActive(Boolean.TRUE);
-            agencies.setIsAccepted(0); // 0 là chưa kích hoạt, 1 là đã kích hoạt, 2 là ngưng hoạt động
+            agencies.setIsAccepted(0); // 0 là chưa kích hoạt, 1 chờ kích hoạt, 2 kích hoạt thành công, 3 kích hoạt thất bại
             agenciesService.save(agencies);
         }
     }

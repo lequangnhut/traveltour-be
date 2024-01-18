@@ -6,5 +6,7 @@ public interface AgenciesService {
 
     Agencies findByUserId(int userId);
 
+    Agencies findByAgencyId(int agencyId);
+
     Agencies save(Agencies agencies);
 }

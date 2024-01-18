@@ -1,15 +1,13 @@
 package com.main.traveltour.restcontroller.agent;
 
-import com.main.traveltour.dto.agent.transport.TransportDto;
 import com.main.traveltour.service.UsersService;
 import com.main.traveltour.service.agent.AgenciesService;
 import com.main.traveltour.service.agent.TransportationBrandsService;
 import com.main.traveltour.service.utils.FileUpload;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
-
-import java.io.IOException;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @CrossOrigin(origins = "http://localhost:3000")
@@ -27,12 +25,4 @@ public class TransportAPI {
 
     @Autowired
     private UsersService usersService;
-
-    @PostMapping("agent/transport/register-transport")
-    private void registerAgentTrans(@RequestPart TransportDto transportDto, @RequestPart("transportationBrandImg") MultipartFile transportationBrandImg, @RequestPart("imgDocument") MultipartFile imgDocument) throws IOException {
-        String transportImg = fileUpload.uploadFile(transportationBrandImg);
-        String imgDoc = fileUpload.uploadFile(imgDocument);
-
-
-    }
 }

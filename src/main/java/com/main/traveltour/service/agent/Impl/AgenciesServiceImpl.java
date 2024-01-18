@@ -18,6 +18,11 @@ public class AgenciesServiceImpl implements AgenciesService {
     }
 
     @Override
+    public Agencies findByAgencyId(int agencyId) {
+        return agenciesRepository.findById(agencyId);
+    }
+
+    @Override
     public Agencies save(Agencies agencies) {
         return agenciesRepository.save(agencies);
     }

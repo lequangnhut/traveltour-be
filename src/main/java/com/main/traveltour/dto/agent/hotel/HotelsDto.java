@@ -1,26 +1,26 @@
-package com.main.traveltour.dto.agent.transport;
+package com.main.traveltour.dto.agent.hotel;
 
 import lombok.Data;
+import lombok.Value;
 
 import java.io.Serializable;
 import java.sql.Timestamp;
 
 /**
- * DTO for {@link com.main.traveltour.entity.Agencies}
+ * DTO for {@link com.main.traveltour.entity.Hotels}
  */
 @Data
-public class AgenciesDto implements Serializable {
+public class HotelsDto implements Serializable {
 
     int id;
-    String nameAgency;
 
-    String representativeName;
-
-    String taxId;
+    String hotelName;
 
     String urlWebsite;
 
     String phone;
+
+    Integer amountRoom;
 
     String province;
 
@@ -36,7 +36,7 @@ public class AgenciesDto implements Serializable {
 
     int userId;
 
-    Integer isAccepted;
+    int hotelTypeId;
 
-    String imgDocument;
+    int agenciesId;
 }
