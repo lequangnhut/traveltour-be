@@ -33,22 +33,23 @@ public class ToursAPI {
 
     @GetMapping("staff/tour/find-all-tours")
     private ResponseEntity<Page<Tours>> findAllTours(
-            @RequestParam(defaultValue = "0") int page, // Số trang, mặc định là trang đầu tiên (0).
-            @RequestParam(defaultValue = "10") int size, // Kích thước của mỗi trang, mặc định là 10.
-            @RequestParam(defaultValue = "id") String sortBy, // Trường để sắp xếp, mặc định là "id".
-            @RequestParam(defaultValue = "asc") String sortDir) { // Hướng sắp xếp, mặc định là tăng dần (ascending).
-
-        // Tạo đối tượng Sort dựa trên hướng sắp xếp và trường sắp xếp.
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(defaultValue = "id") String sortBy,
+            @RequestParam(defaultValue = "asc") String sortDir,
+            @RequestParam(required = false) String searchTerm) { // Thêm tham số tìm kiếm
         Sort sort = sortDir.equalsIgnoreCase(Sort.Direction.ASC.name()) ?
-                Sort.by(sortBy).ascending() : // Nếu hướng sắp xếp là "asc", sử dụng sắp xếp tăng dần.
-                Sort.by(sortBy).descending(); // Nếu không, sử dụng sắp xếp giảm dần.
+                Sort.by(sortBy).ascending() :
+                Sort.by(sortBy).descending();
 
-        // Gọi service để lấy dữ liệu, áp dụng phân trang và sắp xếp.
-        Page<Tours> items = toursService.findAll(PageRequest.of(page, size, sort));
+        // Sử dụng phương thức tìm kiếm mới trong service
+        Page<Tours> items = searchTerm == null || searchTerm.isEmpty()
+                ? toursService.findAll(PageRequest.of(page, size, sort))
+                : toursService.findAllWithSearch(searchTerm, PageRequest.of(page, size, sort));
 
-        // Trả về dữ liệu và trạng thái HTTP OK (200).
         return new ResponseEntity<>(items, HttpStatus.OK);
     }
+
 
     //get tour by id rest api
     @GetMapping("staff/tour/find-by-id/{id}")
