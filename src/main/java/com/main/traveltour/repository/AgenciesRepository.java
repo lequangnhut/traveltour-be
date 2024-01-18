@@ -6,4 +6,8 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface AgenciesRepository extends JpaRepository<Agencies, Integer> {
+
+    Agencies findByUserId(int userId);
+
+    Agencies findById(int agencyId);
 }

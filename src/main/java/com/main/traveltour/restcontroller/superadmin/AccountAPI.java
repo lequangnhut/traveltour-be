@@ -3,10 +3,12 @@ package com.main.traveltour.restcontroller.superadmin;
 import com.main.traveltour.dto.UsersDto;
 import com.main.traveltour.dto.superadmin.AccountDto;
 import com.main.traveltour.dto.superadmin.DataAccount;
+import com.main.traveltour.entity.Agencies;
 import com.main.traveltour.entity.Roles;
 import com.main.traveltour.entity.Users;
 import com.main.traveltour.service.RolesService;
 import com.main.traveltour.service.UsersService;
+import com.main.traveltour.service.agent.AgenciesService;
 import com.main.traveltour.utils.EntityDtoUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -30,6 +32,9 @@ public class AccountAPI {
 
     @Autowired
     private RolesService rolesService;
+
+    @Autowired
+    private AgenciesService agenciesService;
 
     @Autowired
     private PasswordEncoder passwordEncoder;
@@ -56,15 +61,28 @@ public class AccountAPI {
     private void createAccount(@RequestBody DataAccount dataAccount) {
         AccountDto accountDto = dataAccount.getAccountDto();
         Users user = EntityDtoUtils.convertToEntity(accountDto, Users.class);
-        List<String> roles = dataAccount.getRoles();
 
-        List<Roles> rolesList = roles.stream().map(rolesService::findByNameRole).collect(Collectors.toList());
+        List<String> roles = dataAccount.getRoles();
+        List<Roles> rolesList = roles.stream()
+                .map(rolesService::findByNameRole)
+                .collect(Collectors.toList());
+
         user.setRoles(rolesList);
         user.setPassword(passwordEncoder.encode(accountDto.getPassword()));
         user.setAddress("Việt Nam");
         user.setDateCreated(new Timestamp(System.currentTimeMillis()));
-
         usersService.save(user);
+
+        boolean containsAgentRole = roles.stream().anyMatch(role -> role.contains("ROLE_AGENT"));
+
+        if (containsAgentRole) {
+            Agencies agencies = new Agencies();
+            agencies.setUserId(user.getId());
+            agencies.setDateCreated(new Timestamp(System.currentTimeMillis()));
+            agencies.setIsActive(Boolean.TRUE);
+            agencies.setIsAccepted(0); // 0 là chưa kích hoạt, 1 chờ kích hoạt, 2 kích hoạt thành công, 3 kích hoạt thất bại
+            agenciesService.save(agencies);
+        }
     }
 
     @PutMapping("superadmin/account/update-account")
