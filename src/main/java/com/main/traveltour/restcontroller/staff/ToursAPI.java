@@ -1,8 +1,10 @@
 package com.main.traveltour.restcontroller.staff;
 
+import com.main.traveltour.dto.DemoDto;
 import com.main.traveltour.dto.staff.ToursDto;
 import com.main.traveltour.entity.Tours;
 import com.main.traveltour.service.staff.ToursService;
+import com.main.traveltour.service.utils.FileUpload;
 import com.main.traveltour.utils.EntityDtoUtils;
 import com.main.traveltour.utils.ResourceNotFoundException;
 import jakarta.validation.Valid;
@@ -14,11 +16,13 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 @CrossOrigin(origins = "http://localhost:3000")
@@ -30,6 +34,9 @@ public class ToursAPI {
 
     @Autowired
     private ToursService toursService;
+
+    @Autowired
+    private FileUpload fileUpload;
 
     @GetMapping("staff/tour/find-all-tours")
     private ResponseEntity<Page<Tours>> findAllTours(
@@ -64,9 +71,20 @@ public class ToursAPI {
     }
 
 
-    @PostMapping("staff/tour/create-tour")
-    public ResponseEntity<ToursDto> createTour(@Valid @RequestBody ToursDto toursDto) {
+    public ResponseEntity<ToursDto> uploadFileAndCreateTour(
+            @RequestPart("tourDTO") ToursDto toursDto,
+            @RequestPart("business_images") MultipartFile businessImages) throws IOException {
+
         try {
+            // Kiểm tra xem có file nào bị thiếu không
+            if (businessImages == null) return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+
+            // Xử lý tải lên file và nhận đường dẫn
+            String imagesPath = fileUpload.uploadFile(businessImages);
+
+            // Gán đường dẫn vào đối tượng toursDto
+            toursDto.setTourImg(imagesPath);
+
             // Chuyển đổi ToursDto thành entity Tours.
             Tours tours = EntityDtoUtils.convertToEntity(toursDto, Tours.class);
             // Lưu tours vào database.
