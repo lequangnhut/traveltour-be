@@ -79,6 +79,10 @@ public class VisitLocations {
     private Timestamp dateCreated;
 
     @Basic
+    @Column(name = "is_accepted")
+    private Boolean isAccepted;
+
+    @Basic
     @Column(name = "is_active")
     private Boolean isActive;
 }

@@ -4,6 +4,7 @@ import com.main.traveltour.entity.TransportationBrands;
 import lombok.Data;
 
 import java.io.Serializable;
+import java.sql.Timestamp;
 
 /**
  * DTO for {@link TransportationBrands}
@@ -18,6 +19,10 @@ public class TransportationBrandsDto implements Serializable {
     int agenciesId;
 
     int userId;
+
+    Timestamp dateCreated;
+
+    Boolean isAccepted;
 
     Boolean isActive;
 

@@ -13,6 +13,11 @@ public class TransportationBrandsServiceImpl implements TransportationBrandsServ
     TransportationBrandsRepository transportationBrandsRepository;
 
     @Override
+    public TransportationBrands findByUserId(int userId) {
+        return transportationBrandsRepository.findByUserId(userId);
+    }
+
+    @Override
     public TransportationBrands save(TransportationBrands transportationBrands) {
         return transportationBrandsRepository.save(transportationBrands);
     }

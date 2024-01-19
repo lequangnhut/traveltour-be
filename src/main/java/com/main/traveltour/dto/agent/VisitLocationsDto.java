@@ -16,8 +16,6 @@ public class VisitLocationsDto implements Serializable {
 
     String visitLocationName;
 
-    String visitLocationImage;
-
     String urlWebsite;
 
     String phone;
@@ -38,9 +36,5 @@ public class VisitLocationsDto implements Serializable {
 
     int visitLocationTypeId;
 
-    int agenciesId;
-
     Timestamp dateCreated;
-
-    Boolean isActive;
 }

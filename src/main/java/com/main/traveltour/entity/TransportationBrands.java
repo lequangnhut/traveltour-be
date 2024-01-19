@@ -6,6 +6,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.sql.Timestamp;
+
 @Getter
 @Setter
 @NoArgsConstructor
@@ -30,6 +32,14 @@ public class TransportationBrands {
     @Basic
     @Column(name = "user_id")
     private int userId;
+
+    @Basic
+    @Column(name = "date_created")
+    private Timestamp dateCreated;
+
+    @Basic
+    @Column(name = "is_accepted")
+    private Boolean isAccepted;
 
     @Basic
     @Column(name = "is_active")

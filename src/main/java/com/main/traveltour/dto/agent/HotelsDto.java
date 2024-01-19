@@ -34,6 +34,8 @@ public class HotelsDto implements Serializable {
 
     Timestamp dateCreated;
 
+    Boolean isAccepted; // 0 chưa nộp thông tin, 1 đã nộp thông tin
+
     Boolean isActive;
 
     int userId;

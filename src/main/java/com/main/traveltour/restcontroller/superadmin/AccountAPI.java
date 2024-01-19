@@ -3,12 +3,13 @@ package com.main.traveltour.restcontroller.superadmin;
 import com.main.traveltour.dto.UsersDto;
 import com.main.traveltour.dto.superadmin.AccountDto;
 import com.main.traveltour.dto.superadmin.DataAccount;
-import com.main.traveltour.entity.Agencies;
-import com.main.traveltour.entity.Roles;
-import com.main.traveltour.entity.Users;
+import com.main.traveltour.entity.*;
 import com.main.traveltour.service.RolesService;
 import com.main.traveltour.service.UsersService;
 import com.main.traveltour.service.agent.AgenciesService;
+import com.main.traveltour.service.agent.HotelsService;
+import com.main.traveltour.service.agent.TransportationBrandsService;
+import com.main.traveltour.service.agent.VisitLocationsService;
 import com.main.traveltour.utils.EntityDtoUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -37,6 +38,15 @@ public class AccountAPI {
     private AgenciesService agenciesService;
 
     @Autowired
+    private HotelsService hotelsService;
+
+    @Autowired
+    private TransportationBrandsService transportationBrandsService;
+
+    @Autowired
+    private VisitLocationsService visitLocationsService;
+
+    @Autowired
     private PasswordEncoder passwordEncoder;
 
     @GetMapping("superadmin/account/find-all-account-staff")
@@ -63,9 +73,7 @@ public class AccountAPI {
         Users user = EntityDtoUtils.convertToEntity(accountDto, Users.class);
 
         List<String> roles = dataAccount.getRoles();
-        List<Roles> rolesList = roles.stream()
-                .map(rolesService::findByNameRole)
-                .collect(Collectors.toList());
+        List<Roles> rolesList = roles.stream().map(rolesService::findByNameRole).collect(Collectors.toList());
 
         user.setRoles(rolesList);
         user.setPassword(passwordEncoder.encode(accountDto.getPassword()));
@@ -82,6 +90,8 @@ public class AccountAPI {
             agencies.setIsActive(Boolean.TRUE);
             agencies.setIsAccepted(0); // 0 là chưa kích hoạt, 1 chờ kích hoạt, 2 kích hoạt thành công, 3 kích hoạt thất bại
             agenciesService.save(agencies);
+
+            registerBusiness(agencies.getId(), user.getId(), roles);
         }
     }
 
@@ -101,5 +111,37 @@ public class AccountAPI {
         Users users = usersService.findById(id);
         users.setIsActive(Boolean.FALSE);
         usersService.save(users);
+    }
+
+    private void registerBusiness(int agenciesId, int userId, List<String> roles) {
+        if (roles.contains("ROLE_AGENT_HOTEL")) {
+            Hotels hotels = new Hotels();
+            hotels.setUserId(userId);
+            hotels.setHotelTypeId(1);
+            hotels.setAgenciesId(agenciesId);
+            hotels.setIsAccepted(Boolean.FALSE);
+            hotels.setIsActive(Boolean.TRUE);
+            hotels.setDateCreated(new Timestamp(System.currentTimeMillis()));
+            hotelsService.save(hotels);
+        }
+        if (roles.contains("ROLE_AGENT_TRANSPORT")) {
+            TransportationBrands transportationBrands = new TransportationBrands();
+            transportationBrands.setUserId(userId);
+            transportationBrands.setAgenciesId(agenciesId);
+            transportationBrands.setIsAccepted(Boolean.FALSE);
+            transportationBrands.setIsActive(Boolean.TRUE);
+            transportationBrands.setDateCreated(new Timestamp(System.currentTimeMillis()));
+            transportationBrandsService.save(transportationBrands);
+        }
+        if (roles.contains("ROLE_AGENT_PLACE")) {
+            VisitLocations visitLocations = new VisitLocations();
+            visitLocations.setUserId(userId);
+            visitLocations.setVisitLocationTypeId(1);
+            visitLocations.setAgenciesId(agenciesId);
+            visitLocations.setIsAccepted(Boolean.FALSE);
+            visitLocations.setIsActive(Boolean.TRUE);
+            visitLocations.setDateCreated(new Timestamp(System.currentTimeMillis()));
+            visitLocationsService.save(visitLocations);
+        }
     }
 }
