@@ -10,14 +10,12 @@ import java.sql.Timestamp;
  * DTO for {@link com.main.traveltour.entity.Tours}
  */
 @Data
-public class ToursDto implements Serializable {
+public class ToursDto {
     int id;
 
     Integer tourTypeId;
 
     String tourName;
-
-    String tourImg;
 
     Timestamp dateCreated;
 

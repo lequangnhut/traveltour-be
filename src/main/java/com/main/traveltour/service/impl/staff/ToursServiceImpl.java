@@ -8,6 +8,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -17,15 +18,17 @@ public class ToursServiceImpl implements ToursService {
     private ToursRepository toursRepository;
 
     @Override
+    public List<Tours> findAll() {
+        return toursRepository.findAll();
+    }
+
+    @Override
     public Page<Tours> findAll(Pageable pageable) {
         return toursRepository.findAll(pageable);
     }
 
     @Override
     public Page<Tours> findAllWithSearch(String searchTerm, Pageable pageable) {
-        if (searchTerm == null || searchTerm.trim().isEmpty()) {
-            return toursRepository.findAll(pageable);
-        }
         return toursRepository.findByTourNameContainingIgnoreCase(searchTerm, pageable);
     }
 
