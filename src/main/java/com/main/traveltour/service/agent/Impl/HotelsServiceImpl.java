@@ -6,11 +6,18 @@ import com.main.traveltour.service.agent.HotelsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 public class HotelsServiceImpl implements HotelsService {
 
     @Autowired
     private HotelsRepository hotelsRepository;
+
+    @Override
+    public List<Hotels> findAllListHotel() {
+        return hotelsRepository.findAll();
+    }
 
     @Override
     public Hotels findByAgencyId(int userId) {

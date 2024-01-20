@@ -38,8 +38,6 @@ public class HotelsDto implements Serializable {
 
     Boolean isActive;
 
-    int userId;
-
     int hotelTypeId;
 
     int agenciesId;
