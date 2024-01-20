@@ -5,5 +5,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface VisitLocationsRepository extends JpaRepository<VisitLocations, Integer> {
 
-    VisitLocations findByUserId(int userId);
+    VisitLocations findByAgenciesId(int userId);
 }

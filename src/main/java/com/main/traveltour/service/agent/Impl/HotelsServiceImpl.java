@@ -13,8 +13,8 @@ public class HotelsServiceImpl implements HotelsService {
     private HotelsRepository hotelsRepository;
 
     @Override
-    public Hotels findByUserId(int userId) {
-        return hotelsRepository.findByUserId(userId);
+    public Hotels findByAgencyId(int userId) {
+        return hotelsRepository.findByAgenciesId(userId);
     }
 
     @Override

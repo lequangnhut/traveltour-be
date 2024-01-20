@@ -1,5 +1,6 @@
 package com.main.traveltour.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -8,6 +9,7 @@ import lombok.Setter;
 
 import java.math.BigDecimal;
 import java.sql.Timestamp;
+import java.util.Collection;
 import java.util.List;
 
 @Getter
@@ -85,4 +87,17 @@ public class OrderVisits {
 
     @ManyToMany(mappedBy = "orderVisits")
     private List<BookingTours> bookingTours;
+
+    @OneToMany(mappedBy = "orderVisitsByOrderVisitId")
+    private Collection<OrderVisitDetails> orderVisitDetailsById;
+
+    @ManyToOne
+    @JoinColumn(name = "user_id", referencedColumnName = "id", nullable = false, insertable = false, updatable = false)
+    @JsonBackReference
+    private Users usersByUserId;
+
+    @ManyToOne
+    @JoinColumn(name = "visit_location_id", referencedColumnName = "id", nullable = false, insertable = false, updatable = false)
+    @JsonBackReference
+    private VisitLocations visitLocationsByVisitLocationId;
 }

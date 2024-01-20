@@ -1,5 +1,6 @@
 package com.main.traveltour.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -74,6 +75,16 @@ public class OrderTransportations {
     @Basic
     @Column(name = "order_note")
     private String orderNote;
+
+    @ManyToOne
+    @JoinColumn(name = "user_id", referencedColumnName = "id", nullable = false, insertable = false, updatable = false)
+    @JsonBackReference
+    private Users usersByUserId;
+
+    @ManyToOne
+    @JoinColumn(name = "transportation_schedule_id", referencedColumnName = "id", nullable = false, insertable = false, updatable = false)
+    @JsonBackReference
+    private TransportationSchedules transportationSchedulesByTransportationScheduleId;
 
     @ManyToMany(mappedBy = "orderTransportations")
     private List<BookingTours> bookingTours;

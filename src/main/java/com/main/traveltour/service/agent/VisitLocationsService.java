@@ -4,7 +4,7 @@ import com.main.traveltour.entity.VisitLocations;
 
 public interface VisitLocationsService {
 
-    VisitLocations findByUserId(int userId);
+    VisitLocations findByAgencyId(int userId);
 
     VisitLocations save(VisitLocations visitLocations);
 }

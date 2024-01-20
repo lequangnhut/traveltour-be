@@ -13,8 +13,8 @@ public class TransportationBrandsServiceImpl implements TransportationBrandsServ
     TransportationBrandsRepository transportationBrandsRepository;
 
     @Override
-    public TransportationBrands findByUserId(int userId) {
-        return transportationBrandsRepository.findByUserId(userId);
+    public TransportationBrands findByAgencyId(int userId) {
+        return transportationBrandsRepository.findByAgenciesId(userId);
     }
 
     @Override

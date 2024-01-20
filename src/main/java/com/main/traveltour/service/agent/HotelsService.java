@@ -4,7 +4,7 @@ import com.main.traveltour.entity.Hotels;
 
 public interface HotelsService {
 
-    Hotels findByUserId(int userId);
+    Hotels findByAgencyId(int userId);
 
     Hotels save(Hotels hotels);
 }

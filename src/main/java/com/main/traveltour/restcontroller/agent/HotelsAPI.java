@@ -17,8 +17,8 @@ public class HotelsAPI {
     @Autowired
     private HotelsService hotelsService;
 
-    @GetMapping("/agent/hotels/find-by-user-id/{userId}")
+    @GetMapping("/agent/hotels/find-by-agency-id/{userId}")
     private Hotels findByUserId(@PathVariable int userId) {
-        return hotelsService.findByUserId(userId);
+        return hotelsService.findByAgencyId(userId);
     }
 }

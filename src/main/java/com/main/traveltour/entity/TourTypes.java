@@ -1,10 +1,13 @@
 package com.main.traveltour.entity;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+
+import java.util.Collection;
 
 @Getter
 @Setter
@@ -22,4 +25,8 @@ public class TourTypes {
     @Basic
     @Column(name = "tour_type_name")
     private String tourTypeName;
+
+    @OneToMany(mappedBy = "tourTypesByTourTypeId")
+    @JsonManagedReference
+    private Collection<Tours> toursById;
 }

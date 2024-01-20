@@ -68,16 +68,15 @@ public class DecentralizationAPI {
 
     private void changeBusiness(int userId, List<String> roles) {
         Agencies agencies = agenciesService.findByUserId(userId);
-        Hotels hotels = hotelsService.findByUserId(userId);
-        TransportationBrands transportationBrands = transportationBrandsService.findByUserId(userId);
-        VisitLocations visitLocations = visitLocationsService.findByUserId(userId);
+        Hotels hotels = hotelsService.findByAgencyId(agencies.getId());
+        TransportationBrands transportationBrands = transportationBrandsService.findByAgencyId(agencies.getId());
+        VisitLocations visitLocations = visitLocationsService.findByAgencyId(agencies.getId());
 
         if (hotels != null) {
             hotels.setIsActive(roles.contains("ROLE_AGENT_HOTEL"));
             hotelsService.save(hotels);
         } else if (roles.contains("ROLE_AGENT_HOTEL")) {
             Hotels newHotel = new Hotels();
-            newHotel.setUserId(userId);
             newHotel.setHotelTypeId(1);
             newHotel.setAgenciesId(agencies.getId());
             newHotel.setIsAccepted(Boolean.FALSE);
@@ -91,7 +90,6 @@ public class DecentralizationAPI {
             transportationBrandsService.save(transportationBrands);
         } else if (roles.contains("ROLE_AGENT_TRANSPORT")) {
             TransportationBrands newTransportationBrand = new TransportationBrands();
-            newTransportationBrand.setUserId(userId);
             newTransportationBrand.setAgenciesId(agencies.getId());
             newTransportationBrand.setIsAccepted(Boolean.FALSE);
             newTransportationBrand.setIsActive(Boolean.TRUE);
@@ -104,7 +102,6 @@ public class DecentralizationAPI {
             visitLocationsService.save(visitLocations);
         } else if (roles.contains("ROLE_AGENT_PLACE")) {
             VisitLocations newVisitLocation = new VisitLocations();
-            newVisitLocation.setUserId(userId);
             newVisitLocation.setVisitLocationTypeId(1);
             newVisitLocation.setAgenciesId(agencies.getId());
             newVisitLocation.setIsAccepted(Boolean.FALSE);

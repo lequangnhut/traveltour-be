@@ -13,8 +13,8 @@ public class VisitLocationsServiceImpl implements VisitLocationsService {
     private VisitLocationsRepository visitLocationsRepository;
 
     @Override
-    public VisitLocations findByUserId(int userId) {
-        return visitLocationsRepository.findByUserId(userId);
+    public VisitLocations findByAgencyId(int userId) {
+        return visitLocationsRepository.findByAgenciesId(userId);
     }
 
     @Override

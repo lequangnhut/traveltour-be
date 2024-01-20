@@ -1,5 +1,7 @@
 package com.main.traveltour.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -9,6 +11,7 @@ import lombok.Setter;
 import java.math.BigDecimal;
 import java.sql.Date;
 import java.sql.Timestamp;
+import java.util.Collection;
 
 @Getter
 @Setter
@@ -62,4 +65,22 @@ public class TourDetails {
     @Basic
     @Column(name = "tour_detail_description")
     private String tourDetailDescription;
+
+    @OneToMany(mappedBy = "tourDetailsByTourDetailId")
+    @JsonManagedReference
+    private Collection<BookingTours> bookingToursById;
+
+    @OneToMany(mappedBy = "tourDetailsByTourDetailId")
+    @JsonManagedReference
+    private Collection<TourDetailImages> tourDetailImagesById;
+
+    @ManyToOne
+    @JoinColumn(name = "tour_id", referencedColumnName = "id", nullable = false, insertable = false, updatable = false)
+    @JsonBackReference
+    private Tours toursByTourId;
+
+    @ManyToOne
+    @JoinColumn(name = "guide_id", referencedColumnName = "id", nullable = false, insertable = false, updatable = false)
+    @JsonBackReference
+    private Users usersByGuideId;
 }

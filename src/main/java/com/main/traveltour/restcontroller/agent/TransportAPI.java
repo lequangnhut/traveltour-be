@@ -21,16 +21,16 @@ public class TransportAPI {
     @Autowired
     private TransportationBrandsService transportationBrandsService;
 
-    @GetMapping("/agent/transport/find-by-user-id/{userId}")
+    @GetMapping("/agent/transport/find-by-agency-id/{userId}")
     private TransportationBrands findByUserId(@PathVariable int userId) {
-        return transportationBrandsService.findByUserId(userId);
+        return transportationBrandsService.findByAgencyId(userId);
     }
 
     @PostMapping("/agent/transport/register-transport")
     private void registerTransport(@RequestPart("transportDto") TransportationBrandsDto transportDto, @RequestPart("transportImg") MultipartFile transportImg) throws IOException {
         String transportImgUrl = fileUpload.uploadFile(transportImg);
 
-        TransportationBrands transport = transportationBrandsService.findByUserId(transportDto.getUserId());
+        TransportationBrands transport = transportationBrandsService.findByAgencyId(transportDto.getUserId());
         transport.setTransportationBrandName(transportDto.getTransportationBrandName());
         transport.setTransportationBrandDescription(transportDto.getTransportationBrandDescription());
         transport.setTransportationBrandImg(transportImgUrl);

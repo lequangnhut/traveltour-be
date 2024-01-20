@@ -5,5 +5,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface TransportationBrandsRepository extends JpaRepository<TransportationBrands, Integer> {
 
-    TransportationBrands findByUserId(int userId);
+    TransportationBrands findByAgenciesId(int userId);
 }
