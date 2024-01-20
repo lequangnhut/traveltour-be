@@ -9,7 +9,7 @@ import java.io.Serializable;
  * DTO for {@link com.main.traveltour.entity.TourTrips}
  */
 @Data
-public class TourTripsDto implements Serializable {
+public class TourTripsDto {
     int id;
     Integer tourId;
     Integer dayInTrip;

@@ -10,7 +10,7 @@ import java.io.Serializable;
  * DTO for {@link TourTypes}
  */
 @Data
-public class TourTypesDto implements Serializable {
+public class TourTypesDto {
     int id;
     String tourTypeName;
 }

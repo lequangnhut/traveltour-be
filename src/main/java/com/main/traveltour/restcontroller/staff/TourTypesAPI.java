@@ -1,7 +1,7 @@
 package com.main.traveltour.restcontroller.staff;
 
-import com.main.traveltour.entity.TourTypes;
 import com.main.traveltour.dto.staff.TourTypesDto;
+import com.main.traveltour.entity.TourTypes;
 import com.main.traveltour.service.staff.TourTypesService;
 import com.main.traveltour.utils.EntityDtoUtils;
 import com.main.traveltour.utils.ResourceNotFoundException;
@@ -11,7 +11,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Collections;
 import java.util.List;
 
 @RestController

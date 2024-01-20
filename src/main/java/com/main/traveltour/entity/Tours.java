@@ -19,9 +19,9 @@ import java.util.Collection;
 @Table(name = "tours", schema = "travel_tour")
 public class Tours {
 
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Id
-    @Column(name = "id")
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    @Column(name = "id", columnDefinition = "INT AUTO_INCREMENT")
     private int id;
 
     @Basic
