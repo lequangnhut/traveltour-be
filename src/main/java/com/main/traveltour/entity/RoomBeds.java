@@ -1,5 +1,6 @@
 package com.main.traveltour.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -26,4 +27,14 @@ public class RoomBeds {
     @Basic
     @Column(name = "bed_type_id")
     private Integer bedTypeId;
+
+    @ManyToOne
+    @JoinColumn(name = "room_type_id", referencedColumnName = "id", nullable = false, insertable = false, updatable = false)
+    @JsonBackReference
+    private RoomTypes roomTypesByRoomTypeId;
+
+    @ManyToOne
+    @JoinColumn(name = "bed_type_id", referencedColumnName = "id", nullable = false, insertable = false, updatable = false)
+    @JsonBackReference
+    private BedTypes bedTypesByBedTypeId;
 }

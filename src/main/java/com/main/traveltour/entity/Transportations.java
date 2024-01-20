@@ -1,5 +1,7 @@
 package com.main.traveltour.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -7,6 +9,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.sql.Timestamp;
+import java.util.Collection;
 
 @Getter
 @Setter
@@ -44,4 +47,18 @@ public class Transportations {
     @Basic
     @Column(name = "is_active")
     private Boolean isActive;
+
+    @OneToMany(mappedBy = "transportationsByTransportationId")
+    @JsonManagedReference
+    private Collection<TransportationSchedules> transportationSchedulesById;
+
+    @ManyToOne
+    @JoinColumn(name = "transportation_brand_id", referencedColumnName = "id", nullable = false, insertable = false, updatable = false)
+    @JsonBackReference
+    private TransportationBrands transportationBrandsByTransportationBrandId;
+
+    @ManyToOne
+    @JoinColumn(name = "transportation_type_id", referencedColumnName = "id", nullable = false, insertable = false, updatable = false)
+    @JsonBackReference
+    private TransportationTypes transportationTypesByTransportationTypeId;
 }

@@ -1,5 +1,6 @@
 package com.main.traveltour.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -26,4 +27,9 @@ public class HotelImages {
     @Basic
     @Column(name = "hotel_img")
     private String hotelImg;
+
+    @ManyToOne
+    @JoinColumn(name = "hotel_id", referencedColumnName = "id", nullable = false, insertable = false, updatable = false)
+    @JsonBackReference
+    private Hotels hotelsByHotelId;
 }

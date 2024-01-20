@@ -1,5 +1,7 @@
 package com.main.traveltour.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -8,6 +10,7 @@ import lombok.Setter;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 @Getter
@@ -51,11 +54,28 @@ public class RoomTypes {
     @Column(name = "is_active")
     private Boolean isActive;
 
-    @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
-    @JoinTable(name = "room_type_utilities", joinColumns = {@JoinColumn(name = "room_type_id", referencedColumnName = "id")}, inverseJoinColumns = {@JoinColumn(name = "room_utilities_id", referencedColumnName = "id")})
-    private List<RoomUtilities> roomUtilities = new ArrayList<>();
-
     @Basic
     @Column(name = "room_type_description")
     private String roomTypeDescription;
+
+    @OneToMany(mappedBy = "roomTypesByRoomTypeId")
+    @JsonManagedReference
+    private Collection<OrderHotelDetails> orderHotelDetailsById;
+
+    @OneToMany(mappedBy = "roomTypesByRoomTypeId")
+    @JsonManagedReference
+    private Collection<RoomBeds> roomBedsById;
+
+    @OneToMany(mappedBy = "roomTypesByRoomTypeId")
+    @JsonManagedReference
+    private Collection<RoomImages> roomImagesById;
+
+    @ManyToOne
+    @JoinColumn(name = "hotel_id", referencedColumnName = "id", nullable = false, insertable = false, updatable = false)
+    @JsonBackReference
+    private Hotels hotelsByHotelId;
+
+    @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @JoinTable(name = "room_type_utilities", joinColumns = {@JoinColumn(name = "room_type_id", referencedColumnName = "id")}, inverseJoinColumns = {@JoinColumn(name = "room_utilities_id", referencedColumnName = "id")})
+    private List<RoomUtilities> roomUtilities = new ArrayList<>();
 }

@@ -1,10 +1,15 @@
 package com.main.traveltour.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+
+import java.sql.Timestamp;
+import java.util.Collection;
 
 @Getter
 @Setter
@@ -28,8 +33,12 @@ public class TransportationBrands {
     private int agenciesId;
 
     @Basic
-    @Column(name = "user_id")
-    private int userId;
+    @Column(name = "date_created")
+    private Timestamp dateCreated;
+
+    @Basic
+    @Column(name = "is_accepted")
+    private Boolean isAccepted;
 
     @Basic
     @Column(name = "is_active")
@@ -42,4 +51,13 @@ public class TransportationBrands {
     @Basic
     @Column(name = "transportation_brand_description")
     private String transportationBrandDescription;
+
+    @OneToMany(mappedBy = "transportationBrandsByTransportationBrandId")
+    @JsonManagedReference
+    private Collection<Transportations> transportationsById;
+
+    @ManyToOne
+    @JoinColumn(name = "agencies_id", referencedColumnName = "id", nullable = false, insertable = false, updatable = false)
+    @JsonBackReference
+    private Agencies agenciesByAgenciesId;
 }

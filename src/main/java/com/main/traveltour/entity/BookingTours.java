@@ -1,5 +1,7 @@
 package com.main.traveltour.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -9,6 +11,7 @@ import lombok.Setter;
 import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 @Getter
@@ -83,6 +86,28 @@ public class BookingTours {
     @Basic
     @Column(name = "order_note")
     private String orderNote;
+
+    @OneToMany(mappedBy = "bookingToursByBookingTourId")
+    @JsonManagedReference
+    private Collection<BookingTourCustomers> bookingTourCustomersById;
+
+    @OneToMany(mappedBy = "bookingToursByBookingTourId")
+    @JsonManagedReference
+    private Collection<Contracts> contractsById;
+
+    @OneToMany(mappedBy = "bookingToursByBookingTourId")
+    @JsonManagedReference
+    private Collection<Invoices> invoicesById;
+
+    @ManyToOne
+    @JoinColumn(name = "user_id", referencedColumnName = "id", nullable = false, insertable = false, updatable = false)
+    @JsonBackReference
+    private Users usersByUserId;
+
+    @ManyToOne
+    @JoinColumn(name = "tour_detail_id", referencedColumnName = "id", nullable = false, insertable = false, updatable = false)
+    @JsonBackReference
+    private TourDetails tourDetailsByTourDetailId;
 
     @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     @JoinTable(name = "booking_tour_hotels", joinColumns = {@JoinColumn(name = "booking_tour_id", referencedColumnName = "id")}, inverseJoinColumns = {@JoinColumn(name = "order_hotel_id", referencedColumnName = "id")})

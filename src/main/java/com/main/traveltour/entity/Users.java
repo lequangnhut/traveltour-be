@@ -1,6 +1,7 @@
 package com.main.traveltour.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -10,6 +11,7 @@ import lombok.Setter;
 import java.sql.Date;
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 @Getter
@@ -72,6 +74,30 @@ public class Users {
     @Basic
     @Column(name = "token")
     private String token;
+
+    @OneToMany(mappedBy = "usersByUserId")
+    @JsonManagedReference
+    private Collection<Agencies> agenciesById;
+
+    @OneToMany(mappedBy = "usersByUserId")
+    @JsonManagedReference
+    private Collection<BookingTours> bookingToursById;
+
+    @OneToMany(mappedBy = "usersByUserId")
+    @JsonManagedReference
+    private Collection<OrderHotels> orderHotelsById;
+
+    @OneToMany(mappedBy = "usersByUserId")
+    @JsonManagedReference
+    private Collection<OrderTransportations> orderTransportationsById;
+
+    @OneToMany(mappedBy = "usersByUserId")
+    @JsonManagedReference
+    private Collection<OrderVisits> orderVisitsById;
+
+    @OneToMany(mappedBy = "usersByGuideId")
+    @JsonManagedReference
+    private Collection<TourDetails> tourDetailsById;
 
     @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     @JoinTable(name = "roles_users", joinColumns = {@JoinColumn(name = "user_id", referencedColumnName = "id")}, inverseJoinColumns = {@JoinColumn(name = "role_id", referencedColumnName = "id")})

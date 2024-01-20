@@ -1,5 +1,6 @@
 package com.main.traveltour.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -30,4 +31,9 @@ public class TourTrips {
     @Basic
     @Column(name = "activity_in_day")
     private String activityInDay;
+
+    @ManyToOne
+    @JoinColumn(name = "tour_id", referencedColumnName = "id", nullable = false, insertable = false, updatable = false)
+    @JsonBackReference
+    private Tours toursByTourId;
 }

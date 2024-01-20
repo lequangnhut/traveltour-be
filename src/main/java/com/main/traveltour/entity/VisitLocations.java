@@ -1,5 +1,7 @@
 package com.main.traveltour.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -8,6 +10,7 @@ import lombok.Setter;
 
 import java.sql.Time;
 import java.sql.Timestamp;
+import java.util.Collection;
 
 @Getter
 @Setter
@@ -63,10 +66,6 @@ public class VisitLocations {
     private Time closingTime;
 
     @Basic
-    @Column(name = "user_id")
-    private int userId;
-
-    @Basic
     @Column(name = "visit_location_type_id")
     private int visitLocationTypeId;
 
@@ -79,6 +78,28 @@ public class VisitLocations {
     private Timestamp dateCreated;
 
     @Basic
+    @Column(name = "is_accepted")
+    private Boolean isAccepted;
+
+    @Basic
     @Column(name = "is_active")
     private Boolean isActive;
+
+    @OneToMany(mappedBy = "visitLocationsByVisitLocationId")
+    @JsonManagedReference
+    private Collection<OrderVisits> orderVisitsById;
+
+    @OneToMany(mappedBy = "visitLocationsByVisitLocationId")
+    @JsonManagedReference
+    private Collection<VisitLocationTickets> visitLocationTicketsById;
+
+    @ManyToOne
+    @JoinColumn(name = "visit_location_type_id", referencedColumnName = "id", nullable = false, insertable = false, updatable = false)
+    @JsonBackReference
+    private VisitLocationTypes visitLocationTypesByVisitLocationTypeId;
+
+    @ManyToOne
+    @JoinColumn(name = "agencies_id", referencedColumnName = "id", nullable = false, insertable = false, updatable = false)
+    @JsonBackReference
+    private Agencies agenciesByAgenciesId;
 }

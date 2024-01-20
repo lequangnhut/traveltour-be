@@ -1,14 +1,16 @@
 package com.main.traveltour.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.awt.print.Book;
 import java.math.BigDecimal;
 import java.sql.Timestamp;
+import java.util.Collection;
 import java.util.List;
 
 @Getter
@@ -83,6 +85,15 @@ public class OrderHotels {
     @Basic
     @Column(name = "order_note")
     private String orderNote;
+
+    @OneToMany(mappedBy = "orderHotelsByOrderHotelId")
+    @JsonManagedReference
+    private Collection<OrderHotelDetails> orderHotelDetailsById;
+
+    @ManyToOne
+    @JoinColumn(name = "user_id", referencedColumnName = "id", nullable = false, insertable = false, updatable = false)
+    @JsonBackReference
+    private Users usersByUserId;
 
     @ManyToMany(mappedBy = "orderHotels")
     private List<BookingTours> bookingTours;
