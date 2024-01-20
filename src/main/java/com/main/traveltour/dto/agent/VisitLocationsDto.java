@@ -32,8 +32,6 @@ public class VisitLocationsDto implements Serializable {
 
     Time closingTime;
 
-    int userId;
-
     int visitLocationTypeId;
 
     Timestamp dateCreated;

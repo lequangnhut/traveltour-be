@@ -16,10 +16,6 @@ public class TransportationBrandsDto implements Serializable {
 
     String transportationBrandName;
 
-    int agenciesId;
-
-    int userId;
-
     Timestamp dateCreated;
 
     Boolean isAccepted;

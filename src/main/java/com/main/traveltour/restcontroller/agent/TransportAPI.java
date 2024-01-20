@@ -28,9 +28,10 @@ public class TransportAPI {
 
     @PostMapping("/agent/transport/register-transport")
     private void registerTransport(@RequestPart("transportDto") TransportationBrandsDto transportDto, @RequestPart("transportImg") MultipartFile transportImg) throws IOException {
+        int agencyId = transportDto.getId();
         String transportImgUrl = fileUpload.uploadFile(transportImg);
 
-        TransportationBrands transport = transportationBrandsService.findByAgencyId(transportDto.getUserId());
+        TransportationBrands transport = transportationBrandsService.findByAgencyId(agencyId);
         transport.setTransportationBrandName(transportDto.getTransportationBrandName());
         transport.setTransportationBrandDescription(transportDto.getTransportationBrandDescription());
         transport.setTransportationBrandImg(transportImgUrl);
