@@ -34,13 +34,11 @@ public class HotelsDto implements Serializable {
 
     Timestamp dateCreated;
 
-    Boolean isAccepted; // 0 chưa nộp thông tin, 1 đã nộp thông tin
+    Boolean isAccepted;
 
     Boolean isActive;
 
     int hotelTypeId;
-
-    int agenciesId;
 
     List<PlaceUtilities> placeUtilities = new ArrayList<>();
 }

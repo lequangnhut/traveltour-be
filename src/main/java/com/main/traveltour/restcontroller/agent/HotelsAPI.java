@@ -1,10 +1,8 @@
 package com.main.traveltour.restcontroller.agent;
 
-import com.main.traveltour.entity.Hotels;
-import com.main.traveltour.entity.PlaceUtilities;
-import com.main.traveltour.entity.ResponseObject;
-import com.main.traveltour.service.agent.HotelsService;
-import com.main.traveltour.service.agent.PlaceUtilitiesService;
+import com.main.traveltour.dto.agent.HotelsDto;
+import com.main.traveltour.entity.*;
+import com.main.traveltour.service.agent.*;
 import com.main.traveltour.service.utils.FileUpload;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -21,10 +19,19 @@ public class HotelsAPI {
     private FileUpload fileUpload;
 
     @Autowired
-    private PlaceUtilitiesService placeUtilitiesService;
+    private BedTypeService bedTypeService;
 
     @Autowired
     private HotelsService hotelsService;
+
+    @Autowired
+    private HotelsTypeService hotelsTypeService;
+
+    @Autowired
+    private RoomUtilitiesService roomUtilitiesService;
+
+    @Autowired
+    private PlaceUtilitiesService placeUtilitiesService;
 
     @GetMapping("/agent/hotels/find-by-agency-id/{userId}")
     private Hotels findByUserId(@PathVariable int userId) {
@@ -42,6 +49,17 @@ public class HotelsAPI {
         }
     }
 
+    @GetMapping("/agent/hotels/list-hotels-type")
+    private ResponseObject findAllHotelsTYpe() {
+        List<HotelTypes> hotelType = hotelsTypeService.findAllHotelType();
+
+        if (hotelType.isEmpty()) {
+            return new ResponseObject("404", "Không tìm thấy dữ liệu", null);
+        } else {
+            return new ResponseObject("200", "Đã tìm thấy dữ liệu", hotelType);
+        }
+    }
+
     @GetMapping("agent/hotels/list-place-utilities")
     private ResponseObject findAllPlaceUtilities() {
         List<PlaceUtilities> listPlaceUtilities = placeUtilitiesService.findAll();
@@ -53,8 +71,30 @@ public class HotelsAPI {
         }
     }
 
+    @GetMapping("agent/hotels/list-bed-type")
+    private ResponseObject findAllListBedType() {
+        List<BedTypes> bedTypes = bedTypeService.findAllListBedTypes();
+
+        if (bedTypes.isEmpty()) {
+            return new ResponseObject("404", "Không tìm thấy dữ liệu", null);
+        } else {
+            return new ResponseObject("200", "Đã tìm thấy dữ liệu", bedTypes);
+        }
+    }
+
+    @GetMapping("agent/hotels/list-room-utilities")
+    private ResponseObject findAllRoomUtilities() {
+        List<RoomUtilities> roomUtilities = roomUtilitiesService.findAllRoomUtils();
+
+        if (roomUtilities.isEmpty()) {
+            return new ResponseObject("404", "Không tìm thấy dữ liệu", null);
+        } else {
+            return new ResponseObject("200", "Đã tìm thấy dữ liệu", roomUtilities);
+        }
+    }
+
     @PostMapping("agent/hotels/register-hotels")
-    private void registerTransport() throws IOException {
+    private void registerTransport(HotelsDto hotelsDto) throws IOException {
 
     }
 }
