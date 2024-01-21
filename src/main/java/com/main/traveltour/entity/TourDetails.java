@@ -65,6 +65,14 @@ public class TourDetails {
     @Column(name = "tour_detail_description")
     private String tourDetailDescription;
 
+    @Basic
+    @Column(name = "from_location")
+    private String from_location;
+
+    @Basic
+    @Column(name = "to_location")
+    private String to_location;
+
     @OneToMany(mappedBy = "tourDetailsByTourDetailId")
     @JsonManagedReference
     private Collection<BookingTours> bookingToursById;
