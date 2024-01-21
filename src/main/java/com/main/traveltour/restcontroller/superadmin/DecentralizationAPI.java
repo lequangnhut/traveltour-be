@@ -60,7 +60,9 @@ public class DecentralizationAPI {
         List<Roles> rolesList = roles.stream().map(rolesService::findByNameRole).collect(Collectors.toList());
         user.setRoles(rolesList);
 
-        changeBusiness(userId, roles);
+        if (roles.stream().anyMatch(role -> role.startsWith("ROLE_AGENT"))) {
+            changeBusiness(userId, roles);
+        }
 
         Users updatedUser = usersService.save(user);
         return ResponseEntity.ok(updatedUser);
