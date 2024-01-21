@@ -41,6 +41,10 @@ public class Hotels {
     private Integer amountRoom;
 
     @Basic
+    @Column(name = "floors_number")
+    private Integer floorNumber;
+
+    @Basic
     @Column(name = "province")
     private String province;
 
