@@ -18,22 +18,27 @@ public class ToursServiceImpl implements ToursService {
     private ToursRepository toursRepository;
 
     @Override
-    public List<Tours> findAll() {
-        return toursRepository.findAll();
+    public String maxCodeTourId() {
+        return toursRepository.maxCodeTourId();
     }
 
     @Override
-    public Page<Tours> findAll(Pageable pageable) {
-        return toursRepository.findAll(pageable);
+    public List<Tours> findAllByIsActiveIsTrue() {
+        return toursRepository.findAllByIsActiveIsTrue();
+    }
+
+    @Override
+    public Page<Tours> findAllByIsActiveIsTrue(Pageable pageable) {
+        return toursRepository.findAllByIsActiveIsTrue(pageable);
     }
 
     @Override
     public Page<Tours> findAllWithSearch(String searchTerm, Pageable pageable) {
-        return toursRepository.findByTourNameContainingIgnoreCase(searchTerm, pageable);
+        return toursRepository.findByTourNameContainingIgnoreCaseAndIsActiveIsTrue(searchTerm, pageable);
     }
 
     @Override
-    public Optional<Tours> findById(int tourId) {
+    public Optional<Tours> findById(String tourId) {
         return toursRepository.findById(tourId);
     }
 

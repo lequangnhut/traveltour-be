@@ -13,8 +13,8 @@ import java.sql.Timestamp;
  */
 @Data
 public class TourDetailsDto {
-    int id;
-    Integer tourId;
+    String id;
+    String tourId;
     Integer guideId;
     Date departureDate;
     Date arrivalDate;
@@ -24,4 +24,6 @@ public class TourDetailsDto {
     Integer tourDetailStatus;
     Timestamp dateCreated;
     String tourDetailDescription;
+    String fromLocation;
+    String toLocation;
 }

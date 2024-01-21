@@ -120,4 +120,9 @@ public class UsersServiceImpl implements UsersService {
     public Users save(Users users) {
         return usersRepository.save(users);
     }
+
+    @Override
+    public List<Users> findUsersByRolesIsGuild() {
+        return usersRepository.findUsersByRolesIsGuild();
+    }
 }

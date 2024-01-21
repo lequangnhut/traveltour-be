@@ -56,4 +56,9 @@ public interface UsersRepository extends JpaRepository<Users, Integer> {
             "OR r.nameRole LIKE 'ROLE_AGENT_PLACE' " +
             "ORDER BY u.dateCreated DESC")
     Page<Users> findAllAccountAgentOrderByDateCreatedDESC(Pageable pageable);
+
+    @Query("SELECT u FROM Users u " +
+            "JOIN u.roles r " +
+            "WHERE r.nameRole LIKE 'ROLE_GUIDE'")
+    List<Users> findUsersByRolesIsGuild();
 }

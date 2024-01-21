@@ -9,14 +9,16 @@ import java.util.Optional;
 
 public interface ToursService {
 
-    List<Tours> findAll();
+    String maxCodeTourId();
 
-    Page<Tours> findAll(Pageable pageable);
+    List<Tours> findAllByIsActiveIsTrue();
+
+    Page<Tours> findAllByIsActiveIsTrue(Pageable pageable);
 
     // Thêm phương thức tìm kiếm với từ khóa
     Page<Tours> findAllWithSearch(String searchTerm, Pageable pageable);
 
-    Optional<Tours> findById(int tourId);
+    Optional<Tours> findById(String tourId);
 
     Tours save(Tours Tours);
 }

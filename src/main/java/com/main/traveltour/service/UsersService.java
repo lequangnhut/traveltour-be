@@ -32,4 +32,6 @@ public interface UsersService {
     String authenticateLogin(LoginDto loginDto);
 
     Users save(Users users);
+
+    List<Users> findUsersByRolesIsGuild();
 }

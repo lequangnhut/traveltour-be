@@ -56,6 +56,16 @@ public class AccountAPI {
         return new ResponseEntity<>(items, HttpStatus.OK);
     }
 
+    @GetMapping("superadmin/account/find-all-account-role-is-guild")
+    private ResponseObject findUsersByRolesIsGuild() {
+        List<Users> items = usersService.findUsersByRolesIsGuild();
+        if (items.isEmpty()) {
+            return new ResponseObject("404", "Không tìm thấy dữ liệu", null);
+        } else {
+            return new ResponseObject("200", "Đã tìm thấy dữ liệu", items);
+        }
+    }
+
     @GetMapping("superadmin/account/find-all-account-agent")
     private ResponseEntity<Page<Users>> findAllAccountAgent(@RequestParam(defaultValue = "0") int page) {
         Page<Users> items = usersService.findAllAccountAgent(PageRequest.of(page, 10));
