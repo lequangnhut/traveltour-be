@@ -23,12 +23,12 @@ public class OrderVisitDetails {
     private int id;
 
     @Basic
-    @Column(name = "order_visit_id")
-    private Integer orderVisitId;
+    @Column(name = "order_visit_id", nullable = false, length = 30)
+    private String orderVisitId;
 
     @Basic
-    @Column(name = "visit_location_ticket_id")
-    private Integer visitLocationTicketId;
+    @Column(name = "visit_location_ticket_id", nullable = false, length = 30)
+    private String visitLocationTicketId;
 
     @Basic
     @Column(name = "amount")

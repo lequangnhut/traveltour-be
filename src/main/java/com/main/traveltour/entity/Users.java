@@ -99,6 +99,9 @@ public class Users {
     @JsonManagedReference
     private Collection<TourDetails> tourDetailsById;
 
+    @OneToMany(mappedBy = "usersByUserId")
+    private Collection<Settings> settingsById;
+
     @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     @JoinTable(name = "roles_users", joinColumns = {@JoinColumn(name = "user_id", referencedColumnName = "id")}, inverseJoinColumns = {@JoinColumn(name = "role_id", referencedColumnName = "id")})
     @JsonIgnoreProperties("users")

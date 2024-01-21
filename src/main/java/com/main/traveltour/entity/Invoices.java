@@ -16,14 +16,13 @@ import java.sql.Timestamp;
 @Entity
 public class Invoices {
 
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Id
-    @Column(name = "id")
-    private int id;
+    @Column(name = "id", nullable = false, length = 30)
+    private String id;
 
     @Basic
-    @Column(name = "booking_tour_id")
-    private Integer bookingTourId;
+    @Column(name = "booking_tour_id", nullable = false, length = 30)
+    private String bookingTourId;
 
     @Basic
     @Column(name = "date_created")

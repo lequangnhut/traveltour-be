@@ -21,8 +21,8 @@ public class HotelImages {
     private int id;
 
     @Basic
-    @Column(name = "hotel_id")
-    private int hotelId;
+    @Column(name = "hotel_id", nullable = false, length = 30)
+    private String hotelId;
 
     @Basic
     @Column(name = "hotel_img")

@@ -11,6 +11,7 @@ import com.main.traveltour.service.agent.HotelsService;
 import com.main.traveltour.service.agent.TransportationBrandsService;
 import com.main.traveltour.service.agent.VisitLocationsService;
 import com.main.traveltour.utils.EntityDtoUtils;
+import com.main.traveltour.utils.GenerateNextID;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -114,8 +115,13 @@ public class AccountAPI {
     }
 
     private void registerBusiness(int agenciesId, List<String> roles) {
+        String hotelId = GenerateNextID.generateNextCode("HTL", hotelsService.findMaxCode());
+        String transId = GenerateNextID.generateNextCode("TRP", transportationBrandsService.findMaxCode());
+        String placeId = GenerateNextID.generateNextCode("PLA", visitLocationsService.findMaxCode());
+
         if (roles.contains("ROLE_AGENT_HOTEL")) {
             Hotels hotels = new Hotels();
+            hotels.setId(hotelId);
             hotels.setHotelTypeId(1);
             hotels.setAgenciesId(agenciesId);
             hotels.setIsAccepted(Boolean.FALSE);
@@ -125,6 +131,7 @@ public class AccountAPI {
         }
         if (roles.contains("ROLE_AGENT_TRANSPORT")) {
             TransportationBrands transportationBrands = new TransportationBrands();
+            transportationBrands.setId(transId);
             transportationBrands.setAgenciesId(agenciesId);
             transportationBrands.setIsAccepted(Boolean.FALSE);
             transportationBrands.setIsActive(Boolean.TRUE);
@@ -133,6 +140,7 @@ public class AccountAPI {
         }
         if (roles.contains("ROLE_AGENT_PLACE")) {
             VisitLocations visitLocations = new VisitLocations();
+            visitLocations.setId(placeId);
             visitLocations.setVisitLocationTypeId(1);
             visitLocations.setAgenciesId(agenciesId);
             visitLocations.setIsAccepted(Boolean.FALSE);

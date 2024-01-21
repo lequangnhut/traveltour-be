@@ -10,7 +10,12 @@ import org.springframework.stereotype.Service;
 public class TransportationBrandsServiceImpl implements TransportationBrandsService {
 
     @Autowired
-    TransportationBrandsRepository transportationBrandsRepository;
+    private TransportationBrandsRepository transportationBrandsRepository;
+
+    @Override
+    public String findMaxCode() {
+        return transportationBrandsRepository.findMaxCode();
+    }
 
     @Override
     public TransportationBrands findByAgencyId(int userId) {

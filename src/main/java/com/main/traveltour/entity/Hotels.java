@@ -20,10 +20,9 @@ import java.util.List;
 @Table(name = "hotels", schema = "travel_tour")
 public class Hotels {
 
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Id
-    @Column(name = "id")
-    private int id;
+    @Column(name = "id", nullable = false, length = 30)
+    private String id;
 
     @Basic
     @Column(name = "hotel_name")
@@ -68,6 +67,10 @@ public class Hotels {
     @Basic
     @Column(name = "is_active")
     private Boolean isActive;
+
+    @Basic
+    @Column(name = "hotel_avatar")
+    private String hotelAvatar;
 
     @Basic
     @Column(name = "hotel_type_id")

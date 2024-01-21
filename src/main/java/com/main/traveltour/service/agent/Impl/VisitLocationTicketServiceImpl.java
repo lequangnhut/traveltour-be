@@ -13,6 +13,11 @@ public class VisitLocationTicketServiceImpl implements VisitLocationTicketServic
     private VisitLocationTicketsRepository visitLocationTicketsRepository;
 
     @Override
+    public String findMaxCode() {
+        return visitLocationTicketsRepository.findMaxCode();
+    }
+
+    @Override
     public VisitLocationTickets save(VisitLocationTickets visitLocationTickets) {
         return visitLocationTicketsRepository.save(visitLocationTickets);
     }

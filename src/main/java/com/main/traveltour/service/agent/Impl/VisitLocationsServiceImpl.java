@@ -13,6 +13,11 @@ public class VisitLocationsServiceImpl implements VisitLocationsService {
     private VisitLocationsRepository visitLocationsRepository;
 
     @Override
+    public String findMaxCode() {
+        return visitLocationsRepository.findMaxCode();
+    }
+
+    @Override
     public VisitLocations findByAgencyId(int userId) {
         return visitLocationsRepository.findByAgenciesId(userId);
     }

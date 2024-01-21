@@ -21,8 +21,8 @@ public class RoomBeds {
     private int id;
 
     @Basic
-    @Column(name = "room_type_id")
-    private Integer roomTypeId;
+    @Column(name = "room_type_id", nullable = false, length = 30)
+    private String roomTypeId;
 
     @Basic
     @Column(name = "bed_type_id")

@@ -23,8 +23,8 @@ public class BookingTourCustomers {
     private int id;
 
     @Basic
-    @Column(name = "booking_tour_id")
-    private Integer bookingTourId;
+    @Column(name = "booking_tour_id", nullable = false, length = 30)
+    private String bookingTourId;
 
     @Basic
     @Column(name = "customer_name")

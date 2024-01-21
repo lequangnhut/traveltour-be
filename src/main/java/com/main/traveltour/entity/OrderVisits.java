@@ -20,18 +20,17 @@ import java.util.List;
 @Table(name = "order_visits", schema = "travel_tour")
 public class OrderVisits {
 
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Id
-    @Column(name = "id")
-    private int id;
+    @Column(name = "id", nullable = false, length = 30)
+    private String id;
 
     @Basic
     @Column(name = "user_id")
     private Integer userId;
 
     @Basic
-    @Column(name = "visit_location_id")
-    private Integer visitLocationId;
+    @Column(name = "visit_location_id", nullable = false, length = 30)
+    private String visitLocationId;
 
     @Basic
     @Column(name = "customer_name")

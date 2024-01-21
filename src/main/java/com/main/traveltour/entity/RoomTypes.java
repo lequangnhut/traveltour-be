@@ -21,18 +21,17 @@ import java.util.List;
 @Table(name = "room_types", schema = "travel_tour")
 public class RoomTypes {
 
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Id
-    @Column(name = "id")
-    private int id;
+    @Column(name = "id", nullable = false, length = 30)
+    private String id;
 
     @Basic
     @Column(name = "room_type_name")
     private String roomTypeName;
 
     @Basic
-    @Column(name = "hotel_id")
-    private Integer hotelId;
+    @Column(name = "hotel_id", nullable = false, length = 30)
+    private String hotelId;
 
     @Basic
     @Column(name = "capacity_adults")

@@ -17,14 +17,13 @@ import java.sql.Timestamp;
 @Table(name = "contracts", schema = "travel_tour")
 public class Contracts {
 
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Id
-    @Column(name = "id")
-    private int id;
+    @Column(name = "id", nullable = false, length = 30)
+    private String id;
 
     @Basic
-    @Column(name = "booking_tour_id")
-    private Integer bookingTourId;
+    @Column(name = "booking_tour_id", nullable = false, length = 30)
+    private String bookingTourId;
 
     @Basic
     @Column(name = "date_created")
