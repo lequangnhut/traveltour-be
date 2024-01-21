@@ -20,9 +20,8 @@ import java.util.Collection;
 public class Tours {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(name = "id", columnDefinition = "INT AUTO_INCREMENT")
-    private int id;
+    @Column(name = "id", nullable = false, length = 30)
+    private String id;
 
     @Basic
     @Column(name = "tour_type_id")

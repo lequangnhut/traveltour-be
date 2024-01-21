@@ -21,8 +21,8 @@ public class TourTrips {
     private int id;
 
     @Basic
-    @Column(name = "tour_id")
-    private Integer tourId;
+    @Column(name = "tour_id", nullable = false, length = 30)
+    private String tourId;
 
     @Basic
     @Column(name = "day_in_trip")

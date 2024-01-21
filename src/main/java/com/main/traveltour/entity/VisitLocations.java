@@ -20,10 +20,9 @@ import java.util.Collection;
 @Table(name = "visit_locations", schema = "travel_tour")
 public class VisitLocations {
 
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Id
-    @Column(name = "id")
-    private int id;
+    @Column(name = "id", nullable = false, length = 30)
+    private String id;
 
     @Basic
     @Column(name = "visit_location_name")
@@ -66,14 +65,6 @@ public class VisitLocations {
     private Time closingTime;
 
     @Basic
-    @Column(name = "visit_location_type_id")
-    private int visitLocationTypeId;
-
-    @Basic
-    @Column(name = "agencies_id")
-    private int agenciesId;
-
-    @Basic
     @Column(name = "date_created")
     private Timestamp dateCreated;
 
@@ -84,6 +75,14 @@ public class VisitLocations {
     @Basic
     @Column(name = "is_active")
     private Boolean isActive;
+
+    @Basic
+    @Column(name = "visit_location_type_id", nullable = false, length = 30)
+    private int visitLocationTypeId;
+
+    @Basic
+    @Column(name = "agencies_id")
+    private int agenciesId;
 
     @OneToMany(mappedBy = "visitLocationsByVisitLocationId")
     @JsonManagedReference

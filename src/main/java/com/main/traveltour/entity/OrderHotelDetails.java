@@ -23,12 +23,12 @@ public class OrderHotelDetails {
     private int id;
 
     @Basic
-    @Column(name = "order_hotel_id")
-    private Integer orderHotelId;
+    @Column(name = "order_hotel_id", nullable = false, length = 30)
+    private String orderHotelId;
 
     @Basic
-    @Column(name = "room_type_id")
-    private Integer roomTypeId;
+    @Column(name = "room_type_id", nullable = false, length = 30)
+    private String roomTypeId;
 
     @Basic
     @Column(name = "amount")

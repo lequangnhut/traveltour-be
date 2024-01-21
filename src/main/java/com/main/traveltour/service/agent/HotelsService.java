@@ -8,6 +8,8 @@ public interface HotelsService {
 
     List<Hotels> findAllListHotel();
 
+    String findMaxCode();
+
     Hotels findByAgencyId(int userId);
 
     Hotels save(Hotels hotels);

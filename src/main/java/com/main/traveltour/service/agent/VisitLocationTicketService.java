@@ -4,5 +4,7 @@ import com.main.traveltour.entity.VisitLocationTickets;
 
 public interface VisitLocationTicketService {
 
+    String findMaxCode();
+
     VisitLocationTickets save(VisitLocationTickets visitLocationTickets);
 }

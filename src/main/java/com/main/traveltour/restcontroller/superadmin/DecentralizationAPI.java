@@ -7,6 +7,7 @@ import com.main.traveltour.service.agent.AgenciesService;
 import com.main.traveltour.service.agent.HotelsService;
 import com.main.traveltour.service.agent.TransportationBrandsService;
 import com.main.traveltour.service.agent.VisitLocationsService;
+import com.main.traveltour.utils.GenerateNextID;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -33,13 +34,13 @@ public class DecentralizationAPI {
     private AgenciesService agenciesService;
 
     @Autowired
+    private HotelsService hotelsService;
+
+    @Autowired
     private TransportationBrandsService transportationBrandsService;
 
     @Autowired
     private VisitLocationsService visitLocationsService;
-
-    @Autowired
-    private HotelsService hotelsService;
 
     @GetMapping("superadmin/decentralization/find-role-staff")
     private ResponseEntity<Page<Users>> getListUserRoleStaff(@RequestParam(defaultValue = "0") int page) {
@@ -69,6 +70,10 @@ public class DecentralizationAPI {
     }
 
     private void changeBusiness(int userId, List<String> roles) {
+        String hotelId = GenerateNextID.generateNextCode("HTL", hotelsService.findMaxCode());
+        String transId = GenerateNextID.generateNextCode("TRP", transportationBrandsService.findMaxCode());
+        String placeId = GenerateNextID.generateNextCode("PLA", visitLocationsService.findMaxCode());
+
         Agencies agencies = agenciesService.findByUserId(userId);
         Hotels hotels = hotelsService.findByAgencyId(agencies.getId());
         TransportationBrands transportationBrands = transportationBrandsService.findByAgencyId(agencies.getId());
@@ -79,6 +84,7 @@ public class DecentralizationAPI {
             hotelsService.save(hotels);
         } else if (roles.contains("ROLE_AGENT_HOTEL")) {
             Hotels newHotel = new Hotels();
+            newHotel.setId(hotelId);
             newHotel.setHotelTypeId(1);
             newHotel.setAgenciesId(agencies.getId());
             newHotel.setIsAccepted(Boolean.FALSE);
@@ -92,6 +98,7 @@ public class DecentralizationAPI {
             transportationBrandsService.save(transportationBrands);
         } else if (roles.contains("ROLE_AGENT_TRANSPORT")) {
             TransportationBrands newTransportationBrand = new TransportationBrands();
+            newTransportationBrand.setId(transId);
             newTransportationBrand.setAgenciesId(agencies.getId());
             newTransportationBrand.setIsAccepted(Boolean.FALSE);
             newTransportationBrand.setIsActive(Boolean.TRUE);
@@ -104,6 +111,7 @@ public class DecentralizationAPI {
             visitLocationsService.save(visitLocations);
         } else if (roles.contains("ROLE_AGENT_PLACE")) {
             VisitLocations newVisitLocation = new VisitLocations();
+            newVisitLocation.setId(placeId);
             newVisitLocation.setVisitLocationTypeId(1);
             newVisitLocation.setAgenciesId(agencies.getId());
             newVisitLocation.setIsAccepted(Boolean.FALSE);

@@ -21,8 +21,8 @@ public class TourDetailImages {
     private int id;
 
     @Basic
-    @Column(name = "tour_detail_id")
-    private Integer tourDetailId;
+    @Column(name = "tour_detail_id", nullable = false, length = 30)
+    private String tourDetailId;
 
     @Basic
     @Column(name = "tour_detail_img")

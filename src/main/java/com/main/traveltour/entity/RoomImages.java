@@ -21,8 +21,8 @@ public class RoomImages {
     private int id;
 
     @Basic
-    @Column(name = "room_type_id")
-    private int roomTypeId;
+    @Column(name = "room_type_id", nullable = false, length = 30)
+    private String roomTypeId;
 
     @Basic
     @Column(name = "room_type_img")

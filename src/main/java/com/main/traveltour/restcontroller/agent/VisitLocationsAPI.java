@@ -8,6 +8,7 @@ import com.main.traveltour.service.agent.VisitLocationTicketService;
 import com.main.traveltour.service.agent.VisitLocationTypeService;
 import com.main.traveltour.service.agent.VisitLocationsService;
 import com.main.traveltour.service.utils.FileUpload;
+import com.main.traveltour.utils.GenerateNextID;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -68,15 +69,17 @@ public class VisitLocationsAPI {
         createVisitTicket(visitLocations.getId(), selectedTickets, unitPrices);
     }
 
-    private void createVisitTicket(int locationId, List<String> ticketTypes, Map<String, String> unitPrices) {
+    private void createVisitTicket(String locationId, List<String> ticketTypes, Map<String, String> unitPrices) {
         Map<String, String> vietnameseToEnglishMap = new HashMap<>();
         vietnameseToEnglishMap.put("Vé người lớn", "adult");
         vietnameseToEnglishMap.put("Vé trẻ em", "child");
 
         for (String ticketType : ticketTypes) {
+            String ticketId = GenerateNextID.generateNextCode("TK", visitLocationsService.findMaxCode());
             String englishTicketType = vietnameseToEnglishMap.get(ticketType);
 
             VisitLocationTickets tickets = new VisitLocationTickets();
+            tickets.setId(ticketId);
             tickets.setVisitLocationId(locationId);
             tickets.setTicketTypeName(ticketType);
 

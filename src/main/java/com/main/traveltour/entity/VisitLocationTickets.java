@@ -19,14 +19,13 @@ import java.util.Collection;
 @Table(name = "visit_location_tickets", schema = "travel_tour")
 public class VisitLocationTickets {
 
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Id
-    @Column(name = "id")
-    private int id;
+    @Column(name = "id", nullable = false, length = 30)
+    private String id;
 
     @Basic
-    @Column(name = "visit_location_id")
-    private Integer visitLocationId;
+    @Column(name = "visit_location_id", nullable = false, length = 30)
+    private String visitLocationId;
 
     @Basic
     @Column(name = "ticket_type_name")

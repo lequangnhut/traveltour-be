@@ -21,10 +21,9 @@ import java.util.List;
 @Table(name = "order_hotels", schema = "travel_tour")
 public class OrderHotels {
 
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Id
-    @Column(name = "id")
-    private int id;
+    @Column(name = "id", nullable = false, length = 30)
+    private String id;
 
     @Basic
     @Column(name = "user_id")
