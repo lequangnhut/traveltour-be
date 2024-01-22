@@ -67,11 +67,11 @@ public class TourDetails {
 
     @Basic
     @Column(name = "from_location")
-    private String from_location;
+    private String fromLocation;
 
     @Basic
     @Column(name = "to_location")
-    private String to_location;
+    private String toLocation;
 
     @OneToMany(mappedBy = "tourDetailsByTourDetailId")
     @JsonManagedReference
