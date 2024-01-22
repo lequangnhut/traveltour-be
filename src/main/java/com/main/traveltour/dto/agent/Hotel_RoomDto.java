@@ -11,7 +11,7 @@ public class Hotel_RoomDto {
 
     RoomTypesDto roomTypesDto;
 
-    List<String> selectedRoomUtilitiesIds;
+    List<Integer> selectedRoomUtilitiesIds;
 
-    List<String> selectedPlaceUtilitiesIds;
+    List<Integer> selectedPlaceUtilitiesIds;
 }

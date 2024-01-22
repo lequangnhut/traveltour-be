@@ -1,5 +1,5 @@
 <!doctype html>
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
 
 <head>
     <title></title>
@@ -278,19 +278,24 @@
                                                 <td style="word-wrap:break-word;padding:0px;"
                                                     align="center">
                                                     <table role="presentation" cellpadding="0" cellspacing="0"
-                                                           style="width:100%; border-collapse:collapse;border-spacing:0px;" border="0">
+                                                           style="width:100%; border-collapse:collapse;border-spacing:0px;"
+                                                           border="0">
                                                         <tbody>
                                                         <tr>
-                                                            <td style="width:30%" align="left" >
-                                                                <img src="https://i.imgur.com/NDxqwA6.png" width="100%" editable="true" border="0" alt="" />
+                                                            <td style="width:30%" align="left">
+                                                                <img src="https://i.imgur.com/NDxqwA6.png" width="100%"
+                                                                     editable="true" border="0" alt=""/>
                                                             </td>
                                                             <td style="width:70%;" align="right">
                                                                 <p class="link" style="color:#000001; font-size:small; margin: 0; text-decoration:none;
-                                                                   font-family:TW-Averta-Regular, Averta, Helvetica, Arial, sans-serif !important;">Tourism and Travel services</p>
+                                                                   font-family:TW-Averta-Regular, Averta, Helvetica, Arial, sans-serif !important;">
+                                                                    Tourism and Travel services</p>
                                                                 <p class="link" style="color:#000001; font-size:small; margin: 0; text-decoration:none;
-                                                                    font-family:TW-Averta-Regular, Averta, Helvetica, Arial, sans-serif !important;">Website: traveltour.ser.com</p>
+                                                                    font-family:TW-Averta-Regular, Averta, Helvetica, Arial, sans-serif !important;">
+                                                                    Website: traveltour.ser.com</p>
                                                                 <p class="link" style="color:#000001; font-size:small; margin: 0; text-decoration:none;
-                                                                    font-family:TW-Averta-Regular, Averta, Helvetica, Arial, sans-serif !important;">Hotline: 1900 2000</p>
+                                                                    font-family:TW-Averta-Regular, Averta, Helvetica, Arial, sans-serif !important;">
+                                                                    Hotline: 1900 2000</p>
                                                             </td>
                                                         </tr>
                                                         </tbody>
@@ -302,7 +307,10 @@
                                     </div>
                                     <table width="100%" border="0" cellspacing="0" cellpadding="0">
                                         <tr>
-                                            <td class="separator" style="padding-top: 20px; border-bottom:2px solid #706f6f; font-size:0pt; line-height:0pt;">&nbsp;</td>
+                                            <td class="separator"
+                                                style="padding-top: 20px; border-bottom:2px solid #706f6f; font-size:0pt; line-height:0pt;">
+                                                &nbsp;
+                                            </td>
                                         </tr>
                                     </table>
                                     <!--[if mso | IE]>
@@ -383,23 +391,31 @@
                                                     <div style="cursor:auto;color:#5d7079;font-family:TW-Averta-Regular, Averta, Helvetica, Arial;font-size:16px;line-height:24px;letter-spacing:0.4px;text-align:left;">
                                                         <p></p>
                                                         <p style="color:#000000; font-family:TW-Averta-Regular, Averta, Helvetica, Arial; font-size:x-large;
-                                 line-height:28px; text-align:center; margin-bottom:10px;">Chào mừng bạn đến <br />
+                                 line-height:28px; text-align:center; margin-bottom:10px;">Chào mừng bạn đến <br/>
                                                             <strong style="color: #63ab45">Travel Tour</strong>
                                                         </p>
-                                                        <p style="text-align: justify; margin-bottom: 5px">Xin chào, doanh nghiệp <strong>[tên doanh nghiệp]!</strong></p>
+                                                        <p style="text-align: justify; margin-bottom: 5px">Xin chào,
+                                                            doanh nghiệp <strong th:text="${name_agency}">!</strong></p>
                                                         <p style="text-align: justify; margin-bottom: 5px">
-                                                            Chúng tôi xin gửi lời cảm ơn chân thành nhất đến bạn vì đã đăng ký kinh doanh cùng <strong>Travel Tour</strong> .
-                                                            Chúng tôi rất vui mừng và háo hức được hợp tác với bạn trong hành trình kinh doanh này.
-                                                            Sự hỗ trợ của bạn là một phần quan trọng giúp chúng tôi phát triển và mang đến những giải pháp
-                                                            tốt nhất cho khách hàng. Chúng tôi cam kết mang lại cho bạn trải nghiệm đối tác tuyệt vời nhất.
+                                                            Chúng tôi xin gửi lời cảm ơn chân thành nhất đến bạn vì đã
+                                                            đăng ký kinh doanh cùng <strong>Travel Tour</strong> .
+                                                            Chúng tôi rất vui mừng và háo hức được hợp tác với bạn trong
+                                                            hành trình kinh doanh này.
+                                                            Sự hỗ trợ của bạn là một phần quan trọng giúp chúng tôi phát
+                                                            triển và mang đến những giải pháp
+                                                            tốt nhất cho khách hàng. Chúng tôi cam kết mang lại cho bạn
+                                                            trải nghiệm đối tác tuyệt vời nhất.
                                                         </p>
                                                         <p style="text-align: justify; margin-bottom: 5px">
-                                                            Nếu có bất kỳ thắc mắc hoặc yêu cầu nào, đừng ngần ngại liên hệ trực tiếp với chúng tôi.
+                                                            Nếu có bất kỳ thắc mắc hoặc yêu cầu nào, đừng ngần ngại liên
+                                                            hệ trực tiếp với chúng tôi.
                                                             Chúng tôi sẽ luôn sẵn lòng hỗ trợ bạn.
                                                         </p>
                                                         <p style="text-align: justify; margin-bottom: 5px">
-                                                            Một lần nữa, xin cảm ơn bạn vì đã tin tưởng và chọn <strong>Travel Tour</strong>  làm đối tác kinh doanh của mình.
-                                                            Chúng tôi mong chờ một hành trình thành công và có ý nghĩa cùng bạn.
+                                                            Một lần nữa, xin cảm ơn bạn vì đã tin tưởng và chọn <strong>Travel
+                                                            Tour</strong> làm đối tác kinh doanh của mình.
+                                                            Chúng tôi mong chờ một hành trình thành công và có ý nghĩa
+                                                            cùng bạn.
                                                         </p>
                                                         <p style="text-align: justify; margin-bottom: 5px; font-weight: bolder;padding-bottom: 15px;">
                                                             Trân trọng,
@@ -408,37 +424,59 @@
                                                         </p>
                                                         <p style="text-align: center;margin: 0;padding: 0;">
                                                             <a th:href="@{'http://localhost:8080/xac-thuc-email?token=' + ${token}}"
-                                                               class="btn" style="background-color: #63ab45; color: white">>> Truy cập website <<</a>
+                                                               class="btn"
+                                                               style="background-color: #63ab45; color: white">>> Truy
+                                                                cập website <<</a>
                                                         </p>
-                                                        <p class="separator" style="; border-bottom:2px solid #706f6f; font-size:0pt; line-height:0pt;">&nbsp;</p>
+                                                        <p class="separator"
+                                                           style="; border-bottom:2px solid #706f6f; font-size:0pt; line-height:0pt;">
+                                                            &nbsp;</p>
                                                         <table width="100%" border="0" cellspacing="0" cellpadding="0">
                                                             <tr>
-                                                                <td class="text-socials" style="color:#000000; font-family:system-ui; font-size:16px; line-height:22px; text-align:center; text-transform:uppercase;">
+                                                                <td class="text-socials"
+                                                                    style="color:#000000; font-family:system-ui; font-size:16px; line-height:22px; text-align:center; text-transform:uppercase;">
                                                                     <multiline>Theo dõi chúng tôi</multiline>
                                                                 </td>
                                                             </tr>
                                                             <tr>
                                                                 <td style="padding: 10px 0px 10px 0px;" align="center">
-                                                                    <table class="center" border="0" cellspacing="0" cellpadding="0" style="text-align:center;">
+                                                                    <table class="center" border="0" cellspacing="0"
+                                                                           cellpadding="0" style="text-align:center;">
                                                                         <tr>
-                                                                            <td class="img" width="52" style="font-size:0pt; line-height:0pt; text-align:left;">
+                                                                            <td class="img" width="52"
+                                                                                style="font-size:0pt; line-height:0pt; text-align:left;">
                                                                                 <a href="" target="_blank">
-                                                                                    <img src="https://i.imgur.com/877kqQV.jpg" width="42" height="42" editable="true" border="0" alt="" />
+                                                                                    <img src="https://i.imgur.com/877kqQV.jpg"
+                                                                                         width="42" height="42"
+                                                                                         editable="true" border="0"
+                                                                                         alt=""/>
                                                                                 </a>
                                                                             </td>
-                                                                            <td class="img" width="52" style="font-size:0pt; line-height:0pt; text-align:left;">
+                                                                            <td class="img" width="52"
+                                                                                style="font-size:0pt; line-height:0pt; text-align:left;">
                                                                                 <a href="" target="_blank">
-                                                                                    <img src="https://i.imgur.com/33AwFOF.jpg" width="42" height="42" editable="true" border="0" alt="" />
+                                                                                    <img src="https://i.imgur.com/33AwFOF.jpg"
+                                                                                         width="42" height="42"
+                                                                                         editable="true" border="0"
+                                                                                         alt=""/>
                                                                                 </a>
                                                                             </td>
-                                                                            <td class="img" width="52" style="font-size:0pt; line-height:0pt; text-align:left;">
+                                                                            <td class="img" width="52"
+                                                                                style="font-size:0pt; line-height:0pt; text-align:left;">
                                                                                 <a href="" target="_blank">
-                                                                                    <img src="https://i.imgur.com/U8ws7yM.jpg" width="42" height="42" editable="true" border="0" alt="" />
+                                                                                    <img src="https://i.imgur.com/U8ws7yM.jpg"
+                                                                                         width="42" height="42"
+                                                                                         editable="true" border="0"
+                                                                                         alt=""/>
                                                                                 </a>
                                                                             </td>
-                                                                            <td class="img" width="42" style="font-size:0pt; line-height:0pt; text-align:left;">
+                                                                            <td class="img" width="42"
+                                                                                style="font-size:0pt; line-height:0pt; text-align:left;">
                                                                                 <a href="" target="_blank">
-                                                                                    <img src="https://i.imgur.com/y7HcGhJ.jpg" width="42" height="42" editable="true" border="0" alt="" />
+                                                                                    <img src="https://i.imgur.com/y7HcGhJ.jpg"
+                                                                                         width="42" height="42"
+                                                                                         editable="true" border="0"
+                                                                                         alt=""/>
                                                                                 </a>
                                                                             </td>
                                                                         </tr>

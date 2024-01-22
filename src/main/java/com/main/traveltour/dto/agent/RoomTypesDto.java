@@ -13,8 +13,6 @@ public class RoomTypesDto implements Serializable {
 
     String roomTypeName;
 
-    String hotelId;
-
     Integer capacityAdults;
 
     Integer capacityChildren;
@@ -25,5 +23,7 @@ public class RoomTypesDto implements Serializable {
 
     String roomTypeDescription;
 
-    Boolean isActive = true;
+    Integer isActive = 1;
+
+    Boolean isDeleted = false;
 }

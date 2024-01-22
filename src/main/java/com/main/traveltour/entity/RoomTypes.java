@@ -1,6 +1,7 @@
 package com.main.traveltour.entity;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -9,6 +10,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.math.BigDecimal;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -58,6 +60,10 @@ public class RoomTypes {
     private Boolean isDeleted;
 
     @Basic
+    @Column(name = "date_deleted")
+    private Timestamp dateDeleted;
+
+    @Basic
     @Column(name = "room_type_avatar")
     private String roomTypeAvatar;
 
@@ -84,5 +90,6 @@ public class RoomTypes {
 
     @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     @JoinTable(name = "room_type_utilities", joinColumns = {@JoinColumn(name = "room_type_id", referencedColumnName = "id")}, inverseJoinColumns = {@JoinColumn(name = "room_utilities_id", referencedColumnName = "id")})
+    @JsonIgnoreProperties("roomTypes")
     private List<RoomUtilities> roomUtilities = new ArrayList<>();
 }

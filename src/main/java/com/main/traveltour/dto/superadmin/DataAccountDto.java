@@ -5,7 +5,7 @@ import lombok.Data;
 import java.util.List;
 
 @Data
-public class DataAccount {
+public class DataAccountDto {
     private AccountDto accountDto;
 
     private List<String> roles;

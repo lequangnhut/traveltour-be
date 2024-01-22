@@ -5,6 +5,7 @@ import com.main.traveltour.dto.agent.HotelsDto;
 import com.main.traveltour.dto.agent.RoomTypesDto;
 import com.main.traveltour.entity.*;
 import com.main.traveltour.service.agent.*;
+import com.main.traveltour.service.utils.EmailService;
 import com.main.traveltour.service.utils.FileUpload;
 import com.main.traveltour.utils.EntityDtoUtils;
 import com.main.traveltour.utils.GenerateNextID;
@@ -15,7 +16,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @RestController
 @CrossOrigin(origins = "http://localhost:3000")
@@ -43,9 +43,12 @@ public class HotelsAPI {
     @Autowired
     private RoomTypeService roomTypeService;
 
-    @GetMapping("/agent/hotels/find-by-agency-id/{userId}")
-    private Hotels findByUserId(@PathVariable int userId) {
-        return hotelsService.findByAgencyId(userId);
+    @Autowired
+    private RoomImageService roomImageService;
+
+    @GetMapping("/agent/hotels/find-by-agency-id/{agencyId}")
+    private Hotels findByUserId(@PathVariable int agencyId) {
+        return hotelsService.findByAgencyId(agencyId);
     }
 
     @GetMapping("/agent/hotels/list-hotels")
@@ -106,29 +109,50 @@ public class HotelsAPI {
     @PostMapping(value = "/agent/hotels/register-hotels", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public void registerHotels(@RequestPart("dataHotelRoom") Hotel_RoomDto dataHotelRoom,
                                @RequestPart("roomTypeImage") List<MultipartFile> roomTypeImage,
-                               @RequestPart("hotelAvatar") MultipartFile hotelAvatar) throws IOException {
+                               @RequestPart("hotelAvatar") MultipartFile hotelAvatar,
+                               @RequestPart("roomTypeAvatar") MultipartFile roomTypeAvatar) throws IOException {
         String hotelAvtar = fileUpload.uploadFile(hotelAvatar);
         HotelsDto hotelsDto = dataHotelRoom.getHotelsDto();
+
+        List<PlaceUtilities> placeUtilities = dataHotelRoom.getSelectedPlaceUtilitiesIds()
+                .stream().map(placeUtilitiesService::findByPlaceId).toList();
 
         Hotels hotels = EntityDtoUtils.convertToEntity(hotelsDto, Hotels.class);
         hotels.setId(hotelsDto.getId());
         hotels.setHotelAvatar(hotelAvtar);
         hotels.setIsAccepted(Boolean.TRUE);
+        hotels.setPlaceUtilities(placeUtilities);
         hotelsService.save(hotels);
 
-        createRoomType(dataHotelRoom, hotels.getId());
+        createRoomType(dataHotelRoom, roomTypeAvatar, hotels.getId(), roomTypeImage);
     }
 
-    private void createRoomType(Hotel_RoomDto dataHotelRoom, String hotelId) {
+    private void createRoomType(Hotel_RoomDto dataHotelRoom, MultipartFile roomTypeAvatar, String hotelId, List<MultipartFile> roomTypeImage) throws IOException {
         String roomTypeId = GenerateNextID.generateNextCode("RT", roomTypeService.findMaxId());
+        String imgPath = fileUpload.uploadFile(roomTypeAvatar);
+
         RoomTypesDto roomTypesDto = dataHotelRoom.getRoomTypesDto();
 
-//        List<RoomUtilities> roomUtilities = dataHotelRoom.getSelectedRoomUtilitiesIds()
-//                .stream().map(roomTypeService::findByRoomTypeId).toList();
+        List<RoomUtilities> roomUtilities = dataHotelRoom.getSelectedRoomUtilitiesIds()
+                .stream().map(roomUtilitiesService::findByRoomUtilitiesId).toList();
 
         RoomTypes roomTypes = EntityDtoUtils.convertToEntity(roomTypesDto, RoomTypes.class);
         roomTypes.setId(roomTypeId);
         roomTypes.setHotelId(hotelId);
+        roomTypes.setRoomTypeAvatar(imgPath);
+        roomTypes.setRoomUtilities(roomUtilities);
         roomTypeService.save(roomTypes);
+
+        createRoomImage(roomTypeId, roomTypeImage);
+    }
+
+    private void createRoomImage(String roomTypeId, List<MultipartFile> roomTypeImage) throws IOException {
+        for (MultipartFile file : roomTypeImage) {
+            String imgPath = fileUpload.uploadFile(file);
+            RoomImages roomImages = new RoomImages();
+            roomImages.setRoomTypeId(roomTypeId);
+            roomImages.setRoomTypeImg(imgPath);
+            roomImageService.save(roomImages);
+        }
     }
 }
