@@ -37,8 +37,8 @@ public class Hotels {
     private String phone;
 
     @Basic
-    @Column(name = "amount_room")
-    private Integer amountRoom;
+    @Column(name = "floors_number")
+    private Integer floorNumber;
 
     @Basic
     @Column(name = "floors_number")
