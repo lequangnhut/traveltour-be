@@ -15,6 +15,11 @@ public class RoomUtilitiesServiceImpl implements RoomUtilitiesService {
     private RoomUtilitiesRepository roomUtilitiesRepository;
 
     @Override
+    public RoomUtilities findByRoomUtilitiesId(int id) {
+        return roomUtilitiesRepository.findById(id);
+    }
+
+    @Override
     public List<RoomUtilities> findAllRoomUtils() {
         return roomUtilitiesRepository.findAll();
     }

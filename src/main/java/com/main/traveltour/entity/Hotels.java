@@ -1,6 +1,7 @@
 package com.main.traveltour.entity;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -61,6 +62,10 @@ public class Hotels {
     private Timestamp dateCreated;
 
     @Basic
+    @Column(name = "date_deleted")
+    private Timestamp dateDeleted;
+
+    @Basic
     @Column(name = "is_accepted")
     private Boolean isAccepted;
 
@@ -98,5 +103,6 @@ public class Hotels {
 
     @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     @JoinTable(name = "hotel_utilities", joinColumns = {@JoinColumn(name = "hotel_id", referencedColumnName = "id")}, inverseJoinColumns = {@JoinColumn(name = "place_utilities_id", referencedColumnName = "id")})
+    @JsonIgnoreProperties("hotels")
     private List<PlaceUtilities> placeUtilities = new ArrayList<>();
 }

@@ -6,5 +6,7 @@ import java.util.List;
 
 public interface RoomUtilitiesService {
 
+    RoomUtilities findByRoomUtilitiesId(int id);
+
     List<RoomUtilities> findAllRoomUtils();
 }
