@@ -51,7 +51,15 @@ public class RoomTypes {
 
     @Basic
     @Column(name = "is_active")
-    private Boolean isActive;
+    private Integer isActive;
+
+    @Basic
+    @Column(name = "is_deleted")
+    private Boolean isDeleted;
+
+    @Basic
+    @Column(name = "room_type_avatar")
+    private String roomTypeAvatar;
 
     @Basic
     @Column(name = "room_type_description")
