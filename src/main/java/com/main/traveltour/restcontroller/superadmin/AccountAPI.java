@@ -14,10 +14,6 @@ import com.main.traveltour.service.utils.EmailService;
 import com.main.traveltour.utils.EntityDtoUtils;
 import com.main.traveltour.utils.GenerateNextID;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
@@ -53,18 +49,6 @@ public class AccountAPI {
 
     @Autowired
     private EmailService emailService;
-
-    @GetMapping("superadmin/account/find-all-account-staff")
-    private ResponseEntity<Page<Users>> findAllAccountStaff(@RequestParam(defaultValue = "0") int page) {
-        Page<Users> items = usersService.findAllAccountStaff(PageRequest.of(page, 10));
-        return new ResponseEntity<>(items, HttpStatus.OK);
-    }
-
-    @GetMapping("superadmin/account/find-all-account-agent")
-    private ResponseEntity<Page<Users>> findAllAccountAgent(@RequestParam(defaultValue = "0") int page) {
-        Page<Users> items = usersService.findAllAccountAgent(PageRequest.of(page, 10));
-        return new ResponseEntity<>(items, HttpStatus.OK);
-    }
 
     @GetMapping("superadmin/account/find-by-id/{id}")
     private UsersDto findById(@PathVariable int id) {
