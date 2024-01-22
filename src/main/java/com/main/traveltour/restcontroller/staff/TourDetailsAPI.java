@@ -5,6 +5,7 @@ import com.main.traveltour.entity.ResponseObject;
 import com.main.traveltour.entity.TourDetails;
 import com.main.traveltour.service.staff.TourDetailsService;
 import com.main.traveltour.utils.EntityDtoUtils;
+import com.main.traveltour.utils.GenerateNextID;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -59,7 +60,9 @@ public class TourDetailsAPI {
     @PostMapping("/create-tourDetail")
     public ResponseObject createTourDetail(@RequestPart TourDetailsDto tourDetailsDto) {
         try {
+            String tourDetailId = GenerateNextID.generateNextCode("TR", tourDetailsService.getMaxCodeTourDetailId());
             TourDetails tourDetail = EntityDtoUtils.convertToEntity(tourDetailsDto, TourDetails.class);
+            tourDetail.setId(tourDetailId);
             tourDetail = tourDetailsService.save(tourDetail);
             return new ResponseObject("200", "Thêm mới thành công", tourDetail);
         } catch (Exception e) {
@@ -82,13 +85,14 @@ public class TourDetailsAPI {
         }
     }
 
-    @DeleteMapping("/deactivate-tourDetail/{id}")
+    @DeleteMapping("/delete-tourDetail/{id}")
     public ResponseObject deleteTourDetail(@PathVariable String id) {
         try {
-            tourDetailsService.deleteById(id);
+            TourDetails tourDetails = tourDetailsService.getById(id);
+            tourDetailsService.delete(tourDetails);
             return new ResponseObject("204", "Xóa thành công", null);
         } catch (Exception e) {
-            return new ResponseObject("500", "Xóa thất bại", null);
+            return new ResponseObject("500", "Xó    a thất bại", null);
         }
     }
 }

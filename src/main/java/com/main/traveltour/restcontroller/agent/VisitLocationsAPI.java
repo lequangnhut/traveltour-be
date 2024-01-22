@@ -41,9 +41,9 @@ public class VisitLocationsAPI {
         return visitLocationTypeService.findAllForRegisterAgency();
     }
 
-    @GetMapping("/agent/visit/find-by-agency-id/{userId}")
-    private VisitLocations findByUserId(@PathVariable int userId) {
-        return visitLocationsService.findByAgencyId(userId);
+    @GetMapping("/agent/visit/find-by-agency-id/{agencyId}")
+    private VisitLocations findByUserId(@PathVariable int agencyId) {
+        return visitLocationsService.findByAgencyId(agencyId);
     }
 
     @PostMapping("/agent/visit/register-visit-location")

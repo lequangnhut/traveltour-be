@@ -21,9 +21,9 @@ public class TransportAPI {
     @Autowired
     private TransportationBrandsService transportationBrandsService;
 
-    @GetMapping("/agent/transport/find-by-agency-id/{userId}")
-    private TransportationBrands findByUserId(@PathVariable int userId) {
-        return transportationBrandsService.findByAgencyId(userId);
+    @GetMapping("/agent/transport/find-by-agency-id/{agencyId}")
+    private TransportationBrands findByUserId(@PathVariable int agencyId) {
+        return transportationBrandsService.findByAgencyId(agencyId);
     }
 
     @PostMapping("/agent/transport/register-transport")

@@ -18,6 +18,11 @@ public class TourDetailsServiceImpl implements TourDetailsService {
     private TourDetailsRepository tourDetailsRepository;
 
     @Override
+    public String getMaxCodeTourDetailId() {
+        return tourDetailsRepository.getMaxCodeTourDetailId();
+    }
+
+    @Override
     public List<TourDetails> findAll() {
         return tourDetailsRepository.findAll();
     }
@@ -38,12 +43,19 @@ public class TourDetailsServiceImpl implements TourDetailsService {
     }
 
     @Override
+    public TourDetails getById(String id) {
+        return tourDetailsRepository.getById(id);
+    }
+
+    @Override
     public TourDetails save(TourDetails tourDetails) {
         return tourDetailsRepository.save(tourDetails);
     }
 
     @Override
-    public void deleteById(String id) {
-        tourDetailsRepository.deleteById(id);
+    public void delete(TourDetails tourDetails) {
+        tourDetailsRepository.delete(tourDetails);
     }
+
+
 }

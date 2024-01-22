@@ -2,7 +2,7 @@ package com.main.traveltour.restcontroller.superadmin;
 
 import com.main.traveltour.dto.UsersDto;
 import com.main.traveltour.dto.superadmin.AccountDto;
-import com.main.traveltour.dto.superadmin.DataAccount;
+import com.main.traveltour.dto.superadmin.DataAccountDto;
 import com.main.traveltour.entity.*;
 import com.main.traveltour.service.RolesService;
 import com.main.traveltour.service.UsersService;
@@ -10,6 +10,7 @@ import com.main.traveltour.service.agent.AgenciesService;
 import com.main.traveltour.service.agent.HotelsService;
 import com.main.traveltour.service.agent.TransportationBrandsService;
 import com.main.traveltour.service.agent.VisitLocationsService;
+import com.main.traveltour.service.utils.EmailService;
 import com.main.traveltour.utils.EntityDtoUtils;
 import com.main.traveltour.utils.GenerateNextID;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -50,6 +51,9 @@ public class AccountAPI {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
+    @Autowired
+    private EmailService emailService;
+
     @GetMapping("superadmin/account/find-all-account-staff")
     private ResponseEntity<Page<Users>> findAllAccountStaff(@RequestParam(defaultValue = "0") int page) {
         Page<Users> items = usersService.findAllAccountStaff(PageRequest.of(page, 10));
@@ -79,11 +83,11 @@ public class AccountAPI {
     }
 
     @PostMapping("superadmin/account/create-account")
-    private void createAccount(@RequestBody DataAccount dataAccount) {
-        AccountDto accountDto = dataAccount.getAccountDto();
+    private void createAccount(@RequestBody DataAccountDto dataAccountDto) {
+        AccountDto accountDto = dataAccountDto.getAccountDto();
         Users user = EntityDtoUtils.convertToEntity(accountDto, Users.class);
 
-        List<String> roles = dataAccount.getRoles();
+        List<String> roles = dataAccountDto.getRoles();
         List<Roles> rolesList = roles.stream().map(rolesService::findByNameRole).collect(Collectors.toList());
 
         user.setRoles(rolesList);
@@ -104,6 +108,8 @@ public class AccountAPI {
 
             registerBusiness(agencies.getId(), roles);
         }
+
+        emailService.queueEmailCreateBusiness(dataAccountDto);
     }
 
     @PutMapping("superadmin/account/update-account")

@@ -62,6 +62,10 @@ public class TourDetails {
     private Timestamp dateCreated;
 
     @Basic
+    @Column(name = "date_deleted")
+    private Timestamp dateDeleted;
+
+    @Basic
     @Column(name = "tour_detail_description")
     private String tourDetailDescription;
 

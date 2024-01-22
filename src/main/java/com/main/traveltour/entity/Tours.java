@@ -40,6 +40,10 @@ public class Tours {
     private Timestamp dateCreated;
 
     @Basic
+    @Column(name = "date_deleted")
+    private Timestamp dateDeleted;
+
+    @Basic
     @Column(name = "is_active")
     private Boolean isActive;
 

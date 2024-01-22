@@ -20,6 +20,11 @@ public class PlaceUtilitiesServiceImpl implements PlaceUtilitiesService {
     }
 
     @Override
+    public PlaceUtilities findByPlaceId(int id) {
+        return placeUtilitiesRepository.findById(id);
+    }
+
+    @Override
     public PlaceUtilities save(PlaceUtilities placeUtilities) {
         return placeUtilitiesRepository.save(placeUtilities);
     }
