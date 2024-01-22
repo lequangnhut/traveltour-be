@@ -30,7 +30,7 @@ public interface UsersRepository extends JpaRepository<Users, Integer> {
             "WHERE r.nameRole LIKE 'ROLE_ADMIN' " +
             "OR r.nameRole LIKE 'ROLE_STAFF' " +
             "OR r.nameRole LIKE 'ROLE_GUIDE'" +
-            "ORDER BY u.dateCreated DESC")
+            "ORDER BY u.isActive DESC, u.dateCreated DESC")
     Page<Users> findDecentralizationStaffByActiveIsTrue(Pageable pageable);
 
     @Query("SELECT u FROM Users u " +
@@ -38,7 +38,7 @@ public interface UsersRepository extends JpaRepository<Users, Integer> {
             "WHERE r.nameRole LIKE 'ROLE_AGENT_TRANSPORT' " +
             "OR r.nameRole LIKE 'ROLE_AGENT_HOTEL' " +
             "OR r.nameRole LIKE 'ROLE_AGENT_PLACE'" +
-            "ORDER BY u.dateCreated DESC")
+            "ORDER BY u.isActive DESC, u.dateCreated DESC")
     Page<Users> findDecentralizationAgentByActiveIsTrue(Pageable pageable);
 
     @Query("SELECT u FROM Users u " +
@@ -46,7 +46,7 @@ public interface UsersRepository extends JpaRepository<Users, Integer> {
             "WHERE r.nameRole LIKE 'ROLE_ADMIN' " +
             "OR r.nameRole LIKE 'ROLE_STAFF' " +
             "OR r.nameRole LIKE 'ROLE_GUIDE' " +
-            "ORDER BY u.dateCreated DESC")
+            "ORDER BY u.isActive DESC, u.dateCreated DESC")
     Page<Users> findAllAccountStaffOrderByDateCreatedDESC(Pageable pageable);
 
     @Query("SELECT u FROM Users u " +
@@ -54,7 +54,7 @@ public interface UsersRepository extends JpaRepository<Users, Integer> {
             "WHERE r.nameRole LIKE 'ROLE_AGENT_HOTEL' " +
             "OR r.nameRole LIKE 'ROLE_AGENT_TRANSPORT' " +
             "OR r.nameRole LIKE 'ROLE_AGENT_PLACE' " +
-            "ORDER BY u.dateCreated DESC")
+            "ORDER BY u.isActive DESC, u.dateCreated DESC")
     Page<Users> findAllAccountAgentOrderByDateCreatedDESC(Pageable pageable);
 
     @Query("SELECT u FROM Users u " +

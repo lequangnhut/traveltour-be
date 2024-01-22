@@ -14,7 +14,7 @@ import java.util.List;
 @Data
 public class HotelsDto implements Serializable {
 
-    int id;
+    String id;
 
     String hotelName;
 
@@ -24,6 +24,8 @@ public class HotelsDto implements Serializable {
 
     Integer amountRoom;
 
+    Integer floorNumber;
+
     String province;
 
     String district;
@@ -32,13 +34,11 @@ public class HotelsDto implements Serializable {
 
     String address;
 
-    Timestamp dateCreated;
-
-    Boolean isAccepted;
-
     Boolean isActive;
+
+    Timestamp dateCreated;
 
     int hotelTypeId;
 
-    List<PlaceUtilities> placeUtilities = new ArrayList<>();
+    int agenciesId;
 }

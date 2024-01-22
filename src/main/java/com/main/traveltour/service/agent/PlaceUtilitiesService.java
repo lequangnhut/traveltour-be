@@ -8,5 +8,7 @@ public interface PlaceUtilitiesService {
 
     List<PlaceUtilities> findAll();
 
+    PlaceUtilities findByPlaceId(int id);
+
     PlaceUtilities save(PlaceUtilities placeUtilities);
 }

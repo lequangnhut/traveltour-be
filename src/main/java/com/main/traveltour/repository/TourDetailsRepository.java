@@ -15,8 +15,7 @@ import java.util.Optional;
 public interface TourDetailsRepository extends JpaRepository<TourDetails, Integer> {
 
     Optional<TourDetails> findById(String id);
-
-    void deleteById(String id);
+    TourDetails getById(String id);
 
     @Query("SELECT td FROM TourDetails td WHERE " +
             "UPPER(td.toursByTourId.tourName) LIKE %:searchTerm% OR " +
@@ -27,6 +26,6 @@ public interface TourDetailsRepository extends JpaRepository<TourDetails, Intege
 
 
     @Query("SELECT COALESCE(MAX(td.id), 'TD0000') FROM TourDetails td")
-    String maxCodeTourDetailId();
+    String getMaxCodeTourDetailId();
 
 }
