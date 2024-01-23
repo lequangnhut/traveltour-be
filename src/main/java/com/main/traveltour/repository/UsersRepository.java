@@ -5,6 +5,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -25,37 +26,34 @@ public interface UsersRepository extends JpaRepository<Users, Integer> {
 
     Users findByToken(String token);
 
-    @Query("SELECT u FROM Users u " +
+    @Query("SELECT DISTINCT u FROM Users u " +
             "JOIN u.roles r " +
-            "WHERE r.nameRole LIKE 'ROLE_ADMIN' " +
-            "OR r.nameRole LIKE 'ROLE_STAFF' " +
-            "OR r.nameRole LIKE 'ROLE_GUIDE'" +
-            "ORDER BY u.isActive DESC, u.dateCreated DESC")
-    Page<Users> findDecentralizationStaffByActiveIsTrue(Pageable pageable);
+            "WHERE r.nameRole IN ('ROLE_ADMIN', 'ROLE_STAFF', 'ROLE_GUIDE')")
+    Page<Users> findDecentralizationStaff(Pageable pageable);
+
+    @Query("SELECT DISTINCT u FROM Users u " +
+            "JOIN u.roles r " +
+            "WHERE r.nameRole IN ('ROLE_AGENT_HOTEL', 'ROLE_AGENT_TRANSPORT', 'ROLE_AGENT_PLACE')")
+    Page<Users> findDecentralizationAgent(Pageable pageable);
 
     @Query("SELECT u FROM Users u " +
             "JOIN u.roles r " +
-            "WHERE r.nameRole LIKE 'ROLE_AGENT_TRANSPORT' " +
-            "OR r.nameRole LIKE 'ROLE_AGENT_HOTEL' " +
-            "OR r.nameRole LIKE 'ROLE_AGENT_PLACE'" +
-            "ORDER BY u.isActive DESC, u.dateCreated DESC")
-    Page<Users> findDecentralizationAgentByActiveIsTrue(Pageable pageable);
+            "WHERE (r.nameRole LIKE 'ROLE_ADMIN' OR r.nameRole LIKE 'ROLE_STAFF' OR r.nameRole LIKE 'ROLE_GUIDE') " +
+            "AND (LOWER(u.email) LIKE LOWER(CONCAT('%', :searchTerm, '%')) " +
+            "OR LOWER(u.phone) LIKE LOWER(CONCAT('%', :searchTerm, '%')) " +
+            "OR LOWER(u.fullName) LIKE LOWER(CONCAT('%', :searchTerm, '%'))) " +
+            "OR LOWER(u.phone) LIKE LOWER(CONCAT('%', :searchTerm, '%'))")
+    Page<Users> searchAccountStaff(@Param("searchTerm") String searchTerm, Pageable pageable);
+
 
     @Query("SELECT u FROM Users u " +
             "JOIN u.roles r " +
-            "WHERE r.nameRole LIKE 'ROLE_ADMIN' " +
-            "OR r.nameRole LIKE 'ROLE_STAFF' " +
-            "OR r.nameRole LIKE 'ROLE_GUIDE' " +
-            "ORDER BY u.isActive DESC, u.dateCreated DESC")
-    Page<Users> findAllAccountStaffOrderByDateCreatedDESC(Pageable pageable);
-
-    @Query("SELECT u FROM Users u " +
-            "JOIN u.roles r " +
-            "WHERE r.nameRole LIKE 'ROLE_AGENT_HOTEL' " +
-            "OR r.nameRole LIKE 'ROLE_AGENT_TRANSPORT' " +
-            "OR r.nameRole LIKE 'ROLE_AGENT_PLACE' " +
-            "ORDER BY u.isActive DESC, u.dateCreated DESC")
-    Page<Users> findAllAccountAgentOrderByDateCreatedDESC(Pageable pageable);
+            "WHERE (r.nameRole LIKE 'ROLE_AGENT_HOTEL' OR r.nameRole LIKE 'ROLE_AGENT_TRANSPORT' OR r.nameRole LIKE 'ROLE_AGENT_PLACE') " +
+            "AND (LOWER(u.email) LIKE LOWER(CONCAT('%', :searchTerm, '%')) " +
+            "OR LOWER(u.phone) LIKE LOWER(CONCAT('%', :searchTerm, '%')) " +
+            "OR LOWER(u.fullName) LIKE LOWER(CONCAT('%', :searchTerm, '%'))) " +
+            "OR LOWER(u.phone) LIKE LOWER(CONCAT('%', :searchTerm, '%'))")
+    Page<Users> searchAccountAgent(@Param("searchTerm") String searchTerm, Pageable pageable);
 
     @Query("SELECT u FROM Users u " +
             "JOIN u.roles r " +

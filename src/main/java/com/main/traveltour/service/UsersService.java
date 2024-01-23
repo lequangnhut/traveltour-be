@@ -5,8 +5,6 @@ import com.main.traveltour.entity.Users;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
-import java.util.List;
-
 public interface UsersService {
 
     Users findById(int userId);
@@ -19,13 +17,13 @@ public interface UsersService {
 
     Users findByToken(String token);
 
-    Page<Users> findAllAccountStaff(Pageable pageable);
+    Page<Users> findAllAccountStaffWithSearch(String searchTerm, Pageable pageable);
 
-    Page<Users> findAllAccountAgent(Pageable pageable);
+    Page<Users> findAllAccountAgentWithSearch(String searchTerm, Pageable pageable);
 
-    Page<Users> findDecentralizationStaffByActiveIsTrue(Pageable pageable);
+    Page<Users> findDecentralizationStaff(Pageable pageable);
 
-    Page<Users> findDecentralizationAgentByActiveIsTrue(Pageable pageable);
+    Page<Users> findDecentralizationAgent(Pageable pageable);
 
     void authenticateRegister(Users users);
 

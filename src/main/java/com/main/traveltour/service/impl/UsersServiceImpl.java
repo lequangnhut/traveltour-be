@@ -73,23 +73,23 @@ public class UsersServiceImpl implements UsersService {
     }
 
     @Override
-    public Page<Users> findAllAccountStaff(Pageable pageable) {
-        return usersRepository.findAllAccountStaffOrderByDateCreatedDESC(pageable);
+    public Page<Users> findAllAccountStaffWithSearch(String searchTerm, Pageable pageable) {
+        return usersRepository.searchAccountStaff(searchTerm, pageable);
     }
 
     @Override
-    public Page<Users> findAllAccountAgent(Pageable pageable) {
-        return usersRepository.findAllAccountAgentOrderByDateCreatedDESC(pageable);
+    public Page<Users> findAllAccountAgentWithSearch(String searchTerm, Pageable pageable) {
+        return usersRepository.searchAccountAgent(searchTerm, pageable);
     }
 
     @Override
-    public Page<Users> findDecentralizationStaffByActiveIsTrue(Pageable pageable) {
-        return usersRepository.findDecentralizationStaffByActiveIsTrue(pageable);
+    public Page<Users> findDecentralizationStaff(Pageable pageable) {
+        return usersRepository.findDecentralizationStaff(pageable);
     }
 
     @Override
-    public Page<Users> findDecentralizationAgentByActiveIsTrue(Pageable pageable) {
-        return usersRepository.findDecentralizationAgentByActiveIsTrue(pageable);
+    public Page<Users> findDecentralizationAgent(Pageable pageable) {
+        return usersRepository.findDecentralizationAgent(pageable);
     }
 
     @Override
