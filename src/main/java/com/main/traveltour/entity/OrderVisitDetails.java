@@ -27,8 +27,8 @@ public class OrderVisitDetails {
     private String orderVisitId;
 
     @Basic
-    @Column(name = "visit_location_ticket_id", nullable = false, length = 30)
-    private String visitLocationTicketId;
+    @Column(name = "visit_location_ticket_id")
+    private Integer visitLocationTicketId;
 
     @Basic
     @Column(name = "amount")
