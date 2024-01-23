@@ -4,10 +4,14 @@ import com.main.traveltour.entity.Hotels;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
+import java.util.List;
+
 public interface HotelsRepository extends JpaRepository<Hotels, Integer> {
 
     @Query(value = "SELECT MAX(hl.id) FROM Hotels hl")
     String findMaxCode();
+
+    List<Hotels> findAllByAgenciesId(int agencyId);
 
     Hotels findByAgenciesId(int agencyId);
 }

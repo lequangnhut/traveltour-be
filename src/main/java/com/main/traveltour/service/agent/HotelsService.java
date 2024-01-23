@@ -8,9 +8,11 @@ public interface HotelsService {
 
     List<Hotels> findAllListHotel();
 
-    String findMaxCode();
+    List<Hotels> findAllByAgencyId(int agencyId);
 
-    Hotels findByAgencyId(int userId);
+    Hotels findByAgencyId(int agencyId);
+
+    String findMaxCode();
 
     Hotels save(Hotels hotels);
 }

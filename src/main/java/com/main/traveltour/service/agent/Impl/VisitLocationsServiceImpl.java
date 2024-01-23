@@ -6,6 +6,8 @@ import com.main.traveltour.service.agent.VisitLocationsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 public class VisitLocationsServiceImpl implements VisitLocationsService {
 
@@ -18,8 +20,13 @@ public class VisitLocationsServiceImpl implements VisitLocationsService {
     }
 
     @Override
-    public VisitLocations findByAgencyId(int userId) {
-        return visitLocationsRepository.findByAgenciesId(userId);
+    public List<VisitLocations> findAllByAgencyId(int agencyId) {
+        return visitLocationsRepository.findAllByAgenciesId(agencyId);
+    }
+
+    @Override
+    public VisitLocations findByAgencyId(int agencyId) {
+        return visitLocationsRepository.findByAgenciesId(agencyId);
     }
 
     @Override

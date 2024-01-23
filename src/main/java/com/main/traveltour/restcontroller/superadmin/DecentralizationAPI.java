@@ -96,13 +96,13 @@ public class DecentralizationAPI {
         String placeId = GenerateNextID.generateNextCode("PLA", visitLocationsService.findMaxCode());
 
         Agencies agencies = agenciesService.findByUserId(userId);
-        Hotels hotels = hotelsService.findByAgencyId(agencies.getId());
-        TransportationBrands transportationBrands = transportationBrandsService.findByAgencyId(agencies.getId());
-        VisitLocations visitLocations = visitLocationsService.findByAgencyId(agencies.getId());
+        List<Hotels> hotels = hotelsService.findAllByAgencyId(agencies.getId());
+        List<TransportationBrands> transportationBrands = transportationBrandsService.findAllByAgencyId(agencies.getId());
+        List<VisitLocations> visitLocations = visitLocationsService.findAllByAgencyId(agencies.getId());
 
         if (hotels != null) {
-            hotels.setIsActive(roles.contains("ROLE_AGENT_HOTEL"));
-            hotelsService.save(hotels);
+//            hotels.setIsActive(roles.contains("ROLE_AGENT_HOTEL"));
+//            hotelsService.save(hotels);
         } else if (roles.contains("ROLE_AGENT_HOTEL")) {
             Hotels newHotel = new Hotels();
             newHotel.setId(hotelId);
@@ -115,8 +115,8 @@ public class DecentralizationAPI {
         }
 
         if (transportationBrands != null) {
-            transportationBrands.setIsActive(roles.contains("ROLE_AGENT_TRANSPORT"));
-            transportationBrandsService.save(transportationBrands);
+//            transportationBrands.setIsActive(roles.contains("ROLE_AGENT_TRANSPORT"));
+//            transportationBrandsService.save(transportationBrands);
         } else if (roles.contains("ROLE_AGENT_TRANSPORT")) {
             TransportationBrands newTransportationBrand = new TransportationBrands();
             newTransportationBrand.setId(transId);
@@ -128,8 +128,8 @@ public class DecentralizationAPI {
         }
 
         if (visitLocations != null) {
-            visitLocations.setIsActive(roles.contains("ROLE_AGENT_PLACE"));
-            visitLocationsService.save(visitLocations);
+//            visitLocations.setIsActive(roles.contains("ROLE_AGENT_PLACE"));
+//            visitLocationsService.save(visitLocations);
         } else if (roles.contains("ROLE_AGENT_PLACE")) {
             VisitLocations newVisitLocation = new VisitLocations();
             newVisitLocation.setId(placeId);

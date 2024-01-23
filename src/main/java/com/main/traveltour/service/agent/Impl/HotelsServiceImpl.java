@@ -20,13 +20,18 @@ public class HotelsServiceImpl implements HotelsService {
     }
 
     @Override
-    public String findMaxCode() {
-        return hotelsRepository.findMaxCode();
+    public List<Hotels> findAllByAgencyId(int agencyId) {
+        return hotelsRepository.findAllByAgenciesId(agencyId);
     }
 
     @Override
-    public Hotels findByAgencyId(int userId) {
-        return hotelsRepository.findByAgenciesId(userId);
+    public Hotels findByAgencyId(int agencyId) {
+        return hotelsRepository.findByAgenciesId(agencyId);
+    }
+
+    @Override
+    public String findMaxCode() {
+        return hotelsRepository.findMaxCode();
     }
 
     @Override
