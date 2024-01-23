@@ -8,12 +8,15 @@ import com.main.traveltour.service.agent.VisitLocationTicketService;
 import com.main.traveltour.service.agent.VisitLocationTypeService;
 import com.main.traveltour.service.agent.VisitLocationsService;
 import com.main.traveltour.service.utils.FileUpload;
+import com.main.traveltour.utils.EntityDtoUtils;
+import com.main.traveltour.utils.GenerateNextID;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.math.BigDecimal;
+import java.sql.Timestamp;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -40,14 +43,17 @@ public class VisitLocationsAPI {
         return visitLocationTypeService.findAllForRegisterAgency();
     }
 
-    @GetMapping("/agent/visit/find-by-agency-id/{agencyId}")
-    private VisitLocations findByUserId(@PathVariable int agencyId) {
-        return visitLocationsService.findByAgencyId(agencyId);
+    @GetMapping("/agent/visit/find-all-by-agency-id/{agencyId}")
+    private List<VisitLocations> findByUserId(@PathVariable int agencyId) {
+        return visitLocationsService.findAllByAgencyId(agencyId);
     }
 
     @PostMapping("/agent/visit/register-visit-location")
-    private void registerVisitLocation(@RequestPart("visitLocationsDto") VisitLocationsDto visitLocationsDto, @RequestPart("visitLocationImage") MultipartFile visitImage, @RequestPart(value = "selectedTickets", required = false) List<String> selectedTickets, @RequestPart(value = "unitPrices", required = false) Map<String, String> unitPrices) throws IOException {
-        int agencyId = visitLocationsDto.getId();
+    private void registerVisitLocation(@RequestPart("visitLocationsDto") VisitLocationsDto visitLocationsDto,
+                                       @RequestPart("visitLocationImage") MultipartFile visitImage,
+                                       @RequestPart(value = "selectedTickets", required = false) List<String> selectedTickets,
+                                       @RequestPart(value = "unitPrices", required = false) Map<String, String> unitPrices) throws IOException {
+        int agencyId = visitLocationsDto.getAgenciesId();
         String visitLocationImage = fileUpload.uploadFile(visitImage);
 
         VisitLocations visitLocations = visitLocationsService.findByAgencyId(agencyId);
@@ -63,6 +69,25 @@ public class VisitLocationsAPI {
         visitLocations.setClosingTime(visitLocationsDto.getClosingTime());
         visitLocations.setVisitLocationTypeId(visitLocationsDto.getVisitLocationTypeId());
         visitLocations.setIsAccepted(Boolean.TRUE);
+        visitLocationsService.save(visitLocations);
+
+        createVisitTicket(visitLocations.getId(), selectedTickets, unitPrices);
+    }
+
+    @PostMapping("/agent/visit/create-visit-location")
+    private void createVisitLocation(@RequestPart("visitLocationsDto") VisitLocationsDto visitLocationsDto,
+                                     @RequestPart("visitLocationImage") MultipartFile visitImage,
+                                     @RequestPart(value = "selectedTickets", required = false) List<String> selectedTickets,
+                                     @RequestPart(value = "unitPrices", required = false) Map<String, String> unitPrices) throws IOException {
+        String visitLocationImage = fileUpload.uploadFile(visitImage);
+        String visitId = GenerateNextID.generateNextCode("PLA", visitLocationsService.findMaxCode());
+
+        VisitLocations visitLocations = EntityDtoUtils.convertToEntity(visitLocationsDto, VisitLocations.class);
+        visitLocations.setId(visitId);
+        visitLocations.setVisitLocationImage(visitLocationImage);
+        visitLocations.setDateCreated(new Timestamp(System.currentTimeMillis()));
+        visitLocations.setIsAccepted(Boolean.TRUE);
+        visitLocations.setIsActive(Boolean.TRUE);
         visitLocationsService.save(visitLocations);
 
         createVisitTicket(visitLocations.getId(), selectedTickets, unitPrices);

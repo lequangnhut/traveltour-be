@@ -4,9 +4,9 @@ import com.main.traveltour.entity.TransportationBrands;
 import com.main.traveltour.repository.TransportationBrandsRepository;
 import com.main.traveltour.service.agent.TransportationBrandsService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 public class TransportationBrandsServiceImpl implements TransportationBrandsService {
@@ -20,18 +20,13 @@ public class TransportationBrandsServiceImpl implements TransportationBrandsServ
     }
 
     @Override
-    public Page<TransportationBrands> findAllTransportBrand(Pageable pageable) {
-        return transportationBrandsRepository.findAll(pageable);
+    public List<TransportationBrands> findAllByAgencyId(int agencyId) {
+        return transportationBrandsRepository.findAllByAgenciesId(agencyId);
     }
 
     @Override
-    public Page<TransportationBrands> findAllTransportBrandWithSearch(String searchTerm, Pageable pageable) {
-        return transportationBrandsRepository.findByTransportationBrandNameContainingIgnoreCase(searchTerm, pageable);
-    }
-
-    @Override
-    public TransportationBrands findByAgencyId(int userId) {
-        return transportationBrandsRepository.findByAgenciesId(userId);
+    public TransportationBrands findByAgencyId(int agencyId) {
+        return transportationBrandsRepository.findByAgenciesId(agencyId);
     }
 
     @Override
