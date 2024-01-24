@@ -1,6 +1,7 @@
 package com.main.traveltour.restcontroller.superadmin;
 
 import com.main.traveltour.dto.UsersDto;
+import com.main.traveltour.dto.staff.ToursDto;
 import com.main.traveltour.dto.superadmin.AccountDto;
 import com.main.traveltour.dto.superadmin.DataAccountDto;
 import com.main.traveltour.entity.*;
@@ -11,6 +12,7 @@ import com.main.traveltour.service.agent.HotelsService;
 import com.main.traveltour.service.agent.TransportationBrandsService;
 import com.main.traveltour.service.agent.VisitLocationsService;
 import com.main.traveltour.service.utils.EmailService;
+import com.main.traveltour.service.utils.FileUpload;
 import com.main.traveltour.utils.EntityDtoUtils;
 import com.main.traveltour.utils.GenerateNextID;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,8 +22,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -54,11 +58,8 @@ public class AccountAPI {
     @Autowired
     private EmailService emailService;
 
-    @GetMapping("superadmin/account/find-all-account-staff")
-    private ResponseEntity<Page<Users>> findAllAccountStaff(@RequestParam(defaultValue = "0") int page) {
-        Page<Users> items = usersService.findAllAccountStaff(PageRequest.of(page, 10));
-        return new ResponseEntity<>(items, HttpStatus.OK);
-    }
+    @Autowired
+    private FileUpload fileUpload;
 
     @GetMapping("superadmin/account/find-all-account-role-is-guild")
     private ResponseObject findUsersByRolesIsGuild() {
@@ -68,12 +69,6 @@ public class AccountAPI {
         } else {
             return new ResponseObject("200", "Đã tìm thấy dữ liệu", items);
         }
-    }
-
-    @GetMapping("superadmin/account/find-all-account-agent")
-    private ResponseEntity<Page<Users>> findAllAccountAgent(@RequestParam(defaultValue = "0") int page) {
-        Page<Users> items = usersService.findAllAccountAgent(PageRequest.of(page, 10));
-        return new ResponseEntity<>(items, HttpStatus.OK);
     }
 
     @GetMapping("superadmin/account/find-by-id/{id}")

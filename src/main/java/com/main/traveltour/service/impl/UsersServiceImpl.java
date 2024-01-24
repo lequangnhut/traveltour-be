@@ -83,6 +83,11 @@ public class UsersServiceImpl implements UsersService {
     }
 
     @Override
+    public Page<Users> findAllAccountCustomerWithSearch(String searchTerm, Pageable pageable) {
+        return usersRepository.searchAccountCustomer(searchTerm, pageable);
+    }
+
+    @Override
     public Page<Users> findDecentralizationStaff(Pageable pageable) {
         return usersRepository.findDecentralizationStaff(pageable);
     }
@@ -90,6 +95,11 @@ public class UsersServiceImpl implements UsersService {
     @Override
     public Page<Users> findDecentralizationAgent(Pageable pageable) {
         return usersRepository.findDecentralizationAgent(pageable);
+    }
+
+    @Override
+    public Page<Users> findDecentralizationCustomer(Pageable pageable) {
+        return usersRepository.findDecentralizationCustomer(pageable);
     }
 
     @Override
