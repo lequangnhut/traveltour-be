@@ -5,7 +5,6 @@ import com.main.traveltour.dto.agent.HotelsDto;
 import com.main.traveltour.dto.agent.RoomTypesDto;
 import com.main.traveltour.entity.*;
 import com.main.traveltour.service.agent.*;
-import com.main.traveltour.service.utils.EmailService;
 import com.main.traveltour.service.utils.FileUpload;
 import com.main.traveltour.utils.EntityDtoUtils;
 import com.main.traveltour.utils.GenerateNextID;
@@ -46,8 +45,13 @@ public class HotelsAPI {
     @Autowired
     private RoomImageService roomImageService;
 
+    @GetMapping("/agent/hotels/find-all-by-agency-id/{agencyId}")
+    private List<Hotels> findAllByAgencyId(@PathVariable int agencyId) {
+        return hotelsService.findAllByAgencyId(agencyId);
+    }
+
     @GetMapping("/agent/hotels/find-by-agency-id/{agencyId}")
-    private Hotels findByUserId(@PathVariable int agencyId) {
+    private Hotels findByAgencyId(@PathVariable int agencyId) {
         return hotelsService.findByAgencyId(agencyId);
     }
 
@@ -119,6 +123,28 @@ public class HotelsAPI {
 
         Hotels hotels = EntityDtoUtils.convertToEntity(hotelsDto, Hotels.class);
         hotels.setId(hotelsDto.getId());
+        hotels.setHotelAvatar(hotelAvtar);
+        hotels.setIsAccepted(Boolean.TRUE);
+        hotels.setPlaceUtilities(placeUtilities);
+        hotelsService.save(hotels);
+
+        createRoomType(dataHotelRoom, roomTypeAvatar, hotels.getId(), roomTypeImage);
+    }
+
+    @PostMapping(value = "/agent/hotels/create-hotels", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public void createHotels(@RequestPart("dataHotelRoom") Hotel_RoomDto dataHotelRoom,
+                             @RequestPart("roomTypeImage") List<MultipartFile> roomTypeImage,
+                             @RequestPart("hotelAvatar") MultipartFile hotelAvatar,
+                             @RequestPart("roomTypeAvatar") MultipartFile roomTypeAvatar) throws IOException {
+        String hotelAvtar = fileUpload.uploadFile(hotelAvatar);
+        String hotelId = GenerateNextID.generateNextCode("HTl", hotelsService.findMaxCode());
+        HotelsDto hotelsDto = dataHotelRoom.getHotelsDto();
+
+        List<PlaceUtilities> placeUtilities = dataHotelRoom.getSelectedPlaceUtilitiesIds()
+                .stream().map(placeUtilitiesService::findByPlaceId).toList();
+
+        Hotels hotels = EntityDtoUtils.convertToEntity(hotelsDto, Hotels.class);
+        hotels.setId(hotelId);
         hotels.setHotelAvatar(hotelAvtar);
         hotels.setIsAccepted(Boolean.TRUE);
         hotels.setPlaceUtilities(placeUtilities);

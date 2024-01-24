@@ -7,6 +7,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import net.jcip.annotations.Immutable;
 
 import java.sql.Timestamp;
 import java.util.Collection;
@@ -16,6 +17,7 @@ import java.util.Collection;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
+@Immutable
 @Table(name = "agencies", schema = "travel_tour")
 public class Agencies {
 

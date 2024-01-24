@@ -2,11 +2,15 @@ package com.main.traveltour.service.agent;
 
 import com.main.traveltour.entity.TransportationBrands;
 
+import java.util.List;
+
 public interface TransportationBrandsService {
 
     String findMaxCode();
 
-    TransportationBrands findByAgencyId(int userId);
+    List<TransportationBrands> findAllByAgencyId(int agencyId);
+
+    TransportationBrands findByAgencyId(int agencyId);
 
     TransportationBrands save(TransportationBrands transportationBrands);
 }
