@@ -38,4 +38,5 @@ public class HotelsServiceImpl implements HotelsService {
     public Hotels save(Hotels hotels) {
         return hotelsRepository.save(hotels);
     }
+
 }
