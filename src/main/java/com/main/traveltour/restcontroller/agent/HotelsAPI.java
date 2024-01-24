@@ -18,6 +18,7 @@ import java.io.IOException;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @RestController
@@ -225,5 +226,18 @@ public class HotelsAPI {
 
 
         return new ResponseObject("200", "OK", null);
+    }
+
+    @GetMapping("agent/hotels/findByHotelId/{id}")
+    public ResponseObject findByHotel(
+            @PathVariable("id") String id
+    ) {
+        Optional<Hotels> hotels = hotelsService.findById(id);
+        if(hotels.isPresent()) {
+            return new ResponseObject("200", "OK", hotels);
+        }else{
+            return new ResponseObject("400", "Không tim thấy dữ liệu", null);
+        }
+
     }
 }

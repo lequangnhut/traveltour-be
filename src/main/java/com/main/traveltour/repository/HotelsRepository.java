@@ -9,7 +9,7 @@ import java.util.List;
 
 import java.util.List;
 
-public interface HotelsRepository extends JpaRepository<Hotels, Integer> {
+public interface HotelsRepository extends JpaRepository<Hotels, String> {
 
     @Query(value = "SELECT MAX(hl.id) FROM Hotels hl")
     String findMaxCode();
