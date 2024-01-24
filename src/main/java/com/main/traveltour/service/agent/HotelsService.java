@@ -15,4 +15,5 @@ public interface HotelsService {
     String findMaxCode();
 
     Hotels save(Hotels hotels);
+
 }

@@ -25,4 +25,7 @@ public interface ToursRepository extends JpaRepository<Tours, Integer> {
     @Query("SELECT COALESCE(MAX(t.id), 'TR0000') FROM Tours t")
     String maxCodeTourId();
 
+    Page<Tours> findByTourNameContainingIgnoreCase(String searchTerm, Pageable pageable);
+
+    List<Tours> findAllByTourTypeId(int id);
 }

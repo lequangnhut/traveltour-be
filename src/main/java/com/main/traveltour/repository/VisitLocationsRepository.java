@@ -11,7 +11,9 @@ public interface VisitLocationsRepository extends JpaRepository<VisitLocations, 
     @Query(value = "SELECT MAX(pl.id) FROM VisitLocations pl")
     String findMaxCode();
 
+    VisitLocations findByAgenciesId(int userId);
+
     List<VisitLocations> findAllByAgenciesId(int userId);
 
-    VisitLocations findByAgenciesId(int userId);
+    List<VisitLocations> findAllByVisitLocationTypeId(int id);
 }
