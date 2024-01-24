@@ -10,4 +10,8 @@ public interface AgenciesRepository extends JpaRepository<Agencies, Integer> {
     Agencies findByUserId(int userId);
 
     Agencies findById(int agencyId);
+
+    Agencies findByPhone(String phone);
+
+    Agencies findByTaxId(String taxId);
 }

@@ -23,6 +23,16 @@ public class AgenciesServiceImpl implements AgenciesService {
     }
 
     @Override
+    public Agencies findByPhone(String phone) {
+        return agenciesRepository.findByPhone(phone);
+    }
+
+    @Override
+    public Agencies findByTaxId(String taxId) {
+        return agenciesRepository.findByTaxId(taxId);
+    }
+
+    @Override
     public Agencies save(Agencies agencies) {
         return agenciesRepository.save(agencies);
     }

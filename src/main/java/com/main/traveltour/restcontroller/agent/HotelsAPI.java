@@ -135,28 +135,6 @@ public class HotelsAPI {
         createRoomType(dataHotelRoom, roomTypeAvatar, hotels.getId(), roomTypeImage);
     }
 
-    @PostMapping(value = "/agent/hotels/create-hotels", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public void createHotels(@RequestPart("dataHotelRoom") Hotel_RoomDto dataHotelRoom,
-                             @RequestPart("roomTypeImage") List<MultipartFile> roomTypeImage,
-                             @RequestPart("hotelAvatar") MultipartFile hotelAvatar,
-                             @RequestPart("roomTypeAvatar") MultipartFile roomTypeAvatar) throws IOException {
-        String hotelAvtar = fileUpload.uploadFile(hotelAvatar);
-        String hotelId = GenerateNextID.generateNextCode("HTl", hotelsService.findMaxCode());
-        HotelsDto hotelsDto = dataHotelRoom.getHotelsDto();
-
-        List<PlaceUtilities> placeUtilities = dataHotelRoom.getSelectedPlaceUtilitiesIds()
-                .stream().map(placeUtilitiesService::findByPlaceId).toList();
-
-        Hotels hotels = EntityDtoUtils.convertToEntity(hotelsDto, Hotels.class);
-        hotels.setId(hotelId);
-        hotels.setHotelAvatar(hotelAvtar);
-        hotels.setIsAccepted(Boolean.TRUE);
-        hotels.setPlaceUtilities(placeUtilities);
-        hotelsService.save(hotels);
-
-        createRoomType(dataHotelRoom, roomTypeAvatar, hotels.getId(), roomTypeImage);
-    }
-
     private void createRoomType(Hotel_RoomDto dataHotelRoom, MultipartFile roomTypeAvatar, String hotelId, List<MultipartFile> roomTypeImage) throws IOException {
         String roomTypeId = GenerateNextID.generateNextCode("RT", roomTypeService.findMaxId());
         String imgPath = fileUpload.uploadFile(roomTypeAvatar);

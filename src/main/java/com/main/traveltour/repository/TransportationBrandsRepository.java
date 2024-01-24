@@ -14,4 +14,6 @@ public interface TransportationBrandsRepository extends JpaRepository<Transporta
     List<TransportationBrands> findAllByAgenciesId(int agenciesId);
 
     TransportationBrands findByAgenciesId(int agenciesId);
+
+    TransportationBrands findById(String transportBrandId);
 }
