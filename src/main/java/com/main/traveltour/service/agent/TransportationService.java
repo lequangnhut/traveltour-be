@@ -10,9 +10,11 @@ public interface TransportationService {
 
     Transportations findTransportById(String transportId);
 
-    Page<Transportations> findAllTransports(Pageable pageable);
+    Transportations findTransportByLicensePlate(String licensePlate);
 
-    Page<Transportations> findAllTransportWithSearch(String searchTerm, Pageable pageable);
+    Page<Transportations> findAllTransports(String brandId, Pageable pageable);
+
+    Page<Transportations> findAllTransportWithSearch(String brandId, String searchTerm, Pageable pageable);
 
     Transportations save(Transportations transportations);
 }

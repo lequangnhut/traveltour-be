@@ -44,34 +44,18 @@ public class DecentralizationAPI {
     private VisitLocationsService visitLocationsService;
 
     @GetMapping("superadmin/decentralization/find-role-staff")
-    private ResponseEntity<Page<Users>> getListUserRoleStaff(@RequestParam(defaultValue = "0") int page,
-                                                             @RequestParam(defaultValue = "10") int size,
-                                                             @RequestParam(defaultValue = "id") String sortBy,
-                                                             @RequestParam(defaultValue = "asc") String sortDir,
-                                                             @RequestParam(required = false) String searchTerm) {
-        Sort sort = sortDir.equalsIgnoreCase(Sort.Direction.ASC.name())
-                ? Sort.by(sortBy).ascending()
-                : Sort.by(sortBy).descending();
+    private ResponseEntity<Page<Users>> getListUserRoleStaff(@RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int size, @RequestParam(defaultValue = "id") String sortBy, @RequestParam(defaultValue = "asc") String sortDir, @RequestParam(required = false) String searchTerm) {
+        Sort sort = sortDir.equalsIgnoreCase(Sort.Direction.ASC.name()) ? Sort.by(sortBy).ascending() : Sort.by(sortBy).descending();
 
-        Page<Users> users = searchTerm == null || searchTerm.isEmpty()
-                ? usersService.findDecentralizationStaff(PageRequest.of(page, size, sort))
-                : usersService.findAllAccountStaffWithSearch(searchTerm, PageRequest.of(page, size, sort));
+        Page<Users> users = searchTerm == null || searchTerm.isEmpty() ? usersService.findDecentralizationStaff(PageRequest.of(page, size, sort)) : usersService.findAllAccountStaffWithSearch(searchTerm, PageRequest.of(page, size, sort));
         return new ResponseEntity<>(users, HttpStatus.OK);
     }
 
     @GetMapping("superadmin/decentralization/find-role-agent")
-    private ResponseEntity<Page<Users>> getListUserRoleAgent(@RequestParam(defaultValue = "0") int page,
-                                                             @RequestParam(defaultValue = "10") int size,
-                                                             @RequestParam(defaultValue = "id") String sortBy,
-                                                             @RequestParam(defaultValue = "asc") String sortDir,
-                                                             @RequestParam(required = false) String searchTerm) {
-        Sort sort = sortDir.equalsIgnoreCase(Sort.Direction.ASC.name())
-                ? Sort.by(sortBy).ascending()
-                : Sort.by(sortBy).descending();
+    private ResponseEntity<Page<Users>> getListUserRoleAgent(@RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int size, @RequestParam(defaultValue = "id") String sortBy, @RequestParam(defaultValue = "asc") String sortDir, @RequestParam(required = false) String searchTerm) {
+        Sort sort = sortDir.equalsIgnoreCase(Sort.Direction.ASC.name()) ? Sort.by(sortBy).ascending() : Sort.by(sortBy).descending();
 
-        Page<Users> users = searchTerm == null || searchTerm.isEmpty()
-                ? usersService.findDecentralizationAgent(PageRequest.of(page, size, sort))
-                : usersService.findAllAccountAgentWithSearch(searchTerm, PageRequest.of(page, size, sort));
+        Page<Users> users = searchTerm == null || searchTerm.isEmpty() ? usersService.findDecentralizationAgent(PageRequest.of(page, size, sort)) : usersService.findAllAccountAgentWithSearch(searchTerm, PageRequest.of(page, size, sort));
         return new ResponseEntity<>(users, HttpStatus.OK);
     }
 
@@ -101,8 +85,10 @@ public class DecentralizationAPI {
         List<VisitLocations> visitLocations = visitLocationsService.findAllByAgencyId(agencies.getId());
 
         if (hotels != null) {
-//            hotels.setIsActive(roles.contains("ROLE_AGENT_HOTEL"));
-//            hotelsService.save(hotels);
+            for (Hotels hotel : hotels) {
+                hotel.setIsActive(roles.contains("ROLE_AGENT_HOTEL"));
+                hotelsService.save(hotel);
+            }
         } else if (roles.contains("ROLE_AGENT_HOTEL")) {
             Hotels newHotel = new Hotels();
             newHotel.setId(hotelId);
@@ -115,8 +101,10 @@ public class DecentralizationAPI {
         }
 
         if (transportationBrands != null) {
-//            transportationBrands.setIsActive(roles.contains("ROLE_AGENT_TRANSPORT"));
-//            transportationBrandsService.save(transportationBrands);
+            for (TransportationBrands brands : transportationBrands) {
+                brands.setIsActive(roles.contains("ROLE_AGENT_TRANSPORT"));
+                transportationBrandsService.save(brands);
+            }
         } else if (roles.contains("ROLE_AGENT_TRANSPORT")) {
             TransportationBrands newTransportationBrand = new TransportationBrands();
             newTransportationBrand.setId(transId);
@@ -128,8 +116,10 @@ public class DecentralizationAPI {
         }
 
         if (visitLocations != null) {
-//            visitLocations.setIsActive(roles.contains("ROLE_AGENT_PLACE"));
-//            visitLocationsService.save(visitLocations);
+            for (VisitLocations locations : visitLocations) {
+                locations.setIsActive(roles.contains("ROLE_AGENT_PLACE"));
+                visitLocationsService.save(locations);
+            }
         } else if (roles.contains("ROLE_AGENT_PLACE")) {
             VisitLocations newVisitLocation = new VisitLocations();
             newVisitLocation.setId(placeId);

@@ -8,5 +8,9 @@ public interface AgenciesService {
 
     Agencies findByAgencyId(int agencyId);
 
+    Agencies findByPhone(String phone);
+
+    Agencies findByTaxId(String taxId);
+
     Agencies save(Agencies agencies);
 }

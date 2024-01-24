@@ -30,6 +30,11 @@ public class TransportationBrandsServiceImpl implements TransportationBrandsServ
     }
 
     @Override
+    public TransportationBrands findByTransportBrandId(String transportBrandId) {
+        return transportationBrandsRepository.findById(transportBrandId);
+    }
+
+    @Override
     public TransportationBrands save(TransportationBrands transportationBrands) {
         return transportationBrandsRepository.save(transportationBrands);
     }
