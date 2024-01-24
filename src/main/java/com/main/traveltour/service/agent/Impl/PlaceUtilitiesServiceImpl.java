@@ -28,4 +28,9 @@ public class PlaceUtilitiesServiceImpl implements PlaceUtilitiesService {
     public PlaceUtilities save(PlaceUtilities placeUtilities) {
         return placeUtilitiesRepository.save(placeUtilities);
     }
+
+    @Override
+    public PlaceUtilities findById(int id) {
+        return placeUtilitiesRepository.findById(id);
+    }
 }

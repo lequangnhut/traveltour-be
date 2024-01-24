@@ -11,4 +11,6 @@ public interface PlaceUtilitiesService {
     PlaceUtilities findByPlaceId(int id);
 
     PlaceUtilities save(PlaceUtilities placeUtilities);
+
+    PlaceUtilities findById(int id);
 }

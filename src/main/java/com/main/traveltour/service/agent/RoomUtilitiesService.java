@@ -9,4 +9,6 @@ public interface RoomUtilitiesService {
     RoomUtilities findByRoomUtilitiesId(int id);
 
     List<RoomUtilities> findAllRoomUtils();
+
+
 }

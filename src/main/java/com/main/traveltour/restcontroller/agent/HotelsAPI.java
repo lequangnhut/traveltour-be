@@ -1,5 +1,6 @@
 package com.main.traveltour.restcontroller.agent;
 
+import com.main.traveltour.dto.agent.CompanyDataDto;
 import com.main.traveltour.dto.agent.Hotel_RoomDto;
 import com.main.traveltour.dto.agent.HotelsDto;
 import com.main.traveltour.dto.agent.RoomTypesDto;
@@ -14,7 +15,10 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @CrossOrigin(origins = "http://localhost:3000")
@@ -180,5 +184,46 @@ public class HotelsAPI {
             roomImages.setRoomTypeImg(imgPath);
             roomImageService.save(roomImages);
         }
+    }
+
+    @PostMapping("agent/hotels/information-hotel/create")
+    ResponseObject createHotel(
+            @RequestPart("companyDataDto") CompanyDataDto companyDataDto,
+            @RequestPart("selectHotelUtilities") List<Integer> selectHotelUtilities,
+            @RequestParam("avatarHotel") MultipartFile avatarHotel
+    ) throws IOException {
+
+        Hotels hotels = new Hotels();
+
+        String idHotel = GenerateNextID.generateNextCode("KS", hotelsService.findMaxCode());
+
+        String avataHotelUpload = fileUpload.uploadFile(avatarHotel);
+
+        // Thêm khách sạn
+        hotels.setId(idHotel);
+        hotels.setHotelName(companyDataDto.getHotelName());
+        hotels.setPhone(companyDataDto.getPhoneNumber());
+        hotels.setUrlWebsite(companyDataDto.getWebsite());
+        hotels.setProvince(companyDataDto.getProvinceName());
+        hotels.setDistrict(companyDataDto.getDistrictName());
+        hotels.setWard(companyDataDto.getWardName());
+        hotels.setAddress(companyDataDto.getAddress());
+        hotels.setFloorNumber(Integer.valueOf(companyDataDto.getFloorNumber()));
+        hotels.setHotelTypeId(companyDataDto.getHotelType());
+        hotels.setAgenciesId(companyDataDto.getAgencyId());
+        hotels.setHotelAvatar(avataHotelUpload);
+        hotels.setDateCreated(Timestamp.valueOf(LocalDateTime.now()));
+        hotels.setIsActive(true);
+        hotels.setIsAccepted(true);
+
+        List<PlaceUtilities> placeUtilitiesList = selectHotelUtilities.stream()
+                .map(placeUtilitiesService::findById)
+                .collect(Collectors.toList());
+
+        hotels.setPlaceUtilities(placeUtilitiesList);
+        hotelsService.save(hotels);
+
+
+        return new ResponseObject("200", "OK", null);
     }
 }
