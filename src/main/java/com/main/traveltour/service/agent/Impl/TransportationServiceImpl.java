@@ -8,6 +8,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 public class TransportationServiceImpl implements TransportationService {
 
@@ -27,6 +29,11 @@ public class TransportationServiceImpl implements TransportationService {
     @Override
     public Transportations findTransportByLicensePlate(String licensePlate) {
         return transportationsRepository.findByLicensePlate(licensePlate);
+    }
+
+    @Override
+    public List<Transportations> findAllByTransportBrandId(String transportBrandId) {
+        return transportationsRepository.findAllByTransportationBrandId(transportBrandId);
     }
 
     @Override
