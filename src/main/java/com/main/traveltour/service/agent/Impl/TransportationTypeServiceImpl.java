@@ -1,7 +1,8 @@
-package com.main.traveltour.service.agent;
+package com.main.traveltour.service.agent.Impl;
 
 import com.main.traveltour.entity.TransportationTypes;
 import com.main.traveltour.repository.TransportationTypesRepository;
+import com.main.traveltour.service.agent.TransportationTypeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

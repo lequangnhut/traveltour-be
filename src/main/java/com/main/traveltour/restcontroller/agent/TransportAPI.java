@@ -1,13 +1,12 @@
 package com.main.traveltour.restcontroller.agent;
 
 import com.main.traveltour.dto.agent.TransportationsDto;
-import com.main.traveltour.entity.ResponseObject;
-import com.main.traveltour.entity.TransportationBrands;
-import com.main.traveltour.entity.TransportationTypes;
-import com.main.traveltour.entity.Transportations;
+import com.main.traveltour.entity.*;
 import com.main.traveltour.service.agent.TransportationBrandsService;
+import com.main.traveltour.service.agent.TransportationImageService;
 import com.main.traveltour.service.agent.TransportationService;
 import com.main.traveltour.service.agent.TransportationTypeService;
+import com.main.traveltour.service.utils.FileUpload;
 import com.main.traveltour.utils.EntityDtoUtils;
 import com.main.traveltour.utils.GenerateNextID;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,9 +14,12 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.sql.Timestamp;
 import java.util.HashMap;
 import java.util.List;
@@ -29,6 +31,9 @@ import java.util.Map;
 public class TransportAPI {
 
     @Autowired
+    private FileUpload fileUpload;
+
+    @Autowired
     private TransportationService transportationService;
 
     @Autowired
@@ -37,20 +42,14 @@ public class TransportAPI {
     @Autowired
     private TransportationBrandsService transportationBrandsService;
 
-    @GetMapping("/agent/transportation/find-all-transportation/{brandId}")
-    private ResponseEntity<Page<Transportations>> findAllTransportBrand(@RequestParam(defaultValue = "0") int page,
-                                                                        @RequestParam(defaultValue = "10") int size,
-                                                                        @RequestParam(defaultValue = "id") String sortBy,
-                                                                        @RequestParam(defaultValue = "asc") String sortDir,
-                                                                        @RequestParam(required = false) String searchTerm,
-                                                                        @PathVariable String brandId) {
-        Sort sort = sortDir.equalsIgnoreCase(Sort.Direction.ASC.name())
-                ? Sort.by(sortBy).ascending()
-                : Sort.by(sortBy).descending();
+    @Autowired
+    private TransportationImageService transportationImageService;
 
-        Page<Transportations> transportationBrands = searchTerm == null || searchTerm.isEmpty()
-                ? transportationService.findAllTransports(brandId, PageRequest.of(page, size, sort))
-                : transportationService.findAllTransportWithSearch(brandId, searchTerm, PageRequest.of(page, size, sort));
+    @GetMapping("/agent/transportation/find-all-transportation/{brandId}")
+    private ResponseEntity<Page<Transportations>> findAllTransportBrand(@RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int size, @RequestParam(defaultValue = "id") String sortBy, @RequestParam(defaultValue = "asc") String sortDir, @RequestParam(required = false) String searchTerm, @PathVariable String brandId) {
+        Sort sort = sortDir.equalsIgnoreCase(Sort.Direction.ASC.name()) ? Sort.by(sortBy).ascending() : Sort.by(sortBy).descending();
+
+        Page<Transportations> transportationBrands = searchTerm == null || searchTerm.isEmpty() ? transportationService.findAllTransports(brandId, PageRequest.of(page, size, sort)) : transportationService.findAllTransportWithSearch(brandId, searchTerm, PageRequest.of(page, size, sort));
         return new ResponseEntity<>(transportationBrands, HttpStatus.OK);
     }
 
@@ -62,6 +61,17 @@ public class TransportAPI {
             return new ResponseObject("404", "Không tìm thấy dữ liệu", null);
         } else {
             return new ResponseObject("200", "Đã tìm thấy dữ liệu", transportationTypes);
+        }
+    }
+
+    @GetMapping("/agent/transportation/find-image-by-transportId/{transportId}")
+    private ResponseObject findImageByTransportId(@PathVariable String transportId) {
+        List<TransportationImage> transportationImages = transportationImageService.findByTransportId(transportId);
+
+        if (transportationImages.isEmpty()) {
+            return new ResponseObject("404", "Không tìm thấy dữ liệu", null);
+        } else {
+            return new ResponseObject("200", "Đã tìm thấy dữ liệu", transportationImages);
         }
     }
 
@@ -107,22 +117,44 @@ public class TransportAPI {
         return response;
     }
 
-    @PostMapping("/agent/transportation/create-transportation")
-    private void createTrans(@RequestBody TransportationsDto transportationsDto) {
-        String id = GenerateNextID.generateNextCode("TP", transportationService.findMaxCode());
+    @PostMapping(value = "/agent/transportation/create-transportation", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    private void createTrans(@RequestPart("transportationsDto") TransportationsDto transportationsDto, @RequestPart("transportTypeImg") List<MultipartFile> transportTypeImg, @RequestPart("transportationImg") MultipartFile transportationImg) throws IOException {
+        String transportId = GenerateNextID.generateNextCode("TP", transportationService.findMaxCode());
+        String avatarTransport = fileUpload.uploadFile(transportationImg);
 
         Transportations transportation = EntityDtoUtils.convertToEntity(transportationsDto, Transportations.class);
-        transportation.setId(id);
+        transportation.setId(transportId);
         transportation.setIsActive(Boolean.TRUE);
         transportation.setDateCreated(new Timestamp(System.currentTimeMillis()));
+        transportation.setTransportationImg(avatarTransport);
         transportationService.save(transportation);
+
+        for (MultipartFile file : transportTypeImg) {
+            String imgPath = fileUpload.uploadFile(file);
+            TransportationImage image = new TransportationImage();
+            image.setTransportationId(transportId);
+            image.setImagePath(imgPath);
+            transportationImageService.save(image);
+        }
     }
 
-    @PutMapping("/agent/transportation/update-transportation")
-    private void updateTrans(@RequestBody TransportationsDto transportationsDto) {
-        Transportations transportation = EntityDtoUtils.convertToEntity(transportationsDto, Transportations.class);
-        transportation.setId(transportationsDto.getId());
-        transportationService.save(transportation);
+    @PutMapping(value = "/agent/transportation/update-transportation", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    private void updateTrans(@RequestPart("transportationsDto") TransportationsDto transportationsDto,
+                             @RequestPart(value = "transportationImg", required = false) MultipartFile transportationImg) throws IOException {
+        Transportations transportations = transportationService.findTransportById(transportationsDto.getId());
+
+        if (transportationImg != null) {
+            String avatarTransport = fileUpload.uploadFile(transportationImg);
+            transportations.setTransportationImg(avatarTransport);
+            transportationService.save(transportations);
+        } else {
+            transportations.setTransportationBrandId(transportationsDto.getTransportationBrandId());
+            transportations.setTransportationTypeId(transportationsDto.getTransportationTypeId());
+            transportations.setLicensePlate(transportationsDto.getLicensePlate());
+            transportations.setAmountSeat(transportationsDto.getAmountSeat());
+            transportations.setIsActive(transportationsDto.getIsActive());
+            transportationService.save(transportations);
+        }
     }
 
     @GetMapping("/agent/transportation/delete-transportation/{transportId}")

@@ -32,6 +32,10 @@ public class Transportations {
     private Integer transportationTypeId;
 
     @Basic
+    @Column(name = "transportation_img")
+    private String transportationImg;
+
+    @Basic
     @Column(name = "license_plate")
     private String licensePlate;
 
@@ -50,6 +54,10 @@ public class Transportations {
     @OneToMany(mappedBy = "transportationsByTransportationId")
     @JsonManagedReference
     private Collection<TransportationSchedules> transportationSchedulesById;
+
+    @OneToMany(mappedBy = "transportationsByTransportationId")
+    @JsonManagedReference
+    private Collection<TransportationImage> transportationImagesById;
 
     @ManyToOne
     @JoinColumn(name = "transportation_brand_id", referencedColumnName = "id", nullable = false, insertable = false, updatable = false)
