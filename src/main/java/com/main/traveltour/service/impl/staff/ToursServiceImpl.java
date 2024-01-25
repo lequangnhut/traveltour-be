@@ -43,6 +43,11 @@ public class ToursServiceImpl implements ToursService {
     }
 
     @Override
+    public String getToursNameByTourId(String tourId) {
+        return toursRepository.getToursNameByTourId(tourId);
+    }
+
+    @Override
     public Tours save(Tours tours) {
         return toursRepository.save(tours);
     }

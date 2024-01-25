@@ -11,7 +11,7 @@ import java.io.Serializable;
 @Data
 public class TourTripsDto {
     int id;
-    Integer tourId;
+    String tourId;
     Integer dayInTrip;
     String activityInDay;
 }
