@@ -25,13 +25,18 @@ public class TransportationServiceImpl implements TransportationService {
     }
 
     @Override
-    public Page<Transportations> findAllTransports(Pageable pageable) {
-        return transportationsRepository.findAll(pageable);
+    public Transportations findTransportByLicensePlate(String licensePlate) {
+        return transportationsRepository.findByLicensePlate(licensePlate);
     }
 
     @Override
-    public Page<Transportations> findAllTransportWithSearch(String searchTerm, Pageable pageable) {
-        return transportationsRepository.findByTransportWithSearch(searchTerm, pageable);
+    public Page<Transportations> findAllTransports(String brandId, Pageable pageable) {
+        return transportationsRepository.findAllTransport(brandId, pageable);
+    }
+
+    @Override
+    public Page<Transportations> findAllTransportWithSearch(String brandId, String searchTerm, Pageable pageable) {
+        return transportationsRepository.findByTransportWithSearch(brandId, searchTerm, pageable);
     }
 
     @Override

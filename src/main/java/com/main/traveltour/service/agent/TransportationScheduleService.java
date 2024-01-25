@@ -8,11 +8,11 @@ public interface TransportationScheduleService {
 
     String findMaxCode();
 
-    Page<TransportationSchedules> findAllTransportationSchedules(Pageable pageable);
+    TransportationSchedules findBySchedulesId(String transportSchedulesId);
 
-    Page<TransportationSchedules> findTransportationSchedulesWithSearch(String searchTerm, Pageable pageable);
+    TransportationSchedules save(TransportationSchedules schedules);
 
-    TransportationSchedules findByTransportationScheduleId(String id);
+    Page<TransportationSchedules> findAllSchedules(String transportBrandId, Pageable pageable);
 
-    TransportationSchedules save(TransportationSchedules transportationSchedules);
+    Page<TransportationSchedules> findAllSchedulesWitchSearch(String transportBrandId, String searchTerm, Pageable pageable);
 }

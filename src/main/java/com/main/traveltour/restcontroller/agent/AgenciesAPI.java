@@ -10,6 +10,8 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 @RestController
 @CrossOrigin(origins = "http://localhost:3000")
@@ -35,5 +37,23 @@ public class AgenciesAPI {
         agencies.setIsAccepted(1);
 
         agenciesService.save(agencies);
+    }
+
+    @GetMapping("/agent/agencies/check-duplicate-phone/{phone}")
+    private Map<String, Boolean> checkDuplicatePhone(@PathVariable String phone) {
+        Map<String, Boolean> response = new HashMap<>();
+        boolean exists = agenciesService.findByPhone(phone) != null;
+
+        response.put("exists", exists);
+        return response;
+    }
+
+    @GetMapping("/agent/agencies/check-duplicate-taxId/{taxId}")
+    private Map<String, Boolean> checkDuplicateTaxId(@PathVariable String taxId) {
+        Map<String, Boolean> response = new HashMap<>();
+        boolean exists = agenciesService.findByTaxId(taxId) != null;
+
+        response.put("exists", exists);
+        return response;
     }
 }

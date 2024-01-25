@@ -12,5 +12,7 @@ public interface TransportationBrandsService {
 
     TransportationBrands findByAgencyId(int agencyId);
 
+    TransportationBrands findByTransportBrandId(String transportBrandId);
+
     TransportationBrands save(TransportationBrands transportationBrands);
 }
