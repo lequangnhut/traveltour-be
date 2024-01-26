@@ -51,4 +51,9 @@ public class ToursServiceImpl implements ToursService {
     public Tours save(Tours tours) {
         return toursRepository.save(tours);
     }
+
+    @Override
+    public void saveAll(List<Tours> tours) {
+        toursRepository.saveAll(tours);
+    }
 }

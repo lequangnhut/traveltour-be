@@ -13,7 +13,7 @@ import org.springframework.stereotype.Repository;
 public interface TourTripsRepository extends JpaRepository<TourTrips, Integer> {
     TourTrips getById(int id);
 
-    @Query("SELECT COALESCE(MAX(tt.dayInTrip),1) FROM TourTrips tt WHERE tt.tourId = :tourId")
+    @Query("SELECT COALESCE(MAX(tt.dayInTrip),0) FROM TourTrips tt WHERE tt.tourId = :tourId")
     int getDayInTripIsMax(@Param("tourId") String id);
 
     Page<TourTrips> findTourTripsByTourId(String tourId, Pageable pageable);
