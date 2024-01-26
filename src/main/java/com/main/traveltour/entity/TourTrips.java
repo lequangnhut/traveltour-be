@@ -28,8 +28,8 @@ public class TourTrips {
     @Column(name = "day_in_trip")
     private Integer dayInTrip;
 
-    @Basic
-    @Column(name = "activity_in_day")
+    @Lob
+    @Column(name = "activity_in_day", columnDefinition = "LONGTEXT")
     private String activityInDay;
 
     @ManyToOne
