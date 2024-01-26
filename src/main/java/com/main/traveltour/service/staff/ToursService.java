@@ -23,5 +23,6 @@ public interface ToursService {
 
     String getToursNameByTourId(String tourId);
 
-    Tours save(Tours Tours);
+    Tours save(Tours tours);
+    void saveAll(List<Tours> tours);
 }
