@@ -103,7 +103,7 @@ public class ToursAPI {
     }
 
 
-    //update Tours rest api
+    //updateStatusAndActive Tours rest api
     @PutMapping("staff/tour/update-tour/{id}")
     public ResponseEntity<Tours> updateTourById(@PathVariable String id, @RequestPart("toursDto") ToursDto toursDto, @RequestPart("tourImg") MultipartFile tourImg) {
         try {
