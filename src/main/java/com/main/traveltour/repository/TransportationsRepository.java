@@ -17,6 +17,8 @@ public interface TransportationsRepository extends JpaRepository<Transportations
 
     Transportations findByLicensePlate(String licensePlate);
 
+    List<Transportations> findAllByTransportationBrandId(String transportBrandId);
+
     @Query("SELECT t FROM Transportations t " +
             "WHERE t.transportationBrandsByTransportationBrandId.id = :brandId")
     Page<Transportations> findAllTransport(@Param("brandId") String brandId, Pageable pageable);

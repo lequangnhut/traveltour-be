@@ -96,6 +96,10 @@ public class VisitLocations {
     @JsonManagedReference
     private Collection<VisitLocationTickets> visitLocationTicketsById;
 
+    @OneToMany(mappedBy = "visitLocationsByVisitLocationId")
+    @JsonManagedReference
+    private Collection<VisitLocationImage> visitLocationImagesById;
+
     @ManyToOne
     @JoinColumn(name = "visit_location_type_id", referencedColumnName = "id", nullable = false, insertable = false, updatable = false)
     @JsonBackReference
