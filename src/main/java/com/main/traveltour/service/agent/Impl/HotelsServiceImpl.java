@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class HotelsServiceImpl implements HotelsService {
@@ -39,4 +40,8 @@ public class HotelsServiceImpl implements HotelsService {
         return hotelsRepository.save(hotels);
     }
 
+    @Override
+    public Optional<Hotels> findById(String id) {
+        return hotelsRepository.findById(id);
+    }
 }

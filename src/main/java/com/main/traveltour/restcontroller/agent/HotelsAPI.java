@@ -18,6 +18,7 @@ import java.io.IOException;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @RestController
@@ -173,7 +174,7 @@ public class HotelsAPI {
 
         Hotels hotels = new Hotels();
 
-        String idHotel = GenerateNextID.generateNextCode("KS", hotelsService.findMaxCode());
+        String idHotel = GenerateNextID.generateNextCode("HTL", hotelsService.findMaxCode());
 
         String avataHotelUpload = fileUpload.uploadFile(avatarHotel);
 
@@ -203,5 +204,53 @@ public class HotelsAPI {
 
 
         return new ResponseObject("200", "OK", null);
+    }
+
+    @PostMapping("agent/hotels/information-hotel/update")
+    ResponseObject updateHotel(
+            @RequestPart("dataHotel") HotelsDto dataHotel,
+            @RequestPart("selectedUtilities") List<Integer> selectedUtilities,
+            @RequestParam("hotelAvatarUpdated") MultipartFile hotelAvatarUpdated
+    ) throws IOException {
+
+        Optional<Hotels> hotels = hotelsService.findById(dataHotel.getId());
+
+        String avataHotelUpload = null;
+        String oldAvataHotelUpload = hotels.get().getHotelAvatar();
+
+        if (hotelAvatarUpdated != null && !hotelAvatarUpdated.isEmpty()) {
+            avataHotelUpload = fileUpload.uploadFile(hotelAvatarUpdated);
+        }
+
+
+        hotels = Optional.ofNullable(EntityDtoUtils.convertToEntity(dataHotel, Hotels.class));
+        if (avataHotelUpload != null) {
+            hotels.get().setHotelAvatar(avataHotelUpload);
+        } else if (oldAvataHotelUpload != null){
+            hotels.get().setHotelAvatar(oldAvataHotelUpload);
+        }
+
+        List<PlaceUtilities> placeUtilitiesList = selectedUtilities.stream()
+                .map(placeUtilitiesService::findById)
+                .collect(Collectors.toList());
+
+        hotels.get().setPlaceUtilities(placeUtilitiesList);
+
+        hotelsService.save(hotels.get());
+
+        return new ResponseObject("200", "OK", null);
+    }
+
+    @GetMapping("agent/hotels/findByHotelId/{id}")
+    public ResponseObject findByHotel(
+            @PathVariable("id") String id
+    ) {
+        Optional<Hotels> hotels = hotelsService.findById(id);
+        if(hotels.isPresent()) {
+            return new ResponseObject("200", "OK", hotels);
+        }else{
+            return new ResponseObject("400", "Không tim thấy dữ liệu", null);
+        }
+
     }
 }

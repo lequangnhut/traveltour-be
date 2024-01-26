@@ -2,6 +2,7 @@ package com.main.traveltour.dto.agent;
 
 import com.main.traveltour.entity.PlaceUtilities;
 import lombok.Data;
+import lombok.ToString;
 
 import java.io.Serializable;
 import java.sql.Timestamp;
@@ -12,6 +13,7 @@ import java.util.List;
  * DTO for {@link com.main.traveltour.entity.Hotels}
  */
 @Data
+@ToString
 public class HotelsDto implements Serializable {
 
     String id;
