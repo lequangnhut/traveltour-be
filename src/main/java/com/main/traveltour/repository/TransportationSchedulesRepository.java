@@ -8,6 +8,9 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.sql.Timestamp;
+import java.util.List;
+
 @Repository
 public interface TransportationSchedulesRepository extends JpaRepository<TransportationSchedules, Integer> {
 
@@ -15,6 +18,12 @@ public interface TransportationSchedulesRepository extends JpaRepository<Transpo
     String fixMaxCode();
 
     TransportationSchedules findById(String id);
+
+    List<TransportationSchedules> findByTransportationId(String transportId);
+
+    List<TransportationSchedules> findByDepartureTimeAndIsActiveTrue(Timestamp departureTime);
+
+    List<TransportationSchedules> findByArrivalTimeAndIsActiveTrue(Timestamp arrivalTime);
 
     @Query("SELECT t FROM TransportationSchedules t " +
             "JOIN t.transportationsByTransportationId tp " +

@@ -26,6 +26,8 @@ public class TransportationSchedulesDto implements Serializable {
 
     BigDecimal unitPrice;
 
+    String priceFormat;
+
     Timestamp dateCreated;
 
     Timestamp dateDeleted;
