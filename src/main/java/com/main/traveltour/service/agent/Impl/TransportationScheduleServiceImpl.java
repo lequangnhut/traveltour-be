@@ -36,6 +36,11 @@ public class TransportationScheduleServiceImpl implements TransportationSchedule
     }
 
     @Override
+    public List<TransportationSchedules> findAllScheduleByBrandId(String transportBrandId) {
+        return transportationSchedulesRepository.findAllScheduleByBrandId(transportBrandId);
+    }
+
+    @Override
     public TransportationSchedules save(TransportationSchedules schedules) {
         return transportationSchedulesRepository.save(schedules);
     }

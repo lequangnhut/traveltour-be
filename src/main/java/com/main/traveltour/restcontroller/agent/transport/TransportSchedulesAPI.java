@@ -1,4 +1,4 @@
-package com.main.traveltour.restcontroller.agent;
+package com.main.traveltour.restcontroller.agent.transport;
 
 import com.main.traveltour.dto.agent.TransportationSchedulesDto;
 import com.main.traveltour.entity.ResponseObject;

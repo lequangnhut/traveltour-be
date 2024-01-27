@@ -1,4 +1,4 @@
-package com.main.traveltour.restcontroller.agent;
+package com.main.traveltour.restcontroller.agent.transport;
 
 import com.main.traveltour.dto.agent.TransportationBrandsDto;
 import com.main.traveltour.entity.TransportationBrands;
