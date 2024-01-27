@@ -26,6 +26,7 @@ public interface UsersRepository extends JpaRepository<Users, Integer> {
 
     Users findByToken(String token);
 
+
     @Query("SELECT DISTINCT u FROM Users u " +
             "JOIN u.roles r " +
             "WHERE r.nameRole IN ('ROLE_ADMIN', 'ROLE_STAFF', 'ROLE_GUIDE')")
@@ -73,4 +74,7 @@ public interface UsersRepository extends JpaRepository<Users, Integer> {
             "JOIN u.roles r " +
             "WHERE r.nameRole LIKE 'ROLE_GUIDE'")
     List<Users> findUsersByRolesIsGuild();
+
+    @Query("SELECT u.id FROM Users u WHERE u.phone = :phone AND u.id <> :currentUserId")
+    Integer findIdByPhoneNumberAndNotCurrentUser(@Param("phone") String phone, @Param("currentUserId") Integer currentUserId);
 }
