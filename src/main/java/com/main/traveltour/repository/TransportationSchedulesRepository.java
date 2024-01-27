@@ -28,6 +28,12 @@ public interface TransportationSchedulesRepository extends JpaRepository<Transpo
     @Query("SELECT t FROM TransportationSchedules t " +
             "JOIN t.transportationsByTransportationId tp " +
             "JOIN tp.transportationBrandsByTransportationBrandId tpb " +
+            "WHERE tpb.id = :transportBrandId AND t.tripType = false")
+    List<TransportationSchedules> findAllScheduleByBrandId(@Param("transportBrandId") String transportBrandId);
+
+    @Query("SELECT t FROM TransportationSchedules t " +
+            "JOIN t.transportationsByTransportationId tp " +
+            "JOIN tp.transportationBrandsByTransportationBrandId tpb " +
             "WHERE tpb.id = :transportBrandId")
     Page<TransportationSchedules> findAllSchedules(@Param("transportBrandId") String transportBrandId, Pageable pageable);
 

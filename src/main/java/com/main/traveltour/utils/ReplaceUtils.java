@@ -15,8 +15,13 @@ public class ReplaceUtils {
     }
 
     public static String formatPrice(BigDecimal price) {
-        DecimalFormat decimalFormat = new DecimalFormat("###,###");
+        DecimalFormat decimalFormat = new DecimalFormat("#,##0");
         return decimalFormat.format(price);
+    }
+
+    public static BigDecimal parseMoneyString(String moneyString) throws NumberFormatException {
+        String cleanedMoneyString = moneyString.replace(".", "");
+        return new BigDecimal(cleanedMoneyString);
     }
 
     public static String removeTwoZerosFromString(String totalPriceString) {
