@@ -1,4 +1,4 @@
-package com.main.traveltour.restcontroller.agent;
+package com.main.traveltour.restcontroller.agent.transport;
 
 import com.main.traveltour.dto.agent.TransportationsDto;
 import com.main.traveltour.entity.*;
@@ -46,10 +46,18 @@ public class TransportAPI {
     private TransportationImageService transportationImageService;
 
     @GetMapping("/agent/transportation/find-all-transportation/{brandId}")
-    private ResponseEntity<Page<Transportations>> findAllTransportBrand(@RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int size, @RequestParam(defaultValue = "id") String sortBy, @RequestParam(defaultValue = "asc") String sortDir, @RequestParam(required = false) String searchTerm, @PathVariable String brandId) {
-        Sort sort = sortDir.equalsIgnoreCase(Sort.Direction.ASC.name()) ? Sort.by(sortBy).ascending() : Sort.by(sortBy).descending();
+    private ResponseEntity<Page<Transportations>> findAllTransportBrand(@RequestParam(defaultValue = "0") int page,
+                                                                        @RequestParam(defaultValue = "10") int size,
+                                                                        @RequestParam(defaultValue = "id") String sortBy,
+                                                                        @RequestParam(defaultValue = "asc") String sortDir,
+                                                                        @RequestParam(required = false) String searchTerm,
+                                                                        @PathVariable String brandId) {
+        Sort sort = sortDir.equalsIgnoreCase(Sort.Direction.ASC.name())
+                ? Sort.by(sortBy).ascending() : Sort.by(sortBy).descending();
 
-        Page<Transportations> transportationBrands = searchTerm == null || searchTerm.isEmpty() ? transportationService.findAllTransports(brandId, PageRequest.of(page, size, sort)) : transportationService.findAllTransportWithSearch(brandId, searchTerm, PageRequest.of(page, size, sort));
+        Page<Transportations> transportationBrands = searchTerm == null || searchTerm.isEmpty()
+                ? transportationService.findAllTransports(brandId, PageRequest.of(page, size, sort))
+                : transportationService.findAllTransportWithSearch(brandId, searchTerm, PageRequest.of(page, size, sort));
         return new ResponseEntity<>(transportationBrands, HttpStatus.OK);
     }
 
@@ -118,7 +126,9 @@ public class TransportAPI {
     }
 
     @PostMapping(value = "/agent/transportation/create-transportation", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    private void createTrans(@RequestPart("transportationsDto") TransportationsDto transportationsDto, @RequestPart("transportTypeImg") List<MultipartFile> transportTypeImg, @RequestPart("transportationImg") MultipartFile transportationImg) throws IOException {
+    private void createTrans(@RequestPart("transportationsDto") TransportationsDto transportationsDto,
+                             @RequestPart("transportTypeImg") List<MultipartFile> transportTypeImg,
+                             @RequestPart("transportationImg") MultipartFile transportationImg) throws IOException {
         String transportId = GenerateNextID.generateNextCode("TP", transportationService.findMaxCode());
         String avatarTransport = fileUpload.uploadFile(transportationImg);
 
