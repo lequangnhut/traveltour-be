@@ -203,10 +203,18 @@ public class HotelsAPI {
         hotelsService.save(hotels);
 
 
-        return new ResponseObject("200", "OK", null);
+        return new ResponseObject("200", "Thông tin khách sạn được thêm thành công", null);
     }
 
-    @PostMapping("agent/hotels/information-hotel/update")
+    /**
+     * Phương thức chỉnh sửa thông tin khách sạn
+     * @param dataHotel thông tin khách sạn
+     * @param selectedUtilities danh sách dịch vụ khách sạn
+     * @param hotelAvatarUpdated ảnh đai diện khách sạn
+     * @return danh sach khách san
+     * @throws IOException lôi nêu không thêm được ảnh
+     */
+    @PutMapping("agent/hotels/information-hotel/update")
     ResponseObject updateHotel(
             @RequestPart("dataHotel") HotelsDto dataHotel,
             @RequestPart("selectedUtilities") List<Integer> selectedUtilities,
@@ -222,7 +230,6 @@ public class HotelsAPI {
             avataHotelUpload = fileUpload.uploadFile(hotelAvatarUpdated);
         }
 
-
         hotels = Optional.ofNullable(EntityDtoUtils.convertToEntity(dataHotel, Hotels.class));
         if (avataHotelUpload != null) {
             hotels.get().setHotelAvatar(avataHotelUpload);
@@ -234,13 +241,20 @@ public class HotelsAPI {
                 .map(placeUtilitiesService::findById)
                 .collect(Collectors.toList());
 
+        hotels.get().setIsActive(true);
+        hotels.get().setIsAccepted(true);
         hotels.get().setPlaceUtilities(placeUtilitiesList);
 
         hotelsService.save(hotels.get());
 
-        return new ResponseObject("200", "OK", null);
+        return new ResponseObject("200", "Thông tin khách sạn được thay đổi thành công", null);
     }
 
+    /**
+     * Phương thức tìm khách sạn dựa vào id của khách sạn
+     * @param id mã khách sạn
+     * @return
+     */
     @GetMapping("agent/hotels/findByHotelId/{id}")
     public ResponseObject findByHotel(
             @PathVariable("id") String id

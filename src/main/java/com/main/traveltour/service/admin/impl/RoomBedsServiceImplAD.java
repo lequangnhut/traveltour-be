@@ -19,4 +19,9 @@ public class RoomBedsServiceImplAD implements RoomBedsServiceAD {
     public List<RoomBeds> findByBedTypeId(int typeId) {
         return roomBedsRepository.findAllByBedTypeId(typeId);
     }
+
+    @Override
+    public void save(RoomBeds roomBeds) {
+        roomBedsRepository.save(roomBeds);
+    }
 }

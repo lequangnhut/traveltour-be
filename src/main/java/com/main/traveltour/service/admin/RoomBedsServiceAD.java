@@ -6,5 +6,5 @@ import java.util.List;
 
 public interface RoomBedsServiceAD {
     List<RoomBeds> findByBedTypeId(int typeId);
-
+    void save(RoomBeds roomBeds);
 }
