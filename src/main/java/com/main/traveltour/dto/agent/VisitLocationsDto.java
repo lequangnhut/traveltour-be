@@ -12,6 +12,8 @@ import java.sql.Timestamp;
 @Data
 public class VisitLocationsDto implements Serializable {
 
+    String id;
+
     String visitLocationName;
 
     String urlWebsite;
@@ -30,9 +32,13 @@ public class VisitLocationsDto implements Serializable {
 
     Time closingTime;
 
+    Timestamp dateCreated;
+
+    Boolean isAccepted;
+
+    Boolean isActive;
+
     int visitLocationTypeId;
 
     int agenciesId;
-
-    Timestamp dateCreated;
 }

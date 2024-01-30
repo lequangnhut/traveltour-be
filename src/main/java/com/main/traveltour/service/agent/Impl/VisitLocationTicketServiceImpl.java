@@ -6,6 +6,8 @@ import com.main.traveltour.service.agent.VisitLocationTicketService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 public class VisitLocationTicketServiceImpl implements VisitLocationTicketService {
 
@@ -18,7 +20,17 @@ public class VisitLocationTicketServiceImpl implements VisitLocationTicketServic
     }
 
     @Override
+    public List<VisitLocationTickets> findByVisitLocationId(String visitLocationId) {
+        return visitLocationTicketsRepository.findByVisitLocationId(visitLocationId);
+    }
+
+    @Override
     public VisitLocationTickets save(VisitLocationTickets visitLocationTickets) {
         return visitLocationTicketsRepository.save(visitLocationTickets);
+    }
+
+    @Override
+    public void delete(VisitLocationTickets visitLocationTickets) {
+        visitLocationTicketsRepository.delete(visitLocationTickets);
     }
 }
