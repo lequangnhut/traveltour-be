@@ -12,7 +12,9 @@ import java.sql.Timestamp;
 @Data
 public class TransportationBrandsDto implements Serializable {
 
-    int id;
+    String id;
+
+    int agenciesId;
 
     String transportationBrandName;
 

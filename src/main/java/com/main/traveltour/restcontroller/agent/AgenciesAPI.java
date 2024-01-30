@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.sql.Timestamp;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -35,7 +36,7 @@ public class AgenciesAPI {
         Agencies agencies = EntityDtoUtils.convertToEntity(agenciesDto, Agencies.class);
         agencies.setImgDocument(imgDoc);
         agencies.setIsAccepted(1);
-
+        agencies.setDateCreated(new Timestamp(System.currentTimeMillis()));
         agenciesService.save(agencies);
     }
 

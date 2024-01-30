@@ -26,12 +26,13 @@ public interface OrderTransportationsRepository extends JpaRepository<OrderTrans
             "JOIN ort.transportationSchedulesByTransportationScheduleId tsc " +
             "JOIN tsc.transportationsByTransportationId t " +
             "JOIN t.transportationBrandsByTransportationBrandId tbr " +
-            "WHERE LOWER(tsc.id) LIKE LOWER(CONCAT('%', :searchTerm, '%')) " +
-            "OR LOWER(ort.id) LIKE LOWER(CONCAT('%', :searchTerm, '%')) " +
+            "WHERE LOWER(ort.id) LIKE LOWER(CONCAT('%', :searchTerm, '%')) " +
+            "OR LOWER(ort.transportationScheduleId) LIKE LOWER(CONCAT('%', :searchTerm, '%')) " +
             "OR LOWER(ort.customerName) LIKE LOWER(CONCAT('%', :searchTerm, '%')) " +
             "OR LOWER(ort.customerCitizenCard) LIKE LOWER(CONCAT('%', :searchTerm, '%')) " +
             "OR LOWER(ort.customerPhone) LIKE LOWER(CONCAT('%', :searchTerm, '%')) " +
             "OR LOWER(ort.customerEmail) LIKE LOWER(CONCAT('%', :searchTerm, '%')) " +
+            "OR LOWER(CAST(ort.dateCreated AS STRING) ) LIKE LOWER(CONCAT('%', :searchTerm, '%')) " +
             "AND t.id = :transportBrandId AND ort.orderStatus = 0")
     Page<OrderTransportations> findAllOrderTransportWithSearch(@Param("transportBrandId") String transportBrandId, @Param("searchTerm") String searchTerm, Pageable pageable);
 }

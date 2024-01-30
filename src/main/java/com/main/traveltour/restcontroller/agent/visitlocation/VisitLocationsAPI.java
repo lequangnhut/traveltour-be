@@ -1,9 +1,7 @@
-package com.main.traveltour.restcontroller.agent;
+package com.main.traveltour.restcontroller.agent.visitlocation;
 
 import com.main.traveltour.dto.agent.VisitLocationsDto;
-import com.main.traveltour.entity.VisitLocationTickets;
-import com.main.traveltour.entity.VisitLocationTypes;
-import com.main.traveltour.entity.VisitLocations;
+import com.main.traveltour.entity.*;
 import com.main.traveltour.service.agent.VisitLocationTicketService;
 import com.main.traveltour.service.agent.VisitLocationTypeService;
 import com.main.traveltour.service.agent.VisitLocationsService;
@@ -46,6 +44,17 @@ public class VisitLocationsAPI {
     @GetMapping("/agent/visit/find-all-by-agency-id/{agencyId}")
     private List<VisitLocations> findByUserId(@PathVariable int agencyId) {
         return visitLocationsService.findAllByAgencyId(agencyId);
+    }
+
+    @GetMapping("/agent/visit/find-by-visit-location-id/{visitLocationId}")
+    private ResponseObject findTransportBrandById(@PathVariable String visitLocationId) {
+        VisitLocations visitLocations = visitLocationsService.findByVisitLocationId(visitLocationId);
+
+        if (visitLocations == null) {
+            return new ResponseObject("404", "Không tìm thấy dữ liệu", null);
+        } else {
+            return new ResponseObject("200", "Đã tìm thấy dữ liệu", visitLocations);
+        }
     }
 
     @PostMapping("/agent/visit/register-visit-location")
@@ -93,6 +102,37 @@ public class VisitLocationsAPI {
         createVisitTicket(visitLocations.getId(), selectedTickets, unitPrices);
     }
 
+    @PutMapping("/agent/visit/update-visit-location")
+    private void updateVisitLocation(@RequestPart("visitLocationsDto") VisitLocationsDto visitLocationsDto,
+                                     @RequestPart(value = "visitLocationImage", required = false) MultipartFile visitImage,
+                                     @RequestPart(value = "selectedTickets", required = false) List<String> selectedTickets,
+                                     @RequestPart(value = "unitPrices", required = false) Map<String, String> unitPrices) throws IOException {
+        String visitLocationId = visitLocationsDto.getId();
+
+        if (visitImage != null) {
+            String visitLocationImage = fileUpload.uploadFile(visitImage);
+            VisitLocations visitLocations = EntityDtoUtils.convertToEntity(visitLocationsDto, VisitLocations.class);
+            visitLocations.setId(visitLocationId);
+            visitLocations.setVisitLocationImage(visitLocationImage);
+            visitLocationsService.save(visitLocations);
+        } else {
+            VisitLocations visitLocations = EntityDtoUtils.convertToEntity(visitLocationsDto, VisitLocations.class);
+            visitLocations.setId(visitLocationId);
+            visitLocations.setVisitLocationImage(visitLocationsService.findByVisitLocationId(visitLocationId).getVisitLocationImage());
+            visitLocationsService.save(visitLocations);
+        }
+
+        updateVisitTickets(visitLocationId, selectedTickets, unitPrices);
+    }
+
+    @GetMapping("/agent/visit/delete-visit-location/{visitLocationId}")
+    private void deleteVisitLocation(@PathVariable String visitLocationId) {
+        VisitLocations visitLocations = visitLocationsService.findByVisitLocationId(visitLocationId);
+        visitLocations.setIsActive(Boolean.FALSE);
+        visitLocations.setDateDeleted(new Timestamp(System.currentTimeMillis()));
+        visitLocationsService.save(visitLocations);
+    }
+
     private void createVisitTicket(String locationId, List<String> ticketTypes, Map<String, String> unitPrices) {
         Map<String, String> vietnameseToEnglishMap = new HashMap<>();
         vietnameseToEnglishMap.put("Vé người lớn", "adult");
@@ -112,5 +152,50 @@ public class VisitLocationsAPI {
             }
             visitLocationTicketService.save(tickets);
         }
+    }
+
+    private void updateVisitTickets(String locationId, List<String> newTicketTypes, Map<String, String> newUnitPrices) {
+        List<VisitLocationTickets> currentTickets = visitLocationTicketService.findByVisitLocationId(locationId);
+
+        Map<String, String> vietnameseToEnglishMap = new HashMap<>();
+        vietnameseToEnglishMap.put("Vé người lớn", "adult");
+        vietnameseToEnglishMap.put("Vé trẻ em", "child");
+
+        for (String newTicketType : newTicketTypes) {
+            String englishTicketType = vietnameseToEnglishMap.get(newTicketType);
+
+            VisitLocationTickets currentTicket = findTicketByType(currentTickets, newTicketType);
+
+            if (currentTicket != null) {
+                if (newUnitPrices.containsKey(englishTicketType)) {
+                    String unitPriceString = newUnitPrices.get(englishTicketType);
+                    BigDecimal unitPrice = new BigDecimal(unitPriceString);
+                    currentTicket.setUnitPrice(unitPrice);
+                } else {
+                    visitLocationTicketService.delete(currentTicket);
+                }
+            } else {
+                VisitLocationTickets newTicket = new VisitLocationTickets();
+                newTicket.setVisitLocationId(locationId);
+                newTicket.setTicketTypeName(newTicketType);
+
+                if (newUnitPrices.containsKey(englishTicketType)) {
+                    String unitPriceString = newUnitPrices.get(englishTicketType);
+                    BigDecimal unitPrice = new BigDecimal(unitPriceString);
+                    newTicket.setUnitPrice(unitPrice);
+                }
+
+                visitLocationTicketService.save(newTicket);
+            }
+        }
+    }
+
+    private VisitLocationTickets findTicketByType(List<VisitLocationTickets> tickets, String ticketType) {
+        for (VisitLocationTickets ticket : tickets) {
+            if (ticket.getTicketTypeName().equals(ticketType)) {
+                return ticket;
+            }
+        }
+        return null;
     }
 }
