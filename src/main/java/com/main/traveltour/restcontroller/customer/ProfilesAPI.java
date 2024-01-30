@@ -20,8 +20,7 @@ public class ProfilesAPI {
 
     @GetMapping("customer/info/find-by-id/{id}")
     private ResponseObject findById(@PathVariable int id) {
-        Users users = userServiceCT.findbyID(id);
-        System.out.println(users);
+        Users users = userServiceCT.findByID(id);
         if (users != null) {
             CustomerInfoDto dto = EntityDtoUtils.convertToDto(users, CustomerInfoDto.class);
             return new ResponseObject("200", "Đã tìm thấy dữ liệu", dto);
