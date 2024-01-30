@@ -21,12 +21,17 @@ public class VisitLocationsServiceImpl implements VisitLocationsService {
 
     @Override
     public List<VisitLocations> findAllByAgencyId(int agencyId) {
-        return visitLocationsRepository.findAllByAgenciesId(agencyId);
+        return visitLocationsRepository.findAllByAgenciesIdAndIsActiveTrue(agencyId);
     }
 
     @Override
     public VisitLocations findByAgencyId(int agencyId) {
         return visitLocationsRepository.findByAgenciesId(agencyId);
+    }
+
+    @Override
+    public VisitLocations findByVisitLocationId(String visitLocationId) {
+        return visitLocationsRepository.findById( visitLocationId);
     }
 
     @Override

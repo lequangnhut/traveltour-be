@@ -13,7 +13,9 @@ public interface VisitLocationsRepository extends JpaRepository<VisitLocations, 
 
     VisitLocations findByAgenciesId(int userId);
 
-    List<VisitLocations> findAllByAgenciesId(int userId);
+    VisitLocations findById(String visitLocationsId);
+
+    List<VisitLocations> findAllByAgenciesIdAndIsActiveTrue(int userId);
 
     List<VisitLocations> findAllByVisitLocationTypeId(int id);
 }

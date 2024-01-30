@@ -12,5 +12,7 @@ public interface VisitLocationsService {
 
     VisitLocations findByAgencyId(int agencyId);
 
+    VisitLocations findByVisitLocationId(String visitLocationId);
+
     VisitLocations save(VisitLocations visitLocations);
 }

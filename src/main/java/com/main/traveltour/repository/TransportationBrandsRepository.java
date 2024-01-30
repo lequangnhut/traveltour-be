@@ -11,7 +11,7 @@ public interface TransportationBrandsRepository extends JpaRepository<Transporta
     @Query(value = "SELECT MAX(trans.id) FROM TransportationBrands trans")
     String findMaxCode();
 
-    List<TransportationBrands> findAllByAgenciesId(int agenciesId);
+    List<TransportationBrands> findAllByAgenciesIdAndIsActiveTrue(int agenciesId);
 
     TransportationBrands findByAgenciesId(int agenciesId);
 

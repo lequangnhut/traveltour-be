@@ -21,7 +21,7 @@ public class TransportationBrandsServiceImpl implements TransportationBrandsServ
 
     @Override
     public List<TransportationBrands> findAllByAgencyId(int agencyId) {
-        return transportationBrandsRepository.findAllByAgenciesId(agencyId);
+        return transportationBrandsRepository.findAllByAgenciesIdAndIsActiveTrue(agencyId);
     }
 
     @Override

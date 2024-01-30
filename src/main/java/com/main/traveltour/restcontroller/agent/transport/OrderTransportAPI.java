@@ -1,11 +1,14 @@
 package com.main.traveltour.restcontroller.agent.transport;
 
+import com.main.traveltour.component.ByteArrayMultipartFile;
+import com.main.traveltour.dto.agent.ExportDataOrderTransportDto;
 import com.main.traveltour.dto.agent.OrderTransportationsDto;
 import com.main.traveltour.entity.OrderTransportations;
 import com.main.traveltour.entity.ResponseObject;
 import com.main.traveltour.entity.TransportationSchedules;
 import com.main.traveltour.service.agent.OrderTransportService;
 import com.main.traveltour.service.agent.TransportationScheduleService;
+import com.main.traveltour.service.utils.FileUpload;
 import com.main.traveltour.service.utils.QRCodeService;
 import com.main.traveltour.utils.EntityDtoUtils;
 import com.main.traveltour.utils.GenerateNextID;
@@ -17,11 +20,11 @@ import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
-import java.io.ByteArrayInputStream;
-import java.io.File;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
@@ -31,6 +34,9 @@ import java.util.Map;
 @CrossOrigin(origins = "http://localhost:3000")
 @RequestMapping("api/v1")
 public class OrderTransportAPI {
+
+    @Autowired
+    private FileUpload fileUpload;
 
     @Autowired
     private QRCodeService qrCodeService;
@@ -61,8 +67,10 @@ public class OrderTransportAPI {
     private ResponseObject findByOrderTransId(@PathVariable String orderTransId) {
         Map<String, Object> response = new HashMap<>();
         OrderTransportations orderTransportations = orderTransportService.findById(orderTransId);
+        ExportDataOrderTransportDto exportDataOrderTransportDto = EntityDtoUtils.convertToDto(orderTransportations, ExportDataOrderTransportDto.class);
 
         response.put("orderTransportations", orderTransportations);
+        response.put("exportDataOrderTransportDto", exportDataOrderTransportDto);
         response.put("price", ReplaceUtils.formatPrice(orderTransportations.getOrderTotal()));
         return new ResponseObject("200", "Đã tìm thấy dữ liệu", response);
     }
@@ -92,24 +100,39 @@ public class OrderTransportAPI {
     @PostMapping("/agent/order-transport/create-order-transport")
     private void createOrderTransport(@RequestBody OrderTransportationsDto orderTransportationsDto) {
         String orderTransportId = GenerateNextID.generateNextCode("OTR", orderTransportService.findMaxCode());
+        String transportScheduleId = orderTransportationsDto.getTransportationScheduleId();
 
         OrderTransportations orderTransportations = EntityDtoUtils.convertToEntity(orderTransportationsDto, OrderTransportations.class);
         orderTransportations.setId(orderTransportId);
         orderTransportations.setOrderStatus(0); // 0 là đã tạo vé
         orderTransportations.setOrderTotal(ReplaceUtils.parseMoneyString(orderTransportationsDto.getPriceFormat()));
+        orderTransportations.setOrderCode(generateQrCode(orderTransportId));
         orderTransportService.save(orderTransportations);
+
+        TransportationSchedules schedules = transportationScheduleService.findBySchedulesId(transportScheduleId);
+        schedules.setBookedSeat(schedules.getBookedSeat() + orderTransportationsDto.getAmountTicket());
+        transportationScheduleService.save(schedules);
     }
 
     @PutMapping("/agent/order-transport/update-order-transport")
     private void updateOrderTransport(@RequestBody OrderTransportationsDto orderTransportationsDto) {
+        String orderTransportId = orderTransportationsDto.getId();
+        String transportScheduleId = orderTransportationsDto.getTransportationScheduleId();
+
+        OrderTransportations orderTrans = orderTransportService.findById(orderTransportId);
         OrderTransportations orderTransportations = EntityDtoUtils.convertToEntity(orderTransportationsDto, OrderTransportations.class);
         orderTransportations.setId(orderTransportationsDto.getId());
+        orderTransportations.setOrderCode(generateQrCode(orderTransportationsDto.getId()));
         if (orderTransportationsDto.getPriceFormat().contains(",")) {
             orderTransportations.setOrderTotal(ReplaceUtils.replacePrice(orderTransportationsDto.getPriceFormat()));
         } else {
             orderTransportations.setOrderTotal(ReplaceUtils.parseMoneyString(orderTransportationsDto.getPriceFormat()));
         }
         orderTransportService.save(orderTransportations);
+
+        TransportationSchedules schedules = transportationScheduleService.findBySchedulesId(transportScheduleId);
+        schedules.setBookedSeat(schedules.getBookedSeat() + orderTransportationsDto.getAmountTicket() - orderTrans.getAmountTicket());
+        transportationScheduleService.save(schedules);
     }
 
     @GetMapping("/agent/order-transport/delete-order-transport/{orderTransportId}")
@@ -119,21 +142,24 @@ public class OrderTransportAPI {
         orderTransportService.save(orderTransportations);
     }
 
-    private void generateQrCode(String orderTransportId) {
-        String base64String = qrCodeService.generateQrCode("http://localhost:3000/home/see-ticket-informatione/" + orderTransportId);
-        String imageDataBytes = base64String.substring(base64String.indexOf(',') + 1);
+    private String generateQrCode(String orderTransportId) {
+        String targetUrl = "http://localhost:3000/home/see-ticket-informatione/" + orderTransportId;
+        BufferedImage qrCodeImage = qrCodeService.generateQRCodeImage(targetUrl);
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
 
-        byte[] imageBytes = javax.xml.bind.DatatypeConverter.parseBase64Binary(imageDataBytes);
-
-        try (ByteArrayInputStream bis = new ByteArrayInputStream(imageBytes)) {
-            BufferedImage image = ImageIO.read(bis);
-
-            File outputFile = new File("output.png");
-            ImageIO.write(image, "png", outputFile);
-
-            System.out.println("Hình ảnh đã được lưu vào output.png");
+        try {
+            ImageIO.write(qrCodeImage, "png", baos);
         } catch (IOException e) {
             e.printStackTrace();
         }
+        byte[] imageBytes = baos.toByteArray();
+
+        try {
+            MultipartFile multipartFile = new ByteArrayMultipartFile(imageBytes, "qr-code.png");
+            return fileUpload.uploadFile(multipartFile);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return "";
     }
 }
