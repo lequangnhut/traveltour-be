@@ -22,7 +22,7 @@ public class UserServiceCTImpl implements UserServiceCT {
     }
 
     @Override
-    public Users findbyID(int id) {
+    public Users findByID(int id) {
         return usersRepo.findUsersById(id);
     }
 }

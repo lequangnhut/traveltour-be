@@ -7,7 +7,7 @@ public interface UserServiceCT {
 
    Integer findIdByPhoneNumberAndNotCurrentUser(String phone, Integer userID);
 
-   Users findbyID(int id);
+   Users findByID(int id);
 
 
 }
