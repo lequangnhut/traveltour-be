@@ -13,7 +13,7 @@ public class VisitLocationTicketsDto implements Serializable {
 
     int id;
 
-    Integer visitLocationId;
+    String visitLocationId;
 
     String ticketTypeName;
 
