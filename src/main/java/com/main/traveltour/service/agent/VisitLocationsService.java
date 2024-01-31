@@ -10,6 +10,8 @@ public interface VisitLocationsService {
 
     List<VisitLocations> findAllByAgencyId(int agencyId);
 
+    List<VisitLocations> findAllByVisitLocationId(String visitLocationId);
+
     VisitLocations findByAgencyId(int agencyId);
 
     VisitLocations findByVisitLocationId(String visitLocationId);
