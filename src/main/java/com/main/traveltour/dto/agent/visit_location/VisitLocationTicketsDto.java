@@ -1,4 +1,4 @@
-package com.main.traveltour.dto.agent;
+package com.main.traveltour.dto.agent.visit_location;
 
 import lombok.Data;
 

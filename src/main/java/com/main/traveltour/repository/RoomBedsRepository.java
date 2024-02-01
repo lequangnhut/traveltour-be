@@ -8,5 +8,6 @@ import java.util.List;
 public interface RoomBedsRepository extends JpaRepository<RoomBeds, Integer> {
 
     List<RoomBeds> findAllByBedTypeId(int id);
+    RoomBeds findByRoomTypeId(String bedTypeId);
 
 }

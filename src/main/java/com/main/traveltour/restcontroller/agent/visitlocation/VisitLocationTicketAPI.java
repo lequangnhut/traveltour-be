@@ -1,6 +1,6 @@
 package com.main.traveltour.restcontroller.agent.visitlocation;
 
-import com.main.traveltour.dto.agent.VisitLocationTicketsDto;
+import com.main.traveltour.dto.agent.visit_location.VisitLocationTicketsDto;
 import com.main.traveltour.entity.ResponseObject;
 import com.main.traveltour.entity.VisitLocationTickets;
 import com.main.traveltour.entity.VisitLocations;

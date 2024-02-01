@@ -71,14 +71,17 @@ public class RoomTypes {
 
     @OneToMany(mappedBy = "roomTypesByRoomTypeId")
     @JsonManagedReference
+    @ToString.Exclude
     private Collection<OrderHotelDetails> orderHotelDetailsById;
 
     @OneToMany(mappedBy = "roomTypesByRoomTypeId")
     @JsonManagedReference
+    @ToString.Exclude
     private Collection<RoomBeds> roomBedsById;
 
     @OneToMany(mappedBy = "roomTypesByRoomTypeId")
     @JsonManagedReference
+    @ToString.Exclude
     private Collection<RoomImages> roomImagesById;
 
     @ManyToOne

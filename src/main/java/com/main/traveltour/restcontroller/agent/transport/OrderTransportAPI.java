@@ -1,8 +1,8 @@
 package com.main.traveltour.restcontroller.agent.transport;
 
 import com.main.traveltour.component.ByteArrayMultipartFile;
-import com.main.traveltour.dto.agent.ExportDataOrderTransportDto;
-import com.main.traveltour.dto.agent.OrderTransportationsDto;
+import com.main.traveltour.dto.agent.transport.ExportDataOrderTransportDto;
+import com.main.traveltour.dto.agent.transport.OrderTransportationsDto;
 import com.main.traveltour.entity.OrderTransportations;
 import com.main.traveltour.entity.ResponseObject;
 import com.main.traveltour.entity.TransportationSchedules;

@@ -1,6 +1,6 @@
 package com.main.traveltour.restcontroller.agent.transport;
 
-import com.main.traveltour.dto.agent.TransportationSchedulesDto;
+import com.main.traveltour.dto.agent.transport.TransportationSchedulesDto;
 import com.main.traveltour.entity.ResponseObject;
 import com.main.traveltour.entity.TransportationSchedules;
 import com.main.traveltour.entity.Transportations;
