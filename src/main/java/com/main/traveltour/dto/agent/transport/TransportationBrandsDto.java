@@ -1,4 +1,4 @@
-package com.main.traveltour.dto.agent;
+package com.main.traveltour.dto.agent.transport;
 
 import com.main.traveltour.entity.TransportationBrands;
 import lombok.Data;

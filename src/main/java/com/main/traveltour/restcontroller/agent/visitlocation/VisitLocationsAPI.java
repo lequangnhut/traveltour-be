@@ -1,6 +1,6 @@
 package com.main.traveltour.restcontroller.agent.visitlocation;
 
-import com.main.traveltour.dto.agent.VisitLocationsDto;
+import com.main.traveltour.dto.agent.visit_location.VisitLocationsDto;
 import com.main.traveltour.entity.*;
 import com.main.traveltour.service.agent.VisitLocationTicketService;
 import com.main.traveltour.service.agent.VisitLocationTypeService;
