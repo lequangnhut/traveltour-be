@@ -1,4 +1,4 @@
-package com.main.traveltour.restcontroller.agent;
+package com.main.traveltour.restcontroller.agent.hotel;
 
 import com.google.zxing.NotFoundException;
 import com.main.traveltour.dto.agent.RoomTypeAddDto;
@@ -50,6 +50,17 @@ public class RoomTypeAPI {
     @Autowired
     private RoomUtilitiesService roomUtilitiesService;
 
+    /**
+     * Phương thức lấy toàn bộ thông tin loại phòng phân trang và sắp xếp
+     * @param page trang
+     * @param size kích thước
+     * @param sortBy sắp xếp
+     * @param sortDir trường sắp xếp
+     * @param searchTerm thông tin tìm kiếm
+     * @param hotelId mã khách sạn
+     * @param isDelete trang thái xóa
+     * @return kết quả
+     */
     @GetMapping("agent/room-type/get-room-type")
     public ResponseObject getRoomType(
             @RequestParam(defaultValue = "0") int page,
@@ -69,11 +80,14 @@ public class RoomTypeAPI {
                 ? roomTypeService.findAllByHotelIdAndIsDelete(hotelId, isDelete, PageRequest.of(page, size, sort))
                 : roomTypeService.findAllWithSearchAndHotelId(searchTerm, hotelId, PageRequest.of(page, size, sort));
 
-        System.out.println(page + size + sortBy + sortDir + searchTerm + hotelId);
-
         return new ResponseObject("200", "OK", items);
     }
 
+    /**
+     * Phương thức tìm phòng bằng mã phòng
+     * @param roomTypeId mã phòng
+     * @return kết quả
+     */
     @GetMapping("agent/room-type/get-room-type-by-id")
     public ResponseObject getRoomTypeById(
             @RequestParam("roomTypeId") String roomTypeId
@@ -87,6 +101,14 @@ public class RoomTypeAPI {
 
     }
 
+    /**
+     * Phương thức lưu thông tin phòng
+     * @param roomTypesAddDto thông tin phòng
+     * @param roomTypeAvatarData Ảnh đại diện phòng
+     * @param listRoomTypeImg Danh sách hình ảnh khách sạn
+     * @param selectedCheckboxValues Danh sách dịch vụ khách sạn
+     * @return kết quả
+     */
     @PostMapping("agent/room-type/saveRoomType")
     public ResponseObject saveRoomType(
             @RequestPart("roomTypes") RoomTypeAddDto roomTypesAddDto,
@@ -136,6 +158,11 @@ public class RoomTypeAPI {
         }
     }
 
+    /**
+     * Phương thức tìm kiếm loại phòng dựa vào mã phòng
+     * @param id mã phòng
+     * @return kêt quả
+     */
     @GetMapping("agent/room-type/findRoomTypeByRoomId")
     public ResponseObject findRoomTypeByRoomId(
             @RequestParam("id") String id
@@ -150,7 +177,13 @@ public class RoomTypeAPI {
 
     }
 
-    @PostMapping("agent/room-type/editInfoRoomType")
+
+    /**
+     * Phương thức sửa thông tin của phòng
+     * @param roomTypesAddDto thông tin phòng
+     * @return kết quả
+     */
+    @PutMapping("agent/room-type/editInfoRoomType")
     public ResponseObject editInfoRoomType(
             @RequestPart("roomTypes") RoomTypeAddDto roomTypesAddDto
     ) {
@@ -166,7 +199,12 @@ public class RoomTypeAPI {
         roomTypeService.save(roomTypes.get());
 
         // Sửa loại giường cho phòng khách sạn
-        if (!roomBeds.getBedTypeId().equals(roomTypesAddDto.getBedTypeId())) {
+        if (roomBeds == null) {
+            roomBeds = new RoomBeds();
+            roomBeds.setRoomTypeId(roomTypesAddDto.getId());
+            roomBeds.setBedTypeId(roomTypesAddDto.getBedTypeId());
+            roomBedsServiceAD.save(roomBeds);
+        } else if (!roomBeds.getBedTypeId().equals(roomTypesAddDto.getBedTypeId())) {
             roomBeds.setRoomTypeId(roomTypesAddDto.getId());
             roomBeds.setBedTypeId(roomTypesAddDto.getBedTypeId());
             roomBedsServiceAD.save(roomBeds);

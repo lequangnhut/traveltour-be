@@ -17,4 +17,5 @@ public interface RoomTypeService {
     List<RoomTypes> findAllByHotelId(String hotelId);
     RoomTypes save(RoomTypes roomTypes);
     Optional<RoomTypes> findRoomTypeById(String roomTypeId);
+
 }
