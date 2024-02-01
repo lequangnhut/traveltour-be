@@ -1,5 +1,6 @@
 package com.main.traveltour.restcontroller.agent;
 
+import com.google.zxing.NotFoundException;
 import com.main.traveltour.dto.agent.RoomTypeAddDto;
 import com.main.traveltour.entity.*;
 import com.main.traveltour.service.admin.BedTypesServiceAD;
@@ -48,6 +49,7 @@ public class RoomTypeAPI {
 
     @Autowired
     private RoomUtilitiesService roomUtilitiesService;
+
     @GetMapping("agent/room-type/get-room-type")
     public ResponseObject getRoomType(
             @RequestParam(defaultValue = "0") int page,
@@ -77,10 +79,9 @@ public class RoomTypeAPI {
             @RequestParam("roomTypeId") String roomTypeId
     ) {
         Optional<RoomTypes> roomTypes = roomTypeService.findRoomTypeById(roomTypeId);
-
-        if(roomTypes.isPresent()){
-            return new ResponseObject("200", "OK",  roomTypes.get());
-        }else{
+        if (roomTypes.isPresent()) {
+            return new ResponseObject("200", "OK", roomTypes.get());
+        } else {
             return new ResponseObject("404", "Null", null);
         }
 
@@ -93,7 +94,7 @@ public class RoomTypeAPI {
             @RequestPart("listRoomTypeImg") List<MultipartFile> listRoomTypeImg,
             @RequestPart("selectedCheckboxValues") List<Integer> selectedCheckboxValues
     ) {
-        try{
+        try {
             RoomTypes roomTypes = null;
             RoomBeds roomBeds = new RoomBeds();
             List<String> listRoomTypesImage = new ArrayList<String>();
@@ -130,8 +131,46 @@ public class RoomTypeAPI {
             roomBeds.setBedTypeId(roomTypesAddDto.getBedTypeId());
             roomBedsServiceAD.save(roomBeds);
             return new ResponseObject("200", "Thêm phòng thành công", null);
-        }catch (Exception e){
+        } catch (Exception e) {
             return new ResponseObject("500", "Lỗi khi thêm thông tin vui lòng kiểm tra lại", null);
         }
+    }
+
+    @GetMapping("agent/room-type/findRoomTypeByRoomId")
+    public ResponseObject findRoomTypeByRoomId(
+            @RequestParam("id") String id
+    ) {
+        Optional<RoomTypes> roomTypes = roomTypeService.findRoomTypeById(id);
+
+        if (roomTypes.isPresent()) {
+            return new ResponseObject("200", "OK", roomTypes.get());
+        } else {
+            return new ResponseObject("404", "Null", null);
+        }
+
+    }
+
+    @PostMapping("agent/room-type/editInfoRoomType")
+    public ResponseObject editInfoRoomType(
+            @RequestPart("roomTypes") RoomTypeAddDto roomTypesAddDto
+    ) {
+        Optional<RoomTypes> roomTypes = roomTypeService.findRoomTypeById(roomTypesAddDto.getId());
+        RoomBeds roomBeds = roomBedsServiceAD.findRoomBedsRoomTypeId(roomTypesAddDto.getId());
+
+        roomTypes.get().setAmountRoom(roomTypesAddDto.getAmountRoom());
+        roomTypes.get().setRoomTypeName(roomTypesAddDto.getRoomTypeName());
+        roomTypes.get().setCapacityAdults(roomTypesAddDto.getCapacityAdults());
+        roomTypes.get().setCapacityChildren(roomTypesAddDto.getCapacityChildren());
+        roomTypes.get().setRoomTypeDescription(roomTypesAddDto.getRoomTypeDescription());
+
+        roomTypeService.save(roomTypes.get());
+
+        // Sửa loại giường cho phòng khách sạn
+        if (!roomBeds.getBedTypeId().equals(roomTypesAddDto.getBedTypeId())) {
+            roomBeds.setRoomTypeId(roomTypesAddDto.getId());
+            roomBeds.setBedTypeId(roomTypesAddDto.getBedTypeId());
+            roomBedsServiceAD.save(roomBeds);
+        }
+        return new ResponseObject("200", "Thêm phòng thành công", null);
     }
 }
