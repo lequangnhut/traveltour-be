@@ -24,6 +24,17 @@ public class FileUploadResizeImpl implements FileUploadResize {
 
     @Override
     public String uploadFileResize(MultipartFile multipartFile) throws IOException {
+        byte[] resizedImage = resizeImage(multipartFile.getBytes(), 400, 300, 1);
+
+        return cloudinary.uploader()
+                .upload(resizedImage,
+                        Map.of("public_id", UUID.randomUUID().toString()))
+                .get("url")
+                .toString();
+    }
+
+    @Override
+    public String uploadFileResizeAndReducedQuality(MultipartFile multipartFile) throws IOException {
         byte[] resizedImage = resizeImage(multipartFile.getBytes(), 400, 300, 0.5);
 
         return cloudinary.uploader()

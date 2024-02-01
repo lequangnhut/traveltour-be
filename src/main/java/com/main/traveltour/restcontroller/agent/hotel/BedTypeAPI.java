@@ -1,4 +1,4 @@
-package com.main.traveltour.restcontroller.agent;
+package com.main.traveltour.restcontroller.agent.hotel;
 
 import com.main.traveltour.entity.BedTypes;
 import com.main.traveltour.entity.ResponseObject;
