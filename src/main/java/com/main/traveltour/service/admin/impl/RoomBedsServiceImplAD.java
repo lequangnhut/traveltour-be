@@ -21,6 +21,11 @@ public class RoomBedsServiceImplAD implements RoomBedsServiceAD {
     }
 
     @Override
+    public RoomBeds findRoomBedsRoomTypeId(String roomBedsId) {
+        return roomBedsRepository.findByRoomTypeId(roomBedsId);
+    }
+
+    @Override
     public void save(RoomBeds roomBeds) {
         roomBedsRepository.save(roomBeds);
     }
