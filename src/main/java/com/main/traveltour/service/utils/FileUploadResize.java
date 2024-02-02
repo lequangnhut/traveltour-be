@@ -6,4 +6,5 @@ import java.io.IOException;
 
 public interface FileUploadResize {
     String uploadFileResize(MultipartFile multipartFile) throws IOException;
+    String uploadFileResizeAndReducedQuality(MultipartFile multipartFile) throws IOException;
 }
