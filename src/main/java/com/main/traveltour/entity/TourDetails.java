@@ -46,6 +46,10 @@ public class TourDetails {
     private Integer numberOfGuests;
 
     @Basic
+    @Column(name = "minimum_number_of_guests")
+    private Integer minimumNumberOfGuests;
+
+    @Basic
     @Column(name = "unit_price")
     private BigDecimal unitPrice;
 

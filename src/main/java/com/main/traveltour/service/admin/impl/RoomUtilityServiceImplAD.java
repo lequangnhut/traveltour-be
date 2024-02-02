@@ -8,6 +8,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 public class RoomUtilityServiceImplAD implements RoomUilityServiceAD {
 
@@ -33,6 +35,11 @@ public class RoomUtilityServiceImplAD implements RoomUilityServiceAD {
     public RoomUtilities findById(int id) {
         return roomUtilitiesRepository.findById(id);
     }
+
+//    @Override
+//    public List<String> findRoomUtilitiesNameByRoomTypeId(String roomTypeId) {
+//        return roomUtilitiesRepository.findRoomUtilitiesNameByRoomTypeId(roomTypeId);
+//    }
 
     @Override
     public RoomUtilities save(RoomUtilities roomUtilities) {

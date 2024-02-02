@@ -11,6 +11,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Optional;
 
 @RestController
@@ -34,6 +35,17 @@ public class TourTripsAPI {
                 : Sort.by(sortBy).descending();
 
         Page<TourTrips> items = tourTripsService.findTourTripsByTourId(tourId, PageRequest.of(page, size, sort));
+
+        if (items.isEmpty()) {
+            return new ResponseObject("404", "Không tìm thấy dữ liệu", null);
+        } else {
+            return new ResponseObject("200", "Đã tìm thấy dữ liệu", items);
+        }
+    }
+
+    @GetMapping("find-tourTrips-by-tourId/{tourId}")
+    private ResponseObject findTourTripsByTourId(@RequestParam(defaultValue = "null") String tourId) {
+        List<TourTrips> items = tourTripsService.findTourTripsByTourId(tourId);
 
         if (items.isEmpty()) {
             return new ResponseObject("404", "Không tìm thấy dữ liệu", null);
