@@ -19,6 +19,7 @@ public class TourDetailsDto {
     Date departureDate;
     Date arrivalDate;
     Integer numberOfGuests;
+    Integer minimumNumberOfGuests;
     BigDecimal unitPrice;
     String tourDetailNotes;
     Integer tourDetailStatus;

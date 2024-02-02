@@ -37,6 +37,11 @@ public class BedTypesServiceImplAD implements BedTypesServiceAD {
     }
 
     @Override
+    public List<String> findByRoomTypeId(String roomTypeId) {
+        return bedTypesRepository.findByRoomTypeId(roomTypeId);
+    }
+
+    @Override
     public BedTypes save(BedTypes bedTypes) {
         return bedTypesRepository.save(bedTypes);
     }

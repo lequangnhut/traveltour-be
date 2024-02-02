@@ -43,6 +43,11 @@ public class TourTripsServiceImpl implements TourTripsService {
     }
 
     @Override
+    public List<TourTrips> findTourTripsByTourId(String tourId) {
+        return repo.findTourTripsByTourId(tourId);
+    }
+
+    @Override
     public Page<TourTrips> findTourTripsByTourId(String tourId, Pageable pageable) {
         return repo.findTourTripsByTourId(tourId, pageable);
     }
