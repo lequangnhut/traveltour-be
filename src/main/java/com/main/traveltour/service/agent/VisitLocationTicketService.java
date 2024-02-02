@@ -12,6 +12,8 @@ public interface VisitLocationTicketService {
 
     VisitLocationTickets findByVisitTicketId(int visitTicketId);
 
+    VisitLocationTickets findByTicketTypeNameAndLocationId(String ticketTypeName, String locationId);
+
     List<VisitLocationTickets> findByVisitLocationId(String visitLocationId);
 
     Page<VisitLocationTickets> findAllVisitTickets(String brandId, Pageable pageable);

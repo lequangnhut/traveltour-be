@@ -27,6 +27,11 @@ public class VisitLocationTicketServiceImpl implements VisitLocationTicketServic
     }
 
     @Override
+    public VisitLocationTickets findByTicketTypeNameAndLocationId(String ticketTypeName, String locationId) {
+        return visitLocationTicketsRepository.findByTicketTypeNameAndVisitLocationId(ticketTypeName, locationId);
+    }
+
+    @Override
     public Page<VisitLocationTickets> findAllVisitTickets(String brandId, Pageable pageable) {
         return visitLocationTicketsRepository.findAllVisitTickets(brandId, pageable);
     }

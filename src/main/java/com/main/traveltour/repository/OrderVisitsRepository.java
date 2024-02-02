@@ -18,7 +18,7 @@ public interface OrderVisitsRepository extends JpaRepository<OrderVisits, Intege
 
     @Query("SELECT ov FROM OrderVisits ov " +
             "JOIN ov.visitLocationsByVisitLocationId vl " +
-            "WHERE vl.id = :brandId")
+            "WHERE vl.id = :brandId AND ov.orderStatus = 0")
     Page<OrderVisits> findAllOrderVisits(@Param("brandId") String brandId, Pageable pageable);
 
     @Query("SELECT ov FROM OrderVisits ov " +
@@ -28,6 +28,6 @@ public interface OrderVisitsRepository extends JpaRepository<OrderVisits, Intege
             "OR LOWER(ov.customerCitizenCard) LIKE LOWER(CONCAT('%', :searchTerm, '%')) " +
             "OR LOWER(ov.customerPhone) LIKE LOWER(CONCAT('%', :searchTerm, '%')) " +
             "OR LOWER(ov.customerEmail) LIKE LOWER(CONCAT('%', :searchTerm, '%')) " +
-            "AND vl.id = :brandId")
+            "AND vl.id = :brandId AND ov.orderStatus = 0")
     Page<OrderVisits> findAllOrderVisitsWithSearch(@Param("brandId") String brandId, @Param("searchTerm") String searchTerm, Pageable pageable);
 }

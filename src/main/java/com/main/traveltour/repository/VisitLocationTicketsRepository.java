@@ -16,6 +16,8 @@ public interface VisitLocationTicketsRepository extends JpaRepository<VisitLocat
 
     VisitLocationTickets findById(int visitTicketId);
 
+    VisitLocationTickets findByTicketTypeNameAndVisitLocationId(String ticketTypeName, String locationId);
+
     List<VisitLocationTickets> findByVisitLocationId(String visitLocationId);
 
     @Query("SELECT tkt FROM VisitLocationTickets tkt " +

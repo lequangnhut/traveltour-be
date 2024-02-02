@@ -27,6 +27,8 @@ public class OrderVisitsDto implements Serializable {
 
     String customerEmail;
 
+    Integer capacityFree;
+
     Integer capacityAdult;
 
     Integer capacityKid;
