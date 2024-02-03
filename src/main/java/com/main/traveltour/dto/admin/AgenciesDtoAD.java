@@ -1,15 +1,11 @@
-package com.main.traveltour.dto.agent;
+package com.main.traveltour.dto.admin;
 
 import lombok.Data;
 
-import java.io.Serializable;
 import java.sql.Timestamp;
 
-/**
- * DTO for {@link com.main.traveltour.entity.Agencies}
- */
 @Data
-public class AgenciesDto implements Serializable {
+public class AgenciesDtoAD {
 
     private int id;
 
@@ -23,6 +19,8 @@ public class AgenciesDto implements Serializable {
 
     private String phone;
 
+    private String imgDocument;
+
     private String province;
 
     private String district;
@@ -34,8 +32,6 @@ public class AgenciesDto implements Serializable {
     private Timestamp dateCreated;
 
     private Boolean isActive;
-
-    private int isAccepted;
 
     private int userId;
 }
