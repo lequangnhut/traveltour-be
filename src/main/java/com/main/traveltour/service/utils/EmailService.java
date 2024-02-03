@@ -17,4 +17,12 @@ public interface EmailService {
     void queueEmailRegisterAgency(AgenciesDto agenciesDto);
 
     void sendMailRegisterAgency();
+
+    void queueEmailAcceptedAgency(AgenciesDto agenciesDto);
+
+    void sendMailAcceptedAgency();
+
+    void queueEmailDeniedAgency(AgenciesDto agenciesDto);
+
+    void sendMailDeniedAgency();
 }

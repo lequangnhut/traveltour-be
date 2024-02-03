@@ -28,6 +28,8 @@ public class EmailServiceImpl implements EmailService {
     private final Queue<RegisterDto> emailQueueRegister = new LinkedList<>();
     private final Queue<DataAccountDto> emailQueueCreateBusiness = new LinkedList<>();
     private final Queue<AgenciesDto> emailQueueRegisterAgency = new LinkedList<>();
+    private final Queue<AgenciesDto> emailQueueAcceptedAgency = new LinkedList<>();
+    private final Queue<AgenciesDto> emailQueueDeniedAgency = new LinkedList<>();
 
     @Autowired
     private JavaMailSender sender;
@@ -141,6 +143,66 @@ public class EmailServiceImpl implements EmailService {
         }
     }
 
+    @Override
+    public void queueEmailAcceptedAgency(AgenciesDto agenciesDto) {
+        emailQueueAcceptedAgency.add(agenciesDto);
+    }
+
+    @Override
+    public void sendMailAcceptedAgency() {
+        while (!emailQueueAcceptedAgency.isEmpty()) {
+            AgenciesDto agenciesDto = emailQueueAcceptedAgency.poll();
+            Users users = userService.findById(agenciesDto.getUserId());
+            try {
+                MimeMessage message = sender.createMimeMessage();
+                MimeMessageHelper helper = new MimeMessageHelper(message, MimeMessageHelper.MULTIPART_MODE_MIXED_RELATED, StandardCharsets.UTF_8.name());
+
+                helper.setTo(users.getEmail());
+
+                Map<String, Object> variables = new HashMap<>();
+                variables.put("name_agency", agenciesDto.getNameAgency());
+
+                helper.setFrom(email);
+                helper.setText(thymeleafService.createContent("agency-accepted", variables), true);
+                helper.setSubject("TRAVEL TOUR XIN THÔNG BÁO HỒ SƠ DOANH NGHIỆP ĐƯỢC THÔNG QUA");
+
+                sender.send(message);
+            } catch (MessagingException e) {
+                throw new RuntimeException(e);
+            }
+        }
+    }
+
+    @Override
+    public void queueEmailDeniedAgency(AgenciesDto agenciesDto) {
+        emailQueueDeniedAgency.add(agenciesDto);
+    }
+
+    @Override
+    public void sendMailDeniedAgency() {
+        while (!emailQueueDeniedAgency.isEmpty()) {
+            AgenciesDto agenciesDto = emailQueueDeniedAgency.poll();
+            Users users = userService.findById(agenciesDto.getUserId());
+            try {
+                MimeMessage message = sender.createMimeMessage();
+                MimeMessageHelper helper = new MimeMessageHelper(message, MimeMessageHelper.MULTIPART_MODE_MIXED_RELATED, StandardCharsets.UTF_8.name());
+
+                helper.setTo(users.getEmail());
+
+                Map<String, Object> variables = new HashMap<>();
+                variables.put("name_agency", agenciesDto.getNameAgency());
+
+                helper.setFrom(email);
+                helper.setText(thymeleafService.createContent("agency-failed", variables), true);
+                helper.setSubject("TRAVEL TOUR XIN THÔNG BÁO HỒ SƠ DOANH NGHIỆP KHÔNG HỢP LỆ");
+
+                sender.send(message);
+            } catch (MessagingException e) {
+                throw new RuntimeException(e);
+            }
+        }
+    }
+
     @Scheduled(fixedDelay = 5000)
     public void processRegister() {
         sendMailRegister();
@@ -154,6 +216,16 @@ public class EmailServiceImpl implements EmailService {
     @Scheduled(fixedDelay = 5000)
     public void processRegisterAgency() {
         sendMailRegisterAgency();
+    }
+
+    @Scheduled(fixedDelay = 5000)
+    public void processAcceptedAgency() {
+        sendMailAcceptedAgency();
+    }
+
+    @Scheduled(fixedDelay = 5000)
+    public void processDeniedAgency() {
+        sendMailDeniedAgency();
     }
 
     private String convertRolesToVietnamese(List<String> roles) {
