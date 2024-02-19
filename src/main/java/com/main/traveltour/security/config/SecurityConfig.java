@@ -50,7 +50,6 @@ public class SecurityConfig {
                                 .requestMatchers("/api/v1/**").permitAll()
                 ).oauth2Login(
                         oauth2 -> oauth2
-                                .defaultSuccessUrl("/login-google-success")
                                 .authorizationEndpoint()
                                 .baseUri("/oauth2/authorization")
                                 .authorizationRequestRepository(getRepository())

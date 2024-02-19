@@ -3,6 +3,7 @@ package com.main.traveltour.restcontroller.auth;
 import com.main.traveltour.dto.UsersDto;
 import com.main.traveltour.dto.auth.LoginDto;
 import com.main.traveltour.dto.auth.RegisterDto;
+import com.main.traveltour.entity.ResponseObject;
 import com.main.traveltour.entity.Users;
 import com.main.traveltour.security.jwt.JwtUtilities;
 import com.main.traveltour.service.UsersService;
@@ -44,7 +45,7 @@ public class AuthAPI {
 
     /**
      * @return User
-     * @message Register User
+     * Register User
      */
     @PostMapping("auth/register")
     private ResponseEntity<?> registerAuth(@Validated @RequestBody RegisterDto registerDto, BindingResult bindingResult) {
@@ -63,7 +64,7 @@ public class AuthAPI {
 
     /**
      * @return token
-     * @message Login and get token
+     * Login and get token
      */
     @PostMapping("auth/login")
     private ResponseEntity<?> loginAuth(@RequestBody LoginDto loginDto) {
@@ -81,7 +82,7 @@ public class AuthAPI {
 
     /**
      * @return User
-     * @message Check token and return User
+     * Check token and return User
      */
     @GetMapping("auth/request-client")
     private ResponseEntity<?> getCurrentUser(@RequestHeader("Authorization") String token) {
@@ -98,19 +99,27 @@ public class AuthAPI {
         return ResponseEntity.ok(response);
     }
 
-    /**
-     * @return User
-     * @message Check token and return User
-     */
     @GetMapping("auth/find-by-email/{email}")
     private UsersDto findByEmail(@PathVariable String email) {
         Users user = userService.findByEmail(email);
         return EntityDtoUtils.convertToDto(user, UsersDto.class);
     }
 
+    @GetMapping("auth/find-by-token/{token}")
+    @ResponseBody
+    public ResponseObject getUserByToken(@PathVariable String token) {
+        Users users = userService.findByToken(token);
+
+        if (users != null) {
+            return new ResponseObject("200", "Đã tìm thấy dữ liệu", users);
+        } else {
+            return new ResponseObject("404", "Không tìm thấy dữ liệu", null);
+        }
+    }
+
     /**
      * @return check email exists
-     * @message Check email exists in the database
+     * Check email exists in the database
      */
     @GetMapping("auth/check-duplicate-email/{email}")
     private Map<String, Boolean> checkDuplicateEmail(@PathVariable String email) {
@@ -123,7 +132,7 @@ public class AuthAPI {
 
     /**
      * @return check phone exists
-     * @message Check phone exists in the database
+     * Check phone exists in the database
      */
     @GetMapping("auth/check-duplicate-phone/{phone}")
     private Map<String, Boolean> checkDuplicatePhone(@PathVariable String phone) {
@@ -136,7 +145,7 @@ public class AuthAPI {
 
     /**
      * @return check phone exists
-     * @message Check phone exists in the database
+     * Check phone exists in the database
      */
     @GetMapping("auth/check-duplicate-card/{cardId}")
     private Map<String, Boolean> checkDuplicateCardId(@PathVariable String cardId) {
