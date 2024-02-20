@@ -11,6 +11,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface RoomTypesRepository extends JpaRepository<RoomTypes, String>, JpaSpecificationExecutor<RoomTypes> {
 
@@ -49,4 +50,5 @@ public interface RoomTypesRepository extends JpaRepository<RoomTypes, String>, J
 
     Page<RoomTypes> findByHotelIdAndIsDeleted(String hotelId, Boolean isDelete, Pageable pageable);
 
+    Optional<RoomTypes> findById(String s);
 }

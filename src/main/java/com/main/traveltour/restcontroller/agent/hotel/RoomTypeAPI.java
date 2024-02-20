@@ -119,7 +119,6 @@ public class RoomTypeAPI {
         try {
             RoomTypes roomTypes = null;
             RoomBeds roomBeds = new RoomBeds();
-            List<String> listRoomTypesImage = new ArrayList<String>();
 
             String roomTypeId = GenerateNextID.generateNextCode("RT", roomTypeService.findMaxId());
 
@@ -210,5 +209,25 @@ public class RoomTypeAPI {
             roomBedsServiceAD.save(roomBeds);
         }
         return new ResponseObject("200", "Thêm phòng thành công", null);
+    }
+
+    @PutMapping("agent/room-type/updateAvatarRoomType")
+    public ResponseObject updateAvateRoomType(
+            @RequestParam("roomTypeId") String roomTypeId,
+            @RequestPart("roomTypeImg") MultipartFile roomTypeImg
+    ) {
+        try {
+            Optional<RoomTypes> roomTypes = roomTypeService.findRoomTypeById(roomTypeId);
+            if (roomTypes.isPresent()) {
+                RoomTypes roomType = roomTypes.get();
+                roomType.setRoomTypeAvatar(fileUploadResize.uploadFileResizeAndReducedQuality(roomTypeImg));
+                roomTypeService.save(roomType);
+                return new ResponseObject("200", "Thay đổi ảnh đại diện thành công", roomType);
+            } else {
+                return new ResponseObject("404", "Không tìm thấy phòng hiện tại!", null);
+            }
+        } catch (Exception e) {
+            return new ResponseObject("500", "Đã xảy ra lỗi khi thực hiện thay đổi ảnh đại diện", null);
+        }
     }
 }
