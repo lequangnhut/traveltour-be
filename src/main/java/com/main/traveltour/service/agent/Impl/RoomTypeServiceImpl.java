@@ -8,6 +8,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -51,4 +52,10 @@ public class RoomTypeServiceImpl implements RoomTypeService {
     public Optional<RoomTypes> findRoomTypeById(String roomTypeId) {
         return roomTypesRepository.findById(roomTypeId);
     }
+
+    @Override
+    public Optional<RoomTypes> findRoomTypeByRoomTypeId(String roomTypeId) {
+        return roomTypesRepository.findById(roomTypeId);
+    }
+
 }

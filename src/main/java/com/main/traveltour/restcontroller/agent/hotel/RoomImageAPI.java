@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -46,38 +47,52 @@ public class RoomImageAPI {
         }
     }
 
+    /**
+     * Phương thức cập nhật thông tin ảnh phòng
+     * @param roomTypeId mã loại phòng
+     * @param listImageDelete danh sách ảnh cần xóa
+     * @param listRoomTypeImg danh sách ảnh cần thêm
+     * @return trả về thông báo
+     * @throws IOException lỗi khi thực hiện thêm ảnh
+     */
     @PutMapping("agent/room-images/saveImageRoomType")
     public ResponseObject saveImageRoomType(
-            @RequestPart("roomTypeId") String roomTypeId,
+            @RequestParam("roomTypeId") String roomTypeId,
             @RequestPart("listImageDelete") List<Integer> listImageDelete,
             @RequestPart("listRoomTypeImg") List<MultipartFile> listRoomTypeImg
     ) throws IOException {
         TransactionStatus transactionStatus = null;
-
-        boolean error = false;
         try {
             transactionStatus = transactionManager.getTransaction(new DefaultTransactionDefinition());
-            roomImageService.deleteAllByIds(listImageDelete);
+            if(listImageDelete != null && !listImageDelete.isEmpty()) {
+                roomImageService.deleteAllByIds(listImageDelete);
+            }
 
-            transactionManager.commit(transactionStatus);
+            // Thêm ảnh mới
+
+            Optional<RoomTypes> roomTypes = roomTypeService.findRoomTypeById(roomTypeId);
+            if (roomTypes.isPresent()) {
+                RoomTypes roomType = roomTypes.get();
+
+                // Lặp qua từng ảnh trong danh sách và thêm vào danh sách roomImagesById
+                for (MultipartFile roomTypeImage : listRoomTypeImg) {
+                    RoomImages roomImages = new RoomImages();
+                    roomImages.setRoomTypeId(roomTypeId);
+                    roomImages.setRoomTypeImg(fileUploadResize.uploadFileResizeAndReducedQuality(roomTypeImage));
+                    roomImages.setRoomTypesByRoomTypeId(roomType);
+                    roomImageService.save(roomImages);
+                }
+
+                transactionManager.commit(transactionStatus);
+
+                return new ResponseObject("200", "Thay đổi hình ảnh thành công", null);
+            } else {
+                return new ResponseObject("404", "Không tìm thấy phòng hiện tại!", null);
+            }
         } catch (Exception e) {
             transactionManager.rollback(transactionStatus);
-            error = true;
-        }
-
-
-        if (error == false) {
-            for (var roomTypeImage : listRoomTypeImg) {
-                RoomImages roomImages = new RoomImages();
-                roomImages.setRoomTypeId(roomTypeId);
-                System.out.println(roomTypeId);
-                roomImages.setRoomTypeImg(fileUploadResize.uploadFileResizeAndReducedQuality(roomTypeImage));
-                roomImageService.save(roomImages);
-
-            }
-            return new ResponseObject("200", "Thay đổi hình ảnh thành công", null);
-        } else {
             return new ResponseObject("500", "Đã xảy ra lỗi khi thực hiện thay đổi hình ảnh", null);
         }
     }
+
 }

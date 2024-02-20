@@ -18,4 +18,6 @@ public interface RoomTypeService {
     RoomTypes save(RoomTypes roomTypes);
     Optional<RoomTypes> findRoomTypeById(String roomTypeId);
 
+    Optional<RoomTypes> findRoomTypeByRoomTypeId(String roomTypeId);
+
 }
