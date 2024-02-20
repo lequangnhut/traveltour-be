@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Optional;
 
 public interface TourDetailsService {
+
     String getMaxCodeTourDetailId();
 
     List<TourDetails> findAll();
@@ -17,6 +18,7 @@ public interface TourDetailsService {
     Page<TourDetails> findAllWithSearch(String searchTerm, Pageable pageable);
 
     Optional<TourDetails> findById(String id);
+
     TourDetails getById(String id);
 
     TourDetails save(TourDetails tourDetails);
