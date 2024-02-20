@@ -1,4 +1,4 @@
-package com.main.traveltour.service.impl.staff;
+package com.main.traveltour.service.staff.staff;
 
 import com.main.traveltour.entity.HotelTypes;
 import com.main.traveltour.repository.HotelTypesRepository;

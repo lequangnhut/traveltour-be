@@ -1,10 +1,11 @@
-package com.main.traveltour.dto.customer;
+package com.main.traveltour.dto.staff;
 
 import com.main.traveltour.entity.TourDetailImages;
+import com.main.traveltour.entity.TourTypes;
 import com.main.traveltour.entity.Tours;
+import com.main.traveltour.entity.Users;
 import lombok.Data;
 
-import java.io.Serializable;
 import java.math.BigDecimal;
 import java.sql.Date;
 import java.sql.Timestamp;
@@ -14,7 +15,7 @@ import java.util.Collection;
  * DTO for {@link com.main.traveltour.entity.TourDetails}
  */
 @Data
-public class TourDetailsDto implements Serializable {
+public class TourDetailsGetDataDto {
 
     String id;
 
@@ -38,8 +39,6 @@ public class TourDetailsDto implements Serializable {
 
     Timestamp dateCreated;
 
-    Timestamp dateDeleted;
-
     String tourDetailDescription;
 
     String fromLocation;
@@ -48,5 +47,9 @@ public class TourDetailsDto implements Serializable {
 
     Tours toursByTourId;
 
+    TourTypes tourTypes;
+
     Collection<TourDetailImages> tourDetailImagesById;
+
+    Users usersByGuideId;
 }

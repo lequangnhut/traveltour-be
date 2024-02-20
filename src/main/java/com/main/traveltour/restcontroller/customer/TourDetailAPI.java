@@ -1,6 +1,6 @@
 package com.main.traveltour.restcontroller.customer;
 
-import com.main.traveltour.dto.customer.TourDetailsDto;
+import com.main.traveltour.dto.staff.TourDetailsGetDataDto;
 import com.main.traveltour.entity.ResponseObject;
 import com.main.traveltour.entity.TourDetails;
 import com.main.traveltour.service.staff.TourDetailsService;
@@ -23,7 +23,7 @@ public class TourDetailAPI {
     @GetMapping("customer/tour/find-tour-detail-customer")
     private ResponseObject findAllTourDetail(@RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "9") int size) {
         Page<TourDetails> tourDetailsPage = tourDetailsService.findAll(PageRequest.of(page, size));
-        Page<TourDetailsDto> tourDetailsDtoPage = tourDetailsPage.map(tourDetails -> EntityDtoUtils.convertToDto(tourDetails, TourDetailsDto.class));
+        Page<TourDetailsGetDataDto> tourDetailsDtoPage = tourDetailsPage.map(tourDetails -> EntityDtoUtils.convertToDto(tourDetails, TourDetailsGetDataDto.class));
 
         if (tourDetailsDtoPage.isEmpty()) {
             return new ResponseObject("404", "Không tìm thấy dữ liệu", null);
@@ -35,7 +35,7 @@ public class TourDetailAPI {
     @GetMapping("customer/tour/find-by-tour-detail-id/{tourDetailId}")
     private ResponseObject findByTourDetailId(@PathVariable String tourDetailId) {
         Optional<TourDetails> tourDetails = tourDetailsService.findById(tourDetailId);
-        TourDetailsDto tourDetailsDto = EntityDtoUtils.convertOptionalToDto(tourDetails, TourDetailsDto.class);
+        TourDetailsGetDataDto tourDetailsDto = EntityDtoUtils.convertOptionalToDto(tourDetails, TourDetailsGetDataDto.class);
 
         if (tourDetails.isEmpty()) {
             return new ResponseObject("404", "Không tìm thấy dữ liệu", null);

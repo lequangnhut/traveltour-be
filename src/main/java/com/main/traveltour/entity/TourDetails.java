@@ -70,7 +70,7 @@ public class TourDetails {
     private Timestamp dateDeleted;
 
     @Basic
-    @Column(name = "tour_detail_description")
+    @Column(name = "tour_detail_description", columnDefinition = "LONGTEXT")
     private String tourDetailDescription;
 
     @Basic
