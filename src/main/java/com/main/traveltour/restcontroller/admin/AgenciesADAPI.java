@@ -1,11 +1,9 @@
 package com.main.traveltour.restcontroller.admin;
 
 import com.main.traveltour.dto.admin.AgenciesDtoAD;
-import com.main.traveltour.dto.agent.AgenciesDto;
+import com.main.traveltour.dto.agent.hotel.AgenciesDto;
 import com.main.traveltour.entity.*;
-import com.main.traveltour.service.UsersService;
 import com.main.traveltour.service.admin.AgencyServiceAD;
-import com.main.traveltour.service.agent.AgenciesService;
 import com.main.traveltour.service.utils.EmailService;
 import com.main.traveltour.service.utils.FileUpload;
 import com.main.traveltour.utils.EntityDtoUtils;

@@ -1,6 +1,6 @@
 package com.main.traveltour.service.utils.impl;
 
-import com.main.traveltour.dto.agent.AgenciesDto;
+import com.main.traveltour.dto.agent.hotel.AgenciesDto;
 import com.main.traveltour.dto.auth.RegisterDto;
 import com.main.traveltour.dto.superadmin.AccountDto;
 import com.main.traveltour.dto.superadmin.DataAccountDto;

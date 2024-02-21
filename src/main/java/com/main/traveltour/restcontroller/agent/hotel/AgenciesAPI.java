@@ -1,6 +1,6 @@
 package com.main.traveltour.restcontroller.agent.hotel;
 
-import com.main.traveltour.dto.agent.AgenciesDto;
+import com.main.traveltour.dto.agent.hotel.AgenciesDto;
 import com.main.traveltour.entity.Agencies;
 import com.main.traveltour.service.agent.AgenciesService;
 import com.main.traveltour.service.utils.FileUpload;
