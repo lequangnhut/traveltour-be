@@ -44,4 +44,9 @@ public class HotelsServiceImpl implements HotelsService {
     public Optional<Hotels> findById(String id) {
         return hotelsRepository.findById(id);
     }
+
+    @Override
+    public void delete(Hotels hotels) {
+        hotelsRepository.save(hotels);
+    }
 }
