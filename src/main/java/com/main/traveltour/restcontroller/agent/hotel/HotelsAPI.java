@@ -267,4 +267,20 @@ public class HotelsAPI {
         }
 
     }
+
+    @DeleteMapping("agent/hotels/deleteHotel/{id}")
+    public ResponseObject deleteHotel(
+            @PathVariable("id") String id
+    ) {
+        Optional<Hotels> hotels = hotelsService.findById(id);
+        if(hotels.isPresent()) {
+            hotels.get().setIsDelete(true);
+            hotels.get().setDateDeleted(Timestamp.valueOf(LocalDateTime.now()));
+            hotelsService.save(hotels.get());
+            return new ResponseObject("200", "Xóa dữ liệu thành công", null);
+        }else{
+            return new ResponseObject("400", "Không tim thấy dữ liệu", null);
+        }
+
+    }
 }

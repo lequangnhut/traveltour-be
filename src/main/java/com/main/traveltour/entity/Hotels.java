@@ -76,6 +76,10 @@ public class Hotels {
     private Boolean isActive;
 
     @Basic
+    @Column(name = "is_delete")
+    private Boolean isDelete;
+
+    @Basic
     @Column(name = "hotel_avatar")
     private String hotelAvatar;
 

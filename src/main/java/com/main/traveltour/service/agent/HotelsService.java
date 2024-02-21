@@ -18,4 +18,6 @@ public interface HotelsService {
     Hotels save(Hotels hotels);
 
     Optional<Hotels> findById(String id);
+
+    void delete(Hotels hotels);
 }
