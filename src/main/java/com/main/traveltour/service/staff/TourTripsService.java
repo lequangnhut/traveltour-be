@@ -9,7 +9,7 @@ import java.util.Optional;
 
 public interface TourTripsService {
 
-    int getDayInTripIsMax(String id);
+    int getDayInTripIsMax(String tourDetailId);
 
     TourTrips getById(int id);
 

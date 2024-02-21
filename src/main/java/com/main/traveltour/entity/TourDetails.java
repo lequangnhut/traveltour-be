@@ -21,7 +21,6 @@ import java.util.Collection;
 @Table(name = "tour_details", schema = "travel_tour")
 public class TourDetails {
 
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Id
     @Column(name = "id", nullable = false, length = 30)
     private String id;
@@ -92,6 +91,10 @@ public class TourDetails {
     @OneToMany(mappedBy = "tourDetailsByTourDetailId")
     @JsonManagedReference
     private Collection<TourDestinations> tourDestinationsById;
+
+    @OneToMany(mappedBy = "tourDetailsByTourDetailId")
+    @JsonManagedReference
+    private Collection<TourTrips> tourTripsById;
 
     @ManyToOne
     @JoinColumn(name = "tour_id", referencedColumnName = "id", nullable = false, insertable = false, updatable = false)

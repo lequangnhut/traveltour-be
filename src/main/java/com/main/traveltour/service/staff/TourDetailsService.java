@@ -24,4 +24,6 @@ public interface TourDetailsService {
     TourDetails save(TourDetails tourDetails);
 
     void delete(TourDetails tourDetails);
+
+    void updateStatusAndActive();
 }

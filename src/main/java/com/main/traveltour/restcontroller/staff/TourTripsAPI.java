@@ -68,7 +68,7 @@ public class TourTripsAPI {
     @PostMapping("create-tourTrips")
     public ResponseObject createTourTrips(@RequestPart TourTripsDto tourTripsDto) {
         try {
-            int dayInTripIsMax = tourTripsService.getDayInTripIsMax(tourTripsDto.getTourId());
+            int dayInTripIsMax = tourTripsService.getDayInTripIsMax(tourTripsDto.getTourDetailId());
             TourTrips tourTrips = EntityDtoUtils.convertToEntity(tourTripsDto, TourTrips.class);
             tourTrips.setDayInTrip(dayInTripIsMax + 1);
             tourTrips = tourTripsService.save(tourTrips);

@@ -21,8 +21,8 @@ public class TourTrips {
     private int id;
 
     @Basic
-    @Column(name = "tour_id", nullable = false, length = 30)
-    private String tourId;
+    @Column(name = "tour_detail_id", nullable = false, length = 30)
+    private String tourDetailId;
 
     @Basic
     @Column(name = "day_in_trip")
@@ -33,7 +33,7 @@ public class TourTrips {
     private String activityInDay;
 
     @ManyToOne
-    @JoinColumn(name = "tour_id", referencedColumnName = "id", nullable = false, insertable = false, updatable = false)
+    @JoinColumn(name = "tour_detail_id", referencedColumnName = "id", nullable = false, insertable = false, updatable = false)
     @JsonBackReference
-    private Tours toursByTourId;
+    private TourDetails tourDetailsByTourDetailId;
 }
