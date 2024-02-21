@@ -18,8 +18,8 @@ public class TourTripsServiceImpl implements TourTripsService {
     private TourTripsRepository repo;
 
     @Override
-    public int getDayInTripIsMax(String id) {
-        return repo.getDayInTripIsMax(id);
+    public int getDayInTripIsMax(String tourDetailId) {
+        return repo.getDayInTripIsMax(tourDetailId);
     }
 
     @Override
@@ -43,13 +43,13 @@ public class TourTripsServiceImpl implements TourTripsService {
     }
 
     @Override
-    public List<TourTrips> findTourTripsByTourId(String tourId) {
-        return repo.findTourTripsByTourId(tourId);
+    public List<TourTrips> findTourTripsByTourId(String tourDetailId) {
+        return repo.findTourTripsByTourDetailId(tourDetailId);
     }
 
     @Override
-    public Page<TourTrips> findTourTripsByTourId(String tourId, Pageable pageable) {
-        return repo.findTourTripsByTourId(tourId, pageable);
+    public Page<TourTrips> findTourTripsByTourId(String tourDetailId, Pageable pageable) {
+        return repo.findTourTripsByTourDetailId(tourDetailId, pageable);
     }
 
     @Override

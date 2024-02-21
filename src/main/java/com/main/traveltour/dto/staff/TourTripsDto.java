@@ -10,8 +10,12 @@ import java.io.Serializable;
  */
 @Data
 public class TourTripsDto {
+
     int id;
-    String tourId;
+
+    String tourDetailId;
+
     Integer dayInTrip;
+
     String activityInDay;
 }

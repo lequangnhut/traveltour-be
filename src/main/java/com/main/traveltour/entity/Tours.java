@@ -55,10 +55,6 @@ public class Tours {
     @JsonManagedReference
     private Collection<TourDetails> tourDetailsById;
 
-    @OneToMany(mappedBy = "toursByTourId")
-    @JsonManagedReference
-    private Collection<TourTrips> tourTripsById;
-
     @ManyToOne
     @JoinColumn(name = "tour_type_id", referencedColumnName = "id", nullable = false, insertable = false, updatable = false)
     @JsonBackReference

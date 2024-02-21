@@ -1,6 +1,5 @@
 package com.main.traveltour.repository;
 
-import com.main.traveltour.entity.TourDetails;
 import com.main.traveltour.entity.TourTrips;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -13,12 +12,13 @@ import java.util.List;
 
 @Repository
 public interface TourTripsRepository extends JpaRepository<TourTrips, Integer> {
+
     TourTrips getById(int id);
 
-    @Query("SELECT COALESCE(MAX(tt.dayInTrip),0) FROM TourTrips tt WHERE tt.tourId = :tourId")
-    int getDayInTripIsMax(@Param("tourId") String id);
+    @Query("SELECT COALESCE(MAX(tt.dayInTrip),0) FROM TourTrips tt WHERE tt.tourDetailId = :tourDetailId")
+    int getDayInTripIsMax(@Param("tourDetailId") String id);
 
-    List<TourTrips> findTourTripsByTourId(String tourId);
+    List<TourTrips> findTourTripsByTourDetailId(String tourDetailId);
 
-    Page<TourTrips> findTourTripsByTourId(String tourId, Pageable pageable);
+    Page<TourTrips> findTourTripsByTourDetailId(String tourDetailId, Pageable pageable);
 }
