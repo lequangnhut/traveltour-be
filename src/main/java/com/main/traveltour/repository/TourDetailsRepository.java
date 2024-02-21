@@ -15,6 +15,7 @@ import java.util.Optional;
 public interface TourDetailsRepository extends JpaRepository<TourDetails, Integer> {
 
     Optional<TourDetails> findById(String id);
+
     TourDetails getById(String id);
 
     @Query("SELECT td FROM TourDetails td WHERE " +

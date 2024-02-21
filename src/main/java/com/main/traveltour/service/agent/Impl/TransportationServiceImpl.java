@@ -9,6 +9,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class TransportationServiceImpl implements TransportationService {
@@ -22,7 +23,7 @@ public class TransportationServiceImpl implements TransportationService {
     }
 
     @Override
-    public Transportations findTransportById(String transportId) {
+    public Optional<Transportations> findTransportById(String transportId) {
         return transportationsRepository.findById(transportId);
     }
 

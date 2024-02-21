@@ -23,6 +23,7 @@ import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 @RestController
 @CrossOrigin(origins = "http://localhost:3000")
@@ -63,9 +64,9 @@ public class TransportSchedulesAPI {
 
     @GetMapping("/agent/transportation-schedules/find-transport-by-transportId/{transportId}")
     private ResponseObject findTransportByTransportId(@PathVariable String transportId) {
-        Transportations transportations = transportationService.findTransportById(transportId);
+        Optional<Transportations> transportations = transportationService.findTransportById(transportId);
 
-        if (transportations == null) {
+        if (transportations.isEmpty()) {
             return new ResponseObject("404", "Không tìm thấy dữ liệu", null);
         } else {
             return new ResponseObject("200", "Đã tìm thấy dữ liệu", transportations);
@@ -115,19 +116,23 @@ public class TransportSchedulesAPI {
         String transportId = scheduleDto.getTransportationId();
         String scheduleId = GenerateNextID.generateNextCode("TSC", transportationScheduleService.findMaxCode());
 
-        Transportations transportations = transportationService.findTransportById(transportId);
+        Optional<Transportations> transportationsOptional = transportationService.findTransportById(transportId);
 
-        TransportationSchedules schedules = EntityDtoUtils.convertToEntity(scheduleDto, TransportationSchedules.class);
-        schedules.setId(scheduleId);
-        schedules.setDateCreated(new Timestamp(System.currentTimeMillis()));
-        schedules.setIsActive(Boolean.TRUE);
-        schedules.setIsStatus(0);
-        if (scheduleDto.getTripType()) {
-            schedules.setBookedSeat(transportations.getAmountSeat());
-        } else {
-            schedules.setBookedSeat(0);
+        if (transportationsOptional.isPresent()) {
+            Transportations transportations = transportationsOptional.get();
+
+            TransportationSchedules schedules = EntityDtoUtils.convertToEntity(scheduleDto, TransportationSchedules.class);
+            schedules.setId(scheduleId);
+            schedules.setDateCreated(new Timestamp(System.currentTimeMillis()));
+            schedules.setIsActive(Boolean.TRUE);
+            schedules.setIsStatus(0);
+            if (scheduleDto.getTripType()) {
+                schedules.setBookedSeat(transportations.getAmountSeat());
+            } else {
+                schedules.setBookedSeat(0);
+            }
+            transportationScheduleService.save(schedules);
         }
-        transportationScheduleService.save(schedules);
     }
 
     @PutMapping("/agent/transportation-schedules/update-schedule")
@@ -135,18 +140,22 @@ public class TransportSchedulesAPI {
         String transportId = scheduleDto.getTransportationId();
         String scheduleId = scheduleDto.getId();
 
-        Transportations transportations = transportationService.findTransportById(transportId);
+        Optional<Transportations> transportationsOptional = transportationService.findTransportById(transportId);
 
-        TransportationSchedules schedules = EntityDtoUtils.convertToEntity(scheduleDto, TransportationSchedules.class);
-        schedules.setId(scheduleId);
-        schedules.setUnitPrice(ReplaceUtils.replacePrice(scheduleDto.getPriceFormat()));
-        if (scheduleDto.getTripType()) {
-            schedules.setBookedSeat(transportations.getAmountSeat());
-        } else {
-            schedules.setBookedSeat(0);
+        if (transportationsOptional.isPresent()) {
+            Transportations transportations = transportationsOptional.get();
+
+            TransportationSchedules schedules = EntityDtoUtils.convertToEntity(scheduleDto, TransportationSchedules.class);
+            schedules.setId(scheduleId);
+            schedules.setUnitPrice(ReplaceUtils.replacePrice(scheduleDto.getPriceFormat()));
+            if (scheduleDto.getTripType()) {
+                schedules.setBookedSeat(transportations.getAmountSeat());
+            } else {
+                schedules.setBookedSeat(0);
+            }
+
+            transportationScheduleService.save(schedules);
         }
-
-        transportationScheduleService.save(schedules);
     }
 
     @GetMapping("/agent/transportation-schedules/delete-schedule/{scheduleId}")

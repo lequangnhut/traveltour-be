@@ -25,7 +25,8 @@ public class TransportationImageServiceImpl implements TransportationImageServic
     }
 
     @Override
-    public void delete(int imgId) {
-        transportationImageRepository.deleteById(imgId);
+    public void delete(String transportId) {
+        List<TransportationImage> transportationImages = findByTransportId(transportId);
+        transportationImageRepository.deleteAll(transportationImages);
     }
 }

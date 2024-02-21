@@ -10,5 +10,5 @@ public interface TransportationImageService {
 
     TransportationImage save(TransportationImage transportationImage);
 
-    void delete(int imgId);
+    void delete(String transportId);
 }

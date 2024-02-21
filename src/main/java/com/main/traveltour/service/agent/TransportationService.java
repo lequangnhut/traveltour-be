@@ -5,12 +5,13 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface TransportationService {
 
     String findMaxCode();
 
-    Transportations findTransportById(String transportId);
+    Optional<Transportations> findTransportById(String transportId);
 
     Transportations findTransportByLicensePlate(String licensePlate);
 

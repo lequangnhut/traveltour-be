@@ -1,5 +1,7 @@
 package com.main.traveltour.restcontroller.agent.transport;
 
+import com.main.traveltour.dto.TransportationImageDto;
+import com.main.traveltour.dto.agent.transport.TransportGetDataDto;
 import com.main.traveltour.dto.agent.transport.TransportationsDto;
 import com.main.traveltour.entity.*;
 import com.main.traveltour.service.agent.TransportationBrandsService;
@@ -24,6 +26,7 @@ import java.sql.Timestamp;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 @RestController
 @CrossOrigin(origins = "http://localhost:3000")
@@ -107,12 +110,13 @@ public class TransportAPI {
 
     @GetMapping("/agent/transportation/find-by-transportation-id/{transportId}")
     private ResponseObject findByTransportId(@PathVariable String transportId) {
-        Transportations transportations = transportationService.findTransportById(transportId);
+        Optional<Transportations> transportations = transportationService.findTransportById(transportId);
+        TransportGetDataDto transportGetDataDto = EntityDtoUtils.convertOptionalToDto(transportations, TransportGetDataDto.class);
 
-        if (transportations == null) {
+        if (transportations.isEmpty()) {
             return new ResponseObject("404", "Không tìm thấy dữ liệu", null);
         } else {
-            return new ResponseObject("200", "Đã tìm thấy dữ liệu", transportations);
+            return new ResponseObject("200", "Đã tìm thấy dữ liệu", transportGetDataDto);
         }
     }
 
@@ -151,26 +155,69 @@ public class TransportAPI {
     @PutMapping(value = "/agent/transportation/update-transportation", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     private void updateTrans(@RequestPart("transportationsDto") TransportationsDto transportationsDto,
                              @RequestPart(value = "transportationImg", required = false) MultipartFile transportationImg) throws IOException {
-        Transportations transportations = transportationService.findTransportById(transportationsDto.getId());
+        Optional<Transportations> transportationsOptional = transportationService.findTransportById(transportationsDto.getId());
 
-        if (transportationImg != null) {
-            String avatarTransport = fileUpload.uploadFile(transportationImg);
-            transportations.setTransportationImg(avatarTransport);
-            transportationService.save(transportations);
-        } else {
-            transportations.setTransportationBrandId(transportationsDto.getTransportationBrandId());
-            transportations.setTransportationTypeId(transportationsDto.getTransportationTypeId());
-            transportations.setLicensePlate(transportationsDto.getLicensePlate());
-            transportations.setAmountSeat(transportationsDto.getAmountSeat());
-            transportations.setIsActive(transportationsDto.getIsActive());
-            transportationService.save(transportations);
+        if (transportationsOptional.isPresent()) {
+            Transportations transportations = transportationsOptional.get();
+
+            if (transportationImg != null) {
+                String avatarTransport = fileUpload.uploadFile(transportationImg);
+                transportations.setTransportationImg(avatarTransport);
+                transportationService.save(transportations);
+            } else {
+                transportations.setTransportationBrandId(transportationsDto.getTransportationBrandId());
+                transportations.setTransportationTypeId(transportationsDto.getTransportationTypeId());
+                transportations.setLicensePlate(transportationsDto.getLicensePlate());
+                transportations.setAmountSeat(transportationsDto.getAmountSeat());
+                transportations.setIsActive(transportationsDto.getIsActive());
+                transportationService.save(transportations);
+            }
         }
     }
 
     @GetMapping("/agent/transportation/delete-transportation/{transportId}")
     private void deleteTrans(@PathVariable String transportId) {
-        Transportations transportation = transportationService.findTransportById(transportId);
-        transportation.setIsActive(Boolean.FALSE);
-        transportationService.save(transportation);
+        Optional<Transportations> transportationsOptional = transportationService.findTransportById(transportId);
+
+        if (transportationsOptional.isPresent()) {
+            Transportations transportation = transportationsOptional.get();
+            transportation.setIsActive(Boolean.FALSE);
+            transportationService.save(transportation);
+        }
+    }
+
+    @PostMapping(value = "/agent/transportation/create-transport-detail-image/{transportId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseObject createTransportImage(@RequestPart List<MultipartFile> transportImage, @PathVariable String transportId) {
+        try {
+            for (MultipartFile file : transportImage) {
+                String imgPath = fileUpload.uploadFile(file);
+                TransportationImage image = new TransportationImage();
+                image.setTransportationId(transportId);
+                image.setImagePath(imgPath);
+                transportationImageService.save(image);
+            }
+            return new ResponseObject("200", "Thành công", null);
+        } catch (Exception e) {
+            return new ResponseObject("500", "Thất bại", null);
+        }
+    }
+
+    @PutMapping("/agent/transportation/update-transport-detail-image")
+    public ResponseObject updateTransportImage(@RequestBody List<TransportationImageDto> transportationImageDto) {
+        try {
+            for (TransportationImageDto transportationImage : transportationImageDto) {
+                String transportationId = transportationImage.getTransportationId();
+
+                transportationImageService.delete(transportationId);
+
+                for (TransportationImageDto dto : transportationImageDto) {
+                    TransportationImage newImage = EntityDtoUtils.convertToEntity(dto, TransportationImage.class);
+                    transportationImageService.save(newImage);
+                }
+            }
+            return new ResponseObject("204", "Thành công", null);
+        } catch (Exception e) {
+            return new ResponseObject("500", "Thất bại", e);
+        }
     }
 }
