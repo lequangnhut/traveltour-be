@@ -55,12 +55,11 @@ public class RoomImageAPI {
      * @return trả về thông báo
      * @throws IOException lỗi khi thực hiện thêm ảnh
      */
-    @PutMapping("agent/room-images/saveImageRoomType")
-    public ResponseObject saveImageRoomType(
+    @DeleteMapping("agent/room-images/deleteImageRoomType")
+    public ResponseObject deleteImageRoomType(
             @RequestParam("roomTypeId") String roomTypeId,
-            @RequestPart("listImageDelete") List<Integer> listImageDelete,
-            @RequestPart("listRoomTypeImg") List<MultipartFile> listRoomTypeImg
-    ) throws IOException {
+            @RequestPart("listImageDelete") List<Integer> listImageDelete
+    ) {
         TransactionStatus transactionStatus = null;
         try {
             transactionStatus = transactionManager.getTransaction(new DefaultTransactionDefinition());
@@ -68,7 +67,23 @@ public class RoomImageAPI {
                 roomImageService.deleteAllByIds(listImageDelete);
             }
 
-            // Thêm ảnh mới
+            transactionManager.commit(transactionStatus);
+
+            return new ResponseObject("200", "Xóa hình ảnh thành công", null);
+        } catch (Exception e) {
+            transactionManager.rollback(transactionStatus);
+            return new ResponseObject("500", "Đã xảy ra lỗi khi thực hiện xóa hình ảnh", null);
+        }
+    }
+
+    @PostMapping("agent/room-images/addImageRoomType")
+    public ResponseObject addImageRoomType(
+            @RequestParam("roomTypeId") String roomTypeId,
+            @RequestPart("listRoomTypeImg") List<MultipartFile> listRoomTypeImg
+    ) throws IOException {
+        TransactionStatus transactionStatus = null;
+        try {
+            transactionStatus = transactionManager.getTransaction(new DefaultTransactionDefinition());
 
             Optional<RoomTypes> roomTypes = roomTypeService.findRoomTypeById(roomTypeId);
             if (roomTypes.isPresent()) {
@@ -85,7 +100,7 @@ public class RoomImageAPI {
 
                 transactionManager.commit(transactionStatus);
 
-                return new ResponseObject("200", "Thay đổi hình ảnh thành công", null);
+                return new ResponseObject("200", "Thêm hình ảnh thành công", null);
             } else {
                 return new ResponseObject("404", "Không tìm thấy phòng hiện tại!", null);
             }

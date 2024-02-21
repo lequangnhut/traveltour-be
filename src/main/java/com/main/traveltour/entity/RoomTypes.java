@@ -8,6 +8,7 @@ import lombok.*;
 
 import java.math.BigDecimal;
 import java.sql.Timestamp;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -48,6 +49,22 @@ public class RoomTypes {
     @Basic
     @Column(name = "price")
     private BigDecimal price;
+
+    @Basic
+    @Column(name = "breakfast_included")
+    private Boolean breakfastIncluded;
+
+    @Basic
+    @Column(name = "free_cancellation")
+    private Boolean freeCancellation;
+
+    @Basic
+    @Column(name = "checkin_time")
+    private LocalTime checkinTime;
+
+    @Basic
+    @Column(name = "checkout_time")
+    private LocalTime checkoutTime;
 
     @Basic
     @Column(name = "is_active")

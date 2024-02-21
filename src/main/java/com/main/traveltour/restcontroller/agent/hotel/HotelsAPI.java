@@ -1,9 +1,9 @@
 package com.main.traveltour.restcontroller.agent.hotel;
 
-import com.main.traveltour.dto.agent.CompanyDataDto;
-import com.main.traveltour.dto.agent.Hotel_RoomDto;
-import com.main.traveltour.dto.agent.HotelsDto;
-import com.main.traveltour.dto.agent.RoomTypesDto;
+import com.main.traveltour.dto.agent.hotel.CompanyDataDto;
+import com.main.traveltour.dto.agent.hotel.Hotel_RoomDto;
+import com.main.traveltour.dto.agent.hotel.HotelsDto;
+import com.main.traveltour.dto.agent.hotel.RoomTypesDto;
 import com.main.traveltour.entity.*;
 import com.main.traveltour.service.agent.*;
 import com.main.traveltour.service.utils.FileUpload;
@@ -194,6 +194,7 @@ public class HotelsAPI {
         hotels.setDateCreated(Timestamp.valueOf(LocalDateTime.now()));
         hotels.setIsActive(true);
         hotels.setIsAccepted(true);
+        hotels.setIsDelete(false);
 
         List<PlaceUtilities> placeUtilitiesList = selectHotelUtilities.stream()
                 .map(placeUtilitiesService::findById)

@@ -1,4 +1,4 @@
-package com.main.traveltour.dto.agent;
+package com.main.traveltour.dto.agent.hotel;
 
 import lombok.*;
 import org.springframework.data.relational.core.sql.In;
@@ -6,6 +6,7 @@ import org.springframework.data.relational.core.sql.In;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.sql.Timestamp;
+import java.time.LocalTime;
 import java.util.List;
 
 @Getter @Setter
@@ -21,6 +22,8 @@ public class RoomTypeAddDto implements Serializable {
     private Integer amountRoom;
     private Integer bedTypeId;
     private BigDecimal price;
+    private Boolean breakfastIncluded;
+    private Boolean freeCancellation;
     private Integer isActive;
     private Boolean isDeleted;
     private Timestamp dateDeleted;

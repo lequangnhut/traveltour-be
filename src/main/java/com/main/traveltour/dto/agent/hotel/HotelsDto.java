@@ -1,4 +1,4 @@
-package com.main.traveltour.dto.agent;
+package com.main.traveltour.dto.agent.hotel;
 
 import com.main.traveltour.entity.PlaceUtilities;
 import lombok.Data;

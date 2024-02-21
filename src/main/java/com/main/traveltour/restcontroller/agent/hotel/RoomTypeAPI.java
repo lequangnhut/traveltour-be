@@ -1,9 +1,7 @@
 package com.main.traveltour.restcontroller.agent.hotel;
 
-import com.google.zxing.NotFoundException;
-import com.main.traveltour.dto.agent.RoomTypeAddDto;
+import com.main.traveltour.dto.agent.hotel.RoomTypeAddDto;
 import com.main.traveltour.entity.*;
-import com.main.traveltour.service.admin.BedTypesServiceAD;
 import com.main.traveltour.service.admin.RoomBedsServiceAD;
 import com.main.traveltour.service.agent.RoomImageService;
 import com.main.traveltour.service.agent.RoomTypeService;
@@ -12,16 +10,15 @@ import com.main.traveltour.service.utils.FileUpload;
 import com.main.traveltour.service.utils.FileUploadResize;
 import com.main.traveltour.utils.EntityDtoUtils;
 import com.main.traveltour.utils.GenerateNextID;
-import com.main.traveltour.utils.UploadFileUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
-import org.springframework.data.relational.core.sql.In;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.util.ArrayList;
+import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -114,7 +111,9 @@ public class RoomTypeAPI {
             @RequestPart("roomTypes") RoomTypeAddDto roomTypesAddDto,
             @RequestPart("roomTypeAvatarData") MultipartFile roomTypeAvatarData,
             @RequestPart("listRoomTypeImg") List<MultipartFile> listRoomTypeImg,
-            @RequestPart("selectedCheckboxValues") List<Integer> selectedCheckboxValues
+            @RequestPart("selectedCheckboxValues") List<Integer> selectedCheckboxValues,
+            @RequestParam("checkinTime") @DateTimeFormat(iso = DateTimeFormat.ISO.TIME) LocalTime checkinTime,
+            @RequestParam("checkoutTime") @DateTimeFormat(iso = DateTimeFormat.ISO.TIME) LocalTime checkoutTime
     ) {
         try {
             RoomTypes roomTypes = null;
@@ -130,6 +129,8 @@ public class RoomTypeAPI {
 
             roomTypes = EntityDtoUtils.convertToEntity(roomTypesAddDto, RoomTypes.class);
 
+            roomTypes.setCheckinTime(checkinTime);
+            roomTypes.setCheckoutTime(checkoutTime);
             List<RoomUtilities> roomUtilitiesList = selectedCheckboxValues.stream()
                     .map(roomUtilitiesService::findByRoomUtilitiesId)
                     .collect(Collectors.toList());
@@ -184,7 +185,9 @@ public class RoomTypeAPI {
      */
     @PutMapping("agent/room-type/editInfoRoomType")
     public ResponseObject editInfoRoomType(
-            @RequestPart("roomTypes") RoomTypeAddDto roomTypesAddDto
+            @RequestPart("roomTypes") RoomTypeAddDto roomTypesAddDto,
+            @RequestParam("checkinTime") @DateTimeFormat(iso = DateTimeFormat.ISO.TIME) LocalTime checkinTime,
+            @RequestParam("checkoutTime") @DateTimeFormat(iso = DateTimeFormat.ISO.TIME) LocalTime checkoutTime
     ) {
         Optional<RoomTypes> roomTypes = roomTypeService.findRoomTypeById(roomTypesAddDto.getId());
         RoomBeds roomBeds = roomBedsServiceAD.findRoomBedsRoomTypeId(roomTypesAddDto.getId());
@@ -194,6 +197,10 @@ public class RoomTypeAPI {
         roomTypes.get().setCapacityAdults(roomTypesAddDto.getCapacityAdults());
         roomTypes.get().setCapacityChildren(roomTypesAddDto.getCapacityChildren());
         roomTypes.get().setRoomTypeDescription(roomTypesAddDto.getRoomTypeDescription());
+        roomTypes.get().setBreakfastIncluded(roomTypesAddDto.getBreakfastIncluded());
+        roomTypes.get().setFreeCancellation(roomTypesAddDto.getFreeCancellation());
+        roomTypes.get().setCheckinTime(checkinTime);
+        roomTypes.get().setCheckoutTime(checkoutTime);
 
         roomTypeService.save(roomTypes.get());
 
