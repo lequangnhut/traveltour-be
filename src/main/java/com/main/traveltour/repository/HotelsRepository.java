@@ -7,7 +7,8 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
-import java.sql.Date;
+import java.math.BigDecimal;
+import java.sql.Timestamp;
 import java.util.List;
 
 public interface HotelsRepository extends JpaRepository<Hotels, String> {
@@ -45,22 +46,31 @@ public interface HotelsRepository extends JpaRepository<Hotels, String> {
     Page<Hotels> findBySearchTerm(@Param("searchTerm") String searchTerm, Pageable pageable);
 
 
-    @Query("SELECT h FROM Hotels h " +
-            "JOIN h.roomTypesById r " +
-            "JOIN h.agenciesByAgenciesId a " +
-            "JOIN a.usersByUserId u " +
-            "JOIN u.tourDetailsById td " +
-            "WHERE (:location IS NULL OR UPPER(h.province) LIKE UPPER(CONCAT('%', :location, '%'))) AND " +
-            "(:departureDate IS NULL OR td.departureDate <= :departureDate) AND " +
-            "(:arrivalDate IS NULL OR td.arrivalDate >= :arrivalDate) AND " +
-            "(:numAdults IS NULL OR r.capacityAdults >= :numAdults) AND " +
-            "(:numChildren IS NULL OR r.capacityChildren >= :numChildren)")
-    Page<Hotels> findHotelsWithFilters(
+    @Query(value = "SELECT h.*  " +
+            "FROM hotels h  " +
+            "         JOIN room_types r ON h.id = r.hotel_id  " +
+            "WHERE (:location IS NULL OR UPPER(h.province) LIKE CONCAT('%', UPPER(:location), '%'))  " +
+            "  AND (:numAdults IS NULL OR r.capacity_adults >= :numAdults)  " +
+            "  AND (:numChildren IS NULL OR r.capacity_children >= :numChildren)  " +
+            "GROUP BY r.hotel_id  " +
+            "             having  (:numRooms IS NULL OR :numRooms <= (sum(r.amount_room) - (  " +
+            "    SELECT COALESCE(SUM(ohd.amount), 0) as nu  " +
+            "    FROM hotels h  " +
+            "             JOIN room_types r ON h.id = r.hotel_id  " +
+            "        JOIN order_hotel_details ohd  " +
+            "             JOIN order_hotels oh ON ohd.order_hotel_id = oh.id  " +
+            "    WHERE ohd.room_type_id = r.id  " +
+            "      AND ((oh.check_in <= :arrivalDate AND oh.check_out > :arrivalDate) OR  " +
+            "           (oh.check_in < :departureDate AND oh.check_out >= :departureDate) OR  " +
+            "           (oh.check_in >= :arrivalDate AND oh.check_out <= :departureDate))  " +
+            ")))", nativeQuery = true)
+    Page<Hotels> findAvailableHotelsWithFilters(
             @Param("location") String location,
-            @Param("departureDate") Date departureDate,
-            @Param("arrivalDate") Date arrivalDate,
+            @Param("departureDate") Timestamp departureDate,
+            @Param("arrivalDate") Timestamp arrivalDate,
             @Param("numAdults") Integer numAdults,
             @Param("numChildren") Integer numChildren,
+            @Param("numRooms") Integer numRooms,
             Pageable pageable);
 
 }

@@ -6,15 +6,16 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
 import java.sql.Date;
+import java.sql.Timestamp;
 
 public interface HotelServiceService {
     Page<Hotels> findAllHotel(Pageable pageable);
 
     Page<Hotels> findBySearchTerm(String searchTerm, Pageable pageable);
 
-    Page<Hotels> findHotelsWithFilters(String location, Date departureDate,
-                                                Date arrivalDate, Integer numAdults,
-                                                Integer numChildren, Pageable pageable);
+    Page<Hotels> findAvailableHotelsWithFilters(String location, Timestamp departureDate,
+                                                Timestamp arrivalDate, Integer numAdults,
+                                                Integer numChildren, Integer numRooms, Pageable pageable);
 
     Hotels getHotelsById(String id);
 

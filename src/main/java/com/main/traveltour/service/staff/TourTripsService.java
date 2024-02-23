@@ -18,6 +18,7 @@ public interface TourTripsService {
     Page<TourTrips> findAll(Pageable pageable);
 
     Optional<TourTrips> findById(int id);
+
     List<TourTrips> findTourTripsByTourId(String tourId);
 
     Page<TourTrips> findTourTripsByTourId(String tourId, Pageable pageable);

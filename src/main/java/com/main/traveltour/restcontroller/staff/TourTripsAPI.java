@@ -45,8 +45,9 @@ public class TourTripsAPI {
 
     @GetMapping("find-tourTrips-by-tourId/{tourId}")
     private ResponseObject findTourTripsByTourId(@RequestParam(defaultValue = "null") String tourId) {
+        System.out.println(tourId);
         List<TourTrips> items = tourTripsService.findTourTripsByTourId(tourId);
-
+        System.out.println(items);
         if (items.isEmpty()) {
             return new ResponseObject("404", "Không tìm thấy dữ liệu", null);
         } else {
