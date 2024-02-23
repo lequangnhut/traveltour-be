@@ -7,9 +7,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.bind.annotation.*;
 
-import java.sql.Date;
+import java.util.Date;
+import java.sql.Timestamp;
 import java.util.Optional;
 
 @RestController
@@ -32,10 +34,14 @@ public class HotelServiceAPI {
             @RequestParam(defaultValue = "asc") String sortDir,
             @RequestParam(required = false) String searchTerm,
             @RequestParam(required = false) String location,
-            @RequestParam(required = false) Date departureDate,
-            @RequestParam(required = false) Date arrivalDate,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) Date departureDate,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) Date arrivalDate,
             @RequestParam(required = false) Integer numAdults,
-            @RequestParam(required = false) Integer numChildren) {
+            @RequestParam(required = false) Integer numChildren,
+            @RequestParam(required = false) Integer numRooms) {
+
+        Timestamp departureTimestamp = departureDate != null ? new Timestamp(departureDate.getTime()) : null;
+        Timestamp arrivalTimestamp = arrivalDate != null ? new Timestamp(arrivalDate.getTime()) : null;
 
         Sort sort = sortDir.equalsIgnoreCase(Sort.Direction.ASC.name())
                 ? Sort.by(sortBy).ascending()
@@ -44,7 +50,7 @@ public class HotelServiceAPI {
         Page<Hotels> hotels = searchTerm != null && !searchTerm.isEmpty()
                 ? hotelServiceService.findBySearchTerm(searchTerm, PageRequest.of(page, size, sort))
                 : location != null || departureDate != null || arrivalDate != null || numAdults != null || numChildren != null
-                ? hotelServiceService.findHotelsWithFilters(location, departureDate, arrivalDate, numAdults, numChildren, PageRequest.of(page, size, sort))
+                ? hotelServiceService.findAvailableHotelsWithFilters(location, departureTimestamp, arrivalTimestamp, numAdults, numChildren, numRooms, PageRequest.of(page, size, sort))
                 : hotelServiceService.findAllHotel(PageRequest.of(page, size, sort));
 
         return hotelsToResponseObject(hotels);

@@ -12,6 +12,7 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import java.sql.Date;
+import java.sql.Timestamp;
 
 @Service
 public class HotelServiceServiceImpl implements HotelServiceService {
@@ -30,8 +31,8 @@ public class HotelServiceServiceImpl implements HotelServiceService {
     }
 
     @Override
-    public Page<Hotels> findHotelsWithFilters(String location, Date departureDate, Date arrivalDate, Integer numAdults, Integer numChildren, Pageable pageable) {
-        return repo.findHotelsWithFilters(location, departureDate, arrivalDate, numAdults, numChildren, pageable);
+    public Page<Hotels> findAvailableHotelsWithFilters(String location, Timestamp departureDate, Timestamp arrivalDate, Integer numAdults, Integer numChildren,Integer numRooms, Pageable pageable) {
+        return repo.findAvailableHotelsWithFilters(location, departureDate, arrivalDate, numAdults, numChildren,numRooms, pageable);
     }
 
     @Override
