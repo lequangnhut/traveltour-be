@@ -1,17 +1,13 @@
-package com.main.traveltour.service.staff.staff;
+package com.main.traveltour.service.staff.impl;
 
 import com.main.traveltour.entity.Hotels;
-import com.main.traveltour.entity.RoomTypes;
 import com.main.traveltour.repository.HotelsRepository;
-import com.main.traveltour.repository.RoomTypesRepository;
 import com.main.traveltour.service.staff.HotelServiceService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
-import java.sql.Date;
 import java.sql.Timestamp;
 
 @Service

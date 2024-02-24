@@ -4,8 +4,10 @@ import com.main.traveltour.dto.staff.TourDetailImagesDto;
 import com.main.traveltour.dto.staff.TourDetailsDto;
 import com.main.traveltour.dto.staff.TourDetailsGetDataDto;
 import com.main.traveltour.entity.ResponseObject;
+import com.main.traveltour.entity.TourDestinations;
 import com.main.traveltour.entity.TourDetailImages;
 import com.main.traveltour.entity.TourDetails;
+import com.main.traveltour.service.staff.TourDestinationService;
 import com.main.traveltour.service.staff.TourDetailsImageService;
 import com.main.traveltour.service.staff.TourDetailsService;
 import com.main.traveltour.service.utils.FileUpload;
@@ -32,6 +34,9 @@ public class TourDetailsAPI {
 
     @Autowired
     private TourDetailsImageService tourDetailsImageService;
+
+    @Autowired
+    private TourDestinationService tourDestinationService;
 
     @Autowired
     private FileUpload fileUpload;
@@ -75,10 +80,21 @@ public class TourDetailsAPI {
         }
     }
 
+    @GetMapping("/find-tour-destination-by-tour-detail-id/{tourDetailId}")
+    public ResponseObject findTourDestinationByTourDetailId(@PathVariable String tourDetailId) {
+        List<TourDestinations> tourDestinations = tourDestinationService.findAllByTourDetailId(tourDetailId);
+
+        if (tourDestinations.isEmpty()) {
+            return new ResponseObject("404", "Không tìm thấy dữ liệu", null);
+        } else {
+            return new ResponseObject("200", "Đã tìm thấy dữ liệu", tourDestinations);
+        }
+    }
+
     @PostMapping(value = "/create-tourDetail", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseObject createTourDetail(@RequestPart TourDetailsDto tourDetailsDto, @RequestPart List<MultipartFile> tourDetailImage) {
         try {
-            String tourDetailId = GenerateNextID.generateNextCode("TR", tourDetailsService.getMaxCodeTourDetailId());
+            String tourDetailId = GenerateNextID.generateNextCode("TD", tourDetailsService.getMaxCodeTourDetailId());
             TourDetails tourDetail = EntityDtoUtils.convertToEntity(tourDetailsDto, TourDetails.class);
             tourDetail.setId(tourDetailId);
             tourDetail.setTourDetailStatus(1);
@@ -100,6 +116,20 @@ public class TourDetailsAPI {
     @PutMapping("/update-tourDetail/{id}")
     public ResponseObject updateTourDetail(@PathVariable String id, @RequestPart TourDetailsDto tourDetailsDto) {
         try {
+            Optional<TourDetails> detailsOptional = tourDetailsService.findById(id);
+
+            if (detailsOptional.isPresent()) {
+                TourDetails details = detailsOptional.get();
+
+                if (!details.getFromLocation().equals(tourDetailsDto.getFromLocation()) || !details.getToLocation().equals(tourDetailsDto.getToLocation())) {
+                    List<TourDestinations> destinations = tourDestinationService.findAllByTourDetailId(tourDetailsDto.getId());
+
+                    if (!destinations.isEmpty()) {
+                        tourDestinationService.deleteAll(tourDetailsDto.getId());
+                    }
+                }
+            }
+
             tourDetailsDto.setId(id);
             TourDetails tourDetails = EntityDtoUtils.convertToEntity(tourDetailsDto, TourDetails.class);
             TourDetails updatedTourDetail = tourDetailsService.save(tourDetails);
@@ -118,6 +148,34 @@ public class TourDetailsAPI {
             return new ResponseObject("204", "Xóa thành công", null);
         } catch (Exception e) {
             return new ResponseObject("500", "Xó    a thất bại", null);
+        }
+    }
+
+    @PostMapping("/create-tour-destination/{tourDetailId}")
+    public ResponseObject createTourDestination(@RequestBody List<String> dataProvince, @PathVariable String tourDetailId) {
+        try {
+            List<TourDestinations> destinations = tourDestinationService.findAllByTourDetailId(tourDetailId);
+
+            if (destinations.isEmpty()) {
+                for (String province : dataProvince) {
+                    TourDestinations tourDestinations = new TourDestinations();
+                    tourDestinations.setTourDetailId(tourDetailId);
+                    tourDestinations.setProvince(province);
+                    tourDestinationService.save(tourDestinations);
+                }
+            } else {
+                tourDestinationService.deleteAll(tourDetailId);
+
+                for (String province : dataProvince) {
+                    TourDestinations tourDestinations = new TourDestinations();
+                    tourDestinations.setTourDetailId(tourDetailId);
+                    tourDestinations.setProvince(province);
+                    tourDestinationService.save(tourDestinations);
+                }
+            }
+            return new ResponseObject("200", "Thành công", null);
+        } catch (Exception e) {
+            return new ResponseObject("500", "Thất bại", null);
         }
     }
 
