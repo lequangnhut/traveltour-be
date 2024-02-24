@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 
@@ -57,6 +58,7 @@ public class AgenciesADAPI {
             return new ResponseObject("200", "Đã tìm thấy dữ liệu", items);
         }
     }
+
     @GetMapping("admin/agency/find-all-agency-accepted")
     private ResponseObject findAllAgencyAcceptTwo(@RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int size, @RequestParam(defaultValue = "id") String sortBy,
                                                   @RequestParam(defaultValue = "asc") String sortDir, @RequestParam(required = false) String searchTerm) {
@@ -79,7 +81,7 @@ public class AgenciesADAPI {
 
     @GetMapping("admin/agency/find-all-agency-accepted-false")
     private ResponseObject findAllAgencyAcceptTwoButFalse(@RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int size, @RequestParam(defaultValue = "id") String sortBy,
-                                                  @RequestParam(defaultValue = "asc") String sortDir, @RequestParam(required = false) String searchTerm) {
+                                                          @RequestParam(defaultValue = "asc") String sortDir, @RequestParam(required = false) String searchTerm) {
 
         int isAccepted = 2;
         Sort sort = sortDir.equalsIgnoreCase(Sort.Direction.ASC.name())
@@ -99,7 +101,7 @@ public class AgenciesADAPI {
 
     @GetMapping("admin/agency/find-all-agency-denied")
     private ResponseObject findAllAgencyAcceptThree(@RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int size, @RequestParam(defaultValue = "id") String sortBy,
-                                                  @RequestParam(defaultValue = "asc") String sortDir, @RequestParam(required = false) String searchTerm) {
+                                                    @RequestParam(defaultValue = "asc") String sortDir, @RequestParam(required = false) String searchTerm) {
 
         int isAccepted = 3;
         Sort sort = sortDir.equalsIgnoreCase(Sort.Direction.ASC.name())
@@ -116,10 +118,11 @@ public class AgenciesADAPI {
             return new ResponseObject("200", "Đã tìm thấy dữ liệu", items);
         }
     }
+
     @GetMapping("admin/agency/count-all-agency-waiting")
     private ResponseObject countAllAgencyAcceptOne() {
         // Sử dụng phương thức tìm kiếm mới trong service
-        Long items =  agencyServiceAD.countAllWaiting();
+        Long items = agencyServiceAD.countAllWaiting();
         if (items == null) {
             return new ResponseObject("404", "Không tìm thấy dữ liệu", null);
         } else {
@@ -129,13 +132,24 @@ public class AgenciesADAPI {
 
     @GetMapping("admin/agency/find-by-id/{id}")
     private ResponseObject findById(@PathVariable int id) {
-        Agencies agencies = agencyServiceAD.findbyId(id);
+        Agencies agencies = agencyServiceAD.findById(id);
         if (agencies != null) {
             AgenciesDtoAD dto = EntityDtoUtils.convertToDto(agencies, AgenciesDtoAD.class);
             return new ResponseObject("200", "Đã tìm thấy dữ liệu", dto);
         } else {
             return new ResponseObject("404", "Không tìm thấy dữ liệu", null);
         }
+    }
+
+    @GetMapping("admin/agency/find-by-id-note/{id}")
+    private ResponseObject findByIdNote(@PathVariable int id) {List<Agencies> agencies = agencyServiceAD.findByIdAgencyId(id);
+
+        if (agencies != null) {
+            return new ResponseObject("200", "Đã tìm thấy dữ liệu", agencies);
+        } else {
+            return new ResponseObject("404", "Không tìm thấy dữ liệu", null);
+        }
+
     }
 
     @GetMapping("admin/agency/check-duplicate-phone/{phone}")
@@ -164,7 +178,7 @@ public class AgenciesADAPI {
 
     @PutMapping("admin/agency/update-agency")
     private void updateBedTypes(@RequestBody AgenciesDtoAD agenciesDtoAD) {
-        Agencies agencies = agencyServiceAD.findbyId(agenciesDtoAD.getId());
+        Agencies agencies = agencyServiceAD.findById(agenciesDtoAD.getId());
         agencies.setImgDocument(agenciesDtoAD.getImgDocument());
         agencies.setNameAgency(agenciesDtoAD.getNameAgency());
         agencies.setRepresentativeName(agenciesDtoAD.getRepresentativeName());
@@ -199,7 +213,7 @@ public class AgenciesADAPI {
     @DeleteMapping("admin/agency/delete-agency/{id}")
     public ResponseEntity<Map<String, Boolean>> deleteAgencyById(@PathVariable int id) {
         try {
-            Agencies agencies = agencyServiceAD.findbyId(id);
+            Agencies agencies = agencyServiceAD.findById(id);
             agencies.setIsActive(Boolean.FALSE);
             agencyServiceAD.save(agencies);
             Map<String, Boolean> response = new HashMap<>();
@@ -214,7 +228,7 @@ public class AgenciesADAPI {
     @PutMapping("admin/agency/restore-agency/{id}")
     public ResponseEntity<Map<String, Boolean>> restoreAgencyById(@PathVariable int id) {
         try {
-            Agencies agencies = agencyServiceAD.findbyId(id);
+            Agencies agencies = agencyServiceAD.findById(id);
             agencies.setIsActive(Boolean.TRUE);
             agencyServiceAD.save(agencies);
             Map<String, Boolean> response = new HashMap<>();
@@ -229,7 +243,7 @@ public class AgenciesADAPI {
     @PutMapping("admin/agency/accepted-agency/{id}")
     public ResponseEntity<Map<String, Boolean>> acceptedAgencyById(@PathVariable int id) {
         try {
-            Agencies agencies = agencyServiceAD.findbyId(id);
+            Agencies agencies = agencyServiceAD.findById(id);
             agencies.setIsAccepted(2);
             agencyServiceAD.save(agencies);
 
@@ -249,7 +263,7 @@ public class AgenciesADAPI {
     @PutMapping("admin/agency/denied-agency/{id}")
     public ResponseEntity<Map<String, Boolean>> deniedAgencyById(@PathVariable int id) {
         try {
-            Agencies agencies = agencyServiceAD.findbyId(id);
+            Agencies agencies = agencyServiceAD.findById(id);
             agencies.setIsAccepted(3);
             agencyServiceAD.save(agencies);
 

@@ -61,5 +61,5 @@ public interface AgenciesRepository extends JpaRepository<Agencies, Integer> {
 
     Page<Agencies> findByIsAcceptedEqualsAndNameAgencyContainingIgnoreCase(int isAccepted, String searchTerm, Pageable pageable);
 
-
+    List<Agencies> findAllById(int id);
 }
