@@ -4,6 +4,8 @@ import com.main.traveltour.entity.Agencies;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
+import java.util.List;
+
 public interface AgencyServiceAD {
 
     Page<Agencies> findAllAccepted(Pageable pageable);
@@ -26,7 +28,7 @@ public interface AgencyServiceAD {
 
     Page<Agencies> findThreeTrueWithSearch(String searchTerm, Pageable pageable);
 
-    Agencies findbyId(int id);
+    Agencies findById(int id);
 
     Agencies checkPhone(String phone);
 
@@ -34,4 +36,5 @@ public interface AgencyServiceAD {
 
     Agencies save(Agencies agencies);
 
+    List<Agencies> findByIdAgencyId(int id);
 }

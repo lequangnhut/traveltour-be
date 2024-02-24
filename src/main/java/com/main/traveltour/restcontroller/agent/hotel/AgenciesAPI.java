@@ -2,6 +2,8 @@ package com.main.traveltour.restcontroller.agent.hotel;
 
 import com.main.traveltour.dto.agent.hotel.AgenciesDto;
 import com.main.traveltour.entity.Agencies;
+import com.main.traveltour.entity.Notifications;
+import com.main.traveltour.service.admin.NotificationsServiceAD;
 import com.main.traveltour.service.agent.AgenciesService;
 import com.main.traveltour.service.utils.FileUpload;
 import com.main.traveltour.utils.EntityDtoUtils;
@@ -25,6 +27,9 @@ public class AgenciesAPI {
     @Autowired
     private AgenciesService agenciesService;
 
+    @Autowired
+    private NotificationsServiceAD notificationsServiceAD;
+
     @GetMapping("/agent/agencies/find-by-user-id/{userId}")
     private Agencies findAllAccountStaff(@PathVariable int userId) {
         return agenciesService.findByUserId(userId);
@@ -33,11 +38,17 @@ public class AgenciesAPI {
     @PutMapping("/agent/agencies/register-business")
     private void registerAgencies(@RequestPart("agenciesDto") AgenciesDto agenciesDto, @RequestPart("imgDocument") MultipartFile imgDocument) throws IOException {
         String imgDoc = fileUpload.uploadFile(imgDocument);
+
         Agencies agencies = EntityDtoUtils.convertToEntity(agenciesDto, Agencies.class);
         agencies.setImgDocument(imgDoc);
         agencies.setIsAccepted(1);
         agencies.setDateCreated(new Timestamp(System.currentTimeMillis()));
-        agenciesService.save(agencies);
+
+        Agencies agency = agenciesService.save(agencies); // Lưu và nhận ID
+        int agencyId = agency.getId(); // Lấy ID của đối tượng đã được lưu
+
+        createNotification(agencyId, "(D.Nghiệp) " + agencies.getNameAgency()
+                + " nộp hồ sơ đăng ký.");
     }
 
     @GetMapping("/agent/agencies/check-duplicate-phone/{phone}")
@@ -56,5 +67,14 @@ public class AgenciesAPI {
 
         response.put("exists", exists);
         return response;
+    }
+
+    private void createNotification(int agenciesId, String message) {
+        Notifications notification = new Notifications();
+        notification.setAgenciesId(agenciesId);
+        notification.setStatusMessage(message);
+        notification.setIsSeen(false);
+        notification.setDateCreated(new Timestamp(System.currentTimeMillis()));
+        notificationsServiceAD.save(notification);
     }
 }

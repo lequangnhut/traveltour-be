@@ -98,4 +98,8 @@ public class Agencies {
     @JsonBackReference
     @JoinColumn(name = "user_id", referencedColumnName = "id", nullable = false, insertable = false, updatable = false)
     private Users usersByUserId;
+
+    @OneToMany(mappedBy = "agenciesByAgenciesId")
+    @JsonManagedReference
+    private Collection<Notifications> notificationAgenciesById;
 }

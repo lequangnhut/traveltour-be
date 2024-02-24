@@ -8,6 +8,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 public class AgencyServiceImplAD implements AgencyServiceAD {
 
@@ -65,7 +67,7 @@ public class AgencyServiceImplAD implements AgencyServiceAD {
     }
 
     @Override
-    public Agencies findbyId(int id) {
+    public Agencies findById(int id) {
         return agenciesRepository.findById(id);
     }
 
@@ -82,6 +84,11 @@ public class AgencyServiceImplAD implements AgencyServiceAD {
     @Override
     public Agencies save(Agencies agencies) {
         return agenciesRepository.save(agencies);
+    }
+
+    @Override
+    public List<Agencies> findByIdAgencyId(int id) {
+        return agenciesRepository.findAllById(id);
     }
 
 }
