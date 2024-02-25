@@ -20,6 +20,9 @@ public interface TourDetailsRepository extends JpaRepository<TourDetails, Intege
 
     TourDetails getById(String id);
 
+    @Query("SELECT td FROM TourDetails td WHERE td.tourDetailStatus != 4 ORDER BY td.tourDetailStatus ASC")
+    Page<TourDetails> findAllTourDetail(Pageable pageable);
+
     @Query("SELECT td FROM TourDetails td WHERE " +
             "UPPER(td.toursByTourId.tourName) LIKE %:searchTerm% OR " +
             "UPPER(td.fromLocation) LIKE %:searchTerm% OR " +

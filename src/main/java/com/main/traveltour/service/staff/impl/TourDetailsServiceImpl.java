@@ -1,6 +1,7 @@
 package com.main.traveltour.service.staff.impl;
 
 import com.main.traveltour.entity.TourDetails;
+import com.main.traveltour.entity.Tours;
 import com.main.traveltour.repository.TourDetailsRepository;
 import com.main.traveltour.service.staff.TourDetailsService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,7 +32,7 @@ public class TourDetailsServiceImpl implements TourDetailsService {
 
     @Override
     public Page<TourDetails> findAll(Pageable pageable) {
-        return tourDetailsRepository.findAll(pageable);
+        return tourDetailsRepository.findAllTourDetail(pageable);
     }
 
     @Override
@@ -61,8 +62,8 @@ public class TourDetailsServiceImpl implements TourDetailsService {
 
     @Override
     public void updateStatusAndActive() {
-        LocalDate currentDateTime = LocalDate.now();
-        Date currentDate = java.util.Date.from(currentDateTime.atStartOfDay().toInstant(java.time.ZoneOffset.UTC));
+        LocalDate localDate = LocalDate.now();
+        Date currentDate = java.sql.Date.valueOf(localDate);
 
         List<TourDetails> tourDetails1 = tourDetailsRepository.findAllByDepartureDate(currentDate);
         List<TourDetails> tourDetails2 = tourDetailsRepository.findAllByArrivalDate(currentDate);

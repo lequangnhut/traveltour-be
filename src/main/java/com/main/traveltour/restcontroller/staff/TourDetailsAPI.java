@@ -21,6 +21,7 @@ import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.sql.Timestamp;
 import java.util.List;
 import java.util.Optional;
 
@@ -98,6 +99,7 @@ public class TourDetailsAPI {
             TourDetails tourDetail = EntityDtoUtils.convertToEntity(tourDetailsDto, TourDetails.class);
             tourDetail.setId(tourDetailId);
             tourDetail.setTourDetailStatus(1);
+            tourDetail.setDateCreated(new Timestamp(System.currentTimeMillis()));
             tourDetail = tourDetailsService.save(tourDetail);
 
             for (MultipartFile file : tourDetailImage) {
