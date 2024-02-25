@@ -1,4 +1,4 @@
-package com.main.traveltour.restcontroller.agent.hotel;
+package com.main.traveltour.restcontroller.agent;
 
 import com.main.traveltour.dto.agent.hotel.AgenciesDto;
 import com.main.traveltour.entity.Agencies;

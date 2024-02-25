@@ -102,9 +102,9 @@ public class AccountAPI {
             agenciesService.save(agencies);
 
             registerBusiness(agencies.getId(), roles);
-        }
 
-        emailService.queueEmailCreateBusiness(dataAccountDto);
+            emailService.queueEmailCreateBusiness(dataAccountDto);
+        }
     }
 
     @PutMapping("superadmin/account/update-account")

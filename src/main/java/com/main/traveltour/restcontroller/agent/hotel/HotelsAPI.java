@@ -131,6 +131,7 @@ public class HotelsAPI {
         hotels.setHotelAvatar(hotelAvtar);
         hotels.setIsAccepted(Boolean.TRUE);
         hotels.setPlaceUtilities(placeUtilities);
+        hotels.setIsDelete(Boolean.FALSE);
         hotelsService.save(hotels);
 
         createRoomType(dataHotelRoom, roomTypeAvatar, hotels.getId(), roomTypeImage);
