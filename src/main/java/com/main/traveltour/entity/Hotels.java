@@ -78,8 +78,8 @@ public class Hotels {
     private Boolean isActive;
 
     @Basic
-    @Column(name = "is_delete")
-    private Boolean isDelete;
+    @Column(name = "is_deleted")
+    private Boolean isDeleted;
 
     @Basic
     @Column(name = "hotel_avatar")

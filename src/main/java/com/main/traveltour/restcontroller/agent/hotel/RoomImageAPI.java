@@ -48,12 +48,10 @@ public class RoomImageAPI {
     }
 
     /**
-     * Phương thức cập nhật thông tin ảnh phòng
-     * @param roomTypeId mã loại phòng
-     * @param listImageDelete danh sách ảnh cần xóa
-     * @param listRoomTypeImg danh sách ảnh cần thêm
-     * @return trả về thông báo
-     * @throws IOException lỗi khi thực hiện thêm ảnh
+     * Xóa hình ảnh của phòng
+     * @param roomTypeId id của phòng
+     * @param listImageDelete danh sách id của hình ảnh cần xóa
+     * @return thông báo kết quả
      */
     @DeleteMapping("agent/room-images/deleteImageRoomType")
     public ResponseObject deleteImageRoomType(
@@ -76,6 +74,13 @@ public class RoomImageAPI {
         }
     }
 
+    /**
+     * Thêm hình ảnh cho phòng
+     * @param roomTypeId id của phòng
+     * @param listRoomTypeImg danh sách hình ảnh cần thêm
+     * @return thông báo kết quả
+     * @throws IOException
+     */
     @PostMapping("agent/room-images/addImageRoomType")
     public ResponseObject addImageRoomType(
             @RequestParam("roomTypeId") String roomTypeId,

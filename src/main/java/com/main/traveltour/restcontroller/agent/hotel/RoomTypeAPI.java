@@ -66,7 +66,7 @@ public class RoomTypeAPI {
             @RequestParam(defaultValue = "asc") String sortDir,
             @RequestParam(required = false) String searchTerm,
             @RequestParam("hotelId") String hotelId,
-            @RequestParam("isDelete") Boolean isDelete
+            @RequestParam("isDelete") Boolean isDeleted
     ) {
         Sort sort = sortDir.equalsIgnoreCase(Sort.Direction.ASC.name())
                 ? Sort.by(sortBy).ascending()
@@ -74,7 +74,7 @@ public class RoomTypeAPI {
 
         // Sử dụng phương thức tìm kiếm mới trong service
         Page<RoomTypes> items = searchTerm == null || searchTerm.isEmpty()
-                ? roomTypeService.findAllByHotelIdAndIsDelete(hotelId, isDelete, PageRequest.of(page, size, sort))
+                ? roomTypeService.findAllByHotelIdAndIsDelete(hotelId, isDeleted, PageRequest.of(page, size, sort))
                 : roomTypeService.findAllWithSearchAndHotelId(searchTerm, hotelId, PageRequest.of(page, size, sort));
 
         return new ResponseObject("200", "OK", items);
