@@ -48,7 +48,7 @@ public interface RoomTypesRepository extends JpaRepository<RoomTypes, String>, J
 
     Page<RoomTypes> findByHotelIdAndIsDeletedIsFalse(String hotelId, Pageable pageable);
 
-    Page<RoomTypes> findByHotelIdAndIsDeleted(String hotelId, Boolean isDelete, Pageable pageable);
+    Page<RoomTypes> findByHotelIdAndIsDeleted(String hotelId, Boolean isDeleted, Pageable pageable);
 
     Optional<RoomTypes> findById(String s);
 }

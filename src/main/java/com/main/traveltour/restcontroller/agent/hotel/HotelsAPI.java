@@ -131,7 +131,7 @@ public class HotelsAPI {
         hotels.setHotelAvatar(hotelAvtar);
         hotels.setIsAccepted(Boolean.TRUE);
         hotels.setPlaceUtilities(placeUtilities);
-        hotels.setIsDelete(Boolean.FALSE);
+        hotels.setIsDeleted(Boolean.FALSE);
         hotelsService.save(hotels);
 
         createRoomType(dataHotelRoom, roomTypeAvatar, hotels.getId(), roomTypeImage);
@@ -195,7 +195,7 @@ public class HotelsAPI {
         hotels.setDateCreated(Timestamp.valueOf(LocalDateTime.now()));
         hotels.setIsActive(true);
         hotels.setIsAccepted(true);
-        hotels.setIsDelete(false);
+        hotels.setIsDeleted(false);
 
         List<PlaceUtilities> placeUtilitiesList = selectHotelUtilities.stream()
                 .map(placeUtilitiesService::findById)
@@ -255,7 +255,7 @@ public class HotelsAPI {
     /**
      * Phương thức tìm khách sạn dựa vào id của khách sạn
      * @param id mã khách sạn
-     * @return
+     * @return danh sách khách sạn
      */
     @GetMapping("agent/hotels/findByHotelId/{id}")
     public ResponseObject findByHotel(
@@ -276,7 +276,7 @@ public class HotelsAPI {
     ) {
         Optional<Hotels> hotels = hotelsService.findById(id);
         if(hotels.isPresent()) {
-            hotels.get().setIsDelete(true);
+            hotels.get().setIsDeleted(true);
             hotels.get().setDateDeleted(Timestamp.valueOf(LocalDateTime.now()));
             hotelsService.save(hotels.get());
             return new ResponseObject("200", "Xóa dữ liệu thành công", null);

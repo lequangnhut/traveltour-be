@@ -1,6 +1,7 @@
 package com.main.traveltour.service.agent.Impl;
 
 import com.main.traveltour.entity.BedTypes;
+import com.main.traveltour.entity.RoomBeds;
 import com.main.traveltour.repository.BedTypesRepository;
 import com.main.traveltour.service.agent.BedTypeService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,4 +19,5 @@ public class BedTypeServiceImpl implements BedTypeService {
     public List<BedTypes> findAllListBedTypes() {
         return bedTypesRepository.findAll();
     }
+
 }

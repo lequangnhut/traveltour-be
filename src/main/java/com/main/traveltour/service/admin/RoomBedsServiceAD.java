@@ -9,4 +9,6 @@ public interface RoomBedsServiceAD {
     List<RoomBeds> findByBedTypeId(int typeId);
     RoomBeds findRoomBedsRoomTypeId(String roomBedsId);
     void save(RoomBeds roomBeds);
+
+    List<RoomBeds> findAllRoomBedType();
 }

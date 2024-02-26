@@ -9,6 +9,7 @@ import org.springframework.data.repository.query.Param;
 
 import java.math.BigDecimal;
 import java.sql.Timestamp;
+import java.sql.Date;
 import java.util.List;
 
 public interface HotelsRepository extends JpaRepository<Hotels, String> {
