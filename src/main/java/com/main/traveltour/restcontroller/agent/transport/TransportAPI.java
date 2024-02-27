@@ -1,6 +1,6 @@
 package com.main.traveltour.restcontroller.agent.transport;
 
-import com.main.traveltour.dto.TransportationImageDto;
+import com.main.traveltour.dto.agent.transport.TransportationImageDto;
 import com.main.traveltour.dto.agent.transport.TransportGetDataDto;
 import com.main.traveltour.dto.agent.transport.TransportationsDto;
 import com.main.traveltour.entity.*;
