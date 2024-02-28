@@ -99,6 +99,7 @@ public class TourDetailsAPI {
             TourDetails tourDetail = EntityDtoUtils.convertToEntity(tourDetailsDto, TourDetails.class);
             tourDetail.setId(tourDetailId);
             tourDetail.setTourDetailStatus(1);
+            tourDetail.setBookedSeat(0);
             tourDetail.setDateCreated(new Timestamp(System.currentTimeMillis()));
             tourDetail = tourDetailsService.save(tourDetail);
 

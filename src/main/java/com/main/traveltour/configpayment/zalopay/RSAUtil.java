@@ -1,4 +1,4 @@
-package com.main.traveltour.zalopay;
+package com.main.traveltour.configpayment.zalopay;
 
 import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;

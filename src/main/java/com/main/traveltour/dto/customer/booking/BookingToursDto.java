@@ -34,7 +34,7 @@ public class BookingToursDto implements Serializable {
 
     BigDecimal orderTotal;
 
-    Boolean paymentMethod;
+    Integer paymentMethod;
 
     String orderCode;
 

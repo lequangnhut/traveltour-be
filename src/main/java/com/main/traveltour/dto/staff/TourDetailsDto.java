@@ -36,6 +36,8 @@ public class TourDetailsDto {
 
     String tourDetailDescription;
 
+    Integer bookedSeat;
+
     String fromLocation;
 
     String toLocation;

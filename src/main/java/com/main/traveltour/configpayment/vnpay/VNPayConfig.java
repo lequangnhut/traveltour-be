@@ -1,4 +1,4 @@
-package com.main.traveltour.vnpay;
+package com.main.traveltour.configpayment.vnpay;
 
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.stereotype.Component;

@@ -68,7 +68,7 @@ public class BookingTours {
 
     @Basic
     @Column(name = "payment_method")
-    private Boolean paymentMethod;
+    private Integer paymentMethod; // 0: travel | 1: VNPay | 2: ZaLoPay | 3: Momo
 
     @Basic
     @Column(name = "order_code")
@@ -80,7 +80,7 @@ public class BookingTours {
 
     @Basic
     @Column(name = "order_status")
-    private Integer orderStatus;
+    private Integer orderStatus; // 0: chờ thanh toán | 1: đã thanh toán | 2: đã hủy
 
     @Basic
     @Column(name = "order_note")

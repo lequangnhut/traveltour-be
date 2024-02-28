@@ -73,6 +73,10 @@ public class TourDetails {
     private String tourDetailDescription;
 
     @Basic
+    @Column(name = "booked_seat")
+    private Integer bookedSeat;
+
+    @Basic
     @Column(name = "from_location")
     private String fromLocation;
 

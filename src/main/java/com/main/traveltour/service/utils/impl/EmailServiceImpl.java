@@ -2,6 +2,8 @@ package com.main.traveltour.service.utils.impl;
 
 import com.main.traveltour.dto.agent.hotel.AgenciesDto;
 import com.main.traveltour.dto.auth.RegisterDto;
+import com.main.traveltour.dto.customer.booking.BookingDto;
+import com.main.traveltour.dto.customer.booking.BookingToursDto;
 import com.main.traveltour.dto.superadmin.AccountDto;
 import com.main.traveltour.dto.superadmin.DataAccountDto;
 import com.main.traveltour.entity.Users;
@@ -30,6 +32,7 @@ public class EmailServiceImpl implements EmailService {
     private final Queue<AgenciesDto> emailQueueRegisterAgency = new LinkedList<>();
     private final Queue<AgenciesDto> emailQueueAcceptedAgency = new LinkedList<>();
     private final Queue<AgenciesDto> emailQueueDeniedAgency = new LinkedList<>();
+    private final Queue<BookingDto> emailQueueBookingTour = new LinkedList<>();
 
     @Autowired
     private JavaMailSender sender;
@@ -67,7 +70,7 @@ public class EmailServiceImpl implements EmailService {
 
                 helper.setFrom(email);
                 helper.setText(thymeleafService.createContent("verify-email", variables), true);
-                helper.setSubject("TRAVEL TOUR CẢM ƠN QUÝ KHÁCH HÀNG ĐÃ ĐĂNG KÝ TÀI KHOẢN");
+                helper.setSubject("TRAVELTOUR CẢM ƠN QUÝ KHÁCH HÀNG ĐÃ ĐĂNG KÝ TÀI KHOẢN");
 
                 sender.send(message);
             } catch (MessagingException e) {
@@ -103,7 +106,7 @@ public class EmailServiceImpl implements EmailService {
 
                 helper.setFrom(email);
                 helper.setText(thymeleafService.createContent("notification-account-business", variables), true);
-                helper.setSubject("TRAVEL TOUR CHÂN THÀNH CẢM ƠN QUÝ DOANH NGHIỆP ĐÃ ĐĂNG KÝ HỢP TÁC");
+                helper.setSubject("TRAVELTOUR CHÂN THÀNH CẢM ƠN QUÝ DOANH NGHIỆP ĐÃ ĐĂNG KÝ HỢP TÁC");
 
                 sender.send(message);
             } catch (MessagingException e) {
@@ -134,7 +137,7 @@ public class EmailServiceImpl implements EmailService {
 
                 helper.setFrom(email);
                 helper.setText(thymeleafService.createContent("agency-success", variables), true);
-                helper.setSubject("TRAVEL TOUR CHÂN THÀNH CẢM ƠN QUÝ DOANH NGHIỆP ĐÃ ĐĂNG KÝ HỢP TÁC");
+                helper.setSubject("TRAVELTOUR CHÂN THÀNH CẢM ƠN QUÝ DOANH NGHIỆP ĐÃ ĐĂNG KÝ HỢP TÁC");
 
                 sender.send(message);
             } catch (MessagingException e) {
@@ -164,7 +167,7 @@ public class EmailServiceImpl implements EmailService {
 
                 helper.setFrom(email);
                 helper.setText(thymeleafService.createContent("agency-accepted", variables), true);
-                helper.setSubject("TRAVEL TOUR XIN THÔNG BÁO HỒ SƠ DOANH NGHIỆP ĐƯỢC THÔNG QUA");
+                helper.setSubject("TRAVELTOUR XIN THÔNG BÁO HỒ SƠ DOANH NGHIỆP ĐƯỢC THÔNG QUA");
 
                 sender.send(message);
             } catch (MessagingException e) {
@@ -194,7 +197,38 @@ public class EmailServiceImpl implements EmailService {
 
                 helper.setFrom(email);
                 helper.setText(thymeleafService.createContent("agency-failed", variables), true);
-                helper.setSubject("TRAVEL TOUR XIN THÔNG BÁO HỒ SƠ DOANH NGHIỆP KHÔNG HỢP LỆ");
+                helper.setSubject("TRAVELTOUR XIN THÔNG BÁO HỒ SƠ DOANH NGHIỆP KHÔNG HỢP LỆ");
+
+                sender.send(message);
+            } catch (MessagingException e) {
+                throw new RuntimeException(e);
+            }
+        }
+    }
+
+    @Override
+    public void queueEmailBookingTour(BookingDto bookingDto) {
+        emailQueueBookingTour.add(bookingDto);
+    }
+
+    @Override
+    public void sendMailBookingTour() {
+        while (!emailQueueBookingTour.isEmpty()) {
+            BookingDto bookingDto = emailQueueBookingTour.poll();
+            BookingToursDto bookingToursDto = bookingDto.getBookingToursDto();
+            Users users = userService.findById(bookingToursDto.getUserId());
+
+            try {
+                MimeMessage message = sender.createMimeMessage();
+                MimeMessageHelper helper = new MimeMessageHelper(message, MimeMessageHelper.MULTIPART_MODE_MIXED_RELATED, StandardCharsets.UTF_8.name());
+
+                helper.setTo(users.getEmail());
+                Map<String, Object> variables = new HashMap<>();
+                variables.put("name_agency", "");
+
+                helper.setFrom(email);
+                helper.setText(thymeleafService.createContent("agency-failed", variables), true);
+                helper.setSubject("TRAVELTOUR XIN CHÂN THÀNH CẢM ƠN QUÝ KHÁCH ĐÃ ĐẶT TOUR CỦA CHÚNG TÔI.");
 
                 sender.send(message);
             } catch (MessagingException e) {
@@ -226,6 +260,11 @@ public class EmailServiceImpl implements EmailService {
     @Scheduled(fixedDelay = 5000)
     public void processDeniedAgency() {
         sendMailDeniedAgency();
+    }
+
+    @Scheduled(fixedDelay = 5000)
+    public void processBookingTour() {
+        sendMailBookingTour();
     }
 
     private String convertRolesToVietnamese(List<String> roles) {

@@ -4,7 +4,7 @@
  * and open the template in the editor.
  */
 
-package com.main.traveltour.zalopay;
+package com.main.traveltour.configpayment.zalopay;
 
 import java.util.Locale;
 

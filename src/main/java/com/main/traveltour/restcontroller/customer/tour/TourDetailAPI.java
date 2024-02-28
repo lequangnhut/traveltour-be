@@ -1,4 +1,4 @@
-package com.main.traveltour.restcontroller.customer;
+package com.main.traveltour.restcontroller.customer.tour;
 
 import com.main.traveltour.dto.staff.TourDetailsGetDataDto;
 import com.main.traveltour.entity.ResponseObject;

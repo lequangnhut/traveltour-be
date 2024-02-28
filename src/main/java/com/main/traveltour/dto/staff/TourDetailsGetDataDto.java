@@ -41,6 +41,8 @@ public class TourDetailsGetDataDto {
 
     String tourDetailDescription;
 
+    Integer bookedSeat;
+
     String fromLocation;
 
     String toLocation;

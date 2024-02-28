@@ -139,7 +139,7 @@ public class tourDetailData {
 //            Date randomDate = faker.date().past((int) daysBetween, TimeUnit.DAYS);
 //            order.setDateCreated(new Timestamp(randomDate.getTime()));
 //
-//            orderService.save(order);
+//            orderService.saveBookingTour(order);
 //            ordersList.add(order);
 //        }
 //        return new ResponseObject("200", "Đã thêm dữ liệu Order thành công", ordersList);
@@ -177,7 +177,7 @@ public class tourDetailData {
 //            // Giá của sản phẩm (giả sử từ 10,000 đến 1,000,000)
 //            item.setPrice(BigDecimal.valueOf(faker.number().randomDouble(2, 10000, 1000000)));
 //
-//            orderItemService.save(item);
+//            orderItemService.saveBookingTour(item);
 //            orderItemList.add(item);
 //        }
 //

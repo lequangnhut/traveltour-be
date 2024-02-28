@@ -2,6 +2,7 @@ package com.main.traveltour.service.utils;
 
 import com.main.traveltour.dto.agent.hotel.AgenciesDto;
 import com.main.traveltour.dto.auth.RegisterDto;
+import com.main.traveltour.dto.customer.booking.BookingDto;
 import com.main.traveltour.dto.superadmin.DataAccountDto;
 
 public interface EmailService {
@@ -25,4 +26,8 @@ public interface EmailService {
     void queueEmailDeniedAgency(AgenciesDto agenciesDto);
 
     void sendMailDeniedAgency();
+
+    void queueEmailBookingTour(BookingDto bookingDto);
+
+    void sendMailBookingTour();
 }
