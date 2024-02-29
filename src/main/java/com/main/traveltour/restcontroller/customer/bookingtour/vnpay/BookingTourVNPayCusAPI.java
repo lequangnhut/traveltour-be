@@ -1,4 +1,4 @@
-package com.main.traveltour.restcontroller.customer.booking;
+package com.main.traveltour.restcontroller.customer.bookingtour.vnpay;
 
 import com.main.traveltour.dto.customer.booking.BookingDto;
 import com.main.traveltour.dto.customer.booking.BookingToursDto;
@@ -8,6 +8,7 @@ import com.main.traveltour.service.customer.BookingTourService;
 import com.main.traveltour.service.staff.TourDetailsService;
 import com.main.traveltour.service.utils.EmailService;
 import com.main.traveltour.utils.EntityDtoUtils;
+import com.main.traveltour.utils.GenerateNextID;
 import com.main.traveltour.utils.RandomUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -21,7 +22,7 @@ import java.util.Optional;
 @RestController
 @CrossOrigin(origins = "http://localhost:3000")
 @RequestMapping("api/v1/")
-public class BookingTourAPI {
+public class BookingTourVNPayCusAPI {
 
     @Autowired
     private UsersService usersService;
@@ -35,25 +36,31 @@ public class BookingTourAPI {
     @Autowired
     private EmailService emailService;
 
-    @PostMapping("book-tour/create-book-tour")
-    private ResponseObject createBookingTour(@RequestBody BookingDto bookingDto) {
+    /**
+     * Thêm mới tour với vnpay
+     */
+    @PostMapping("book-tour/create-book-tour-vnpay/{transactionId}")
+    private ResponseObject updateBookingTour(@RequestBody BookingDto bookingDto, @PathVariable int transactionId) {
         BookingToursDto bookingToursDto = bookingDto.getBookingToursDto();
         List<Map<String, String>> bookingTourCustomersDto = bookingDto.getBookingTourCustomersDto();
 
         Integer userId = bookingToursDto.getUserId();
         Integer totalAmountBook = bookingToursDto.getCapacityAdult() + bookingToursDto.getCapacityKid() + bookingToursDto.getCapacityBaby();
         try {
-            if (userId != null) {
-                BookingTours bookingTourDto = EntityDtoUtils.convertToEntity(bookingToursDto, BookingTours.class);
-                bookingTourDto.setDateCreated(new Timestamp(System.currentTimeMillis()));
-                if (bookingToursDto.getPaymentMethod() == 0) { // 0: travel
-                    bookingTourDto.setOrderStatus(0); // 0: chờ thanh toán
+            if (transactionId != 0) {
+                if (userId != null) {
+                    BookingTours bookingTours = EntityDtoUtils.convertToEntity(bookingToursDto, BookingTours.class);
+                    bookingTours.setDateCreated(new Timestamp(System.currentTimeMillis()));
+                    createBookingTour(bookingToursDto, bookingTours, bookingTourCustomersDto, totalAmountBook, 1);
+
+                    createInvoices(bookingTours.getId());
+                    createContracts(bookingTours.getId());
+                    decreaseAmountTour(bookingTours.getTourDetailId(), totalAmountBook);
+                } else {
+                    createUser(bookingToursDto, bookingTourCustomersDto, totalAmountBook, transactionId);
                 }
-                bookingTourService.saveBookingTour(bookingTourDto);
-                saveBookingTourCustomers(bookingToursDto.getId(), bookingTourCustomersDto);
-                decreaseAmountTour(bookingTourDto.getTourDetailId(), totalAmountBook);
             } else {
-                createUser(bookingToursDto, bookingTourCustomersDto, totalAmountBook);
+                createUser(bookingToursDto, bookingTourCustomersDto, totalAmountBook, transactionId);
             }
             return new ResponseObject("200", "Thành công", bookingDto);
         } catch (Exception e) {
@@ -61,7 +68,7 @@ public class BookingTourAPI {
         }
     }
 
-    private void createUser(BookingToursDto bookingToursDto, List<Map<String, String>> bookingTourCustomersDto, Integer totalAmountBook) {
+    private void createUser(BookingToursDto bookingToursDto, List<Map<String, String>> bookingTourCustomersDto, Integer totalAmountBook, int transactionId) {
         String email = bookingToursDto.getCustomerEmail();
         String phone = bookingToursDto.getCustomerPhone();
         String citizenCard = bookingToursDto.getCustomerCitizenCard();
@@ -85,18 +92,35 @@ public class BookingTourAPI {
             return newUser;
         });
 
-        BookingTours bookingTourDto = EntityDtoUtils.convertToEntity(bookingToursDto, BookingTours.class);
-        bookingTourDto.setUserId(user.getId());
-        bookingTourDto.setDateCreated(new Timestamp(System.currentTimeMillis()));
-        if (bookingToursDto.getPaymentMethod() == 0) { // 0: travel
-            bookingTourDto.setOrderStatus(0); // 0: chờ thanh toán
+        if (transactionId != 0) {
+            BookingTours bookingTours = EntityDtoUtils.convertToEntity(bookingToursDto, BookingTours.class);
+            bookingTours.setUserId(user.getId());
+            bookingTours.setDateCreated(new Timestamp(System.currentTimeMillis()));
+            createBookingTour(bookingToursDto, bookingTours, bookingTourCustomersDto, totalAmountBook, 1);
+
+            createInvoices(bookingTours.getId());
+            createContracts(bookingTours.getId());
+            decreaseAmountTour(bookingTours.getTourDetailId(), totalAmountBook);
+        } else {
+            BookingTours bookingTours = EntityDtoUtils.convertToEntity(bookingToursDto, BookingTours.class);
+            bookingTours.setUserId(user.getId());
+            bookingTours.setDateCreated(new Timestamp(System.currentTimeMillis()));
+            createBookingTour(bookingToursDto, bookingTours, bookingTourCustomersDto, totalAmountBook, 2);
         }
-        bookingTourService.saveBookingTour(bookingTourDto);
-        saveBookingTourCustomers(bookingTourDto.getId(), bookingTourCustomersDto);
-        decreaseAmountTour(bookingTourDto.getTourDetailId(), totalAmountBook);
     }
 
-    private void saveBookingTourCustomers(String bookingTourId, List<Map<String, String>> bookingTourCustomersDto) {
+    private void createBookingTour(BookingToursDto bookingToursDto, BookingTours bookingTours, List<Map<String, String>> bookingTourCustomersDto, Integer totalAmountBook, int orderStatus) {
+        String bookingTourId = bookingToursDto.getId();
+
+        if (bookingToursDto.getPaymentMethod() == 1) { // 1: VNPay
+            bookingTours.setOrderStatus(orderStatus);
+        }
+        bookingTourService.saveBookingTour(bookingTours);
+
+        createBookingTourCustomers(bookingTourId, bookingTourCustomersDto);
+    }
+
+    private void createBookingTourCustomers(String bookingTourId, List<Map<String, String>> bookingTourCustomersDto) {
         for (Map<String, String> data : bookingTourCustomersDto) {
             BookingTourCustomers bookingTourCustomers = new BookingTourCustomers();
 
@@ -132,5 +156,21 @@ public class BookingTourAPI {
             details.setBookedSeat(currentBookSeat + totalAmountBook);
             tourDetailsService.save(details);
         }
+    }
+
+    private void createInvoices(String bookingTourId) {
+        Invoices invoices = new Invoices();
+        invoices.setId(GenerateNextID.generateNextInvoiceID(bookingTourService.findMaxCodeInvoices()));
+        invoices.setBookingTourId(bookingTourId);
+        invoices.setDateCreated(new Timestamp(System.currentTimeMillis()));
+        bookingTourService.saveBookingInvoices(invoices);
+    }
+
+    private void createContracts(String bookingTourId) {
+        Contracts contracts = new Contracts();
+        contracts.setId(GenerateNextID.generateNextContractID(bookingTourService.findMaxCodeContracts()));
+        contracts.setBookingTourId(bookingTourId);
+        contracts.setDateCreated(new Timestamp(System.currentTimeMillis()));
+        bookingTourService.saveBookingContracts(contracts);
     }
 }

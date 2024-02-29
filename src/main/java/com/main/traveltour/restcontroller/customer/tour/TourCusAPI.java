@@ -15,7 +15,7 @@ import java.util.Optional;
 @RestController
 @CrossOrigin(origins = "http://localhost:3000")
 @RequestMapping("api/v1/")
-public class TourDetailAPI {
+public class TourCusAPI {
 
     @Autowired
     private TourDetailsService tourDetailsService;

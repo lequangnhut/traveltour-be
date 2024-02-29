@@ -80,7 +80,7 @@ public class BookingTours {
 
     @Basic
     @Column(name = "order_status")
-    private Integer orderStatus; // 0: chờ thanh toán | 1: đã thanh toán | 2: đã hủy
+    private Integer orderStatus; // 0: chờ thanh toán | 1: đã thanh toán | 2: thất bại | 3: hủy giao dịch
 
     @Basic
     @Column(name = "order_note")
