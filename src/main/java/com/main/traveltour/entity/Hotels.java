@@ -84,6 +84,14 @@ public class Hotels {
     private String hotelAvatar;
 
     @Basic
+    @Column(name = "longitude")
+    private String longitude;
+
+    @Basic
+    @Column(name = "latitude")
+    private String latitude;
+
+    @Basic
     @Column(name = "hotel_type_id")
     private int hotelTypeId;
 

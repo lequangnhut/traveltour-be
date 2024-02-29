@@ -50,16 +50,30 @@ public class HotelsAPI {
     @Autowired
     private RoomImageService roomImageService;
 
+    /**
+     * Phương thức tìm kiếm khách sạn dựa vào id của đại lý
+     * @param agencyId mã đại lý
+     * @return danh sách khách sạn
+     */
     @GetMapping("/agent/hotels/find-all-by-agency-id/{agencyId}")
     private List<Hotels> findAllByAgencyId(@PathVariable int agencyId) {
         return hotelsService.findAllByAgencyId(agencyId);
     }
 
+    /**
+     * Phương thức tìm kiếm khách sạn dựa vào id của đại lý
+     * @param agencyId mã đại lý
+     * @return danh sách khách sạn
+     */
     @GetMapping("/agent/hotels/find-by-agency-id/{agencyId}")
     private Hotels findByAgencyId(@PathVariable int agencyId) {
         return hotelsService.findByAgencyId(agencyId);
     }
 
+    /**
+     * Phương thức tìm kiếm danh sách khách sạn
+     * @return danh sách khách sạn
+     */
     @GetMapping("/agent/hotels/list-hotels")
     private ResponseObject findAllHotels() {
         List<Hotels> hotels = hotelsService.findAllListHotel();
@@ -71,6 +85,10 @@ public class HotelsAPI {
         }
     }
 
+    /**
+     * Phương thức tìm kiếm loại khách sạn
+     * @return danh sách loại khách sạn
+     */
     @GetMapping("/agent/hotels/list-hotels-type")
     private ResponseObject findAllHotelsTYpe() {
         List<HotelTypes> hotelType = hotelsTypeService.findAllHotelType();
@@ -82,6 +100,10 @@ public class HotelsAPI {
         }
     }
 
+    /**
+     * Phương thức tìm kiếm dịch vụ khách sạn
+     * @return danh sách dịch vụ khách sạn
+     */
     @GetMapping("agent/hotels/list-place-utilities")
     private ResponseObject findAllPlaceUtilities() {
         List<PlaceUtilities> listPlaceUtilities = placeUtilitiesService.findAll();
@@ -93,6 +115,10 @@ public class HotelsAPI {
         }
     }
 
+    /**
+     * Phương thức tìm kiếm loại phòng dựa vào các tiêu chí
+     * @return danh sách loại phòng
+     */
     @GetMapping("agent/hotels/list-bed-type")
     private ResponseObject findAllListBedType() {
         List<BedTypes> bedTypes = bedTypeService.findAllListBedTypes();
@@ -114,6 +140,15 @@ public class HotelsAPI {
             return new ResponseObject("200", "Đã tìm thấy dữ liệu", roomUtilities);
         }
     }
+
+    /**
+     * Phương thức tạo mới thông tin khách sạn
+     * @param dataHotelRoom thông tin khách sạn
+     * @param roomTypeImage danh sách ảnh loại phòng
+     * @param hotelAvatar ảnh đại diện khách sạn
+     * @param roomTypeAvatar ảnh loại phòng
+     * @throws IOException lôi nêu không thêm được ảnh
+     */
 
     @PostMapping(value = "/agent/hotels/register-hotels", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public void registerHotels(@RequestPart("dataHotelRoom") Hotel_RoomDto dataHotelRoom,
@@ -137,6 +172,14 @@ public class HotelsAPI {
         createRoomType(dataHotelRoom, roomTypeAvatar, hotels.getId(), roomTypeImage);
     }
 
+    /**
+     * Phương thức tạo mới thông tin loại phòng
+     * @param dataHotelRoom thông tin khách sạn
+     * @param roomTypeAvatar ảnh loại phòng
+     * @param hotelId mã khách sạn
+     * @param roomTypeImage danh sách ảnh loại phòng
+     * @throws IOException Throws IOException
+     */
     private void createRoomType(Hotel_RoomDto dataHotelRoom, MultipartFile roomTypeAvatar, String hotelId, List<MultipartFile> roomTypeImage) throws IOException {
         String roomTypeId = GenerateNextID.generateNextCode("RT", roomTypeService.findMaxId());
         String imgPath = fileUpload.uploadFile(roomTypeAvatar);
@@ -156,6 +199,12 @@ public class HotelsAPI {
         createRoomImage(roomTypeId, roomTypeImage);
     }
 
+    /**
+     * Phương thức tạo mới thông tin loại phòng
+     * @param roomTypeId mã loại phòng
+     * @param roomTypeImage ảnh loại phòng
+     * @throws IOException lôi nêu không thêm được ảnh
+     */
     private void createRoomImage(String roomTypeId, List<MultipartFile> roomTypeImage) throws IOException {
         for (MultipartFile file : roomTypeImage) {
             String imgPath = fileUpload.uploadFile(file);
@@ -166,11 +215,23 @@ public class HotelsAPI {
         }
     }
 
+    /**
+     * Phương thức tạo mới thông tin khách sạn
+     * @param companyDataDto thông tin khách sạn
+     * @param selectHotelUtilities danh sách dịch vụ khách sạn
+     * @param avatarHotel ảnh đại diện khách sạn
+     * @param longitude kinh độ
+     * @param latitude vĩ độ
+     * @return danh sách khách sạn
+     * @throws IOException lôi nêu không thêm được ảnh
+     */
     @PostMapping("agent/hotels/information-hotel/create")
     ResponseObject createHotel(
             @RequestPart("companyDataDto") CompanyDataDto companyDataDto,
             @RequestPart("selectHotelUtilities") List<Integer> selectHotelUtilities,
-            @RequestParam("avatarHotel") MultipartFile avatarHotel
+            @RequestParam("avatarHotel") MultipartFile avatarHotel,
+            @RequestPart("longitude") String longitude,
+            @RequestPart("latitude") String latitude
     ) throws IOException {
 
         Hotels hotels = new Hotels();
@@ -193,6 +254,8 @@ public class HotelsAPI {
         hotels.setAgenciesId(companyDataDto.getAgencyId());
         hotels.setHotelAvatar(avataHotelUpload);
         hotels.setDateCreated(Timestamp.valueOf(LocalDateTime.now()));
+        hotels.setLongitude(longitude);
+        hotels.setLatitude(latitude);
         hotels.setIsActive(true);
         hotels.setIsAccepted(true);
         hotels.setIsDeleted(false);
@@ -220,7 +283,9 @@ public class HotelsAPI {
     ResponseObject updateHotel(
             @RequestPart("dataHotel") HotelsDto dataHotel,
             @RequestPart("selectedUtilities") List<Integer> selectedUtilities,
-            @RequestParam("hotelAvatarUpdated") MultipartFile hotelAvatarUpdated
+            @RequestParam("hotelAvatarUpdated") MultipartFile hotelAvatarUpdated,
+            @RequestParam(value = "longitude", defaultValue = "") String longitude,
+            @RequestParam(value = "latitude", defaultValue = "") String latitude
     ) throws IOException {
 
         Optional<Hotels> hotels = hotelsService.findById(dataHotel.getId());
@@ -242,10 +307,18 @@ public class HotelsAPI {
         List<PlaceUtilities> placeUtilitiesList = selectedUtilities.stream()
                 .map(placeUtilitiesService::findById)
                 .collect(Collectors.toList());
-
+        hotels.get().setDateCreated(Timestamp.valueOf(LocalDateTime.now()));
         hotels.get().setIsActive(true);
         hotels.get().setIsAccepted(true);
+        hotels.get().setIsDeleted(false);
         hotels.get().setPlaceUtilities(placeUtilitiesList);
+
+        if(longitude != null && !longitude.isEmpty()) {
+            hotels.get().setLongitude(longitude);
+        }
+        if(latitude != null && !latitude.isEmpty()) {
+            hotels.get().setLatitude(latitude);
+        }
 
         hotelsService.save(hotels.get());
 
@@ -270,6 +343,11 @@ public class HotelsAPI {
 
     }
 
+    /**
+     * Phương thức xóa khách sạn dựa vào id của khách sạn
+     * @param id mã khách sạn
+     * @return danh sách khách sạn
+     */
     @DeleteMapping("agent/hotels/deleteHotel/{id}")
     public ResponseObject deleteHotel(
             @PathVariable("id") String id

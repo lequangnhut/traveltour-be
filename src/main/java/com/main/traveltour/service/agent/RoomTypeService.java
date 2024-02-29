@@ -40,6 +40,7 @@ public interface RoomTypeService {
             Timestamp checkInDateFiller,
             Timestamp checkOutDateFiller,
             int page,
-            int size
+            int size,
+            String sort
     );
 }

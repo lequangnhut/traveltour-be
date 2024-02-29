@@ -1,6 +1,7 @@
 package com.main.traveltour.restcontroller.agent.hotel;
 
 import com.main.traveltour.dto.agent.hotel.RoomTypeAddDto;
+import com.main.traveltour.dto.agent.hotel.RoomTypeDto;
 import com.main.traveltour.entity.*;
 import com.main.traveltour.service.admin.RoomBedsServiceAD;
 import com.main.traveltour.service.agent.RoomImageService;
@@ -55,7 +56,7 @@ public class RoomTypeAPI {
      * @param sortDir trường sắp xếp
      * @param searchTerm thông tin tìm kiếm
      * @param hotelId mã khách sạn
-     * @param isDelete trang thái xóa
+     * @param isDeleted trang thái xóa
      * @return kết quả
      */
     @GetMapping("agent/room-type/get-room-type")
@@ -95,7 +96,6 @@ public class RoomTypeAPI {
         } else {
             return new ResponseObject("404", "Null", null);
         }
-
     }
 
     /**
@@ -218,6 +218,12 @@ public class RoomTypeAPI {
         return new ResponseObject("200", "Thêm phòng thành công", null);
     }
 
+    /**
+     * Phương thức cập nhật ảnh đại diện phòng
+     * @param roomTypeId mã phòng
+     * @param roomTypeImg ảnh đại diện phòng
+     * @return kết quả
+     */
     @PutMapping("agent/room-type/updateAvatarRoomType")
     public ResponseObject updateAvateRoomType(
             @RequestParam("roomTypeId") String roomTypeId,
@@ -235,6 +241,24 @@ public class RoomTypeAPI {
             }
         } catch (Exception e) {
             return new ResponseObject("500", "Đã xảy ra lỗi khi thực hiện thay đổi ảnh đại diện", null);
+        }
+    }
+
+    /**
+     * Phương thức tìm phòng bằng mã phòng
+     * @param roomTypeId mã phòng
+     * @return kết quả
+     */
+    @GetMapping("agent/room-type/findRoomTypesById")
+    public ResponseObject findRoomTypesById(
+            @RequestParam("roomTypeId") String roomTypeId
+    ) {
+        Optional<RoomTypes> roomTypes = roomTypeService.findRoomTypeById(roomTypeId);
+        RoomTypeDto roomTypeDto = EntityDtoUtils.convertToDto(roomTypes.get(), RoomTypeDto.class);
+        if (roomTypes.isPresent()) {
+            return new ResponseObject("200", "OK", roomTypeDto);
+        } else {
+            return new ResponseObject("404", "Null", null);
         }
     }
 }

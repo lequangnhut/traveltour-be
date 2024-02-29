@@ -92,19 +92,21 @@ public class HotelAPI {
             @RequestParam(required = false) String checkInDateFiller,
             @RequestParam(required = false) String checkOutDateFiller,
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size) throws ParseException {
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(defaultValue = "") String sort) throws ParseException {
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
 
         Date dateFomatCheckin = dateFormat.parse(checkInDateFiller);
         Date dateFomatCheckout = dateFormat.parse(checkOutDateFiller);
 
         RoomTypeCustomerDto hotel = roomTypeService.findRoomTypesWithFiltersCustomer(
-                    priceFilter, hotelTypeIdListFilter, placeUtilitiesIdListFilter,
-                    roomUtilitiesIdListFilter, breakfastIncludedFilter,
-                    freeCancellationFilter, roomBedsIdListFilter, amountRoomFilter,
-                    locationFilter, capacityAdultsFilter, capacityChildrenFilter,
-                    false, false,
-                    new Timestamp(dateFomatCheckin.getTime()), new Timestamp(dateFomatCheckout.getTime()), page, size);
+                priceFilter, hotelTypeIdListFilter, placeUtilitiesIdListFilter,
+                roomUtilitiesIdListFilter, breakfastIncludedFilter,
+                freeCancellationFilter, roomBedsIdListFilter, amountRoomFilter,
+                locationFilter, capacityAdultsFilter, capacityChildrenFilter,
+                false, false,
+                new Timestamp(dateFomatCheckin.getTime()), new Timestamp(dateFomatCheckout.getTime()), page, size,
+                sort);
 
         List<RoomTypeDto> roomTypeDto = EntityDtoUtils.convertToDtoList(hotel.getRoomTypes(), RoomTypeDto.class);
         return new ResponseObjectAndPages("200", "OK", roomTypeDto, hotel.getTotalCount());

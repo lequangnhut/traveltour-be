@@ -73,11 +73,11 @@ public class RoomTypeServiceImpl implements RoomTypeService {
 
     @Transactional(readOnly = true)
     public RoomTypeCustomerDto findRoomTypesWithFiltersCustomer(BigDecimal priceFilter, List<Integer> hotelTypeIdListFilter,
-                                                                   List<Integer> placeUtilitiesIdListFilter, List<Integer> roomUtilitiesIdListFilter,
-                                                                   Boolean breakfastIncludedFilter, Boolean freeCancellationFilter, List<Integer> roomBedsIdListFilter,
-                                                                   Integer amountRoomFilter, String locationFilter, Integer capacityAdultsFilter,
-                                                                   Integer capacityChildrenFilter, Boolean isDeletedHotelFilter, Boolean isDeletedRoomTypeFilter,
-                                                                   Timestamp checkInDateFiller, Timestamp checkOutDateFiller, int page, int size) {
+                                                                List<Integer> placeUtilitiesIdListFilter, List<Integer> roomUtilitiesIdListFilter,
+                                                                Boolean breakfastIncludedFilter, Boolean freeCancellationFilter, List<Integer> roomBedsIdListFilter,
+                                                                Integer amountRoomFilter, String locationFilter, Integer capacityAdultsFilter,
+                                                                Integer capacityChildrenFilter, Boolean isDeletedHotelFilter, Boolean isDeletedRoomTypeFilter,
+                                                                Timestamp checkInDateFiller, Timestamp checkOutDateFiller, int page, int size, String sort) {
 
         CriteriaBuilder builder = entityManager.getCriteriaBuilder();
         CriteriaQuery<RoomTypes> query = builder.createQuery(RoomTypes.class);
@@ -116,15 +116,16 @@ public class RoomTypeServiceImpl implements RoomTypeService {
         }
 
         if (locationFilter != null && !locationFilter.isEmpty()) {
-            predicates.add(builder.like(root.get("location"), "%" + locationFilter + "%"));
+            Join<RoomTypes, Hotels> hotelsJoin = root.join("hotelsByHotelId", JoinType.LEFT);
+            predicates.add(builder.like(hotelsJoin.get("province"), "%" + locationFilter + "%"));
         }
 
         if (capacityAdultsFilter != null && capacityAdultsFilter > 0) {
-            predicates.add(builder.equal(root.get("capacityAdults"), capacityAdultsFilter));
+            predicates.add(builder.lessThanOrEqualTo(root.get("capacityAdults"), capacityAdultsFilter));
         }
 
         if (capacityChildrenFilter != null && capacityChildrenFilter > 0) {
-            predicates.add(builder.equal(root.get("capacityChildren"), capacityChildrenFilter));
+            predicates.add(builder.lessThanOrEqualTo(root.get("capacityChildren"), capacityChildrenFilter));
         }
 
         if (isDeletedHotelFilter != null) {
@@ -164,7 +165,7 @@ public class RoomTypeServiceImpl implements RoomTypeService {
                 RoomTypes roomType = entityManager.find(RoomTypes.class, roomId);
                 if (roomType != null) {
                     Integer remainingRooms = roomType.getAmountRoom() - numberOfRoomsBooked.intValue();
-                    if(remainingRooms < 0) {
+                    if (remainingRooms < 0) {
                         remainingRooms = 0;
                     }
 
@@ -174,6 +175,19 @@ public class RoomTypeServiceImpl implements RoomTypeService {
             }
 
         }
+
+        if (sort != null && !sort.isEmpty()) {
+            if ("01".equalsIgnoreCase(sort)) {
+                query.orderBy(builder.asc(root.get("price")));
+            } else if ("02".equalsIgnoreCase(sort)) {
+                query.orderBy(builder.desc(root.get("price")));
+            } else if ("03".equalsIgnoreCase(sort)) {
+                query.orderBy(builder.asc(root.get("amountRoom")));
+            } else if ("04".equalsIgnoreCase(sort)) {
+                query.orderBy(builder.desc(root.get("amountRoom")));
+            }
+        }
+
         query.where(predicates.toArray(new Predicate[0]));
 
         roomTypeCustomerResult.setTotalCount(entityManager.createQuery(query).getResultList().size());
