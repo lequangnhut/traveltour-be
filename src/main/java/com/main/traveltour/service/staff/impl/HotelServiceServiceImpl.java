@@ -2,7 +2,7 @@ package com.main.traveltour.service.staff.impl;
 
 import com.main.traveltour.entity.Hotels;
 import com.main.traveltour.repository.HotelsRepository;
-import com.main.traveltour.service.staff.HotelServiceService;
+import com.main.traveltour.service.staff.staff.HotelServiceService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;

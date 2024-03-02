@@ -108,7 +108,6 @@ public class CustomerAPI {
             user.setBirth(customerDto.getBirth());
             user.setPhone(customerDto.getPhone());
             user.setCitizenCard(customerDto.getCitizenCard());
-            user.setAddress(customerDto.getAddress());
             user.setIsActive(customerDto.getIsActive());
             user.setAvatar(imagesPath);
 

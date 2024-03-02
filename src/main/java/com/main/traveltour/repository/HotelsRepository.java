@@ -55,7 +55,7 @@ public interface HotelsRepository extends JpaRepository<Hotels, String> {
             "  AND (:numChildren IS NULL OR r.capacity_children >= :numChildren)  " +
             "GROUP BY r.hotel_id  " +
             "             having  (:numRooms IS NULL OR :numRooms <= (sum(r.amount_room) - (  " +
-            "    SELECT COALESCE(SUM(ohd.amount), 0) as nu  " +
+            "    SELECT COALESCE(SUM(ohd.amount), 0) " +
             "    FROM hotels h  " +
             "             JOIN room_types r ON h.id = r.hotel_id  " +
             "        JOIN order_hotel_details ohd  " +
@@ -64,7 +64,12 @@ public interface HotelsRepository extends JpaRepository<Hotels, String> {
             "      AND ((oh.check_in <= :arrivalDate AND oh.check_out > :arrivalDate) OR  " +
             "           (oh.check_in < :departureDate AND oh.check_out >= :departureDate) OR  " +
             "           (oh.check_in >= :arrivalDate AND oh.check_out <= :departureDate))  " +
-            ")))", nativeQuery = true)
+            ")))",
+            countQuery = "SELECT COUNT(DISTINCT h.id) " +
+                    "FROM hotels h JOIN room_types r ON h.id = r.hotel_id " +
+                    "WHERE (:location IS NULL OR UPPER(h.province) LIKE CONCAT('%', UPPER(:location), '%')) AND " +
+                    "(:numAdults IS NULL OR r.capacity_adults >= :numAdults) AND " +
+                    "(:numChildren IS NULL OR r.capacity_children >= :numChildren)", nativeQuery = true)
     Page<Hotels> findAvailableHotelsWithFilters(
             @Param("location") String location,
             @Param("departureDate") Timestamp departureDate,

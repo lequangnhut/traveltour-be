@@ -1,7 +1,7 @@
 package com.main.traveltour.component;
 
 import com.main.traveltour.service.agent.TransportationScheduleService;
-import com.main.traveltour.service.staff.TourDetailsService;
+import com.main.traveltour.service.staff.staff.TourDetailsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;

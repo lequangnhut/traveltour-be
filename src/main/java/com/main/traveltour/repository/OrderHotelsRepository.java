@@ -6,7 +6,6 @@ import org.springframework.data.jpa.repository.Query;
 
 public interface OrderHotelsRepository extends JpaRepository<OrderHotels, Integer> {
     @Query("SELECT COALESCE(MAX(oh.id), 'OH0000') FROM OrderHotels oh")
-    String maxCodeTourId();
-
+    String maxCode();
 
 }

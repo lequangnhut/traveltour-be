@@ -2,7 +2,7 @@ package com.main.traveltour.restcontroller.staff;
 
 import com.main.traveltour.entity.HotelTypes;
 import com.main.traveltour.entity.ResponseObject;
-import com.main.traveltour.service.staff.HotelTypeServiceService;
+import com.main.traveltour.service.staff.staff.HotelTypeServiceService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 

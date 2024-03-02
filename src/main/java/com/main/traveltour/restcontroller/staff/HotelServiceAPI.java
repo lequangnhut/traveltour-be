@@ -2,7 +2,7 @@ package com.main.traveltour.restcontroller.staff;
 
 import com.main.traveltour.entity.Hotels;
 import com.main.traveltour.entity.ResponseObject;
-import com.main.traveltour.service.staff.HotelServiceService;
+import com.main.traveltour.service.staff.staff.HotelServiceService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -59,10 +59,9 @@ public class HotelServiceAPI {
 
     @GetMapping("find-by-id/{id}")
     public ResponseObject findById(@PathVariable String id) {
-        System.out.println();
         Optional<Hotels> hotels = Optional.ofNullable(hotelServiceService.getHotelsById(id));
         if (hotels.isEmpty()) {
-            return new ResponseObject("404", "Không tìm thấy dữ liệu", null);
+            return new ResponseObject("500", "Không tìm thấy dữ liệu", null);
         } else {
             return new ResponseObject("200", "Đã tìm thấy dữ liệu", hotels);
         }
@@ -70,7 +69,7 @@ public class HotelServiceAPI {
 
     private ResponseObject hotelsToResponseObject(Page<Hotels> hotels) {
         if (hotels.isEmpty()) {
-            return new ResponseObject("404", "Không tìm thấy dữ liệu", null);
+            return new ResponseObject("500", "Không tìm thấy dữ liệu", null);
         } else {
             return new ResponseObject("200", "Đã tìm thấy dữ liệu", hotels);
         }

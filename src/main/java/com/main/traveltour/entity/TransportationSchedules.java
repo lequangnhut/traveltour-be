@@ -1,12 +1,12 @@
 package com.main.traveltour.entity;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
 
 import java.math.BigDecimal;
 import java.sql.Timestamp;
@@ -72,12 +72,14 @@ public class TransportationSchedules {
     @Column(name = "is_status")
     private Integer isStatus;
 
-    @OneToMany(mappedBy = "transportationSchedulesByTransportationScheduleId")
+    @OneToMany(mappedBy = "transportationSchedulesByTransportationScheduleId", fetch = FetchType.LAZY)
     @JsonManagedReference
     private Collection<OrderTransportations> orderTransportationsById;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
+    @Fetch(FetchMode.JOIN)
     @JoinColumn(name = "transportation_id", referencedColumnName = "id", nullable = false, insertable = false, updatable = false)
     @JsonBackReference
     private Transportations transportationsByTransportationId;
+
 }

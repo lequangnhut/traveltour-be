@@ -7,9 +7,9 @@ import com.main.traveltour.entity.ResponseObject;
 import com.main.traveltour.entity.TourDestinations;
 import com.main.traveltour.entity.TourDetailImages;
 import com.main.traveltour.entity.TourDetails;
-import com.main.traveltour.service.staff.TourDestinationService;
-import com.main.traveltour.service.staff.TourDetailsImageService;
-import com.main.traveltour.service.staff.TourDetailsService;
+import com.main.traveltour.service.staff.staff.TourDestinationService;
+import com.main.traveltour.service.staff.staff.TourDetailsImageService;
+import com.main.traveltour.service.staff.staff.TourDetailsService;
 import com.main.traveltour.service.utils.FileUpload;
 import com.main.traveltour.utils.EntityDtoUtils;
 import com.main.traveltour.utils.GenerateNextID;
@@ -99,7 +99,6 @@ public class TourDetailsAPI {
             TourDetails tourDetail = EntityDtoUtils.convertToEntity(tourDetailsDto, TourDetails.class);
             tourDetail.setId(tourDetailId);
             tourDetail.setTourDetailStatus(1);
-            tourDetail.setBookedSeat(0);
             tourDetail.setDateCreated(new Timestamp(System.currentTimeMillis()));
             tourDetail = tourDetailsService.save(tourDetail);
 
