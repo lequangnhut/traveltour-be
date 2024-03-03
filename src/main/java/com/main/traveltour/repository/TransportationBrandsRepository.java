@@ -16,4 +16,6 @@ public interface TransportationBrandsRepository extends JpaRepository<Transporta
     TransportationBrands findByAgenciesId(int agenciesId);
 
     TransportationBrands findById(String transportBrandId);
+
+    List<TransportationBrands> findAllByIsActiveIsTrueAndIsAcceptedIsTrue();
 }

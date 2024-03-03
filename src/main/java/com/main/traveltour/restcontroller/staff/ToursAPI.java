@@ -3,7 +3,7 @@ package com.main.traveltour.restcontroller.staff;
 import com.main.traveltour.dto.staff.ToursDto;
 import com.main.traveltour.entity.ResponseObject;
 import com.main.traveltour.entity.Tours;
-import com.main.traveltour.service.staff.ToursService;
+import com.main.traveltour.service.staff.staff.ToursService;
 import com.main.traveltour.service.utils.FileUpload;
 import com.main.traveltour.utils.EntityDtoUtils;
 import com.main.traveltour.utils.GenerateNextID;

@@ -1,9 +1,8 @@
 package com.main.traveltour.service.staff.impl;
 
 import com.main.traveltour.entity.TourDetails;
-import com.main.traveltour.entity.Tours;
 import com.main.traveltour.repository.TourDetailsRepository;
-import com.main.traveltour.service.staff.TourDetailsService;
+import com.main.traveltour.service.staff.staff.TourDetailsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;

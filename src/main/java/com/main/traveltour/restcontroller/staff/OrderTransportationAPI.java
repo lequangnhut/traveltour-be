@@ -1,0 +1,37 @@
+package com.main.traveltour.restcontroller.staff;
+
+import com.main.traveltour.dto.staff.OrderTransportationsDto;
+import com.main.traveltour.dto.staff.OrderVisitsDto;
+import com.main.traveltour.entity.OrderTransportations;
+import com.main.traveltour.entity.OrderVisits;
+import com.main.traveltour.entity.ResponseObject;
+import com.main.traveltour.service.staff.staff.OrderTransportationService;
+import com.main.traveltour.service.staff.staff.OrderVisitLocationService;
+import com.main.traveltour.utils.EntityDtoUtils;
+import com.main.traveltour.utils.GenerateNextID;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.*;
+
+@RestController
+@CrossOrigin(origins = "http://localhost:3000")
+@RequestMapping("api/v1/staff/order-transportation")
+public class OrderTransportationAPI {
+
+    @Autowired
+    private OrderTransportationService orderTransportationService;
+
+    @PostMapping(value = "create-order-transportation")
+    public ResponseObject createOrderTransportation(@RequestPart("orderTransportationsDto") OrderTransportationsDto orderTransportationsDto) {
+        try {
+            String orderTransportationId = GenerateNextID.generateNextCode("OTR", orderTransportationService.maxCode());
+            OrderTransportations orderTransportations = EntityDtoUtils.convertToEntity(orderTransportationsDto, OrderTransportations.class);
+            orderTransportations.setId(orderTransportationId);
+            orderTransportationService.save(orderTransportations);
+
+            return new ResponseObject("200", "Thêm mới thành công", orderTransportations);
+        } catch (Exception e) {
+            return new ResponseObject("500", "Thêm mới thất bại", null);
+        }
+    }
+
+}
