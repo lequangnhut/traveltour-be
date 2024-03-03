@@ -3,7 +3,6 @@ package com.main.traveltour.dto.staff;
 import lombok.Data;
 
 import java.math.BigDecimal;
-import java.sql.Date;
 import java.sql.Timestamp;
 
 /**
@@ -18,9 +17,9 @@ public class TourDetailsDto {
 
     Integer guideId;
 
-    Date departureDate;
+    Timestamp departureDate;
 
-    Date arrivalDate;
+    Timestamp arrivalDate;
 
     Integer numberOfGuests;
 

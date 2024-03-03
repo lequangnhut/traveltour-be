@@ -2,7 +2,7 @@ package com.main.traveltour.service.staff.impl;
 
 import com.main.traveltour.entity.OrderHotelDetails;
 import com.main.traveltour.repository.OrderHotelDetailsRepository;
-import com.main.traveltour.service.staff.OrderHotelDetailService;
+import com.main.traveltour.service.staff.staff.OrderHotelDetailService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

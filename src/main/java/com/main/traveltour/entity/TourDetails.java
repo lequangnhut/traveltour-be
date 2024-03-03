@@ -9,7 +9,6 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.math.BigDecimal;
-import java.sql.Date;
 import java.sql.Timestamp;
 import java.util.Collection;
 
@@ -35,11 +34,11 @@ public class TourDetails {
 
     @Basic
     @Column(name = "departure_date")
-    private Date departureDate;
+    private Timestamp departureDate;
 
     @Basic
     @Column(name = "arrival_date")
-    private Date arrivalDate;
+    private Timestamp arrivalDate;
 
     @Basic
     @Column(name = "number_of_guests")

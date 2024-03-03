@@ -7,7 +7,6 @@ import com.main.traveltour.entity.Users;
 import lombok.Data;
 
 import java.math.BigDecimal;
-import java.sql.Date;
 import java.sql.Timestamp;
 import java.util.Collection;
 
@@ -23,9 +22,9 @@ public class TourDetailsGetDataDto {
 
     Integer guideId;
 
-    Date departureDate;
+    Timestamp departureDate;
 
-    Date arrivalDate;
+    Timestamp arrivalDate;
 
     Integer numberOfGuests;
 

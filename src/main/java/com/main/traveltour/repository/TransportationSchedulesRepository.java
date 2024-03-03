@@ -46,4 +46,51 @@ public interface TransportationSchedulesRepository extends JpaRepository<Transpo
             "OR LOWER(t.id) LIKE LOWER(CONCAT('%', :searchTerm, '%')) " +
             "AND tpb.id = :transportBrandId")
     Page<TransportationSchedules> findAllSchedulesWithSearch(@Param("transportBrandId") String transportBrandId, @Param("searchTerm") String searchTerm, Pageable pageable);
+
+    @Query("SELECT t FROM TransportationSchedules t " +
+            "JOIN t.transportationsByTransportationId tp " +
+            "JOIN tp.transportationBrandsByTransportationBrandId tpb " +
+            "WHERE t.tripType = true AND t.isActive = true")
+    Page<TransportationSchedules> getAllTransportationSchedules(Pageable pageable);
+
+    @Query(value = "SELECT ts.* " +
+            "FROM transportation_schedules ts " +
+            "JOIN transportations t ON ts.transportation_id = t.id " +
+            "JOIN transportation_brands tb ON t.transportation_brand_id = tb.id " +
+            "JOIN transportation_types tt ON t.transportation_type_id = tt.id " +
+            "WHERE (ts.from_location = :fromLocation) " +
+            "AND (ts.to_location = :toLocation) " +
+            "AND (ts.departure_time BETWEEN :departureTime AND (:departureTime + INTERVAL 1 HOUR)) " +
+            "AND (ts.arrival_time BETWEEN (:arrivalTime - INTERVAL 1 HOUR) AND :arrivalTime) " +
+            "AND (t.amount_seat >= :amountSeat) " +
+            "AND (:price IS NULL OR ts.unit_price <= :price) " +
+            "AND (coalesce(:transportationTypeIdList) IS NULL OR tt.id IN (:transportationTypeIdList)) " +
+            "AND (coalesce(:listOfVehicleManufacturers) IS NULL OR tb.id IN (:listOfVehicleManufacturers)) ",
+            countQuery = "SELECT COUNT(*) FROM (" +
+                    "SELECT ts.id " +
+                    "FROM transportation_schedules ts " +
+                    "INNER JOIN transportations t ON ts.transportation_id = t.id " +
+                    "INNER JOIN transportation_brands tb ON t.transportation_brand_id = tb.id " +
+                    "INNER JOIN transportation_types tt ON t.transportation_type_id = tt.id " +
+                    "WHERE (ts.from_location = :fromLocation) " +
+                    "AND (ts.to_location = :toLocation) " +
+                    "AND (ts.departure_time BETWEEN :departureTime AND (:departureTime + INTERVAL 1 HOUR)) " +
+                    "AND (ts.arrival_time BETWEEN (:arrivalTime - INTERVAL 1 HOUR) AND :arrivalTime) " +
+                    "AND (t.amount_seat >= :amountSeat) " +
+                    "AND (:price IS NULL OR ts.unit_price <= :price) " +
+                    "AND (coalesce(:transportationTypeIdList) IS NULL OR tt.id IN (:transportationTypeIdList)) " +
+                    "AND (coalesce(:listOfVehicleManufacturers) IS NULL OR tb.id IN (:listOfVehicleManufacturers)) " +
+                    "GROUP BY ts.id) AS temp",
+            nativeQuery = true)
+    Page<TransportationSchedules> findTransportationSchedulesWithFilter(
+            @Param("fromLocation") String fromLocation,
+            @Param("toLocation") String toLocation,
+            @Param("departureTime") Timestamp departureTime,
+            @Param("arrivalTime") Timestamp arrivalTime,
+            @Param("amountSeat") Integer amountSeat,
+            @Param("price") Integer price,
+            @Param("transportationTypeIdList") List<Integer> transportationTypeIdList,
+            @Param("listOfVehicleManufacturers") List<String> listOfVehicleManufacturers,
+            Pageable pageable);
+
 }

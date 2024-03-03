@@ -1,11 +1,10 @@
 package com.main.traveltour.restcontroller.staff;
 
-import com.main.traveltour.entity.HotelTypes;
 import com.main.traveltour.entity.ResponseObject;
 import com.main.traveltour.entity.RoomTypes;
 import com.main.traveltour.service.admin.BedTypesServiceAD;
 import com.main.traveltour.service.admin.RoomUilityServiceAD;
-import com.main.traveltour.service.staff.RoomTypeServiceService;
+import com.main.traveltour.service.staff.staff.RoomTypeServiceService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -13,7 +12,6 @@ import org.springframework.data.domain.Sort;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Optional;
 
 @RestController
 @CrossOrigin(origins = "http://localhost:3000")

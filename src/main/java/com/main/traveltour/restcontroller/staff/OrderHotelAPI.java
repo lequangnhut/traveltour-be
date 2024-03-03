@@ -1,29 +1,13 @@
 package com.main.traveltour.restcontroller.staff;
 
 import com.main.traveltour.dto.staff.OrderHotelsDto;
-import com.main.traveltour.dto.staff.TourDetailImagesDto;
-import com.main.traveltour.dto.staff.TourDetailsDto;
-import com.main.traveltour.dto.staff.TourDetailsGetDataDto;
 import com.main.traveltour.entity.OrderHotels;
 import com.main.traveltour.entity.ResponseObject;
-import com.main.traveltour.entity.TourDetailImages;
-import com.main.traveltour.entity.TourDetails;
-import com.main.traveltour.service.staff.OrderHotelsService;
-import com.main.traveltour.service.staff.TourDetailsImageService;
-import com.main.traveltour.service.staff.TourDetailsService;
-import com.main.traveltour.service.utils.FileUpload;
+import com.main.traveltour.service.staff.staff.OrderHotelsService;
 import com.main.traveltour.utils.EntityDtoUtils;
 import com.main.traveltour.utils.GenerateNextID;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Sort;
-import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
-
-import java.util.List;
-import java.util.Optional;
 
 @RestController
 @CrossOrigin(origins = "http://localhost:3000")
