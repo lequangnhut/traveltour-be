@@ -2,7 +2,7 @@ package com.main.traveltour.restcontroller.staff;
 
 import com.main.traveltour.dto.staff.OrderHotelDetailsDto;
 import com.main.traveltour.entity.OrderHotelDetails;
-import com.main.traveltour.service.staff.staff.OrderHotelDetailService;
+import com.main.traveltour.service.staff.OrderHotelDetailService;
 import com.main.traveltour.utils.EntityDtoUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;

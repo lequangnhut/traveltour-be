@@ -2,7 +2,7 @@ package com.main.traveltour.service.staff.impl;
 
 import com.main.traveltour.entity.VisitLocations;
 import com.main.traveltour.repository.VisitLocationsRepository;
-import com.main.traveltour.service.staff.staff.VisitLocationService;
+import com.main.traveltour.service.staff.VisitLocationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;

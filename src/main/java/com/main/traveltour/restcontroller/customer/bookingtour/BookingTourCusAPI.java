@@ -5,7 +5,7 @@ import com.main.traveltour.dto.customer.booking.BookingToursDto;
 import com.main.traveltour.entity.*;
 import com.main.traveltour.service.UsersService;
 import com.main.traveltour.service.customer.BookingTourService;
-import com.main.traveltour.service.staff.staff.TourDetailsService;
+import com.main.traveltour.service.staff.TourDetailsService;
 import com.main.traveltour.service.utils.EmailService;
 import com.main.traveltour.utils.EntityDtoUtils;
 import com.main.traveltour.utils.GenerateNextID;

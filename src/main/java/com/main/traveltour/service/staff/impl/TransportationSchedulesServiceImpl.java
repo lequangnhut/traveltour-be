@@ -2,7 +2,7 @@ package com.main.traveltour.service.staff.impl;
 
 import com.main.traveltour.entity.TransportationSchedules;
 import com.main.traveltour.repository.TransportationSchedulesRepository;
-import com.main.traveltour.service.staff.staff.TransportationScheduleService;
+import com.main.traveltour.service.staff.TransportationScheduleService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -39,8 +39,6 @@ public class TransportationSchedulesServiceImpl implements TransportationSchedul
              Timestamp departureTime, Timestamp arrivalTime, Integer amountSeat,
              Integer price, List<Integer> transportationTypeIdList, List<String> listOfVehicleManufacturers,
              Pageable pageable) {
-        return repo.findTransportationSchedulesWithFilter(fromLocation, toLocation,
-                departureTime, arrivalTime, amountSeat, price, transportationTypeIdList,
-                listOfVehicleManufacturers, pageable);
+        return null;
     }
 }

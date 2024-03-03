@@ -3,7 +3,7 @@ package com.main.traveltour.restcontroller.staff;
 import com.main.traveltour.dto.staff.VisitLocationsDto;
 import com.main.traveltour.entity.VisitLocations;
 import com.main.traveltour.entity.ResponseObject;
-import com.main.traveltour.service.staff.staff.VisitLocationService;
+import com.main.traveltour.service.staff.VisitLocationService;
 import com.main.traveltour.utils.EntityDtoUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;

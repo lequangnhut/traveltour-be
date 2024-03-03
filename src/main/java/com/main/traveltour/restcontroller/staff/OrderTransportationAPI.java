@@ -1,12 +1,9 @@
 package com.main.traveltour.restcontroller.staff;
 
 import com.main.traveltour.dto.staff.OrderTransportationsDto;
-import com.main.traveltour.dto.staff.OrderVisitsDto;
 import com.main.traveltour.entity.OrderTransportations;
-import com.main.traveltour.entity.OrderVisits;
 import com.main.traveltour.entity.ResponseObject;
-import com.main.traveltour.service.staff.staff.OrderTransportationService;
-import com.main.traveltour.service.staff.staff.OrderVisitLocationService;
+import com.main.traveltour.service.staff.OrderTransportationService;
 import com.main.traveltour.utils.EntityDtoUtils;
 import com.main.traveltour.utils.GenerateNextID;
 import org.springframework.beans.factory.annotation.Autowired;

@@ -1,4 +1,4 @@
-package com.main.traveltour.service.staff.staff;
+package com.main.traveltour.service.staff;
 
 import com.main.traveltour.entity.VisitLocations;
 import org.springframework.data.domain.Page;

@@ -2,7 +2,7 @@ package com.main.traveltour.service.staff.impl;
 
 import com.main.traveltour.entity.OrderTransportations;
 import com.main.traveltour.repository.OrderTransportationsRepository;
-import com.main.traveltour.service.staff.staff.OrderTransportationService;
+import com.main.traveltour.service.staff.OrderTransportationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

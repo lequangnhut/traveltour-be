@@ -3,7 +3,7 @@ package com.main.traveltour.restcontroller.staff;
 
 import com.main.traveltour.entity.ResponseObject;
 import com.main.traveltour.entity.TransportationTypes;
-import com.main.traveltour.service.staff.staff.TransportationTypesService;
+import com.main.traveltour.service.staff.TransportationTypesService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;

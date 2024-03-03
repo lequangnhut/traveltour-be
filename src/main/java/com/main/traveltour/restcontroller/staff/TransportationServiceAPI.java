@@ -7,9 +7,8 @@ import com.main.traveltour.dto.staff.TransportationSchedulesDto;
 import com.main.traveltour.dto.staff.TransportationSearchDto;
 import com.main.traveltour.entity.TransportationSchedules;
 import com.main.traveltour.entity.ResponseObject;
-import com.main.traveltour.entity.Transportations;
 import com.main.traveltour.repository.TransportationSchedulesRepository;
-import com.main.traveltour.service.staff.staff.TransportationScheduleService;
+import com.main.traveltour.service.staff.TransportationScheduleService;
 import com.main.traveltour.utils.EntityDtoUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -18,11 +17,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.web.bind.annotation.*;
 
 import java.sql.Timestamp;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @RestController
 @CrossOrigin(origins = "http://localhost:3000")

@@ -7,7 +7,7 @@ import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
 import com.main.traveltour.entity.ResponseObject;
 import com.main.traveltour.entity.Tours;
-import com.main.traveltour.service.staff.staff.ToursService;
+import com.main.traveltour.service.staff.ToursService;
 import com.main.traveltour.utils.GenerateNextID;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
