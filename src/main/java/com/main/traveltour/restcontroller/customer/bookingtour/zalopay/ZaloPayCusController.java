@@ -10,11 +10,9 @@ import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.message.BasicNameValuePair;
 import org.json.JSONObject;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.BufferedReader;
-import java.io.IOException;
 import java.io.InputStreamReader;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -22,7 +20,7 @@ import java.util.*;
 @RestController
 @CrossOrigin(origins = "http://localhost:3000")
 @RequestMapping("api/v1")
-public class ZaloPayController {
+public class ZaloPayCusController {
 
     private static final Map<String, String> config = new HashMap<String, String>() {{
         put("appid", "2554");
