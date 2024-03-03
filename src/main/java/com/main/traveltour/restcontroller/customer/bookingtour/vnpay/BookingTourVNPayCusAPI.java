@@ -60,7 +60,17 @@ public class BookingTourVNPayCusAPI {
                     createUser(bookingToursDto, bookingTourCustomersDto, totalAmountBook, transactionId);
                 }
             } else {
-                createUser(bookingToursDto, bookingTourCustomersDto, totalAmountBook, transactionId);
+                if (userId != null) {
+                    BookingTours bookingTours = EntityDtoUtils.convertToEntity(bookingToursDto, BookingTours.class);
+                    bookingTours.setDateCreated(new Timestamp(System.currentTimeMillis()));
+                    createBookingTour(bookingToursDto, bookingTours, bookingTourCustomersDto, totalAmountBook, 2);
+
+                    createInvoices(bookingTours.getId());
+                    createContracts(bookingTours.getId());
+                    decreaseAmountTour(bookingTours.getTourDetailId(), totalAmountBook);
+                } else {
+                    createUser(bookingToursDto, bookingTourCustomersDto, totalAmountBook, transactionId);
+                }
             }
             return new ResponseObject("200", "Thành công", bookingDto);
         } catch (Exception e) {
