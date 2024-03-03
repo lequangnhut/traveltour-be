@@ -17,6 +17,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.web.bind.annotation.*;
 
 import java.sql.Timestamp;
+import java.util.Objects;
 import java.util.Optional;
 
 @RestController
@@ -72,7 +73,7 @@ public class TransportationServiceAPI {
                         PageRequest.of(page, size, sort));
             }
 
-            if (transportationSchedules.isEmpty()) {
+            if (Objects.requireNonNull(transportationSchedules).isEmpty()) {
                 transportationSchedules = transportationScheduleService.findTransportationSchedulesWithFilter(
                         searchDto.getFromLocation(),
                         searchDto.getToLocation(),

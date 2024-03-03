@@ -39,6 +39,16 @@ public class TransportationSchedulesServiceImpl implements TransportationSchedul
              Timestamp departureTime, Timestamp arrivalTime, Integer amountSeat,
              Integer price, List<Integer> transportationTypeIdList, List<String> listOfVehicleManufacturers,
              Pageable pageable) {
-        return null;
+        return repo.findTransportationSchedulesWithFilter(
+                fromLocation,
+                toLocation,
+                departureTime,
+                arrivalTime,
+                amountSeat,
+                price,
+                transportationTypeIdList,
+                listOfVehicleManufacturers,
+                pageable
+        );
     }
 }
