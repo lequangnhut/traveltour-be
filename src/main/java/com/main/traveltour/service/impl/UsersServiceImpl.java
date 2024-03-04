@@ -136,4 +136,9 @@ public class UsersServiceImpl implements UsersService {
     public List<Users> findUsersByRolesIsGuild() {
         return usersRepository.findUsersByRolesIsGuild();
     }
+
+    @Override
+    public Users checkMailForgot(String email) {
+        return usersRepository.findByEmailAndActive(email);
+    }
 }
