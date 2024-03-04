@@ -1,15 +1,15 @@
 package com.main.traveltour.repository;
 
+import com.main.traveltour.dto.staff.RoomTypeAvailabilityDto;
 import com.main.traveltour.entity.RoomTypes;
-import com.main.traveltour.entity.TourDetails;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import java.sql.Timestamp;
 import java.util.List;
 import java.util.Optional;
 
@@ -48,7 +48,20 @@ public interface RoomTypesRepository extends JpaRepository<RoomTypes, String>, J
 
     Page<RoomTypes> findByHotelIdAndIsDeletedIsFalse(String hotelId, Pageable pageable);
 
+
     Page<RoomTypes> findByHotelIdAndIsDeleted(String hotelId, Boolean isDeleted, Pageable pageable);
+
+    @Query("SELECT SUM(ohd.amount) FROM OrderHotelDetails ohd " +
+            "JOIN ohd.orderHotelsByOrderHotelId oh " +
+            "WHERE ohd.roomTypesByRoomTypeId.id = :roomTypeId " +
+            "AND ((oh.checkIn <= :checkOut AND oh.checkOut > :checkOut) OR  " +
+            "(oh.checkIn < :checkIn AND oh.checkOut >= :checkIn) OR  " +
+            "(oh.checkIn >= :checkOut AND oh.checkOut <= :checkIn)) " +
+            "AND oh.orderStatus <> 4")
+    Integer calculateBookedRooms(@Param("roomTypeId") String roomTypeId,
+                                 @Param("checkIn") Timestamp checkIn,
+                                 @Param("checkOut") Timestamp checkOut);
+
 
     Optional<RoomTypes> findById(String s);
 }
