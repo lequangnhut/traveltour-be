@@ -38,4 +38,6 @@ public interface UsersService {
     Users save(Users users);
 
     List<Users> findUsersByRolesIsGuild();
+
+    Users checkMailForgot(String email);
 }

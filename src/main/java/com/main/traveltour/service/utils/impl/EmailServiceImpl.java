@@ -2,6 +2,7 @@ package com.main.traveltour.service.utils.impl;
 
 import com.main.traveltour.dto.agent.hotel.AgenciesDto;
 import com.main.traveltour.dto.auth.RegisterDto;
+import com.main.traveltour.dto.customer.ForgotPasswordDto;
 import com.main.traveltour.dto.customer.booking.BookingDto;
 import com.main.traveltour.dto.customer.booking.BookingToursDto;
 import com.main.traveltour.dto.superadmin.AccountDto;
@@ -33,6 +34,8 @@ public class EmailServiceImpl implements EmailService {
     private final Queue<AgenciesDto> emailQueueAcceptedAgency = new LinkedList<>();
     private final Queue<AgenciesDto> emailQueueDeniedAgency = new LinkedList<>();
     private final Queue<BookingDto> emailQueueBookingTour = new LinkedList<>();
+
+    private final Queue<ForgotPasswordDto> emailQueueForgot = new LinkedList<>();
 
     @Autowired
     private JavaMailSender sender;
@@ -237,6 +240,37 @@ public class EmailServiceImpl implements EmailService {
         }
     }
 
+    @Override
+    public void sendMailForgot() {
+        while (!emailQueueForgot.isEmpty()) {
+            ForgotPasswordDto passwordsDto = emailQueueForgot.poll();
+            try {
+                MimeMessage message = sender.createMimeMessage();
+                MimeMessageHelper helper = new MimeMessageHelper(message, MimeMessageHelper.MULTIPART_MODE_MIXED_RELATED, StandardCharsets.UTF_8.name());
+
+                helper.setTo(passwordsDto.getEmail());
+
+                Map<String, Object> variables = new HashMap<>();
+                variables.put("full_name", passwordsDto.getFull_name());
+                variables.put("email", passwordsDto.getEmail());
+                variables.put("verifyCode", passwordsDto.getVerifyCode());
+
+                helper.setFrom(email);
+                helper.setText(thymeleafService.createContent("send-otp", variables), true);
+                helper.setSubject("THAY ĐỔI MẬT KHẨU");
+
+                sender.send(message);
+            } catch (MessagingException e) {
+                throw new RuntimeException(e);
+            }
+        }
+    }
+
+    @Override
+    public void queueEmailForgot(ForgotPasswordDto passwordsDto) {
+        emailQueueForgot.add(passwordsDto);
+    }
+
     @Scheduled(fixedDelay = 5000)
     public void processRegister() {
         sendMailRegister();
@@ -290,5 +324,10 @@ public class EmailServiceImpl implements EmailService {
         }
 
         return roleString.toString();
+    }
+
+    @Scheduled(fixedDelay = 5000)
+    public void processForgotMail() {
+        sendMailForgot();
     }
 }

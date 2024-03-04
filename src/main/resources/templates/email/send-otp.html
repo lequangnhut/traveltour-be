@@ -401,7 +401,10 @@
                               Nếu bạn không thực hiện hành động quên mật khẩu này, vui lòng
                               liên hệ chúng tôi.
                             </p>
-                            <p style="text-align: center; padding: 15px 0 15px 0;background-color: green;width: 40%; font-weight:bolder;font-size: x-large; margin: 0 auto;color: white;">365289</p>
+                            <p style="text-align: center;margin: 0;padding: 0;">
+                              <a th:href="@{'http://localhost:8080/api/v1/customer/forgot-pass/captcha/check-code-on-time/' + ${verifyCode} + '&' + ${email}}"
+                                 class="btn" style="background-color: #63ab45; color: white">ĐỔI MẬT KHẨU</a>
+                            </p>
                             <p class="separator" style="padding-top: 25px; border-bottom:2px solid #706f6f; font-size:0pt; line-height:0pt;">&nbsp;</p>
                             <table width="100%" border="0" cellspacing="0" cellpadding="0">
                               <tr>
