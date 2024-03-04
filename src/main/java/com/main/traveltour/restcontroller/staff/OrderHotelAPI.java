@@ -17,18 +17,6 @@ public class OrderHotelAPI {
     @Autowired
     private OrderHotelsService orderHotelsService;
 
-//    @GetMapping("/find-by-id/{id}")
-//    public ResponseObject findById(@PathVariable String id) {
-//        Optional<TourDetails> tourDetails = tourDetailsService.findById(id);
-//        TourDetailsGetDataDto tourDetailsDto = EntityDtoUtils.convertOptionalToDto(tourDetails, TourDetailsGetDataDto.class);
-//
-//        if (tourDetails.isEmpty()) {
-//            return new ResponseObject("404", "Không tìm thấy dữ liệu", null);
-//        } else {
-//            return new ResponseObject("200", "Đã tìm thấy dữ liệu", tourDetailsDto);
-//        }
-//    }
-
     @PostMapping(value = "create-order-hotel")
     public ResponseObject createOrderHotel(@RequestPart OrderHotelsDto orderHotelsDto) {
         try {

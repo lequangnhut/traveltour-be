@@ -59,7 +59,6 @@ public class HotelServiceAPI {
 
     @GetMapping("find-by-id/{id}")
     public ResponseObject findById(@PathVariable String id) {
-        System.out.println();
         Optional<Hotels> hotels = Optional.ofNullable(hotelServiceService.getHotelsById(id));
         if (hotels.isEmpty()) {
             return new ResponseObject("404", "Không tìm thấy dữ liệu", null);
