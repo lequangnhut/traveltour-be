@@ -1,6 +1,5 @@
 package com.main.traveltour.restcontroller.customer.forgotpw;
 
-import com.github.cage.GCage;
 import com.github.cage.YCage;
 import com.main.traveltour.dto.customer.ChangePassDto;
 import com.main.traveltour.dto.customer.ForgotPasswordDto;
@@ -15,7 +14,10 @@ import com.main.traveltour.utils.RandomUtils;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.*;
+import org.springframework.http.CacheControl;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
@@ -38,7 +40,7 @@ public class ForgotPasswordAPI {
 
     @Autowired
     private EmailService emailService;
-    
+
     @Autowired
     private PassOTPService passOTPService;
 
@@ -83,6 +85,7 @@ public class ForgotPasswordAPI {
         response.put("exists", exists);
         return response;
     }
+
     @PostMapping("/customer/forgot-pass/captcha/{email}")
     public void submitEmail(@PathVariable String email, @Valid ForgotPasswordDto passwordsDto) {
         String verifyCode = RandomUtils.RandomToken(15);
@@ -101,12 +104,12 @@ public class ForgotPasswordAPI {
         passwordsDto.setVerifyCode(verifyCode);
         passwordsDto.setEmail(users.getEmail());
 
-       emailService.queueEmailForgot(passwordsDto);
+        emailService.queueEmailForgot(passwordsDto);
     }
 
     @PutMapping("/customer/forgot-pass/captcha/new-password/{token}")
     public ResponseObject changePasswordAPI(@PathVariable String token, @RequestBody ChangePassDto changePassDto) {
-        try{
+        try {
             PassOTP passOTP = passOTPService.findByToken(token);
             Users users = usersService.findById(passOTP.getUsersId());
             //get link hình
@@ -121,7 +124,7 @@ public class ForgotPasswordAPI {
             passOTPService.save(passOTP);
 
             return new ResponseObject("200", "Cập nhật thành công", updatePassUser);
-        }catch (Exception e) {
+        } catch (Exception e) {
             return new ResponseObject("404", "Cập nhật thất bại", null);
         }
     }
@@ -136,9 +139,9 @@ public class ForgotPasswordAPI {
             long diffInMillis = now.getTime() - dateCreated.getTime();
             long diffInMinutes = diffInMillis / (60 * 1000);
 
-            if(passOTP.getIsActive() && diffInMinutes < 10){
+            if (passOTP.getIsActive() && diffInMinutes < 10) {
                 return new ResponseObject("200", "Hợp lệ", passOTP);
-            }else{
+            } else {
                 passOTP.setIsActive(false);
                 passOTPService.save(passOTP);
                 return new ResponseObject("404", "Không hợp lệ", null);

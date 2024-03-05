@@ -4,6 +4,7 @@ import com.main.traveltour.entity.TourDetails;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
+import java.sql.Timestamp;
 import java.util.List;
 import java.util.Optional;
 
@@ -14,6 +15,8 @@ public interface TourDetailsService {
     List<TourDetails> findAll();
 
     Page<TourDetails> findAll(Pageable pageable);
+
+    Page<TourDetails> findAllCustomer(String fromLocation, Timestamp departureDate, Timestamp arrivalDate, Integer price, List<Integer> tourTypesByTourTypeId, Pageable pageable);
 
     Page<TourDetails> findAllWithSearch(String searchTerm, Pageable pageable);
 

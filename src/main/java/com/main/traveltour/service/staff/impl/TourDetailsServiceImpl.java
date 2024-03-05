@@ -8,6 +8,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.util.Date;
 import java.util.List;
@@ -32,6 +33,11 @@ public class TourDetailsServiceImpl implements TourDetailsService {
     @Override
     public Page<TourDetails> findAll(Pageable pageable) {
         return tourDetailsRepository.findAllTourDetail(pageable);
+    }
+
+    @Override
+    public Page<TourDetails> findAllCustomer(String fromLocation, Timestamp departureDate, Timestamp arrivalDate, Integer price, List<Integer> tourTypesByTourTypeId, Pageable pageable) {
+        return tourDetailsRepository.findTTourDetailWithFilter(fromLocation, departureDate, arrivalDate, price, tourTypesByTourTypeId, pageable);
     }
 
     @Override

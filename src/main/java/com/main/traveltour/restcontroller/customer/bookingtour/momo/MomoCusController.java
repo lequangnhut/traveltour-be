@@ -61,7 +61,7 @@ public class MomoCusController {
         int transactionId = RandomUtils.RandomOtpValue(5);
 
         // Thêm thông tin vào URL redirect
-        return "redirect:http://localhost:3000/tour-detail/" + tourDetailId + "/booking-tour/customer-information/check-information/" +
+        return "redirect:http://localhost:3000/tours/tour-detail/" + tourDetailId + "/booking-tour/customer-information/check-information/" +
                 (paymentStatus == 1 ? "payment-success" : "payment-failure") +
                 "?orderInfo=" + orderInfo +
                 (paymentStatus == 1 ? "&transactionId=" + transactionId : "&transactionId=0") +
