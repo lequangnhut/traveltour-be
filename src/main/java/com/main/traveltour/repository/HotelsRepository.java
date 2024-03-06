@@ -33,50 +33,43 @@ public interface HotelsRepository extends JpaRepository<Hotels, String> {
     Hotels getHotelsById(String id);
 
     @Query("SELECT h FROM Hotels h " +
-            "JOIN h.roomTypesById")
-    Page<Hotels> findAllHotel(Pageable pageable);
-
-    @Query("SELECT h FROM Hotels h " +
             "JOIN h.roomTypesById r " +
-            "WHERE UPPER(h.hotelName) LIKE %:searchTerm% OR " +
+            "WHERE ((:searchTerm IS NULL) OR (UPPER(h.hotelName) LIKE %:searchTerm% OR " +
             "UPPER(h.phone) LIKE %:searchTerm% OR " +
             "UPPER(h.province) LIKE %:searchTerm% OR " +
             "UPPER(h.district) LIKE %:searchTerm% OR " +
             "UPPER(h.ward) LIKE %:searchTerm% OR " +
-            "CAST(r.price AS string) LIKE %:searchTerm%")
-    Page<Hotels> findBySearchTerm(@Param("searchTerm") String searchTerm, Pageable pageable);
+            "CAST(r.price AS string) LIKE %:searchTerm%)) AND " +
+            "(:location IS NULL OR UPPER(h.province)LIKE CONCAT('%', UPPER(:location),'%')) AND " +
+            "(:numAdults IS NULL OR r.capacityAdults >= :numAdults) AND " +
+            "(:numChildren IS NULL OR r.capacityChildren >= :numChildren)" +
+            "GROUP BY h")
+    List<Hotels> findAllBySearch(@Param("searchTerm") String searchTerm,
+                                 @Param("location") String location,
+                                 @Param("numAdults") Integer numAdults,
+                                 @Param("numChildren") Integer numChildren
+                                  );
 
+    @Query("SELECT SUM(ohd.amount) FROM OrderHotelDetails ohd " +
+            "JOIN ohd.orderHotelsByOrderHotelId oh " +
+            "WHERE ohd.roomTypesByRoomTypeId.hotelId = :hotelId " +
+            "AND ((oh.checkIn <= :checkOut AND oh.checkOut > :checkOut) OR  " +
+            "(oh.checkIn < :checkIn AND oh.checkOut >= :checkIn) OR  " +
+            "(oh.checkIn >= :checkOut AND oh.checkOut <= :checkIn)) " +
+            "AND oh.orderStatus <> 4")
+    Integer calculateBookedRoomsByHotelId(@Param("hotelId") String hotelId,
+                                          @Param("checkIn") Timestamp checkIn,
+                                          @Param("checkOut") Timestamp checkOut);
 
-    @Query(value = "SELECT h.*  " +
-            "FROM hotels h  " +
-            "         JOIN room_types r ON h.id = r.hotel_id  " +
-            "WHERE (:location IS NULL OR UPPER(h.province) LIKE CONCAT('%', UPPER(:location), '%'))  " +
-            "  AND (:numAdults IS NULL OR r.capacity_adults >= :numAdults)  " +
-            "  AND (:numChildren IS NULL OR r.capacity_children >= :numChildren)  " +
-            "GROUP BY r.hotel_id  " +
-            "             having  (:numRooms IS NULL OR :numRooms <= (sum(r.amount_room) - (  " +
-            "    SELECT COALESCE(SUM(ohd.amount), 0) " +
-            "    FROM hotels h  " +
-            "             JOIN room_types r ON h.id = r.hotel_id  " +
-            "        JOIN order_hotel_details ohd  " +
-            "             JOIN order_hotels oh ON ohd.order_hotel_id = oh.id  " +
-            "    WHERE ohd.room_type_id = r.id  " +
-            "      AND ((oh.check_in <= :arrivalDate AND oh.check_out > :arrivalDate) OR  " +
-            "           (oh.check_in < :departureDate AND oh.check_out >= :departureDate) OR  " +
-            "           (oh.check_in >= :arrivalDate AND oh.check_out <= :departureDate))  " +
-            ")))",
-            countQuery = "SELECT COUNT(DISTINCT h.id) " +
-                    "FROM hotels h JOIN room_types r ON h.id = r.hotel_id " +
-                    "WHERE (:location IS NULL OR UPPER(h.province) LIKE CONCAT('%', UPPER(:location), '%')) AND " +
-                    "(:numAdults IS NULL OR r.capacity_adults >= :numAdults) AND " +
-                    "(:numChildren IS NULL OR r.capacity_children >= :numChildren)", nativeQuery = true)
-    Page<Hotels> findAvailableHotelsWithFilters(
-            @Param("location") String location,
-            @Param("departureDate") Timestamp departureDate,
-            @Param("arrivalDate") Timestamp arrivalDate,
-            @Param("numAdults") Integer numAdults,
-            @Param("numChildren") Integer numChildren,
-            @Param("numRooms") Integer numRooms,
-            Pageable pageable);
+    @Query("SELECT SUM(r.amountRoom) FROM Hotels h " +
+            "JOIN h.roomTypesById r " +
+            "WHERE h.id = :hotelId")
+    Integer calculateAllHotelRoomNumbersByHotelId(@Param("hotelId") String hotelId);
+
+    @Query("SELECT AVG(r.price) FROM Hotels h " +
+            "JOIN h.roomTypesById r " +
+            "WHERE h.id = :hotelId")
+    Integer CalculateAverageHotelRoomPrice(@Param("hotelId") String hotelId);
+
 
 }

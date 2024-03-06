@@ -3,11 +3,16 @@ package com.main.traveltour.restcontroller.staff;
 import com.main.traveltour.dto.staff.OrderVisitsDto;
 import com.main.traveltour.entity.OrderVisits;
 import com.main.traveltour.entity.ResponseObject;
+import com.main.traveltour.entity.TourDetails;
 import com.main.traveltour.service.staff.OrderVisitLocationService;
+import com.main.traveltour.service.staff.TourDetailsService;
 import com.main.traveltour.utils.EntityDtoUtils;
 import com.main.traveltour.utils.GenerateNextID;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @RestController
 @CrossOrigin(origins = "http://localhost:3000")
@@ -17,12 +22,23 @@ public class OrderVisitLocationAPI {
     @Autowired
     private OrderVisitLocationService orderVisitLocationService;
 
+    @Autowired
+    private TourDetailsService tourDetailsService;
+
     @PostMapping(value = "create-order-visit-location")
-    public ResponseObject createOrderVisit(@RequestPart OrderVisitsDto orderVisitsDto) {
+    public ResponseObject createOrderVisit(@RequestPart OrderVisitsDto orderVisitsDto, @RequestPart("tourDetailId") String tourDetailId) {
         try {
             String orderVisitId = GenerateNextID.generateNextCode("OVS", orderVisitLocationService.maxCode());
+
             OrderVisits orderVisits = EntityDtoUtils.convertToEntity(orderVisitsDto, OrderVisits.class);
             orderVisits.setId(orderVisitId);
+
+            List<TourDetails> tourDetailsList = new ArrayList<>();
+            TourDetails tourDetails = tourDetailsService.findById(tourDetailId);
+            tourDetailsList.add(tourDetails);
+
+            orderVisits.setTourDetails(tourDetailsList);
+
             orderVisitLocationService.save(orderVisits);
 
             return new ResponseObject("200", "Thêm mới thành công", orderVisits);

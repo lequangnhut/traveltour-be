@@ -108,15 +108,4 @@ public class BookingTours {
     @JsonBackReference
     private TourDetails tourDetailsByTourDetailId;
 
-    @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
-    @JoinTable(name = "booking_tour_hotels", joinColumns = {@JoinColumn(name = "booking_tour_id", referencedColumnName = "id")}, inverseJoinColumns = {@JoinColumn(name = "order_hotel_id", referencedColumnName = "id")})
-    private List<OrderHotels> orderHotels = new ArrayList<>();
-
-    @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
-    @JoinTable(name = "booking_tour_transportations", joinColumns = {@JoinColumn(name = "booking_tour_id", referencedColumnName = "id")}, inverseJoinColumns = {@JoinColumn(name = "order_transportation_id", referencedColumnName = "id")})
-    private List<OrderTransportations> orderTransportations = new ArrayList<>();
-
-    @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
-    @JoinTable(name = "booking_tour_visits", joinColumns = {@JoinColumn(name = "booking_tour_id", referencedColumnName = "id")}, inverseJoinColumns = {@JoinColumn(name = "order_visit_id", referencedColumnName = "id")})
-    private List<OrderVisits> orderVisits = new ArrayList<>();
 }

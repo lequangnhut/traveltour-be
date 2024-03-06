@@ -71,7 +71,7 @@ public class TourDetailsAPI {
 
     @GetMapping("/find-by-id/{id}")
     public ResponseObject findById(@PathVariable String id) {
-        Optional<TourDetails> tourDetails = tourDetailsService.findById(id);
+        Optional<TourDetails> tourDetails = Optional.ofNullable(tourDetailsService.findById(id));
         TourDetailsGetDataDto tourDetailsDto = EntityDtoUtils.convertOptionalToDto(tourDetails, TourDetailsGetDataDto.class);
 
         if (tourDetails.isEmpty()) {
@@ -119,7 +119,7 @@ public class TourDetailsAPI {
     @PutMapping("/update-tourDetail/{id}")
     public ResponseObject updateTourDetail(@PathVariable String id, @RequestPart TourDetailsDto tourDetailsDto) {
         try {
-            Optional<TourDetails> detailsOptional = tourDetailsService.findById(id);
+            Optional<TourDetails> detailsOptional = Optional.ofNullable(tourDetailsService.findById(id));
 
             if (detailsOptional.isPresent()) {
                 TourDetails details = detailsOptional.get();
