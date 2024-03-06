@@ -28,7 +28,8 @@ public interface VisitLocationsRepository extends JpaRepository<VisitLocations, 
 
     @Query("SELECT vl FROM VisitLocations vl " +
             "JOIN vl.visitLocationTicketsById vlt " +
-            "WHERE vl.isActive = TRUE AND vl.isAccepted = TRUE")
+            "WHERE vl.isActive = TRUE AND vl.isAccepted = TRUE " +
+            "GROUP BY vl.id")
     Page<VisitLocations> getAllByIsActiveIsTrueAndIsAcceptedIsTrue(Pageable pageable);
 
     @Query("SELECT vl FROM VisitLocations vl " +
