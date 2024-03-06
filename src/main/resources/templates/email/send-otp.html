@@ -389,22 +389,22 @@
                                  line-height:28px; text-align:center; margin-bottom:10px;">Hỗ trợ người dùng
                             </p>
                             <p style="text-align: justify; margin-bottom: 5px">Xin chào, <span th:text="${full_name}"></span> !</p>
-                            <p style="text-align:justify;margin-bottom:5px">
-                              Có vẻ như bạn đã quên mật khẩu của mình, chúng tôi xin gửi bạn một mã
-                              OTP để xác nhận hoạt động này nhé!.
-                            </p>
-                            <p style="text-align: justify; margin-bottom: 5px">
-                              Vui lòng không share mã này với bất cứ ai để bảo mật tài khoản của
-                              người dùng, mã OTP có hiệu lực trong 2 phút.
-                            </p>
-                            <p style="text-align: justify; margin-bottom: 5px; font-weight: bolder;padding-bottom: 15px;">
-                              Nếu bạn không thực hiện hành động quên mật khẩu này, vui lòng
-                              liên hệ chúng tôi.
+                            <p style="text-align:justify;margin-bottom:15px">
+                              Chúng tôi nhận được yêu cầu đổi mật khẩu cho tài khoản của bạn. Để hoàn thành quá trình đổi mật khẩu,
+                              vui lòng nhấp vào liên kết dưới đây:
                             </p>
                             <p style="text-align: center;margin: 0;padding: 0;">
                               <a th:href="@{'http://localhost:8080/api/v1/customer/forgot-pass/captcha/check-code-on-time/' + ${verifyCode} + '&' + ${email}}"
                                  class="btn" style="background-color: #63ab45; color: white">ĐỔI MẬT KHẨU</a>
                             </p>
+                            <p style="text-align: justify; margin-bottom: 5px">
+                              Nếu bạn không thực hiện yêu cầu này, hãy bỏ qua email này. Liên kết sẽ hết hạn sau 10 phút.
+                            </p>
+                            <p style="text-align: justify; margin-bottom: 5px; font-weight: bolder;padding-bottom: 15px;">
+                              Lưu ý rằng thông tin tài khoản của bạn sẽ được bảo vệ và không bao giờ được chia sẻ với bất
+                              kỳ ai khác. Nếu bạn gặp bất kỳ vấn đề nào, hãy liên hệ với chúng tôi.
+                            </p>
+
                             <p class="separator" style="padding-top: 25px; border-bottom:2px solid #706f6f; font-size:0pt; line-height:0pt;">&nbsp;</p>
                             <table width="100%" border="0" cellspacing="0" cellpadding="0">
                               <tr>

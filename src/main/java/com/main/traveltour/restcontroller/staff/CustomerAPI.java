@@ -1,7 +1,9 @@
 package com.main.traveltour.restcontroller.staff;
 
 import com.main.traveltour.dto.UsersDto;
+import com.main.traveltour.dto.customer.ChangePassDto;
 import com.main.traveltour.dto.staff.CustomerDto;
+import com.main.traveltour.entity.PassOTP;
 import com.main.traveltour.entity.ResponseObject;
 import com.main.traveltour.entity.Roles;
 import com.main.traveltour.entity.Users;
@@ -19,7 +21,9 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @CrossOrigin(origins = "http://localhost:3000")
@@ -104,6 +108,7 @@ public class CustomerAPI {
             Users user = usersService.findById(id);
 
             user.setEmail(customerDto.getEmail());
+            user.setGender(customerDto.getGender());
             user.setFullName(customerDto.getFullName());
             user.setBirth(customerDto.getBirth());
             user.setPhone(customerDto.getPhone());
@@ -130,5 +135,52 @@ public class CustomerAPI {
             return new ResponseObject("404", "Không tìm thấy dữ liệu", false);
         }
 
+    }
+
+    @PutMapping("update-customer-phone/{id}&{phone}")
+    public ResponseObject updatePhone(@PathVariable int id, @PathVariable String phone) {
+        try{
+            Users users = usersService.findById(id);
+            users.setPhone(phone);
+            Users updatePassUser = usersService.save(users);
+            //Thành công thì loại luôn token đó
+            return new ResponseObject("200", "Cập nhật thành công", updatePassUser);
+        }catch (Exception e) {
+            return new ResponseObject("404", "Cập nhật thất bại", null);
+        }
+    }
+
+    @PutMapping("update-pass/{id}")
+    public ResponseObject updatePasswordAPI(@PathVariable int id, @RequestBody ChangePassDto changePassDto) {
+        try{
+            Users users = usersService.findById(id);
+            //get link hình
+            //String imagePath = users.getAvatar();
+            //Lưu mật khẩu mới vào db
+            String passwordEncore = passwordEncoder.encode(changePassDto.getNewPass());
+            users.setPassword(passwordEncore);
+            //users.setAvatar(imagePath);
+            Users updatePassUser = usersService.save(users);
+
+            return new ResponseObject("200", "Cập nhật thành công", updatePassUser);
+        }catch (Exception e) {
+            return new ResponseObject("404", "Cập nhật thất bại", null);
+        }
+    }
+
+    @GetMapping("check-current-password/{id}&{currentPass}")
+    public Map<String, Boolean> checkCurrentPassAPI(@PathVariable int id, @PathVariable String currentPass) {
+        Users users = usersService.findById(id);
+        Map<String, Boolean> response = new HashMap<>();
+
+        if (users != null) {
+            boolean isCurrentPassCorrect = passwordEncoder.matches(currentPass, users.getPassword());
+            if (isCurrentPassCorrect) {
+                response.put("exists", true);
+            } else {
+                response.put("exists", false);
+            }
+        }
+        return response;
     }
 }
