@@ -51,7 +51,7 @@ public class TourCusAPI {
 
     @GetMapping("customer/tour/find-by-tour-detail-id/{tourDetailId}")
     private ResponseObject findByTourDetailId(@PathVariable String tourDetailId) {
-        Optional<TourDetails> tourDetails = tourDetailsService.findById(tourDetailId);
+        Optional<TourDetails> tourDetails = Optional.ofNullable(tourDetailsService.findById(tourDetailId));
         TourDetailsGetDataDto tourDetailsDto = EntityDtoUtils.convertOptionalToDto(tourDetails, TourDetailsGetDataDto.class);
 
         if (tourDetails.isEmpty()) {

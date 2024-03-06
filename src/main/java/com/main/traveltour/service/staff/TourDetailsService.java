@@ -6,7 +6,6 @@ import org.springframework.data.domain.Pageable;
 
 import java.sql.Timestamp;
 import java.util.List;
-import java.util.Optional;
 
 public interface TourDetailsService {
 
@@ -20,7 +19,7 @@ public interface TourDetailsService {
 
     Page<TourDetails> findAllWithSearch(String searchTerm, Pageable pageable);
 
-    Optional<TourDetails> findById(String id);
+    TourDetails findById(String id);
 
     TourDetails getById(String id);
 

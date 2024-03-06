@@ -16,7 +16,7 @@ import java.util.Optional;
 @Repository
 public interface TourDetailsRepository extends JpaRepository<TourDetails, Integer> {
 
-    Optional<TourDetails> findById(String id);
+    TourDetails findById(String id);
 
     TourDetails getById(String id);
 

@@ -1,7 +1,9 @@
 package com.main.traveltour.restcontroller.staff;
 
+import com.main.traveltour.dto.staff.HotelsDto;
 import com.main.traveltour.entity.Hotels;
 import com.main.traveltour.entity.ResponseObject;
+import com.main.traveltour.entity.TourDetails;
 import com.main.traveltour.service.staff.HotelServiceService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -19,17 +21,13 @@ import java.util.Optional;
 @RequestMapping("api/v1/staff/hotel-service/")
 public class HotelServiceAPI {
 
-    private final HotelServiceService hotelServiceService;
-
     @Autowired
-    public HotelServiceAPI(HotelServiceService hotelServiceService) {
-        this.hotelServiceService = hotelServiceService;
-    }
+    private HotelServiceService hotelServiceService;
 
     @GetMapping("find-all-hotel")
     public ResponseObject searchHotels(
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(defaultValue = "5") int size,
             @RequestParam(defaultValue = "id") String sortBy,
             @RequestParam(defaultValue = "asc") String sortDir,
             @RequestParam(required = false) String searchTerm,
@@ -47,15 +45,12 @@ public class HotelServiceAPI {
                 ? Sort.by(sortBy).ascending()
                 : Sort.by(sortBy).descending();
 
-        Page<Hotels> hotels = searchTerm != null && !searchTerm.isEmpty()
-                ? hotelServiceService.findBySearchTerm(searchTerm, PageRequest.of(page, size, sort))
-                : location != null || departureDate != null || arrivalDate != null || numAdults != null || numChildren != null
-                ? hotelServiceService.findAvailableHotelsWithFilters(location, departureTimestamp, arrivalTimestamp, numAdults, numChildren, numRooms, PageRequest.of(page, size, sort))
-                : hotelServiceService.findAllHotel(PageRequest.of(page, size, sort));
+        Page<HotelsDto> hotelsDtos = hotelServiceService.findAvailableHotelsWithFilters
+                (searchTerm, location, departureTimestamp, arrivalTimestamp, numAdults,
+                        numChildren, numRooms, PageRequest.of(page, size, sort));
 
-        return hotelsToResponseObject(hotels);
+        return hotelsToResponseObject(hotelsDtos);
     }
-
 
     @GetMapping("find-by-id/{id}")
     public ResponseObject findById(@PathVariable String id) {
@@ -67,11 +62,11 @@ public class HotelServiceAPI {
         }
     }
 
-    private ResponseObject hotelsToResponseObject(Page<Hotels> hotels) {
-        if (hotels.isEmpty()) {
+    private ResponseObject hotelsToResponseObject(Page<HotelsDto> hotelsDtos) {
+        if (hotelsDtos.isEmpty()) {
             return new ResponseObject("404", "Không tìm thấy dữ liệu", null);
         } else {
-            return new ResponseObject("200", "Đã tìm thấy dữ liệu", hotels);
+            return new ResponseObject("200", "Đã tìm thấy dữ liệu", hotelsDtos);
         }
     }
 }

@@ -12,7 +12,6 @@ import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.util.Date;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class TourDetailsServiceImpl implements TourDetailsService {
@@ -46,7 +45,7 @@ public class TourDetailsServiceImpl implements TourDetailsService {
     }
 
     @Override
-    public Optional<TourDetails> findById(String id) {
+    public TourDetails findById(String id) {
         return tourDetailsRepository.findById(id);
     }
 
