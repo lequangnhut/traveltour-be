@@ -6,13 +6,17 @@ import com.main.traveltour.configpayment.momo.enums.RequestType;
 import com.main.traveltour.configpayment.momo.models.PaymentResponse;
 import com.main.traveltour.configpayment.momo.processor.CreateOrderMoMo;
 import com.main.traveltour.configpayment.momo.shared.utils.LogUtils;
+import com.main.traveltour.entity.TourDetails;
+import com.main.traveltour.service.staff.TourDetailsService;
 import com.main.traveltour.utils.RandomUtils;
 import jakarta.servlet.http.HttpServletRequest;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
+import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -21,8 +25,15 @@ import java.util.Map;
 @RequestMapping("api/v1")
 public class MomoCusController {
 
+    @Autowired
+    private TourDetailsService tourDetailsService;
+
     @PostMapping("momo/submit-payment")
-    private ResponseEntity<Map<String, Object>> submitOrderVNPay(@RequestParam("price") int price, @RequestParam("bookingTourId") String bookingTourId) throws Exception {
+    private ResponseEntity<Map<String, Object>> submitOrderVNPay(@RequestParam("tourDetailId") String tourDetailId, @RequestParam("bookingTourId") String bookingTourId) throws Exception {
+        TourDetails tourDetails = tourDetailsService.findById(tourDetailId);
+        BigDecimal unitPriceDecimal = tourDetails.getUnitPrice();
+        int price = unitPriceDecimal.intValue();
+
         Map<String, Object> response = new HashMap<>();
 
         LogUtils.init();

@@ -7,6 +7,9 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.math.BigDecimal;
+import java.sql.Time;
+
 @Getter
 @Setter
 @NoArgsConstructor
@@ -25,15 +28,44 @@ public class TourTrips {
     private String tourDetailId;
 
     @Basic
+    @Column(name = "transportation_type_id")
+    private Integer transportationTypeId;
+
+    @Basic
+    @Column(name = "place_name")
+    private String placeName;
+
+    @Basic
+    @Column(name = "place_image")
+    private String placeImage;
+
+    @Basic
+    @Column(name = "place_address")
+    private String placeAddress;
+
+    @Basic
+    @Column(name = "place_cost")
+    private BigDecimal placeCost;
+
+    @Basic
+    @Column(name = "time_go")
+    private Time timeGo;
+
+    @Basic
+    @Column(name = "activity_in_day")
+    private String activityInDay;
+
+    @Basic
     @Column(name = "day_in_trip")
     private Integer dayInTrip;
-
-    @Lob
-    @Column(name = "activity_in_day", columnDefinition = "LONGTEXT")
-    private String activityInDay;
 
     @ManyToOne
     @JoinColumn(name = "tour_detail_id", referencedColumnName = "id", nullable = false, insertable = false, updatable = false)
     @JsonBackReference
     private TourDetails tourDetailsByTourDetailId;
+
+    @ManyToOne
+    @JoinColumn(name = "transportation_type_id", referencedColumnName = "id", nullable = false, insertable = false, updatable = false)
+    @JsonBackReference
+    private TransportationTypes transportationTypesByTransportationTypeId;
 }

@@ -13,6 +13,8 @@ public interface TourDetailsService {
 
     List<TourDetails> findAll();
 
+    List<Object[]> findTourTrend();
+
     Page<TourDetails> findAll(Pageable pageable);
 
     Page<TourDetails> findAllCustomer(String fromLocation, Timestamp departureDate, Timestamp arrivalDate, Integer price, List<Integer> tourTypesByTourTypeId, Pageable pageable);

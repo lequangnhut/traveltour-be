@@ -51,7 +51,7 @@ public class BookingTourVNPayCusAPI {
                 if (userId != null) {
                     BookingTours bookingTours = EntityDtoUtils.convertToEntity(bookingToursDto, BookingTours.class);
                     bookingTours.setDateCreated(new Timestamp(System.currentTimeMillis()));
-                    createBookingTour(bookingToursDto, bookingTours, bookingTourCustomersDto, totalAmountBook, 1);
+                    createBookingTour(bookingToursDto, bookingTours, bookingTourCustomersDto, 1);
 
                     createInvoices(bookingTours.getId());
                     createContracts(bookingTours.getId());
@@ -63,7 +63,7 @@ public class BookingTourVNPayCusAPI {
                 if (userId != null) {
                     BookingTours bookingTours = EntityDtoUtils.convertToEntity(bookingToursDto, BookingTours.class);
                     bookingTours.setDateCreated(new Timestamp(System.currentTimeMillis()));
-                    createBookingTour(bookingToursDto, bookingTours, bookingTourCustomersDto, totalAmountBook, 2);
+                    createBookingTour(bookingToursDto, bookingTours, bookingTourCustomersDto, 2);
 
                     createInvoices(bookingTours.getId());
                     createContracts(bookingTours.getId());
@@ -72,6 +72,7 @@ public class BookingTourVNPayCusAPI {
                     createUser(bookingToursDto, bookingTourCustomersDto, totalAmountBook, transactionId);
                 }
             }
+            emailService.queueEmailBookingTour(bookingDto);
             return new ResponseObject("200", "Thành công", bookingDto);
         } catch (Exception e) {
             return new ResponseObject("404", "Thất bại", null);
@@ -106,7 +107,7 @@ public class BookingTourVNPayCusAPI {
             BookingTours bookingTours = EntityDtoUtils.convertToEntity(bookingToursDto, BookingTours.class);
             bookingTours.setUserId(user.getId());
             bookingTours.setDateCreated(new Timestamp(System.currentTimeMillis()));
-            createBookingTour(bookingToursDto, bookingTours, bookingTourCustomersDto, totalAmountBook, 1);
+            createBookingTour(bookingToursDto, bookingTours, bookingTourCustomersDto, 1);
 
             createInvoices(bookingTours.getId());
             createContracts(bookingTours.getId());
@@ -115,11 +116,11 @@ public class BookingTourVNPayCusAPI {
             BookingTours bookingTours = EntityDtoUtils.convertToEntity(bookingToursDto, BookingTours.class);
             bookingTours.setUserId(user.getId());
             bookingTours.setDateCreated(new Timestamp(System.currentTimeMillis()));
-            createBookingTour(bookingToursDto, bookingTours, bookingTourCustomersDto, totalAmountBook, 2);
+            createBookingTour(bookingToursDto, bookingTours, bookingTourCustomersDto, 2);
         }
     }
 
-    private void createBookingTour(BookingToursDto bookingToursDto, BookingTours bookingTours, List<Map<String, String>> bookingTourCustomersDto, Integer totalAmountBook, int orderStatus) {
+    private void createBookingTour(BookingToursDto bookingToursDto, BookingTours bookingTours, List<Map<String, String>> bookingTourCustomersDto, int orderStatus) {
         String bookingTourId = bookingToursDto.getId();
 
         if (bookingToursDto.getPaymentMethod() == 1) { // 1: VNPay

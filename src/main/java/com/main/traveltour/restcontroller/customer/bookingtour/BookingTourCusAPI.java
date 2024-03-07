@@ -13,6 +13,7 @@ import com.main.traveltour.utils.RandomUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.math.BigDecimal;
 import java.sql.Date;
 import java.sql.Timestamp;
 import java.util.List;
@@ -39,13 +40,22 @@ public class BookingTourCusAPI {
     @PostMapping("book-tour/create-book-tour")
     private ResponseObject createBookingTour(@RequestBody BookingDto bookingDto) {
         BookingToursDto bookingToursDto = bookingDto.getBookingToursDto();
+        TourDetails tourDetails = tourDetailsService.findById(bookingToursDto.getTourDetailId());
         List<Map<String, String>> bookingTourCustomersDto = bookingDto.getBookingTourCustomersDto();
 
         Integer userId = bookingToursDto.getUserId();
         Integer totalAmountBook = bookingToursDto.getCapacityAdult() + bookingToursDto.getCapacityKid() + bookingToursDto.getCapacityBaby();
         try {
             if (userId != null) {
+                BigDecimal unitPriceDecimal = tourDetails.getUnitPrice();
+                int capacityAdult = bookingToursDto.getCapacityAdult();
+                int capacityKid = bookingToursDto.getCapacityKid();
+                int unitPrice = unitPriceDecimal.intValue();
+
+                BigDecimal orderTotal = BigDecimal.valueOf((capacityAdult * unitPrice) + (capacityKid * (unitPrice * 0.3)));
+
                 BookingTours bookingTourDto = EntityDtoUtils.convertToEntity(bookingToursDto, BookingTours.class);
+                bookingTourDto.setOrderTotal(orderTotal);
                 bookingTourDto.setDateCreated(new Timestamp(System.currentTimeMillis()));
                 if (bookingToursDto.getPaymentMethod() == 0) { // 0: travel
                     bookingTourDto.setOrderStatus(0); // 0: chờ thanh toán
@@ -59,6 +69,7 @@ public class BookingTourCusAPI {
             } else {
                 createUser(bookingToursDto, bookingTourCustomersDto, totalAmountBook);
             }
+            emailService.queueEmailBookingTour(bookingDto);
             return new ResponseObject("200", "Thành công", bookingDto);
         } catch (Exception e) {
             return new ResponseObject("404", "Thất bại", null);
@@ -66,9 +77,18 @@ public class BookingTourCusAPI {
     }
 
     private void createUser(BookingToursDto bookingToursDto, List<Map<String, String>> bookingTourCustomersDto, Integer totalAmountBook) {
+        TourDetails tourDetails = tourDetailsService.findById(bookingToursDto.getTourDetailId());
+
         String email = bookingToursDto.getCustomerEmail();
         String phone = bookingToursDto.getCustomerPhone();
         String citizenCard = bookingToursDto.getCustomerCitizenCard();
+
+        BigDecimal unitPriceDecimal = tourDetails.getUnitPrice();
+        int capacityAdult = bookingToursDto.getCapacityAdult();
+        int capacityKid = bookingToursDto.getCapacityKid();
+        int unitPrice = unitPriceDecimal.intValue();
+
+        BigDecimal orderTotal = BigDecimal.valueOf((capacityAdult * unitPrice) + (capacityKid * (unitPrice * 0.3)));
 
         Users userPhone = usersService.findByPhone(phone);
         Users userCitizenCard = usersService.findByCardId(citizenCard);
@@ -91,6 +111,7 @@ public class BookingTourCusAPI {
 
         BookingTours bookingTourDto = EntityDtoUtils.convertToEntity(bookingToursDto, BookingTours.class);
         bookingTourDto.setUserId(user.getId());
+        bookingTourDto.setOrderTotal(orderTotal);
         bookingTourDto.setDateCreated(new Timestamp(System.currentTimeMillis()));
         if (bookingToursDto.getPaymentMethod() == 0) { // 0: travel
             bookingTourDto.setOrderStatus(0); // 0: chờ thanh toán

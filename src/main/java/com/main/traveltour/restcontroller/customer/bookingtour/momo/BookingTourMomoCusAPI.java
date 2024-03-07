@@ -72,6 +72,7 @@ public class BookingTourMomoCusAPI {
                     createUser(bookingToursDto, bookingTourCustomersDto, totalAmountBook, transactionId);
                 }
             }
+            emailService.queueEmailBookingTour(bookingDto);
             return new ResponseObject("200", "Thành công", bookingDto);
         } catch (Exception e) {
             e.printStackTrace();

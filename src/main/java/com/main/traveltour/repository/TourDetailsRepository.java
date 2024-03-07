@@ -20,7 +20,9 @@ public interface TourDetailsRepository extends JpaRepository<TourDetails, Intege
 
     TourDetails getById(String id);
 
-    @Query("SELECT td FROM TourDetails td WHERE td.tourDetailStatus != 4 ORDER BY td.tourDetailStatus ASC")
+    @Query("SELECT td FROM TourDetails td " +
+            "WHERE td.tourDetailStatus != 4 " +
+            "ORDER BY td.tourDetailStatus ASC, td.dateCreated DESC")
     Page<TourDetails> findAllTourDetail(Pageable pageable);
 
     @Query("SELECT td FROM TourDetails td WHERE " +
@@ -54,4 +56,10 @@ public interface TourDetailsRepository extends JpaRepository<TourDetails, Intege
             @Param("price") Integer price,
             @Param("tourTypesByTourTypeId") List<Integer> tourTypesByTourTypeId,
             Pageable pageable);
+
+    @Query(value = "SELECT td.id as tour_id, t.tour_name, t.tour_img, td.unit_price, COUNT(td.id) as tour_detail_count " +
+            "FROM tours t LEFT JOIN tour_details td ON t.id = td.tour_id " +
+            "GROUP BY td.id, t.tour_name, t.tour_img, td.unit_price " +
+            "ORDER BY tour_detail_count DESC limit 5;", nativeQuery = true)
+    List<Object[]> findTourDetailTrend();
 }

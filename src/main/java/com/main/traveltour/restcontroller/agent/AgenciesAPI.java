@@ -47,8 +47,7 @@ public class AgenciesAPI {
         Agencies agency = agenciesService.save(agencies); // Lưu và nhận ID
         int agencyId = agency.getId(); // Lấy ID của đối tượng đã được lưu
 
-        createNotification(agencyId, "(D.Nghiệp) " + agencies.getNameAgency()
-                + " nộp hồ sơ đăng ký.");
+        createNotification(agencyId, "(D.Nghiệp) " + agencies.getNameAgency() + " nộp hồ sơ đăng ký.");
     }
 
     @GetMapping("/agent/agencies/check-duplicate-phone/{phone}")

@@ -1,6 +1,8 @@
 package com.main.traveltour.restcontroller.customer.bookingtour.vnpay;
 
 import com.main.traveltour.configpayment.vnpay.VNPayService;
+import com.main.traveltour.entity.TourDetails;
+import com.main.traveltour.service.staff.TourDetailsService;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -8,7 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
-import java.text.ParseException;
+import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -21,10 +23,17 @@ public class VNPayCusController {
     private VNPayService vnPayService;
 
     @Autowired
+    private TourDetailsService tourDetailsService;
+
+    @Autowired
     private HttpServletRequest request;
 
     @PostMapping("vnpay/submit-payment")
-    private ResponseEntity<Map<String, Object>> submitOrderVNPay(@RequestParam("price") int orderTotal, @RequestParam("orderInfo") String orderInfo) {
+    private ResponseEntity<Map<String, Object>> submitOrderVNPay(@RequestParam("tourDetailId") String tourDetailId, @RequestParam("orderInfo") String orderInfo) {
+        TourDetails tourDetails = tourDetailsService.findById(tourDetailId);
+        BigDecimal unitPriceDecimal = tourDetails.getUnitPrice();
+        int orderTotal = unitPriceDecimal.intValue();
+
         String baseUrl = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort();
         String vnPayUrl = vnPayService.createOrder(orderTotal, orderInfo, baseUrl);
 
@@ -35,7 +44,7 @@ public class VNPayCusController {
     }
 
     @GetMapping("vnpay/success-payment")
-    private String successOrderVNPay(HttpServletRequest request) throws ParseException {
+    private String successOrderVNPay(HttpServletRequest request) {
         int paymentStatus = vnPayService.orderReturn(request);
         String tourDetailId = null;
 

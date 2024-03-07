@@ -7,10 +7,15 @@ import com.main.traveltour.dto.customer.booking.BookingDto;
 import com.main.traveltour.dto.customer.booking.BookingToursDto;
 import com.main.traveltour.dto.superadmin.AccountDto;
 import com.main.traveltour.dto.superadmin.DataAccountDto;
+import com.main.traveltour.entity.TourDetails;
+import com.main.traveltour.entity.Tours;
 import com.main.traveltour.entity.Users;
 import com.main.traveltour.service.UsersService;
+import com.main.traveltour.service.staff.TourDetailsService;
+import com.main.traveltour.service.staff.ToursService;
 import com.main.traveltour.service.utils.EmailService;
 import com.main.traveltour.service.utils.ThymeleafService;
+import com.main.traveltour.utils.ReplaceUtils;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,7 +26,9 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.nio.charset.StandardCharsets;
+import java.sql.Timestamp;
 import java.util.*;
 
 @Service
@@ -45,6 +52,12 @@ public class EmailServiceImpl implements EmailService {
 
     @Autowired
     private UsersService userService;
+
+    @Autowired
+    private TourDetailsService tourDetailsService;
+
+    @Autowired
+    private ToursService toursService;
 
     @Value("${spring.mail.username}")
     private String email;
@@ -219,19 +232,60 @@ public class EmailServiceImpl implements EmailService {
         while (!emailQueueBookingTour.isEmpty()) {
             BookingDto bookingDto = emailQueueBookingTour.poll();
             BookingToursDto bookingToursDto = bookingDto.getBookingToursDto();
-            Users users = userService.findById(bookingToursDto.getUserId());
+
+            TourDetails tourDetails = tourDetailsService.findById(bookingToursDto.getTourDetailId());
+            Optional<Tours> tours = toursService.findById(tourDetails.getTourId());
+
+            String customerEmail = "";
+            if (bookingToursDto.getUserId() != null) {
+                Users users = userService.findById(bookingToursDto.getUserId());
+                customerEmail = users.getEmail();
+            }
 
             try {
                 MimeMessage message = sender.createMimeMessage();
                 MimeMessageHelper helper = new MimeMessageHelper(message, MimeMessageHelper.MULTIPART_MODE_MIXED_RELATED, StandardCharsets.UTF_8.name());
 
-                helper.setTo(users.getEmail());
+                BigDecimal unitPriceDecimal = tourDetails.getUnitPrice();
+                int capacityAdult = bookingToursDto.getCapacityAdult();
+                int capacityKid = bookingToursDto.getCapacityKid();
+                int unitPrice = unitPriceDecimal.intValue();
+
+                BigDecimal orderTotal = BigDecimal.valueOf((capacityAdult * unitPrice) + (capacityKid * (unitPrice * 0.3)));
+
+                if (bookingToursDto.getUserId() != null) {
+                    helper.setTo(customerEmail);
+                } else {
+                    helper.setTo(bookingToursDto.getCustomerEmail());
+                }
+
                 Map<String, Object> variables = new HashMap<>();
-                variables.put("name_agency", "");
+                variables.put("bookingId", bookingToursDto.getId());
+                variables.put("dateTimeBooking", new Timestamp(System.currentTimeMillis()));
+                variables.put("tourType", tours.get().getTourTypesByTourTypeId().getTourTypeName());
+                variables.put("customerName", bookingToursDto.getCustomerName());
+                variables.put("customerCitizenCard", bookingToursDto.getCustomerCitizenCard());
+                variables.put("customerPhone", bookingToursDto.getCustomerPhone());
+                if (bookingToursDto.getPaymentMethod() == 1) {
+                    variables.put("paymentMethod", "VÍ VNPAY");
+                } else if (bookingToursDto.getPaymentMethod() == 2) {
+                    variables.put("paymentMethod", "VÍ ZALOPAY");
+                } else if (bookingToursDto.getPaymentMethod() == 3) {
+                    variables.put("paymentMethod", "VÍ MOMO");
+                } else {
+                    variables.put("paymentMethod", "Tiền mặt");
+                }
+                variables.put("tourName", tours.get().getTourName());
+                variables.put("totalCapacity", capacityAdult + " Người lớn, " + capacityKid + " Trẻ em, " + bookingToursDto.getCapacityBaby() + " Em bé.");
+                variables.put("departureDate", tourDetails.getDepartureDate());
+                variables.put("arrivalDate", tourDetails.getArrivalDate());
+                variables.put("unitPriceAdult", ReplaceUtils.formatPrice(tourDetails.getUnitPrice()) + " VNĐ");
+                variables.put("unitPriceKid", ReplaceUtils.formatPrice(BigDecimal.valueOf(unitPrice * 0.3)) + " VNĐ");
+                variables.put("orderTotal", ReplaceUtils.formatPrice(orderTotal) + " VNĐ");
 
                 helper.setFrom(email);
-                helper.setText(thymeleafService.createContent("agency-failed", variables), true);
-                helper.setSubject("TRAVELTOUR XIN CHÂN THÀNH CẢM ƠN QUÝ KHÁCH ĐÃ ĐẶT TOUR CỦA CHÚNG TÔI.");
+                helper.setText(thymeleafService.createContent("order-tour-verify", variables), true);
+                helper.setSubject("DỊCH VỤ LỮ HÀNH TRAVELTOUR XIN CHÂN THÀNH CẢM ƠN QUÝ KHÁCH ĐÃ ĐẶT TOUR CỦA CHÚNG TÔI.");
 
                 sender.send(message);
             } catch (MessagingException e) {

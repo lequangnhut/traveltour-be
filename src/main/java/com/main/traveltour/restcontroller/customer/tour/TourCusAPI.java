@@ -27,7 +27,8 @@ public class TourCusAPI {
     private TourDetailsService tourDetailsService;
 
     @GetMapping("customer/tour/find-tour-detail-customer")
-    private ResponseObject findAllTourDetail(@RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "9") int size) {
+    private ResponseObject findAllTourDetail(@RequestParam(defaultValue = "0") int page,
+                                             @RequestParam(defaultValue = "9") int size) {
         Page<TourDetails> tourDetailsPage = tourDetailsService.findAll(PageRequest.of(page, size));
         Page<TourDetailsGetDataDto> tourDetailsDtoPage = tourDetailsPage.map(tourDetails -> EntityDtoUtils.convertToDto(tourDetails, TourDetailsGetDataDto.class));
 
@@ -35,6 +36,17 @@ public class TourCusAPI {
             return new ResponseObject("404", "Không tìm thấy dữ liệu", null);
         } else {
             return new ResponseObject("200", "Đã tìm thấy dữ liệu", tourDetailsDtoPage);
+        }
+    }
+
+    @GetMapping("customer/tour/find-all-tour-trend")
+    private ResponseObject findAllTourTrend() {
+        List<Object[]> tourTrend = tourDetailsService.findTourTrend();
+
+        if (tourTrend.isEmpty()) {
+            return new ResponseObject("404", "Không tìm thấy dữ liệu", null);
+        } else {
+            return new ResponseObject("200", "Đã tìm thấy dữ liệu", tourTrend);
         }
     }
 

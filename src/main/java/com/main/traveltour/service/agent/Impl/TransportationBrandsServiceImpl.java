@@ -4,6 +4,8 @@ import com.main.traveltour.entity.TransportationBrands;
 import com.main.traveltour.repository.TransportationBrandsRepository;
 import com.main.traveltour.service.agent.TransportationBrandsService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -22,6 +24,11 @@ public class TransportationBrandsServiceImpl implements TransportationBrandsServ
     @Override
     public List<TransportationBrands> findAllByAgencyId(int agencyId) {
         return transportationBrandsRepository.findAllByAgenciesIdAndIsActiveTrue(agencyId);
+    }
+
+    @Override
+    public Page<TransportationBrands> findAllCus(Pageable pageable) {
+        return transportationBrandsRepository.findAllCustomer(pageable);
     }
 
     @Override

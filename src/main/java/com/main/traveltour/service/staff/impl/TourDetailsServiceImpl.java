@@ -30,6 +30,11 @@ public class TourDetailsServiceImpl implements TourDetailsService {
     }
 
     @Override
+    public List<Object[]> findTourTrend() {
+        return tourDetailsRepository.findTourDetailTrend();
+    }
+
+    @Override
     public Page<TourDetails> findAll(Pageable pageable) {
         return tourDetailsRepository.findAllTourDetail(pageable);
     }

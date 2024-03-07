@@ -29,4 +29,8 @@ public class TransportationTypes {
     @OneToMany(mappedBy = "transportationTypesByTransportationTypeId")
     @JsonManagedReference
     private Collection<Transportations> transportationsById;
+
+    @OneToMany(mappedBy = "transportationTypesByTransportationTypeId")
+    @JsonManagedReference
+    private Collection<TourTrips> tourTripsById;
 }
