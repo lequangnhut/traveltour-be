@@ -1,9 +1,11 @@
-package com.main.traveltour.dto.staff;
+package com.main.traveltour.dto.staff.tour;
 
 import lombok.Data;
 import lombok.Value;
 
 import java.io.Serializable;
+import java.math.BigDecimal;
+import java.sql.Time;
 
 /**
  * DTO for {@link com.main.traveltour.entity.TourTrips}
@@ -15,7 +17,15 @@ public class TourTripsDto {
 
     String tourDetailId;
 
-    Integer dayInTrip;
+    Integer transportationTypeId;
+
+    String placeName;
+
+    String placeAddress;
+
+    BigDecimal placeCost;
 
     String activityInDay;
+
+    Integer dayInTrip;
 }

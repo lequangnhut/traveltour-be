@@ -1,20 +1,15 @@
-package com.main.traveltour.dto.staff;
+package com.main.traveltour.dto.staff.tour;
 
-import com.main.traveltour.entity.TourDetailImages;
-import com.main.traveltour.entity.TourTypes;
-import com.main.traveltour.entity.Tours;
-import com.main.traveltour.entity.Users;
 import lombok.Data;
 
 import java.math.BigDecimal;
 import java.sql.Timestamp;
-import java.util.Collection;
 
 /**
  * DTO for {@link com.main.traveltour.entity.TourDetails}
  */
 @Data
-public class TourDetailsGetDataDto {
+public class TourDetailsDto {
 
     String id;
 
@@ -45,12 +40,4 @@ public class TourDetailsGetDataDto {
     String fromLocation;
 
     String toLocation;
-
-    Tours toursByTourId;
-
-    TourTypes tourTypes;
-
-    Collection<TourDetailImages> tourDetailImagesById;
-
-    Users usersByGuideId;
 }

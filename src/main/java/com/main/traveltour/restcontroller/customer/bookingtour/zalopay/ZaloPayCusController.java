@@ -69,7 +69,7 @@ public class ZaloPayCusController {
                 put("bankcode", "");
                 put("item", new JSONObject(item).toString());
                 put("embeddata", new JSONObject(embeddata).toString());
-                put("return_url", "http://localhost:8080/api/v1/vnpay/success-payment");
+                put("callback_url", "http://localhost:8080/api/v1/vnpay/success-payment");
             }};
 
             // appid +”|”+ apptransid +”|”+ appuser +”|”+ amount +"|" + apptime +”|”+ embeddata +"|" +item

@@ -1,6 +1,6 @@
-package com.main.traveltour.restcontroller.staff;
+package com.main.traveltour.restcontroller.staff.tour;
 
-import com.main.traveltour.dto.staff.ToursDto;
+import com.main.traveltour.dto.staff.tour.ToursDto;
 import com.main.traveltour.entity.ResponseObject;
 import com.main.traveltour.entity.Tours;
 import com.main.traveltour.service.staff.ToursService;

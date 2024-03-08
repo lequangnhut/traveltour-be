@@ -1,8 +1,8 @@
-package com.main.traveltour.restcontroller.staff;
+package com.main.traveltour.restcontroller.staff.tour;
 
-import com.main.traveltour.dto.staff.TourDetailImagesDto;
-import com.main.traveltour.dto.staff.TourDetailsDto;
-import com.main.traveltour.dto.staff.TourDetailsGetDataDto;
+import com.main.traveltour.dto.staff.tour.TourDetailImagesDto;
+import com.main.traveltour.dto.staff.tour.TourDetailsDto;
+import com.main.traveltour.dto.staff.tour.TourDetailsGetDataDto;
 import com.main.traveltour.entity.ResponseObject;
 import com.main.traveltour.entity.TourDestinations;
 import com.main.traveltour.entity.TourDetailImages;
@@ -74,7 +74,7 @@ public class TourDetailsAPI {
         Optional<TourDetails> tourDetails = Optional.ofNullable(tourDetailsService.findById(id));
         TourDetailsGetDataDto tourDetailsDto = EntityDtoUtils.convertOptionalToDto(tourDetails, TourDetailsGetDataDto.class);
 
-        if (tourDetails.isEmpty()) {
+        if (tourDetailsDto == null) {
             return new ResponseObject("404", "Không tìm thấy dữ liệu", null);
         } else {
             return new ResponseObject("200", "Đã tìm thấy dữ liệu", tourDetailsDto);

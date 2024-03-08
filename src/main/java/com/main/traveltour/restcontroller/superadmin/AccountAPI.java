@@ -1,7 +1,6 @@
 package com.main.traveltour.restcontroller.superadmin;
 
 import com.main.traveltour.dto.UsersDto;
-import com.main.traveltour.dto.staff.ToursDto;
 import com.main.traveltour.dto.superadmin.AccountDto;
 import com.main.traveltour.dto.superadmin.DataAccountDto;
 import com.main.traveltour.entity.*;
@@ -16,16 +15,10 @@ import com.main.traveltour.service.utils.FileUpload;
 import com.main.traveltour.utils.EntityDtoUtils;
 import com.main.traveltour.utils.GenerateNextID;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.sql.Timestamp;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 

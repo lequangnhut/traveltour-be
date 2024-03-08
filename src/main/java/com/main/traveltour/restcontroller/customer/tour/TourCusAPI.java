@@ -1,6 +1,6 @@
 package com.main.traveltour.restcontroller.customer.tour;
 
-import com.main.traveltour.dto.staff.TourDetailsGetDataDto;
+import com.main.traveltour.dto.staff.tour.TourDetailsGetDataDto;
 import com.main.traveltour.entity.ResponseObject;
 import com.main.traveltour.entity.TourDetails;
 import com.main.traveltour.entity.TourTypes;

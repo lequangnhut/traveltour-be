@@ -6,9 +6,14 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 public class TimeUtils {
-    public static Time parseTimeString(String timeString) throws ParseException {
-        SimpleDateFormat dateFormat = new SimpleDateFormat("HH:mm:ss");
-        Date parsedDate = dateFormat.parse(timeString);
-        return new Time(parsedDate.getTime());
+
+    public static Time parseTime(String timeString) throws ParseException {
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ");
+        Date date = sdf.parse(timeString);
+
+        SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm:ss");
+        String timeOnly = timeFormat.format(date);
+
+        return Time.valueOf(timeOnly);
     }
 }

@@ -1,4 +1,4 @@
-package com.main.traveltour.dto.staff;
+package com.main.traveltour.dto.staff.tour;
 
 import com.main.traveltour.entity.TourTypes;
 import lombok.Data;
