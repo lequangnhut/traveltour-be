@@ -6,11 +6,11 @@ import org.springframework.data.domain.Pageable;
 
 
 public interface BookingTourService {
-    Page<BookingTours> getAll(Pageable pageable);
+    Page<BookingTours> getAll(Integer orderStatus, Pageable pageable);
 
     BookingTours findById(String bookingTourId);
 
-    Page<BookingTours> findBySearchTerm(String searchTerm, Pageable pageable);
+    Page<BookingTours> findBySearchTerm(Integer orderStatus, String searchTerm, Pageable pageable);
 
     void update(BookingTours bookingTour);
 }

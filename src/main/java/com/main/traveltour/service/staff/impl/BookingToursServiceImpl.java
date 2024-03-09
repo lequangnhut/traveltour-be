@@ -15,8 +15,8 @@ public class BookingToursServiceImpl implements BookingTourService {
 
 
     @Override
-    public Page<BookingTours> getAll(org.springframework.data.domain.Pageable pageable) {
-        return repo.findAllBookingTours(pageable);
+    public Page<BookingTours> getAll(Integer orderStatus, Pageable pageable) {
+        return repo.findAllBookingTours(orderStatus, pageable);
     }
 
     public BookingTours findById(String bookingTourId) {
@@ -24,8 +24,8 @@ public class BookingToursServiceImpl implements BookingTourService {
     }
 
     @Override
-    public Page<BookingTours> findBySearchTerm(String searchTerm, Pageable pageable) {
-        return repo.findBySearchTerm(searchTerm, pageable);
+    public Page<BookingTours> findBySearchTerm(Integer orderStatus, String searchTerm, Pageable pageable) {
+        return repo.findBySearchTerm(orderStatus, searchTerm, pageable);
     }
 
     @Override

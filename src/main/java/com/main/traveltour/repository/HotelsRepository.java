@@ -1,15 +1,14 @@
 package com.main.traveltour.repository;
 
 import com.main.traveltour.entity.Hotels;
+import com.main.traveltour.entity.OrderHotels;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
-import java.math.BigDecimal;
-import java.sql.Timestamp;
-import java.sql.Date;
+import java.util.Date;
 import java.util.List;
 
 public interface HotelsRepository extends JpaRepository<Hotels, String> {
@@ -34,7 +33,8 @@ public interface HotelsRepository extends JpaRepository<Hotels, String> {
 
     @Query("SELECT h FROM Hotels h " +
             "JOIN h.roomTypesById r " +
-            "WHERE ((:searchTerm IS NULL) OR (UPPER(h.hotelName) LIKE %:searchTerm% OR " +
+            "WHERE (h.isAccepted = TRUE AND h.isActive = TRUE AND h.isDeleted = FALSE) AND " +
+            "((:searchTerm IS NULL) OR (UPPER(h.hotelName) LIKE %:searchTerm% OR " +
             "UPPER(h.phone) LIKE %:searchTerm% OR " +
             "UPPER(h.province) LIKE %:searchTerm% OR " +
             "UPPER(h.district) LIKE %:searchTerm% OR " +
@@ -48,18 +48,18 @@ public interface HotelsRepository extends JpaRepository<Hotels, String> {
                                  @Param("location") String location,
                                  @Param("numAdults") Integer numAdults,
                                  @Param("numChildren") Integer numChildren
-                                  );
+    );
 
     @Query("SELECT SUM(ohd.amount) FROM OrderHotelDetails ohd " +
             "JOIN ohd.orderHotelsByOrderHotelId oh " +
             "WHERE ohd.roomTypesByRoomTypeId.hotelId = :hotelId " +
-            "AND ((oh.checkIn <= :checkOut AND oh.checkOut > :checkOut) OR  " +
-            "(oh.checkIn < :checkIn AND oh.checkOut >= :checkIn) OR  " +
-            "(oh.checkIn >= :checkOut AND oh.checkOut <= :checkIn)) " +
+            "AND ((oh.checkIn BETWEEN :checkIn AND :checkOut) " +
+            "OR (oh.checkOut BETWEEN :checkIn AND :checkOut)) " +
             "AND oh.orderStatus <> 4")
     Integer calculateBookedRoomsByHotelId(@Param("hotelId") String hotelId,
-                                          @Param("checkIn") Timestamp checkIn,
-                                          @Param("checkOut") Timestamp checkOut);
+                                          @Param("checkIn") Date checkIn,
+                                          @Param("checkOut") Date checkOut);
+
 
     @Query("SELECT SUM(r.amountRoom) FROM Hotels h " +
             "JOIN h.roomTypesById r " +
@@ -70,6 +70,28 @@ public interface HotelsRepository extends JpaRepository<Hotels, String> {
             "JOIN h.roomTypesById r " +
             "WHERE h.id = :hotelId")
     Integer CalculateAverageHotelRoomPrice(@Param("hotelId") String hotelId);
+
+    //fill khách sạn theo tour
+
+    @Query("SELECT h FROM Hotels h " +
+            "JOIN h.roomTypesById rt " +
+            "JOIN rt.orderHotelDetailsById ohd " +
+            "JOIN ohd.orderHotelsByOrderHotelId oh " +
+            "JOIN oh.tourDetails td " +
+            "WHERE (td.id = :tourDetailId) AND " +
+            "(oh.orderStatus = :orderHotelStatus) AND " +
+            "(:searchTerm IS NULL OR (UPPER(h.hotelName) LIKE %:searchTerm% OR " +
+            "UPPER(h.province) LIKE %:searchTerm% OR " +
+            "UPPER(h.district) LIKE %:searchTerm% OR " +
+            "UPPER(h.ward) LIKE %:searchTerm% OR " +
+            "UPPER(h.address) LIKE %:searchTerm% OR " +
+            "UPPER(h.phone) LIKE %:searchTerm% OR " +
+            "CAST(h.floorNumber AS string) LIKE %:searchTerm%)) " +
+            "GROUP BY h.id")
+    Page<Hotels> findHotelByTourDetailId(@Param("tourDetailId") String tourDetailId,
+                                         @Param("orderHotelStatus") Integer orderHotelStatus,
+                                         @Param("searchTerm") String searchTerm,
+                                         Pageable pageable);
 
 
 }

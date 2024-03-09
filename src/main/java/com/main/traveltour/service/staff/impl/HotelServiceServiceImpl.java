@@ -11,7 +11,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
-import java.sql.Timestamp;
+import java.util.Date;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
@@ -24,7 +24,7 @@ public class HotelServiceServiceImpl implements HotelServiceService {
     private HotelsRepository repo;
 
     @Override
-    public Page<HotelsDto> findAvailableHotelsWithFilters(String searchTerm, String location, Timestamp checkIn, Timestamp checkOut, Integer numAdults, Integer numChildren, Integer numRooms, Pageable pageable) {
+    public Page<HotelsDto> findAvailableHotelsWithFilters(String searchTerm, String location, Date checkIn, Date checkOut, Integer numAdults, Integer numChildren, Integer numRooms, Pageable pageable) {
         List<Hotels> hotelsList = repo.findAllBySearch(searchTerm, location, numAdults, numChildren);
 
         List<HotelsDto> filteredAndConvertedHotels = hotelsList.stream().map(hotel -> {
@@ -43,7 +43,7 @@ public class HotelServiceServiceImpl implements HotelServiceService {
         return new PageImpl<>(paginatedList, pageable, filteredAndConvertedHotels.size());
     }
 
-    private int calculateBookedRoomsByHotelId(String hotelId, Timestamp checkIn, Timestamp checkOut) {
+    private int calculateBookedRoomsByHotelId(String hotelId, Date checkIn, Date checkOut) {
         Integer bookedRooms = repo.calculateBookedRoomsByHotelId(hotelId, checkIn, checkOut);
         return bookedRooms != null ? bookedRooms : 0;
     }
