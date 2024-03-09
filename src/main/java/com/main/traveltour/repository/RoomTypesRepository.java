@@ -64,4 +64,6 @@ public interface RoomTypesRepository extends JpaRepository<RoomTypes, String>, J
 
 
     Optional<RoomTypes> findById(String s);
+
+    List<RoomTypes> findByIdIn(List<String> ids);
 }

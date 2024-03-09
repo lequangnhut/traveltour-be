@@ -34,4 +34,9 @@ public class RoomBedsServiceImplAD implements RoomBedsServiceAD {
     public List<RoomBeds> findAllRoomBedType() {
         return roomBedsRepository.findAll();
     }
+
+    @Override
+    public RoomBeds findById(int id) {
+        return roomBedsRepository.findById(id).get();
+    }
 }

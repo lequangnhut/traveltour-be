@@ -3,7 +3,12 @@ package com.main.traveltour.service.agent.Impl;
 import com.main.traveltour.dto.agent.hotel.RoomTypeCustomerDto;
 import com.main.traveltour.entity.*;
 import com.main.traveltour.repository.RoomTypesRepository;
+import com.main.traveltour.service.admin.RoomBedsServiceAD;
+import com.main.traveltour.service.agent.BedTypeService;
+import com.main.traveltour.service.agent.RoomImageService;
 import com.main.traveltour.service.agent.RoomTypeService;
+import com.main.traveltour.service.utils.FileUploadResize;
+import com.main.traveltour.utils.GenerateNextID;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.criteria.*;
 import org.slf4j.Logger;
@@ -13,9 +18,12 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.sql.Timestamp;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -29,6 +37,17 @@ public class RoomTypeServiceImpl implements RoomTypeService {
     @Autowired
     private EntityManager entityManager;
 
+    @Autowired
+    private FileUploadResize fileUploadResize;
+
+    @Autowired
+    private RoomTypeService roomTypeService;
+
+    @Autowired
+    private RoomImageService roomImageService;
+
+    @Autowired
+    private RoomBedsServiceAD roomBedsServiceAD;
     private static final Logger LOGGER = LoggerFactory.getLogger(RoomTypes.class);
 
     @Override
@@ -72,12 +91,14 @@ public class RoomTypeServiceImpl implements RoomTypeService {
     }
 
     @Transactional(readOnly = true)
-    public RoomTypeCustomerDto findRoomTypesWithFiltersCustomer(BigDecimal priceFilter, List<Integer> hotelTypeIdListFilter,
-                                                                List<Integer> placeUtilitiesIdListFilter, List<Integer> roomUtilitiesIdListFilter,
-                                                                Boolean breakfastIncludedFilter, Boolean freeCancellationFilter, List<Integer> roomBedsIdListFilter,
-                                                                Integer amountRoomFilter, String locationFilter, Integer capacityAdultsFilter,
-                                                                Integer capacityChildrenFilter, Boolean isDeletedHotelFilter, Boolean isDeletedRoomTypeFilter,
-                                                                Timestamp checkInDateFiller, Timestamp checkOutDateFiller, int page, int size, String sort) {
+    public RoomTypeCustomerDto findRoomTypesWithFiltersCustomer(
+            BigDecimal priceFilter, List<Integer> hotelTypeIdListFilter,
+            List<Integer> placeUtilitiesIdListFilter, List<Integer> roomUtilitiesIdListFilter,
+            Boolean breakfastIncludedFilter, Boolean freeCancellationFilter, List<Integer> roomBedsIdListFilter,
+            Integer amountRoomFilter, String locationFilter, Integer capacityAdultsFilter,
+            Integer capacityChildrenFilter, Boolean isDeletedHotelFilter, Boolean isDeletedRoomTypeFilter,
+            Timestamp checkInDateFiller, Timestamp checkOutDateFiller,
+            String hotelIdFilter, int page, int size, String sort) {
 
         CriteriaBuilder builder = entityManager.getCriteriaBuilder();
         CriteriaQuery<RoomTypes> query = builder.createQuery(RoomTypes.class);
@@ -188,6 +209,11 @@ public class RoomTypeServiceImpl implements RoomTypeService {
             }
         }
 
+        if (hotelIdFilter != null && !hotelIdFilter.isEmpty()) {
+            Join<RoomTypes, Hotels> hotelsJoin = root.join("hotelsByHotelId", JoinType.LEFT);
+            predicates.add(builder.equal(hotelsJoin.get("id"), hotelIdFilter));
+        }
+
         query.where(predicates.toArray(new Predicate[0]));
 
         roomTypeCustomerResult.setTotalCount(entityManager.createQuery(query).getResultList().size());
@@ -199,6 +225,42 @@ public class RoomTypeServiceImpl implements RoomTypeService {
         );
 
         return roomTypeCustomerResult;
+    }
+
+    @Override
+    public List<RoomTypes> findAllRoomTypeByIds(List<String> ids) {
+        return roomTypesRepository.findByIdIn(ids);
+    }
+
+    @Override
+    public void registerRoomType(RoomTypes roomTypes, String hotelId, List<Integer> roomTypeUtilities, MultipartFile roomTypeAvatar, List<MultipartFile> listRoomTypeImg, LocalTime checkinTime, LocalTime checkoutTime, Integer bedTypeId) throws IOException {
+        String roomTypeAvatarUpload = fileUploadResize.uploadFileResize(roomTypeAvatar);
+        String roomTypeId = GenerateNextID.generateNextCode("RT", roomTypeService.findMaxId());
+
+        roomTypes.setId(roomTypeId);
+        roomTypes.setHotelId(hotelId);
+        roomTypes.setRoomTypeAvatar(roomTypeAvatarUpload);
+        roomTypes.setCheckinTime(checkinTime);
+        roomTypes.setCheckoutTime(checkoutTime);
+        roomTypes.setIsDeleted(false);
+        roomTypesRepository.save(roomTypes);
+
+        listRoomTypeImg.stream().map(roomTypeImage -> {
+            RoomImages roomImages = new RoomImages();
+            roomImages.setRoomTypeId(roomTypes.getId());
+            try {
+                roomImages.setRoomTypeImg(fileUploadResize.uploadFileResizeAndReducedQuality(roomTypeImage));
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+            return roomImages;
+        }).forEach(roomImageService::save);
+
+        RoomBeds roomBeds = RoomBeds.builder()
+                .roomTypeId(roomTypes.getId())
+                .bedTypeId(bedTypeId)
+                .build();
+        roomBedsServiceAD.save(roomBeds);
     }
 
 }

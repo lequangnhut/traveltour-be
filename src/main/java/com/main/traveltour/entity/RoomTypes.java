@@ -19,6 +19,7 @@ import java.util.List;
 @AllArgsConstructor
 @Entity
 @ToString
+@Builder
 @Table(name = "room_types", schema = "travel_tour")
 public class RoomTypes {
 

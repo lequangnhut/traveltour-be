@@ -4,9 +4,12 @@ import com.main.traveltour.dto.agent.hotel.RoomTypeCustomerDto;
 import com.main.traveltour.entity.RoomTypes;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.sql.Timestamp;
+import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -39,8 +42,13 @@ public interface RoomTypeService {
             Boolean isDeletedRoomTypeFilter,
             Timestamp checkInDateFiller,
             Timestamp checkOutDateFiller,
+            String hotelIdFilter,
             int page,
             int size,
             String sort
     );
+
+    List<RoomTypes> findAllRoomTypeByIds(List<String> ids);
+
+    void registerRoomType(RoomTypes roomTypeDto, String hotelId, List<Integer> roomTypeUtilities, MultipartFile roomTypeAvatar, List<MultipartFile> listRoomTypeImg, LocalTime checkinTime, LocalTime checkoutTime, Integer bedTypeId) throws IOException;
 }
