@@ -1,9 +1,7 @@
 package com.main.traveltour.restcontroller.staff.tour;
 
-import com.main.traveltour.dto.staff.tour.TourDetailsGetDataDto;
 import com.main.traveltour.dto.staff.tour.TourTripGetDataDto;
 import com.main.traveltour.dto.staff.tour.TourTripsDto;
-import com.main.traveltour.dto.staff.tour.TourTypesDto;
 import com.main.traveltour.entity.ResponseObject;
 import com.main.traveltour.entity.TourTrips;
 import com.main.traveltour.service.staff.TourTripsService;
@@ -14,13 +12,16 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.relational.core.sql.In;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.sql.Time;
 import java.time.LocalTime;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @RestController
@@ -34,7 +35,7 @@ public class TourTripsAPI {
     @Autowired
     private FileUpload fileUpload;
 
-    @GetMapping("find-all-tourTrips/{tourId}")
+    @GetMapping("find-all-tourTrips")
     private ResponseObject findAllTourTrips(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size,
@@ -56,11 +57,24 @@ public class TourTripsAPI {
         }
     }
 
-    @GetMapping("find-tourTrips-by-tourId/{tourId}")
+    @GetMapping("find-tourTrips-by-tourId")
     private ResponseObject findTourTripsByTourId(@RequestParam(defaultValue = "null") String tourId) {
-        List<TourTrips> items = tourTripsService.findTourTripsByTourId(tourId);
+        Map<String, Object> response = new HashMap<>();
 
-        if (items.isEmpty()) {
+        List<TourTrips> tourTrips = tourTripsService.findTourTripsByTourId(tourId);
+        List<Integer> dayInTrip = tourTripsService.findAllDayInTrip(tourId);
+
+        response.put("tourTrips", tourTrips);
+        response.put("dayInTrip", dayInTrip);
+
+        return new ResponseObject("200", "Đã tìm thấy dữ liệu", response);
+    }
+
+    @GetMapping("find-tourTrips-dayInTrip")
+    private ResponseObject findByTourIdAndDayInTrip(@RequestParam(defaultValue = "1") int dayInTrip) {
+        List<TourTrips> items = tourTripsService.findByDayInTrip(dayInTrip);
+
+        if (items == null) {
             return new ResponseObject("404", "Không tìm thấy dữ liệu", null);
         } else {
             return new ResponseObject("200", "Đã tìm thấy dữ liệu", items);
@@ -83,16 +97,13 @@ public class TourTripsAPI {
         try {
             String imagesPath = fileUpload.uploadFile(placeImage);
             Time placeTimeGo = TimeUtils.parseTime(timeGo);
-            int dayInTripIsMax = tourTripsService.getDayInTripIsMax(tourTripsDto.getTourDetailId());
 
             TourTrips tourTrips = EntityDtoUtils.convertToEntity(tourTripsDto, TourTrips.class);
             tourTrips.setPlaceImage(imagesPath);
             tourTrips.setTimeGo(placeTimeGo);
-            tourTrips.setDayInTrip(dayInTripIsMax + 1);
             tourTripsService.save(tourTrips);
             return new ResponseObject("200", "Thêm mới thành công", "thành công");
         } catch (Exception e) {
-            e.printStackTrace();
             return new ResponseObject("500", "Thêm mới thất bại", "thất bại");
         }
     }
@@ -117,7 +128,6 @@ public class TourTripsAPI {
             TourTrips updatedTourDetail = tourTripsService.save(tourTrips);
             return new ResponseObject("200", "Cập nhật thành công", updatedTourDetail);
         } catch (Exception e) {
-            e.printStackTrace();
             return new ResponseObject("500", "Cập nhật thất bại", null);
         }
     }
@@ -125,8 +135,8 @@ public class TourTripsAPI {
     @DeleteMapping("delete-tourTrips/{id}")
     public ResponseObject deleteTourTrips(@PathVariable int id) {
         try {
-            TourTrips TourTrips = tourTripsService.getById(id);
-            tourTripsService.delete(TourTrips);
+            TourTrips tourTrips = tourTripsService.getById(id);
+            tourTripsService.delete(tourTrips);
             return new ResponseObject("204", "Xóa thành công", null);
         } catch (Exception e) {
             return new ResponseObject("500", "Xó    a thất bại", null);

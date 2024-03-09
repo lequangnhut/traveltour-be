@@ -9,9 +9,11 @@ import java.util.Optional;
 
 public interface TourTripsService {
 
-    int getDayInTripIsMax(String tourDetailId);
-
     TourTrips getById(int id);
+
+    List<TourTrips> findByDayInTrip(int dayInTrip);
+
+    List<Integer> findAllDayInTrip(String tourDetail);
 
     List<TourTrips> findAll();
 

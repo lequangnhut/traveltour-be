@@ -15,10 +15,19 @@ public interface TourTripsRepository extends JpaRepository<TourTrips, Integer> {
 
     TourTrips getById(int id);
 
-    @Query("SELECT COALESCE(MAX(tt.dayInTrip),0) FROM TourTrips tt WHERE tt.tourDetailId = :tourDetailId")
-    int getDayInTripIsMax(@Param("tourDetailId") String id);
-
-    List<TourTrips> findTourTripsByTourDetailId(String tourDetailId);
-
     Page<TourTrips> findTourTripsByTourDetailId(String tourDetailId, Pageable pageable);
+
+    @Query("SELECT tt.dayInTrip " +
+            "FROM TourTrips tt " +
+            "WHERE tt.tourDetailId = :tourDetailId " +
+            "GROUP BY tt.dayInTrip")
+    List<Integer> findAllByDayInTrip(@Param("tourDetailId") String id);
+
+    @Query("SELECT tt " +
+            "FROM TourTrips tt " +
+            "WHERE tt.tourDetailId = :tourDetailId " +
+            "AND tt.dayInTrip = 1")
+    List<TourTrips> findByTourDetailId(@Param("tourDetailId") String tourDetailId);
+
+    List<TourTrips> findByDayInTrip(int dayInTrip);
 }

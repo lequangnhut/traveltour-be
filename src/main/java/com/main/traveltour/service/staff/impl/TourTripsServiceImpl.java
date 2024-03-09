@@ -18,23 +18,8 @@ public class TourTripsServiceImpl implements TourTripsService {
     private TourTripsRepository repo;
 
     @Override
-    public int getDayInTripIsMax(String tourDetailId) {
-        return repo.getDayInTripIsMax(tourDetailId);
-    }
-
-    @Override
     public TourTrips getById(int id) {
         return repo.getById(id);
-    }
-
-    @Override
-    public List<TourTrips> findAll() {
-        return repo.findAll();
-    }
-
-    @Override
-    public Page<TourTrips> findAll(Pageable pageable) {
-        return repo.findAll(pageable);
     }
 
     @Override
@@ -43,13 +28,33 @@ public class TourTripsServiceImpl implements TourTripsService {
     }
 
     @Override
-    public List<TourTrips> findTourTripsByTourId(String tourDetailId) {
-        return repo.findTourTripsByTourDetailId(tourDetailId);
+    public Page<TourTrips> findAll(Pageable pageable) {
+        return repo.findAll(pageable);
     }
 
     @Override
     public Page<TourTrips> findTourTripsByTourId(String tourDetailId, Pageable pageable) {
         return repo.findTourTripsByTourDetailId(tourDetailId, pageable);
+    }
+
+    @Override
+    public List<TourTrips> findAll() {
+        return repo.findAll();
+    }
+
+    @Override
+    public List<Integer> findAllDayInTrip(String tourDetail) {
+        return repo.findAllByDayInTrip(tourDetail);
+    }
+
+    @Override
+    public List<TourTrips> findTourTripsByTourId(String tourDetailId) {
+        return repo.findByTourDetailId(tourDetailId);
+    }
+
+    @Override
+    public List<TourTrips> findByDayInTrip(int dayInTrip) {
+        return repo.findByDayInTrip(dayInTrip);
     }
 
     @Override
