@@ -1,15 +1,15 @@
 package com.main.traveltour.restcontroller.agent.hotel;
 
-import com.main.traveltour.dto.agent.hotel.CompanyDataDto;
-import com.main.traveltour.dto.agent.hotel.Hotel_RoomDto;
-import com.main.traveltour.dto.agent.hotel.HotelsDto;
-import com.main.traveltour.dto.agent.hotel.RoomTypesDto;
+import com.main.traveltour.dto.agent.hotel.*;
 import com.main.traveltour.entity.*;
+import com.main.traveltour.service.admin.RoomBedsServiceAD;
 import com.main.traveltour.service.agent.*;
 import com.main.traveltour.service.utils.FileUpload;
 import com.main.traveltour.utils.EntityDtoUtils;
 import com.main.traveltour.utils.GenerateNextID;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.relational.core.sql.In;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -17,6 +17,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -31,6 +32,9 @@ public class HotelsAPI {
 
     @Autowired
     private BedTypeService bedTypeService;
+
+    @Autowired
+    private RoomBedsServiceAD roomBedsService;
 
     @Autowired
     private HotelsService hotelsService;
@@ -141,35 +145,26 @@ public class HotelsAPI {
         }
     }
 
-    /**
-     * Phương thức tạo mới thông tin khách sạn
-     * @param dataHotelRoom thông tin khách sạn
-     * @param roomTypeImage danh sách ảnh loại phòng
-     * @param hotelAvatar ảnh đại diện khách sạn
-     * @param roomTypeAvatar ảnh loại phòng
-     * @throws IOException lôi nêu không thêm được ảnh
-     */
 
     @PostMapping(value = "/agent/hotels/register-hotels", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public void registerHotels(@RequestPart("dataHotelRoom") Hotel_RoomDto dataHotelRoom,
-                               @RequestPart("roomTypeImage") List<MultipartFile> roomTypeImage,
-                               @RequestPart("hotelAvatar") MultipartFile hotelAvatar,
-                               @RequestPart("roomTypeAvatar") MultipartFile roomTypeAvatar) throws IOException {
-        String hotelAvtar = fileUpload.uploadFile(hotelAvatar);
-        HotelsDto hotelsDto = dataHotelRoom.getHotelsDto();
-
-        List<PlaceUtilities> placeUtilities = dataHotelRoom.getSelectedPlaceUtilitiesIds()
-                .stream().map(placeUtilitiesService::findByPlaceId).toList();
-
+    public void registerHotels(@RequestPart("hotels") RegisterHotelDto hotelsDto,
+                               @RequestPart("roomType") RegisterRoomTypeDto roomTypeDto,
+                               @RequestPart("placeUtilities") List<Integer> placeUtilities,
+                               @RequestPart("roomTypeUtilities") List<Integer> roomTypeUtilities,
+                               @RequestPart("listRoomTypeImg") List<MultipartFile> listRoomTypeImg,
+                               @RequestParam("bedTypeId") Integer bedTypeId,
+                               @RequestParam("checkinTime") @DateTimeFormat(iso = DateTimeFormat.ISO.TIME) LocalTime checkinTime,
+                               @RequestParam("checkoutTime") @DateTimeFormat(iso = DateTimeFormat.ISO.TIME) LocalTime checkoutTime,
+                               @RequestParam("avatarHotel") MultipartFile avatarHotel,
+                               @RequestParam("roomTypeAvatar") MultipartFile roomTypeAvatar) throws IOException
+    {
+        String hotelId = GenerateNextID.generateNextCode("HTL", hotelsService.findMaxCode());
         Hotels hotels = EntityDtoUtils.convertToEntity(hotelsDto, Hotels.class);
-        hotels.setId(hotelsDto.getId());
-        hotels.setHotelAvatar(hotelAvtar);
-        hotels.setIsAccepted(Boolean.TRUE);
-        hotels.setPlaceUtilities(placeUtilities);
-        hotels.setIsDeleted(Boolean.FALSE);
-        hotelsService.save(hotels);
 
-        createRoomType(dataHotelRoom, roomTypeAvatar, hotels.getId(), roomTypeImage);
+        hotelsService.registerInfoHotel(hotels, hotelId, placeUtilities, avatarHotel);
+
+        RoomTypes roomTypes = EntityDtoUtils.convertToEntity(roomTypeDto, RoomTypes.class);
+        roomTypeService.registerRoomType(roomTypes, hotelId, roomTypeUtilities, roomTypeAvatar, listRoomTypeImg, checkinTime, checkoutTime, bedTypeId);
     }
 
     /**
@@ -180,23 +175,34 @@ public class HotelsAPI {
      * @param roomTypeImage danh sách ảnh loại phòng
      * @throws IOException Throws IOException
      */
-    private void createRoomType(Hotel_RoomDto dataHotelRoom, MultipartFile roomTypeAvatar, String hotelId, List<MultipartFile> roomTypeImage) throws IOException {
+    private void createRoomType(
+            Hotel_RoomDto dataHotelRoom,
+            MultipartFile roomTypeAvatar,
+            String hotelId,
+            List<MultipartFile> roomTypeImage,
+            LocalTime checkinTime,
+            LocalTime checkoutTime,
+            Integer roomBedId,
+            List<Integer> selectedRoomUtilitiesIds) throws IOException {
         String roomTypeId = GenerateNextID.generateNextCode("RT", roomTypeService.findMaxId());
         String imgPath = fileUpload.uploadFile(roomTypeAvatar);
 
         RoomTypesDto roomTypesDto = dataHotelRoom.getRoomTypesDto();
 
-        List<RoomUtilities> roomUtilities = dataHotelRoom.getSelectedRoomUtilitiesIds()
+        List<RoomUtilities> roomUtilities = selectedRoomUtilitiesIds
                 .stream().map(roomUtilitiesService::findByRoomUtilitiesId).toList();
 
         RoomTypes roomTypes = EntityDtoUtils.convertToEntity(roomTypesDto, RoomTypes.class);
         roomTypes.setId(roomTypeId);
         roomTypes.setHotelId(hotelId);
         roomTypes.setRoomTypeAvatar(imgPath);
+        roomTypes.setCheckinTime(checkinTime);
+        roomTypes.setCheckoutTime(checkoutTime);
         roomTypes.setRoomUtilities(roomUtilities);
         roomTypeService.save(roomTypes);
 
         createRoomImage(roomTypeId, roomTypeImage);
+        createRoomBed(roomTypeId, roomBedId);
     }
 
     /**
@@ -213,6 +219,19 @@ public class HotelsAPI {
             roomImages.setRoomTypeImg(imgPath);
             roomImageService.save(roomImages);
         }
+    }
+
+    /**
+     * Phương thức tạo mới thông tin loại giường
+     * @param roomTypeId mã loại phòng
+     * @param roomBedId mã loại giường
+     */
+    private void createRoomBed(String roomTypeId, Integer roomBedId) {
+        RoomBeds roomBeds = new RoomBeds();
+        roomBeds.setRoomTypeId(roomTypeId);
+        roomBeds.setBedTypeId(roomBedId);
+
+        roomBedsService.save(roomBeds);
     }
 
     /**

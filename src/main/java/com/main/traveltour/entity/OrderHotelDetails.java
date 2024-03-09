@@ -31,6 +31,14 @@ public class OrderHotelDetails {
     private String roomTypeId;
 
     @Basic
+    @Column(name = "customer_name")
+    private String customerName;
+
+    @Basic
+    @Column(name = "customer_email")
+    private String customerEmail;
+
+    @Basic
     @Column(name = "amount")
     private Integer amount;
 

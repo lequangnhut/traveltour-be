@@ -11,17 +11,21 @@ import java.text.SimpleDateFormat;
 import com.main.traveltour.service.agent.*;
 import com.main.traveltour.utils.EntityDtoUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @CrossOrigin(origins = "http://localhost:3000")
 @RequestMapping("api/v1")
-public class HotelAPI {
+public class HotelCustomerAPI {
     @Autowired
     private HotelsService hotelsService;
 
@@ -91,6 +95,7 @@ public class HotelAPI {
             @RequestParam(required = false) Integer capacityChildrenFilter,
             @RequestParam(required = false) String checkInDateFiller,
             @RequestParam(required = false) String checkOutDateFiller,
+            @RequestParam(required = false) String hotelIdFilter,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size,
             @RequestParam(defaultValue = "") String sort) throws ParseException {
@@ -105,10 +110,26 @@ public class HotelAPI {
                 freeCancellationFilter, roomBedsIdListFilter, amountRoomFilter,
                 locationFilter, capacityAdultsFilter, capacityChildrenFilter,
                 false, false,
-                new Timestamp(dateFomatCheckin.getTime()), new Timestamp(dateFomatCheckout.getTime()), page, size,
+                new Timestamp(dateFomatCheckin.getTime()), new Timestamp(dateFomatCheckout.getTime()),
+                hotelIdFilter, page, size,
                 sort);
 
         List<RoomTypeDto> roomTypeDto = EntityDtoUtils.convertToDtoList(hotel.getRoomTypes(), RoomTypeDto.class);
         return new ResponseObjectAndPages("200", "OK", roomTypeDto, hotel.getTotalCount());
+    }
+
+    @GetMapping("customer/hotels/findAllRoomTypeByIds")
+    public ResponseObject findAllRoomTypeByIds(
+            @RequestParam(required = false) List<String> ids) {
+        List<RoomTypes> roomTypes = roomTypeService.findAllRoomTypeByIds(ids);
+        return new ResponseObject("200", "OK", roomTypes);
+    }
+
+    @GetMapping("customer/hotels/findAllRoomTypeByEncryptedData")
+    public ResponseObject findAllRoomTypeByEncryptedData(
+            @RequestParam(required = false) String encryptedData) {
+        System.out.println(encryptedData);
+//        List<RoomTypes> roomTypes = roomTypeService.findRoomTypesWithFiltersCustomer(encryptedData);
+        return new ResponseObject("200", "OK", encryptedData);
     }
 }

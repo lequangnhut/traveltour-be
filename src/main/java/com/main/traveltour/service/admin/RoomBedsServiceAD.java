@@ -11,4 +11,6 @@ public interface RoomBedsServiceAD {
     void save(RoomBeds roomBeds);
 
     List<RoomBeds> findAllRoomBedType();
+
+    RoomBeds findById(int id);
 }

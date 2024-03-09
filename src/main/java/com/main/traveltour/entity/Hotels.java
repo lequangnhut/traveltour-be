@@ -84,6 +84,10 @@ public class Hotels {
     private String hotelAvatar;
 
     @Basic
+    @Column(name = "hotel_description", columnDefinition = "LONGTEXT")
+    private String hotelDescription;
+
+    @Basic
     @Column(name = "longitude")
     private String longitude;
 

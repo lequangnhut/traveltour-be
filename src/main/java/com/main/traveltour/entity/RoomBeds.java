@@ -10,6 +10,7 @@ import lombok.*;
 @AllArgsConstructor
 @Entity
 @ToString
+@Builder
 @Table(name = "room_beds", schema = "travel_tour")
 public class RoomBeds {
 

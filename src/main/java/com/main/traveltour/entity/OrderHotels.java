@@ -69,7 +69,7 @@ public class OrderHotels {
 
     @Basic
     @Column(name = "payment_method")
-    private Boolean paymentMethod;
+    private String paymentMethod;
 
     @Basic
     @Column(name = "order_code")
@@ -96,9 +96,13 @@ public class OrderHotels {
     @JsonBackReference
     private Users usersByUserId;
 
+    @ManyToOne
+    @JoinColumn(name = "payment_method", referencedColumnName = "name", nullable = false, insertable = false, updatable = false)
+    @JsonBackReference
+    private PaymentMethod orderByPaymentMethod;
+
     @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     @JoinTable(name = "booking_tour_hotels", joinColumns = {@JoinColumn(name = "order_hotel_id", referencedColumnName = "id")}, inverseJoinColumns = {@JoinColumn(name = "tour_detail_id", referencedColumnName = "id")})
     @JsonIgnoreProperties("orderHotels")
     private List<TourDetails> tourDetails = new ArrayList<>();
-
 }
