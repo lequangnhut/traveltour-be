@@ -3,7 +3,6 @@ package com.main.traveltour.restcontroller.staff;
 import com.main.traveltour.dto.staff.HotelsDto;
 import com.main.traveltour.entity.Hotels;
 import com.main.traveltour.entity.ResponseObject;
-import com.main.traveltour.entity.TourDetails;
 import com.main.traveltour.service.staff.HotelServiceService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -13,7 +12,6 @@ import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Date;
-import java.sql.Timestamp;
 import java.util.Optional;
 
 @RestController
@@ -38,15 +36,12 @@ public class HotelServiceAPI {
             @RequestParam(required = false) Integer numChildren,
             @RequestParam(required = false) Integer numRooms) {
 
-        Timestamp departureTimestamp = departureDate != null ? new Timestamp(departureDate.getTime()) : null;
-        Timestamp arrivalTimestamp = arrivalDate != null ? new Timestamp(arrivalDate.getTime()) : null;
-
         Sort sort = sortDir.equalsIgnoreCase(Sort.Direction.ASC.name())
                 ? Sort.by(sortBy).ascending()
                 : Sort.by(sortBy).descending();
 
         Page<HotelsDto> hotelsDtos = hotelServiceService.findAvailableHotelsWithFilters
-                (searchTerm, location, departureTimestamp, arrivalTimestamp, numAdults,
+                (searchTerm, location, departureDate, arrivalDate, numAdults,
                         numChildren, numRooms, PageRequest.of(page, size, sort));
 
         return hotelsToResponseObject(hotelsDtos);

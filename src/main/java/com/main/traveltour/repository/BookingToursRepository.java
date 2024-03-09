@@ -15,14 +15,15 @@ public interface BookingToursRepository extends JpaRepository<BookingTours, Inte
 
     BookingTours findById(String bookingTourId);
 
-    @Query("SELECT bt FROM BookingTours bt ORDER BY bt.orderStatus ASC")
-    Page<BookingTours> findAllBookingTours(Pageable pageable);
+    @Query("SELECT bt FROM BookingTours bt WHERE bt.orderStatus = :orderStatus")
+    Page<BookingTours> findAllBookingTours(@Param("orderStatus") Integer orderStatus, Pageable pageable);
 
     @Query("SELECT bt FROM BookingTours bt " +
-            "WHERE UPPER(bt.customerName) LIKE %:searchTerm% OR " +
+            "WHERE bt.orderStatus = :orderStatus AND " +
+            "UPPER(bt.customerName) LIKE %:searchTerm% OR " +
             "UPPER(bt.customerCitizenCard) LIKE %:searchTerm% OR " +
             "UPPER(bt.customerPhone) LIKE %:searchTerm% OR " +
             "UPPER(bt.customerEmail) LIKE %:searchTerm% OR " +
             "CAST(bt.orderTotal AS string) LIKE %:searchTerm%")
-    Page<BookingTours> findBySearchTerm(@Param("searchTerm") String searchTerm, Pageable pageable);
+    Page<BookingTours> findBySearchTerm(@Param("orderStatus") Integer orderStatus, @Param("searchTerm") String searchTerm, Pageable pageable);
 }

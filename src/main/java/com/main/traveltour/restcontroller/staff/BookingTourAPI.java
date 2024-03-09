@@ -34,6 +34,7 @@ public class BookingTourAPI {
             @RequestParam(defaultValue = "10") int size,
             @RequestParam(defaultValue = "id") String sortBy,
             @RequestParam(defaultValue = "asc") String sortDir,
+            @RequestParam(required = false) Integer orderStatus,
             @RequestParam(required = false) String searchTerm) {
 
         Sort sort = sortDir.equalsIgnoreCase(Sort.Direction.ASC.name())
@@ -41,8 +42,8 @@ public class BookingTourAPI {
                 : Sort.by(sortBy).descending();
 
         Page<BookingTours> bookingTours = searchTerm != null && !searchTerm.isEmpty()
-                ? bookingTourService.findBySearchTerm(searchTerm, PageRequest.of(page, size, sort))
-                : bookingTourService.getAll(PageRequest.of(page, size, sort));
+                ? bookingTourService.findBySearchTerm(orderStatus, searchTerm, PageRequest.of(page, size, sort))
+                : bookingTourService.getAll(orderStatus, PageRequest.of(page, size, sort));
 
         Page<BookingToursDto> bookingToursDtos = bookingTours.map(bookingTour -> EntityDtoUtils.convertToDto(bookingTour, BookingToursDto.class));
 

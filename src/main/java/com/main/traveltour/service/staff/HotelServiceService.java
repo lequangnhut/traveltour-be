@@ -5,13 +5,12 @@ import com.main.traveltour.entity.Hotels;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
-import java.sql.Date;
-import java.sql.Timestamp;
+import java.util.Date;
 
 public interface HotelServiceService {
 
-    Page<HotelsDto> findAvailableHotelsWithFilters(String searchTerm, String location, Timestamp departureDate,
-                                                   Timestamp arrivalDate, Integer numAdults,
+    Page<HotelsDto> findAvailableHotelsWithFilters(String searchTerm, String location, Date departureDate,
+                                                   Date arrivalDate, Integer numAdults,
                                                    Integer numChildren, Integer numRooms, Pageable pageable);
 
     Hotels getHotelsById(String id);
