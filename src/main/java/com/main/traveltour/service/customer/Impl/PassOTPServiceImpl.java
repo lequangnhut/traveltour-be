@@ -53,9 +53,8 @@ public class PassOTPServiceImpl implements PassOTPService {
             Instant instantNow = Instant.now();
 
             long diffInSeconds = instantNow.getEpochSecond() - instantDateCreated.getEpochSecond();
-            long diffInMinutes = diffInSeconds / 60;
 
-            if (diffInMinutes > 10) {
+            if (diffInSeconds >= 600) {
                 passOTP.setIsActive(false);
                 passOTPRepository.save(passOTP);
             }

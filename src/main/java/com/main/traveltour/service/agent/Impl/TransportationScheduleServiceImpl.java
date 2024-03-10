@@ -57,11 +57,14 @@ public class TransportationScheduleServiceImpl implements TransportationSchedule
 
     @Override
     public void updateStatusAndActive() {
-        LocalDateTime currentDateTime = LocalDateTime.now();
-        Timestamp timestamp = Timestamp.valueOf(currentDateTime.truncatedTo(java.time.temporal.ChronoUnit.SECONDS));
+//        LocalDateTime currentDateTime = LocalDateTime.now();
+//        Timestamp timestamp = Timestamp.valueOf(currentDateTime.truncatedTo(java.time.temporal.ChronoUnit.SECONDS));
+//
+//        List<TransportationSchedules> transportationSchedules1 = transportationSchedulesRepository.findByDepartureTimeAndIsActiveTrue(timestamp);
+//        List<TransportationSchedules> transportationSchedule2 = transportationSchedulesRepository.findByArrivalTimeAndIsActiveTrue(timestamp);
 
-        List<TransportationSchedules> transportationSchedules1 = transportationSchedulesRepository.findByDepartureTimeAndIsActiveTrue(timestamp);
-        List<TransportationSchedules> transportationSchedule2 = transportationSchedulesRepository.findByArrivalTimeAndIsActiveTrue(timestamp);
+        List<TransportationSchedules> transportationSchedules1 = transportationSchedulesRepository.findTripInProgress();
+        List<TransportationSchedules> transportationSchedule2 = transportationSchedulesRepository.findTripCompleted();
 
         for (TransportationSchedules schedules : transportationSchedules1) {
             schedules.setIsStatus(1);

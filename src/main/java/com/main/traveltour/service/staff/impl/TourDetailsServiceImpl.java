@@ -71,11 +71,14 @@ public class TourDetailsServiceImpl implements TourDetailsService {
 
     @Override
     public void updateStatusAndActive() {
-        LocalDate localDate = LocalDate.now();
-        Date currentDate = java.sql.Date.valueOf(localDate);
+//        LocalDate localDate = LocalDate.now();
+//        Date currentDate = java.sql.Date.valueOf(localDate);
+//
+//        List<TourDetails> tourDetails1 = tourDetailsRepository.findAllByDepartureDate(currentDate);
+//        List<TourDetails> tourDetails2 = tourDetailsRepository.findAllByArrivalDate(currentDate);
 
-        List<TourDetails> tourDetails1 = tourDetailsRepository.findAllByDepartureDate(currentDate);
-        List<TourDetails> tourDetails2 = tourDetailsRepository.findAllByArrivalDate(currentDate);
+        List<TourDetails> tourDetails1 = tourDetailsRepository.findTourInProgress();
+        List<TourDetails> tourDetails2 = tourDetailsRepository.findTourCompleted();
 
         for (TourDetails tourDetails : tourDetails1) {
             tourDetails.setTourDetailStatus(2);

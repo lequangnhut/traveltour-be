@@ -20,20 +20,20 @@ public class ScheduledTasks {
     private PassOTPService passOTPService;
 
 
-    @Scheduled(fixedDelay = 1000)
-    public void checkTransportSchedulesStatus() {
-        transportationScheduleService.updateStatusAndActive();
-    }
+//    @Scheduled(fixedDelay = 1000)
+//    public void checkTransportSchedulesStatus() {
+//        transportationScheduleService.updateStatusAndActive();
+//    }
+//
+//    @Scheduled(fixedDelay = 1000)
+//    public void checkTourDetailStatus() {
+//        tourDetailsService.updateStatusAndActive();
+//    }
 
-    @Scheduled(fixedDelay = 1000)
-    public void checkTourDetailStatus() {
-        tourDetailsService.updateStatusAndActive();
-    }
-
-    @Scheduled(fixedDelay = 1000)
-    public void checkFailOtpForgot() {
-        passOTPService.updateActive();
-    }
+//    @Scheduled(fixedDelay = 1000)
+//    public void checkFailOtpForgot() {
+//        passOTPService.updateActive();
+//    }
 
 
 }

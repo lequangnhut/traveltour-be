@@ -61,4 +61,11 @@ public interface TourDetailsRepository extends JpaRepository<TourDetails, Intege
             "GROUP BY td.id, t.tour_name, t.tour_img, td.unit_price " +
             "ORDER BY tour_detail_count DESC limit 5;", nativeQuery = true)
     List<Object[]> findTourDetailTrend();
+
+
+    @Query(value = "SELECT * FROM tour_details WHERE departure_date <= NOW() AND arrival_date >= NOW() AND tour_detail_status <> 2;", nativeQuery = true)
+    List<TourDetails> findTourInProgress();
+
+    @Query(value = "SELECT * FROM tour_details WHERE arrival_date < NOW() AND tour_detail_status <> 3;", nativeQuery = true)
+    List<TourDetails> findTourCompleted();
 }
