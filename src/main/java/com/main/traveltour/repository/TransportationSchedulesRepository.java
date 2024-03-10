@@ -1,5 +1,6 @@
 package com.main.traveltour.repository;
 
+import com.main.traveltour.entity.TourDetails;
 import com.main.traveltour.entity.TransportationSchedules;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -92,5 +93,11 @@ public interface TransportationSchedulesRepository extends JpaRepository<Transpo
             @Param("transportationTypeIdList") List<Integer> transportationTypeIdList,
             @Param("listOfVehicleManufacturers") List<String> listOfVehicleManufacturers,
             Pageable pageable);
+
+    @Query(value = "SELECT * FROM transportation_schedules WHERE departure_time <= NOW() AND arrival_time >= NOW() AND is_status <> 1;", nativeQuery = true)
+    List<TransportationSchedules> findTripInProgress();
+
+    @Query(value = "SELECT * FROM transportation_schedules WHERE arrival_time < NOW() AND is_status <> 2;", nativeQuery = true)
+    List<TransportationSchedules> findTripCompleted();
 
 }
