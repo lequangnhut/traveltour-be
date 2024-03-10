@@ -62,22 +62,23 @@ public class TourTripsAPI {
         Map<String, Object> response = new HashMap<>();
 
         List<TourTrips> tourTrips = tourTripsService.findTourTripsByTourId(tourId);
-        List<Integer> dayInTrip = tourTripsService.findAllDayInTrip(tourId);
+        List<TourTripGetDataDto> tourTripGetDataDto = EntityDtoUtils.convertToDtoList(tourTrips, TourTripGetDataDto.class);
+        List<Integer> dayInTrip = tourTripsService.findDayByTourDetailId(tourId);
 
-        response.put("tourTrips", tourTrips);
+        response.put("tourTrips", tourTripGetDataDto);
         response.put("dayInTrip", dayInTrip);
 
         return new ResponseObject("200", "Đã tìm thấy dữ liệu", response);
     }
 
     @GetMapping("find-tourTrips-dayInTrip")
-    private ResponseObject findByTourIdAndDayInTrip(@RequestParam(defaultValue = "1") int dayInTrip) {
-        List<TourTrips> items = tourTripsService.findByDayInTrip(dayInTrip);
+    private ResponseObject findByTourIdAndDayInTrip(@RequestParam(defaultValue = "1") int dayInTrip, @RequestParam(defaultValue = "1") String tourDetailId) {
+        List<TourTrips> tourTrips = tourTripsService.findByDayInTripAndTourDetailId(dayInTrip, tourDetailId);
 
-        if (items == null) {
+        if (tourTrips.isEmpty()) {
             return new ResponseObject("404", "Không tìm thấy dữ liệu", null);
         } else {
-            return new ResponseObject("200", "Đã tìm thấy dữ liệu", items);
+            return new ResponseObject("200", "Đã tìm thấy dữ liệu", tourTrips);
         }
     }
 

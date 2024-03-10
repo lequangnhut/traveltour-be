@@ -21,7 +21,7 @@ public interface TourTripsRepository extends JpaRepository<TourTrips, Integer> {
             "FROM TourTrips tt " +
             "WHERE tt.tourDetailId = :tourDetailId " +
             "GROUP BY tt.dayInTrip")
-    List<Integer> findAllByDayInTrip(@Param("tourDetailId") String id);
+    List<Integer> findDayByTourDetailId(@Param("tourDetailId") String tourDetailId);
 
     @Query("SELECT tt " +
             "FROM TourTrips tt " +
@@ -29,5 +29,5 @@ public interface TourTripsRepository extends JpaRepository<TourTrips, Integer> {
             "AND tt.dayInTrip = 1")
     List<TourTrips> findByTourDetailId(@Param("tourDetailId") String tourDetailId);
 
-    List<TourTrips> findByDayInTrip(int dayInTrip);
+    List<TourTrips> findByDayInTripAndTourDetailId(int dayInTrip, String tourDetailId);
 }

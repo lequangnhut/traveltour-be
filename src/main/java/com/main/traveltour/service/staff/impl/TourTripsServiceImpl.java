@@ -43,8 +43,8 @@ public class TourTripsServiceImpl implements TourTripsService {
     }
 
     @Override
-    public List<Integer> findAllDayInTrip(String tourDetail) {
-        return repo.findAllByDayInTrip(tourDetail);
+    public List<Integer> findDayByTourDetailId(String tourDetail) {
+        return repo.findDayByTourDetailId(tourDetail);
     }
 
     @Override
@@ -53,8 +53,8 @@ public class TourTripsServiceImpl implements TourTripsService {
     }
 
     @Override
-    public List<TourTrips> findByDayInTrip(int dayInTrip) {
-        return repo.findByDayInTrip(dayInTrip);
+    public List<TourTrips> findByDayInTripAndTourDetailId(int dayInTrip, String tourDetailId) {
+        return repo.findByDayInTripAndTourDetailId(dayInTrip, tourDetailId);
     }
 
     @Override

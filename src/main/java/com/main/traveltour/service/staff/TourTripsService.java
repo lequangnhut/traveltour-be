@@ -11,9 +11,9 @@ public interface TourTripsService {
 
     TourTrips getById(int id);
 
-    List<TourTrips> findByDayInTrip(int dayInTrip);
+    List<TourTrips> findByDayInTripAndTourDetailId(int dayInTrip, String tourDetailId);
 
-    List<Integer> findAllDayInTrip(String tourDetail);
+    List<Integer> findDayByTourDetailId(String tourDetail);
 
     List<TourTrips> findAll();
 
