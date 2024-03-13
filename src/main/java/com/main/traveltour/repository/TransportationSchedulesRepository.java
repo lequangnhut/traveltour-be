@@ -1,5 +1,6 @@
 package com.main.traveltour.repository;
 
+import com.main.traveltour.entity.Hotels;
 import com.main.traveltour.entity.TourDetails;
 import com.main.traveltour.entity.TransportationSchedules;
 import org.springframework.data.domain.Page;
@@ -48,11 +49,6 @@ public interface TransportationSchedulesRepository extends JpaRepository<Transpo
             "AND tpb.id = :transportBrandId")
     Page<TransportationSchedules> findAllSchedulesWithSearch(@Param("transportBrandId") String transportBrandId, @Param("searchTerm") String searchTerm, Pageable pageable);
 
-    @Query("SELECT t FROM TransportationSchedules t " +
-            "JOIN t.transportationsByTransportationId tp " +
-            "JOIN tp.transportationBrandsByTransportationBrandId tpb " +
-            "WHERE t.tripType = true AND t.isActive = true")
-    Page<TransportationSchedules> getAllTransportationSchedules(Pageable pageable);
 
     @Query(value = "SELECT ts.* " +
             "FROM transportation_schedules ts " +
@@ -99,5 +95,27 @@ public interface TransportationSchedulesRepository extends JpaRepository<Transpo
 
     @Query(value = "SELECT * FROM transportation_schedules WHERE arrival_time < NOW() AND is_status <> 2;", nativeQuery = true)
     List<TransportationSchedules> findTripCompleted();
+
+    //fill phương tiện theo tour
+
+    @Query("SELECT ts FROM TransportationSchedules ts " +
+            "JOIN ts.transportationsByTransportationId t " +
+            "JOIN ts.orderTransportationsById ot " +
+            "JOIN ot.tourDetails td " +
+            "WHERE (td.id = :tourDetailId) AND " +
+            "(ot.orderStatus = :orderStatus) AND " +
+            "(:searchTerm IS NULL OR (UPPER(ts.fromLocation) LIKE %:searchTerm% OR " +
+            "UPPER(ts.toLocation) LIKE %:searchTerm% OR " +
+            "UPPER(ts.transportationsByTransportationId.licensePlate) LIKE %:searchTerm% OR " +
+            "CAST(ts.bookedSeat AS string) LIKE %:searchTerm% OR " +
+            "UPPER(ts.transportationsByTransportationId.transportationBrandsByTransportationBrandId.transportationBrandName) LIKE %:searchTerm% OR " +
+            "UPPER(ts.transportationsByTransportationId.transportationTypesByTransportationTypeId.transportationTypeName) LIKE %:searchTerm% OR " +
+            "CAST(ts.transportationsByTransportationId.amountSeat AS string) LIKE %:searchTerm% OR " +
+            "CAST(ts.unitPrice AS string) LIKE %:searchTerm%)) " +
+            "GROUP BY ts.id")
+    Page<TransportationSchedules> findTransportationSchedulesByTourDetailId(@Param("tourDetailId") String tourDetailId,
+                                                                            @Param("orderStatus") Integer orderStatus,
+                                                                            @Param("searchTerm") String searchTerm,
+                                                                            Pageable pageable);
 
 }

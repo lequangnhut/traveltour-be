@@ -8,6 +8,8 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import java.util.List;
+
 public interface OrderTransportationsRepository extends JpaRepository<OrderTransportations, Integer> {
 
     @Query("SELECT MAX(ort.id) FROM OrderTransportations ort")
@@ -35,4 +37,7 @@ public interface OrderTransportationsRepository extends JpaRepository<OrderTrans
             "OR LOWER(CAST(ort.dateCreated AS STRING) ) LIKE LOWER(CONCAT('%', :searchTerm, '%')) " +
             "AND t.id = :transportBrandId AND ort.orderStatus = 0")
     Page<OrderTransportations> findAllOrderTransportWithSearch(@Param("transportBrandId") String transportBrandId, @Param("searchTerm") String searchTerm, Pageable pageable);
+
+    List<OrderTransportations> findAllByTransportationScheduleId(String transportationScheduleId);
+
 }

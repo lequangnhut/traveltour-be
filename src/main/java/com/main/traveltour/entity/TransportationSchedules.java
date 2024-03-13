@@ -66,11 +66,11 @@ public class TransportationSchedules {
 
     @Basic
     @Column(name = "trip_type")
-    private Boolean tripType;
+    private Boolean tripType; //false là chuyến lẽ, true là chuyến của tour
 
     @Basic
     @Column(name = "is_status")
-    private Integer isStatus;
+    private Integer isStatus; //0:
 
     @OneToMany(mappedBy = "transportationSchedulesByTransportationScheduleId")
     @JsonManagedReference

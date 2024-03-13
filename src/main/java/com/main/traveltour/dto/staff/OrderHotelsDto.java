@@ -33,7 +33,7 @@ public class OrderHotelsDto {
     Timestamp checkIn;
     Timestamp checkOut;
     BigDecimal orderTotal;
-    Boolean paymentMethod;
+    String paymentMethod;
     String orderCode;
     Timestamp dateCreated;
     Integer orderStatus;

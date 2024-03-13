@@ -71,7 +71,7 @@ public class OrderTransportations {
 
     @Basic
     @Column(name = "order_status")
-    private Integer orderStatus;
+    private Integer orderStatus; //0: chờ thanh toán, 1:đã thanh toán, 2: hủy giao dịch
 
     @Basic
     @Column(name = "order_note")

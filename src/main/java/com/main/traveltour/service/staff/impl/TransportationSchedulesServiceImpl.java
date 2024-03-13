@@ -19,17 +19,12 @@ public class TransportationSchedulesServiceImpl implements TransportationSchedul
 
 
     @Override
-    public Page<TransportationSchedules> getAllTransportationSchedules(Pageable pageable) {
-        return repo.getAllTransportationSchedules(pageable);
+    public TransportationSchedules findById(String id) {
+        return repo.findById(id);
     }
 
     @Override
     public Page<TransportationSchedules> findBySearchTerm(String searchTerm, Pageable pageable) {
-        return null;
-    }
-
-    @Override
-    public Page<TransportationSchedules> findTransportationByProvince(String location, Pageable pageable) {
         return null;
     }
 
@@ -50,5 +45,10 @@ public class TransportationSchedulesServiceImpl implements TransportationSchedul
                 listOfVehicleManufacturers,
                 pageable
         );
+    }
+
+    @Override
+    public void update(TransportationSchedules transportationSchedules) {
+        repo.save(transportationSchedules);
     }
 }
