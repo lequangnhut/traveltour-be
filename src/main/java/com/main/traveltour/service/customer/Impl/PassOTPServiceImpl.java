@@ -1,7 +1,6 @@
 package com.main.traveltour.service.customer.Impl;
 
 import com.main.traveltour.entity.PassOTP;
-import com.main.traveltour.entity.TourDetails;
 import com.main.traveltour.repository.PassOTPRepository;
 import com.main.traveltour.service.customer.PassOTPService;
 import jakarta.transaction.Transactional;
@@ -9,7 +8,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
-import java.util.Date;
 import java.util.List;
 
 @Service
@@ -59,6 +57,5 @@ public class PassOTPServiceImpl implements PassOTPService {
                 passOTPRepository.save(passOTP);
             }
         }
-
     }
 }

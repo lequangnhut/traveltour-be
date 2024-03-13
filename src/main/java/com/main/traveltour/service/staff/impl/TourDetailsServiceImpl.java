@@ -9,8 +9,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.sql.Timestamp;
-import java.time.LocalDate;
-import java.util.Date;
 import java.util.List;
 
 @Service
@@ -71,12 +69,6 @@ public class TourDetailsServiceImpl implements TourDetailsService {
 
     @Override
     public void updateStatusAndActive() {
-//        LocalDate localDate = LocalDate.now();
-//        Date currentDate = java.sql.Date.valueOf(localDate);
-//
-//        List<TourDetails> tourDetails1 = tourDetailsRepository.findAllByDepartureDate(currentDate);
-//        List<TourDetails> tourDetails2 = tourDetailsRepository.findAllByArrivalDate(currentDate);
-
         List<TourDetails> tourDetails1 = tourDetailsRepository.findTourInProgress();
         List<TourDetails> tourDetails2 = tourDetailsRepository.findTourCompleted();
 

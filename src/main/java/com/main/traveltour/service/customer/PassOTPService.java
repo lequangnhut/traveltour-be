@@ -13,6 +13,4 @@ public interface PassOTPService {
     PassOTP findByToken(String token);
 
     void updateActive();
-
-
 }

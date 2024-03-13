@@ -9,9 +9,7 @@ import com.main.traveltour.entity.Users;
 import com.main.traveltour.service.UsersService;
 import com.main.traveltour.service.customer.PassOTPService;
 import com.main.traveltour.service.utils.EmailService;
-import com.main.traveltour.service.utils.FileUpload;
 import com.main.traveltour.utils.RandomUtils;
-import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.CacheControl;
@@ -36,9 +34,6 @@ public class ForgotPasswordAPI {
     private UsersService usersService;
 
     @Autowired
-    private HttpSession session;
-
-    @Autowired
     private EmailService emailService;
 
     @Autowired
@@ -47,12 +42,7 @@ public class ForgotPasswordAPI {
     @Autowired
     private PasswordEncoder encoder;
 
-
-    @Autowired
-    private FileUpload fileUpload;
-
     private String sessionCaptcha = null;
-
 
     @GetMapping("/customer/forgot-pass/captcha")
     public ResponseEntity<byte[]> generateCaptcha() {
