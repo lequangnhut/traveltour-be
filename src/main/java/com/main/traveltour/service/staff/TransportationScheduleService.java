@@ -10,12 +10,10 @@ import java.util.List;
 
 public interface TransportationScheduleService {
 
-    Page<TransportationSchedules> getAllTransportationSchedules(Pageable pageable);
-
+    TransportationSchedules findById(String id);
 
     Page<TransportationSchedules> findBySearchTerm(String searchTerm, Pageable pageable);
 
-    Page<TransportationSchedules> findTransportationByProvince(String location, Pageable pageable);
 
     Page<TransportationSchedules> findTransportationSchedulesWithFilter(
             String fromLocation,
@@ -27,4 +25,6 @@ public interface TransportationScheduleService {
             List<Integer> transportationTypeIdList,
             List<String> listOfVehicleManufacturers,
             Pageable pageable);
+
+    void update(TransportationSchedules transportationSchedules);
 }

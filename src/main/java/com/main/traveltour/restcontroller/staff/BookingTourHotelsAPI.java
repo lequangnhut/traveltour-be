@@ -1,10 +1,7 @@
 package com.main.traveltour.restcontroller.staff;
 
 import com.main.traveltour.dto.staff.OrderHotelDetailsGetDataDto;
-import com.main.traveltour.entity.Hotels;
-import com.main.traveltour.entity.OrderHotelDetails;
-import com.main.traveltour.entity.OrderHotels;
-import com.main.traveltour.entity.ResponseObject;
+import com.main.traveltour.entity.*;
 import com.main.traveltour.service.staff.BookingTourHotelService;
 import com.main.traveltour.utils.EntityDtoUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -76,6 +73,21 @@ public class BookingTourHotelsAPI {
             return new ResponseObject("200", "Xóa thành công", null);
         } catch (Exception e) {
             return new ResponseObject("500", "Xóa thất bại", null);
+        }
+    }
+
+    @PutMapping("/restore-booking-tour-hotel-by-tour-detail-id-and-hotel-id")
+    public ResponseObject restore(@RequestParam(required = false) String tourDetailId,
+                                  @RequestParam(required = false) String hotelId) {
+        try {
+            List<OrderHotels> orderHotelsList = bookingTourHotelService.findOrderHotelByTourDetailIdAndHotelId(tourDetailId, hotelId);
+            for (OrderHotels orderHotel : orderHotelsList) {
+                orderHotel.setOrderStatus(0);
+                bookingTourHotelService.update(orderHotel);
+            }
+            return new ResponseObject("204", "Xóa thành công", null);
+        } catch (Exception e) {
+            return new ResponseObject("500", "Xóa thất bại", e.getMessage());
         }
     }
 

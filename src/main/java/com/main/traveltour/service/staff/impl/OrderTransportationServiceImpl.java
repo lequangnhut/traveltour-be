@@ -6,6 +6,8 @@ import com.main.traveltour.service.staff.OrderTransportationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 public class OrderTransportationServiceImpl implements OrderTransportationService {
 
@@ -18,7 +20,17 @@ public class OrderTransportationServiceImpl implements OrderTransportationServic
     }
 
     @Override
+    public List<OrderTransportations> findAllByTransportationScheduleId(String transportationScheduleId) {
+        return repo.findAllByTransportationScheduleId(transportationScheduleId);
+    }
+
+    @Override
     public OrderTransportations save(OrderTransportations orderTransportations) {
         return repo.save(orderTransportations);
+    }
+
+    @Override
+    public void update(OrderTransportations orderTransportations) {
+        repo.save(orderTransportations);
     }
 }

@@ -30,10 +30,7 @@ public class OrderHotelAPI {
     @PostMapping(value = "create-order-hotel")
     public ResponseObject createOrderHotel(@RequestPart OrderHotelsDto orderHotelsDto, @RequestPart("tourDetailId") String tourDetailId) {
         try {
-            String orderHotelId = GenerateNextID.generateNextCode("OH", orderHotelsService.maxCodeTourId());
-
             OrderHotels orderHotels = EntityDtoUtils.convertToEntity(orderHotelsDto, OrderHotels.class);
-            orderHotels.setId(orderHotelId);
 
             List<TourDetails> tourDetailsList = new ArrayList<>();
             TourDetails tourDetails = tourDetailsService.findById(tourDetailId);
