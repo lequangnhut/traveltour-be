@@ -2,7 +2,8 @@ package com.main.traveltour.service.utils;
 
 import com.main.traveltour.dto.agent.hotel.AgenciesDto;
 import com.main.traveltour.dto.auth.RegisterDto;
-import com.main.traveltour.dto.customer.ForgotPasswordDto;
+import com.main.traveltour.dto.customer.booking.BookingToursDto;
+import com.main.traveltour.dto.customer.infomation.ForgotPasswordDto;
 import com.main.traveltour.dto.customer.booking.BookingDto;
 import com.main.traveltour.dto.superadmin.DataAccountDto;
 
@@ -35,4 +36,8 @@ public interface EmailService {
     void sendMailForgot();
 
     void queueEmailForgot(ForgotPasswordDto passwordsDto);
+
+    void sendMailCustomerCancelTour();
+
+    void queueEmailCustomerCancelTour(BookingToursDto bookingToursDto);
 }
