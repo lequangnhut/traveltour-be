@@ -52,4 +52,25 @@ public interface VisitLocationsRepository extends JpaRepository<VisitLocations, 
     Page<VisitLocations> findVisitLocationsByProvince(
             @Param("location") String location,
             Pageable pageable);
+
+    //fill tham quan theo tour
+
+    @Query("SELECT vl FROM VisitLocations vl " +
+            "JOIN vl.orderVisitsById ov " +
+            "JOIN ov.orderVisitDetailsById ovd " +
+            "JOIN ov.tourDetails td " +
+            "WHERE td.id = :tourDetailId AND " +
+            "ov.orderStatus = :orderVisitStatus AND " +
+            "(:searchTerm IS NULL OR (UPPER(vl.visitLocationName) LIKE CONCAT('%', UPPER(:searchTerm), '%') OR " +
+            "UPPER(vl.province) LIKE CONCAT('%', UPPER(:searchTerm), '%') OR " +
+            "UPPER(vl.district) LIKE CONCAT('%', UPPER(:searchTerm), '%') OR " +
+            "UPPER(vl.ward) LIKE CONCAT('%', UPPER(:searchTerm), '%') OR " +
+            "UPPER(vl.address) LIKE CONCAT('%', UPPER(:searchTerm), '%') OR " +
+            "UPPER(vl.phone) LIKE CONCAT('%', UPPER(:searchTerm), '%'))) " +
+            "GROUP BY vl.id")
+    Page<VisitLocations> findVisitByTourDetailId(@Param("tourDetailId") String tourDetailId,
+                                                     @Param("orderVisitStatus") Integer orderVisitStatus,
+                                                 @Param("searchTerm") String searchTerm,
+                                                 Pageable pageable);
+
 }
