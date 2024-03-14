@@ -6,6 +6,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
 import java.sql.Timestamp;
+import java.util.Optional;
 
 
 public interface RoomTypeServiceService {
@@ -14,4 +15,5 @@ public interface RoomTypeServiceService {
 
     Page<RoomTypeAvailabilityDto> findRoomAvailabilityByHotelIdAndDateRange(String hotelId, Timestamp checkIn, Timestamp checkOut, Pageable pageable);
 
+    Optional<RoomTypes> findById(String id);
 }

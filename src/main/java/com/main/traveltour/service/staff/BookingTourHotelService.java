@@ -19,4 +19,6 @@ public interface BookingTourHotelService {
 
     void update(OrderHotels orderHotels);
 
+    Page<Hotels> findHotelByUserId(Integer userId, Integer orderHotelStatus, Pageable pageable);
+
 }

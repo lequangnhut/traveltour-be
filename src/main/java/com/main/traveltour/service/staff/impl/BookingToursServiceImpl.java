@@ -32,4 +32,9 @@ public class BookingToursServiceImpl implements BookingTourService {
     public void update(BookingTours bookingTour) {
         repo.save(bookingTour);
     }
+
+    @Override
+    public Page<BookingTours> getAllByUserId(Integer orderStatus, Integer userId, Pageable pageable) {
+        return repo.findAllBookingToursByUserId(orderStatus, userId, pageable);
+    }
 }

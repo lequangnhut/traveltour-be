@@ -4,6 +4,8 @@ import com.main.traveltour.entity.OrderTransportations;
 import com.main.traveltour.repository.OrderTransportationsRepository;
 import com.main.traveltour.service.staff.OrderTransportationService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -33,4 +35,10 @@ public class OrderTransportationServiceImpl implements OrderTransportationServic
     public void update(OrderTransportations orderTransportations) {
         repo.save(orderTransportations);
     }
+
+    @Override
+    public Page<OrderTransportations> findByUserIdAndStatus(Integer orderStatus, Integer userId, Pageable pageable) {
+        return repo.findAllBookingTransByUserId(orderStatus, userId, pageable);
+    }
+
 }

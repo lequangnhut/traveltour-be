@@ -13,4 +13,6 @@ public interface BookingTourService {
     Page<BookingTours> findBySearchTerm(Integer orderStatus, String searchTerm, Pageable pageable);
 
     void update(BookingTours bookingTour);
+
+    Page<BookingTours> getAllByUserId(Integer orderStatus, Integer userId, Pageable pageable);
 }

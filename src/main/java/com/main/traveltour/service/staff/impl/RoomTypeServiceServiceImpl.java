@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -86,6 +87,11 @@ public class RoomTypeServiceServiceImpl implements RoomTypeServiceService {
         }).collect(Collectors.toList());
 
         return new PageImpl<>(dtos, pageable, roomTypesPage.getTotalElements());
+    }
+
+    @Override
+    public Optional<RoomTypes> findById(String id) {
+        return repo.findById(id);
     }
 
     private int calculateBookedRooms(String roomTypeId, Timestamp checkIn, Timestamp checkOut) {

@@ -1,9 +1,8 @@
 package com.main.traveltour.restcontroller.staff;
 
 import com.main.traveltour.dto.UsersDto;
-import com.main.traveltour.dto.customer.ChangePassDto;
+import com.main.traveltour.dto.customer.infomation.ChangePassDto;
 import com.main.traveltour.dto.staff.CustomerDto;
-import com.main.traveltour.entity.PassOTP;
 import com.main.traveltour.entity.ResponseObject;
 import com.main.traveltour.entity.Roles;
 import com.main.traveltour.entity.Users;

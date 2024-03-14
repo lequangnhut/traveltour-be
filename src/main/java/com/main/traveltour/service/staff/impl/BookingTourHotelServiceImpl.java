@@ -45,4 +45,9 @@ public class BookingTourHotelServiceImpl implements BookingTourHotelService {
     public void update(OrderHotels orderHotels) {
         orderHotelsRepository.save(orderHotels);
     }
+
+    @Override
+    public Page<Hotels> findHotelByUserId(Integer userId, Integer orderHotelStatus, Pageable pageable) {
+        return hotelsRepository.findHotelByUserId(userId, orderHotelStatus, pageable);
+    }
 }
