@@ -13,18 +13,31 @@ import java.util.Collection;
 
 @Data
 public class TransportationSchedulesDto {
+
     String id;
+
     String transportationId;
+
     String fromLocation;
+
     String toLocation;
+
     Timestamp departureTime;
+
     Timestamp arrivalTime;
+
     BigDecimal unitPrice;
+
     Timestamp dateCreated;
+
     Timestamp dateDeleted;
+
     Boolean isActive;
+
     Integer bookedSeat;
+
     Boolean tripType;
+
     Integer isStatus;
 
     Collection<OrderTransportations> orderTransportationsById;
@@ -37,5 +50,4 @@ public class TransportationSchedulesDto {
 
     @JsonIgnoreProperties("transportationsById")
     TransportationBrands transportationBrandsByTransportationBrandId;
-
 }

@@ -6,6 +6,7 @@ import com.main.traveltour.service.staff.TourDetailsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -18,6 +19,9 @@ public class TourDetailsServiceImpl implements TourDetailsService {
 
     @Autowired
     private TourDetailsRepository tourDetailsRepository;
+
+    @Autowired
+    private JdbcTemplate jdbcTemplate;
 
     @Override
     public String getMaxCodeTourDetailId() {
@@ -77,11 +81,16 @@ public class TourDetailsServiceImpl implements TourDetailsService {
 
         for (TourDetails tourDetails : tourDetails1) {
             tourDetails.setTourDetailStatus(2);
-            tourDetailsRepository.save(tourDetails);
+            saveTourDetail(tourDetails);
         }
         for (TourDetails tourDetails : tourDetails2) {
             tourDetails.setTourDetailStatus(3);
-            tourDetailsRepository.save(tourDetails);
+            saveTourDetail(tourDetails);
         }
+    }
+
+    public void saveTourDetail(TourDetails tourDetails) {
+        String sql = "UPDATE tour_details SET tour_detail_status = ? WHERE id = ?";
+        jdbcTemplate.update(sql, tourDetails.getTourDetailStatus(), tourDetails.getId());
     }
 }

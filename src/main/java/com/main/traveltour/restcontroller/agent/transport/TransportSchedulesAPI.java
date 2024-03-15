@@ -143,17 +143,9 @@ public class TransportSchedulesAPI {
         Optional<Transportations> transportationsOptional = transportationService.findTransportById(transportId);
 
         if (transportationsOptional.isPresent()) {
-            Transportations transportations = transportationsOptional.get();
-
             TransportationSchedules schedules = EntityDtoUtils.convertToEntity(scheduleDto, TransportationSchedules.class);
             schedules.setId(scheduleId);
             schedules.setUnitPrice(ReplaceUtils.replacePrice(scheduleDto.getPriceFormat()));
-            if (scheduleDto.getTripType()) {
-                schedules.setBookedSeat(transportations.getAmountSeat());
-            } else {
-                schedules.setBookedSeat(0);
-            }
-
             transportationScheduleService.save(schedules);
         }
     }

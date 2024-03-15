@@ -30,7 +30,7 @@ public class TransportationBrandsDto implements Serializable {
 
     String transportationBrandImg;
 
-    String transportationBrandDescription;
+    String transportationBrandPolicy;
 
     Collection<Transportations> transportationsById;
 

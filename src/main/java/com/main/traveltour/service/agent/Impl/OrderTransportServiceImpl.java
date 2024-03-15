@@ -1,7 +1,6 @@
 package com.main.traveltour.service.agent.Impl;
 
 import com.main.traveltour.entity.OrderTransportations;
-import com.main.traveltour.entity.TransportationSchedules;
 import com.main.traveltour.repository.OrderTransportationsRepository;
 import com.main.traveltour.service.agent.OrderTransportService;
 import org.springframework.beans.factory.annotation.Autowired;

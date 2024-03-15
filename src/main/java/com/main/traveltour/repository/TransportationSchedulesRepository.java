@@ -1,7 +1,6 @@
 package com.main.traveltour.repository;
 
-import com.main.traveltour.entity.Hotels;
-import com.main.traveltour.entity.TourDetails;
+import com.main.traveltour.entity.OrderTransportations;
 import com.main.traveltour.entity.TransportationSchedules;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -23,15 +22,17 @@ public interface TransportationSchedulesRepository extends JpaRepository<Transpo
 
     List<TransportationSchedules> findByTransportationId(String transportId);
 
-    List<TransportationSchedules> findByDepartureTimeAndIsActiveTrue(Timestamp departureTime);
-
-    List<TransportationSchedules> findByArrivalTimeAndIsActiveTrue(Timestamp arrivalTime);
-
     @Query("SELECT t FROM TransportationSchedules t " +
             "JOIN t.transportationsByTransportationId tp " +
             "JOIN tp.transportationBrandsByTransportationBrandId tpb " +
             "WHERE tpb.id = :transportBrandId AND t.tripType = false")
     List<TransportationSchedules> findAllScheduleByBrandId(@Param("transportBrandId") String transportBrandId);
+
+    @Query("SELECT sc FROM TransportationSchedules sc " +
+            "JOIN sc.transportationsByTransportationId tp " +
+            "JOIN tp.transportationBrandsByTransportationBrandId br " +
+            "WHERE br.id = :brandId AND sc.isStatus = 0 AND sc.isActive = true AND sc.tripType = false")
+    Page<TransportationSchedules> findAllTransportScheduleCus(Pageable pageable, @Param("brandId") String brandId);
 
     @Query("SELECT t FROM TransportationSchedules t " +
             "JOIN t.transportationsByTransportationId tp " +
@@ -97,7 +98,6 @@ public interface TransportationSchedulesRepository extends JpaRepository<Transpo
     List<TransportationSchedules> findTripCompleted();
 
     //fill phương tiện theo tour
-
     @Query("SELECT ts FROM TransportationSchedules ts " +
             "JOIN ts.transportationsByTransportationId t " +
             "JOIN ts.orderTransportationsById ot " +
@@ -117,5 +117,4 @@ public interface TransportationSchedulesRepository extends JpaRepository<Transpo
                                                                             @Param("orderStatus") Integer orderStatus,
                                                                             @Param("searchTerm") String searchTerm,
                                                                             Pageable pageable);
-
 }

@@ -52,8 +52,8 @@ public class TransportationBrands {
     private String transportationBrandImg;
 
     @Basic
-    @Column(name = "transportation_brand_description")
-    private String transportationBrandDescription;
+    @Column(name = "transportation_brand_policy", columnDefinition = "LONGTEXT")
+    private String transportationBrandPolicy;
 
     @OneToMany(mappedBy = "transportationBrandsByTransportationBrandId")
     @JsonManagedReference

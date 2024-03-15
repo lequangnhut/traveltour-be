@@ -70,7 +70,11 @@ public class TransportationSchedules {
 
     @Basic
     @Column(name = "is_status")
-    private Integer isStatus; //0:
+    private Integer isStatus;
+
+    @Basic
+    @Column(name = "schedule_note")
+    private String scheduleNote;
 
     @OneToMany(mappedBy = "transportationSchedulesByTransportationScheduleId")
     @JsonManagedReference

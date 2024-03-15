@@ -23,5 +23,7 @@ public interface TransportationScheduleService {
 
     Page<TransportationSchedules> findAllSchedulesWitchSearch(String transportBrandId, String searchTerm, Pageable pageable);
 
+    Page<TransportationSchedules> findAllTransportScheduleCus(Pageable pageable, String brandId);
+
     void updateStatusAndActive();
 }

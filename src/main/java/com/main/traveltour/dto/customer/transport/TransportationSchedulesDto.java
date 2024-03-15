@@ -1,5 +1,8 @@
-package com.main.traveltour.dto.agent.transport;
+package com.main.traveltour.dto.customer.transport;
 
+import com.main.traveltour.entity.TransportationBrands;
+import com.main.traveltour.entity.TransportationTypes;
+import com.main.traveltour.entity.Transportations;
 import lombok.Data;
 
 import java.io.Serializable;
@@ -26,8 +29,6 @@ public class TransportationSchedulesDto implements Serializable {
 
     BigDecimal unitPrice;
 
-    String priceFormat;
-
     Timestamp dateCreated;
 
     Timestamp dateDeleted;
@@ -41,4 +42,10 @@ public class TransportationSchedulesDto implements Serializable {
     Integer isStatus;
 
     String scheduleNote;
+
+    Transportations transportations;
+
+    TransportationTypes transportationTypes;
+
+    TransportationBrands transportationBrands;
 }

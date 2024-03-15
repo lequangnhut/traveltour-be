@@ -1,9 +1,12 @@
 package com.main.traveltour.restcontroller.customer.transport;
 
 import com.main.traveltour.dto.customer.TransportationBrandsDto;
+import com.main.traveltour.dto.customer.transport.TransportationSchedulesDto;
 import com.main.traveltour.entity.ResponseObject;
 import com.main.traveltour.entity.TransportationBrands;
+import com.main.traveltour.entity.TransportationSchedules;
 import com.main.traveltour.service.agent.TransportationBrandsService;
+import com.main.traveltour.service.agent.TransportationScheduleService;
 import com.main.traveltour.utils.EntityDtoUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -14,6 +17,9 @@ import org.springframework.web.bind.annotation.*;
 @CrossOrigin(origins = "http://localhost:3000")
 @RequestMapping("api/v1/")
 public class TransportCusAPI {
+
+    @Autowired
+    private TransportationScheduleService transportationScheduleService;
 
     @Autowired
     private TransportationBrandsService transportationBrandsService;
@@ -40,6 +46,20 @@ public class TransportCusAPI {
             return new ResponseObject("404", "Không tìm thấy dữ liệu", null);
         } else {
             return new ResponseObject("200", "Đã tìm thấy dữ liệu", brandsDto);
+        }
+    }
+
+    @GetMapping("customer/transport/find-all-transport-schedule/{brandId}")
+    public ResponseObject findAllTransportSchedule(@RequestParam(defaultValue = "0") int page,
+                                                   @RequestParam(defaultValue = "9") int size,
+                                                   @PathVariable String brandId) {
+        Page<TransportationSchedules> transportationSchedules = transportationScheduleService.findAllTransportScheduleCus(PageRequest.of(page, size), brandId);
+        Page<TransportationSchedulesDto> transportationSchedulesDto = transportationSchedules.map(schedules -> EntityDtoUtils.convertToDto(schedules, TransportationSchedulesDto.class));
+
+        if (transportationSchedulesDto.isEmpty()) {
+            return new ResponseObject("404", "Không tìm thấy dữ liệu", null);
+        } else {
+            return new ResponseObject("200", "Đã tìm thấy dữ liệu", transportationSchedulesDto);
         }
     }
 }

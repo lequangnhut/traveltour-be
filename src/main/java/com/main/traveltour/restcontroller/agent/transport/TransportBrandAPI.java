@@ -50,7 +50,7 @@ public class TransportBrandAPI {
 
         TransportationBrands transport = transportationBrandsService.findByAgencyId(agenciesId);
         transport.setTransportationBrandName(transportDto.getTransportationBrandName());
-        transport.setTransportationBrandDescription(transportDto.getTransportationBrandDescription());
+        transport.setTransportationBrandPolicy(transportDto.getTransportationBrandPolicy());
         transport.setTransportationBrandImg(transportImgUrl);
         transport.setIsAccepted(Boolean.TRUE);
         transportationBrandsService.save(transport);
@@ -82,12 +82,12 @@ public class TransportBrandAPI {
         if (transportImg != null) {
             String transportImgUrl = fileUpload.uploadFile(transportImg);
             transport.setTransportationBrandName(transportDto.getTransportationBrandName());
-            transport.setTransportationBrandDescription(transportDto.getTransportationBrandDescription());
+            transport.setTransportationBrandPolicy(transportDto.getTransportationBrandPolicy());
             transport.setTransportationBrandImg(transportImgUrl);
             transportationBrandsService.save(transport);
         } else {
             transport.setTransportationBrandName(transportDto.getTransportationBrandName());
-            transport.setTransportationBrandDescription(transportDto.getTransportationBrandDescription());
+            transport.setTransportationBrandPolicy(transportDto.getTransportationBrandPolicy());
             transportationBrandsService.save(transport);
         }
     }

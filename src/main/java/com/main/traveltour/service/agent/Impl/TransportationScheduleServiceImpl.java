@@ -6,73 +6,77 @@ import com.main.traveltour.service.agent.TransportationScheduleService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 
-import java.sql.Timestamp;
-import java.time.Instant;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
 import java.util.List;
 
 @Service
 public class TransportationScheduleServiceImpl implements TransportationScheduleService {
 
     @Autowired
-    private TransportationSchedulesRepository transportationSchedulesRepository;
+    private TransportationSchedulesRepository repo;
+
+    @Autowired
+    private JdbcTemplate jdbcTemplate;
 
     @Override
     public String findMaxCode() {
-        return transportationSchedulesRepository.fixMaxCode();
+        return repo.fixMaxCode();
     }
 
     @Override
     public TransportationSchedules findBySchedulesId(String transportSchedulesId) {
-        return transportationSchedulesRepository.findById(transportSchedulesId);
+        return repo.findById(transportSchedulesId);
     }
 
     @Override
     public List<TransportationSchedules> findByTransportId(String transportId) {
-        return transportationSchedulesRepository.findByTransportationId(transportId);
+        return repo.findByTransportationId(transportId);
     }
 
     @Override
     public List<TransportationSchedules> findAllScheduleByBrandId(String transportBrandId) {
-        return transportationSchedulesRepository.findAllScheduleByBrandId(transportBrandId);
+        return repo.findAllScheduleByBrandId(transportBrandId);
     }
 
     @Override
     public TransportationSchedules save(TransportationSchedules schedules) {
-        return transportationSchedulesRepository.save(schedules);
+        return repo.save(schedules);
     }
 
     @Override
     public Page<TransportationSchedules> findAllSchedules(String transportBrandId, Pageable pageable) {
-        return transportationSchedulesRepository.findAllSchedules(transportBrandId, pageable);
+        return repo.findAllSchedules(transportBrandId, pageable);
     }
 
     @Override
     public Page<TransportationSchedules> findAllSchedulesWitchSearch(String transportBrandId, String searchTerm, Pageable pageable) {
-        return transportationSchedulesRepository.findAllSchedulesWithSearch(transportBrandId, searchTerm, pageable);
+        return repo.findAllSchedulesWithSearch(transportBrandId, searchTerm, pageable);
+    }
+
+    @Override
+    public Page<TransportationSchedules> findAllTransportScheduleCus(Pageable pageable, String brandId) {
+        return repo.findAllTransportScheduleCus(pageable, brandId);
     }
 
     @Override
     public void updateStatusAndActive() {
-//        LocalDateTime currentDateTime = LocalDateTime.now();
-//        Timestamp timestamp = Timestamp.valueOf(currentDateTime.truncatedTo(java.time.temporal.ChronoUnit.SECONDS));
-//
-//        List<TransportationSchedules> transportationSchedules1 = transportationSchedulesRepository.findByDepartureTimeAndIsActiveTrue(timestamp);
-//        List<TransportationSchedules> transportationSchedule2 = transportationSchedulesRepository.findByArrivalTimeAndIsActiveTrue(timestamp);
-
-        List<TransportationSchedules> transportationSchedules1 = transportationSchedulesRepository.findTripInProgress();
-        List<TransportationSchedules> transportationSchedule2 = transportationSchedulesRepository.findTripCompleted();
+        List<TransportationSchedules> transportationSchedules1 = repo.findTripInProgress();
+        List<TransportationSchedules> transportationSchedule2 = repo.findTripCompleted();
 
         for (TransportationSchedules schedules : transportationSchedules1) {
             schedules.setIsStatus(1);
-            transportationSchedulesRepository.save(schedules);
+            saveTransportSchedules(schedules);
         }
         for (TransportationSchedules schedules : transportationSchedule2) {
             schedules.setIsStatus(2);
-            transportationSchedulesRepository.save(schedules);
+            saveTransportSchedules(schedules);
         }
+    }
+
+    public void saveTransportSchedules(TransportationSchedules schedules) {
+        String sql = "UPDATE transportation_schedules SET is_status = ? WHERE id = ?";
+        jdbcTemplate.update(sql, schedules.getIsStatus(), schedules.getId());
     }
 }

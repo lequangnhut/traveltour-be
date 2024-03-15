@@ -1,20 +1,27 @@
 package com.main.traveltour.dto.staff;
 
 import lombok.Data;
-import lombok.Value;
 
-import java.io.Serializable;
 import java.sql.Timestamp;
 
 @Data
 public class TransportationBrandsDto {
+
     String id;
+
     String transportationBrandName;
+
     int agenciesId;
+
     Timestamp dateCreated;
+
     Timestamp dateDeleted;
+
     Boolean isAccepted;
+
     Boolean isActive;
+
     String transportationBrandImg;
-    String transportationBrandDescription;
+
+    String transportationBrandPolicy;
 }
