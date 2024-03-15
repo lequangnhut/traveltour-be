@@ -75,4 +75,5 @@ public interface TourDetailsRepository extends JpaRepository<TourDetails, Intege
 
     @Query(value = "SELECT * FROM tour_details WHERE arrival_date < NOW() AND tour_detail_status <> 3;", nativeQuery = true)
     List<TourDetails> findTourCompleted();
+
 }

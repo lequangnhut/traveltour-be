@@ -15,5 +15,7 @@ public interface HotelServiceService {
 
     Hotels getHotelsById(String id);
 
+    Hotels findByRoomTypeId(String roomTypeId);
+
 
 }

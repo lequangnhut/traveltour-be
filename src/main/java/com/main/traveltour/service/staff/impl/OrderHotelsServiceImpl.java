@@ -10,6 +10,8 @@ import com.main.traveltour.service.agent.RoomTypeService;
 import com.main.traveltour.service.staff.OrderHotelsService;
 import com.main.traveltour.utils.GenerateOrderCode;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -59,4 +61,11 @@ public class OrderHotelsServiceImpl implements OrderHotelsService {
         orderHotels.setDateCreated(Timestamp.valueOf(LocalDateTime.now()));
         repo.save(orderHotels);
     }
+
+    @Override
+    public Page<OrderHotels> getAllByUserId(Integer orderStatus, Integer userId, Pageable pageable) {
+        return repo.findAllBookingHotelsByUserId(orderStatus, userId, pageable);
+    }
+
+
 }

@@ -2,7 +2,7 @@ package com.main.traveltour.service.utils.impl;
 
 import com.main.traveltour.dto.agent.hotel.AgenciesDto;
 import com.main.traveltour.dto.auth.RegisterDto;
-import com.main.traveltour.dto.customer.ForgotPasswordDto;
+import com.main.traveltour.dto.customer.infomation.ForgotPasswordDto;
 import com.main.traveltour.dto.customer.booking.BookingDto;
 import com.main.traveltour.dto.customer.booking.BookingToursDto;
 import com.main.traveltour.dto.superadmin.AccountDto;
@@ -41,8 +41,8 @@ public class EmailServiceImpl implements EmailService {
     private final Queue<AgenciesDto> emailQueueAcceptedAgency = new LinkedList<>();
     private final Queue<AgenciesDto> emailQueueDeniedAgency = new LinkedList<>();
     private final Queue<BookingDto> emailQueueBookingTour = new LinkedList<>();
-
     private final Queue<ForgotPasswordDto> emailQueueForgot = new LinkedList<>();
+    private final Queue<BookingToursDto> emailQueueCustomerCancelTour = new LinkedList<>();
 
     @Autowired
     private JavaMailSender sender;
@@ -325,6 +325,100 @@ public class EmailServiceImpl implements EmailService {
         emailQueueForgot.add(passwordsDto);
     }
 
+    @Override
+    public void sendMailCustomerCancelTour() {
+        while (!emailQueueCustomerCancelTour.isEmpty()) {
+            BookingToursDto bookingToursDto = emailQueueCustomerCancelTour.poll();
+            TourDetails tourDetails = tourDetailsService.findById(bookingToursDto.getTourDetailId());
+            Optional<Tours> tours = toursService.findById(tourDetails.getTourId());
+
+            try {
+                MimeMessage message = sender.createMimeMessage();
+                MimeMessageHelper helper = new MimeMessageHelper(message, MimeMessageHelper.MULTIPART_MODE_MIXED_RELATED, StandardCharsets.UTF_8.name());
+
+                BigDecimal unitPriceDecimal = tourDetails.getUnitPrice();
+                int capacityAdult = bookingToursDto.getCapacityAdult();
+                int capacityKid = bookingToursDto.getCapacityKid();
+                int unitPrice = unitPriceDecimal.intValue();
+
+                BigDecimal orderTotal = BigDecimal.valueOf((capacityAdult * unitPrice) + (capacityKid * (unitPrice * 0.3)));
+
+                if (bookingToursDto.getUserId() != null) {
+                    helper.setTo(bookingToursDto.getCustomerEmail());
+                } else {
+                    helper.setTo(bookingToursDto.getCustomerEmail());
+                }
+
+                Map<String, Object> variables = new HashMap<>();
+                variables.put("customerEmail", bookingToursDto.getCustomerEmail());
+                variables.put("bookingId", bookingToursDto.getId());
+                variables.put("dateTimeBooking", bookingToursDto.getDateCreated());
+                variables.put("timeDelete", new Timestamp(System.currentTimeMillis()));
+                variables.put("customerName", bookingToursDto.getCustomerName());
+                variables.put("customerCitizenCard", bookingToursDto.getCustomerCitizenCard());
+                variables.put("customerPhone", bookingToursDto.getCustomerPhone());
+                if (bookingToursDto.getPaymentMethod() == 1) {
+                    variables.put("paymentMethod", "VÍ VNPAY");
+                } else if (bookingToursDto.getPaymentMethod() == 2) {
+                    variables.put("paymentMethod", "VÍ ZALOPAY");
+                } else if (bookingToursDto.getPaymentMethod() == 3) {
+                    variables.put("paymentMethod", "VÍ MOMO");
+                } else {
+                    variables.put("paymentMethod", "Thanh toán tại quầy");
+                }
+                variables.put("tourName", tours.get().getTourName());
+                variables.put("totalCapacity", capacityAdult + " Người lớn, " + capacityKid + " Trẻ em, " + bookingToursDto.getCapacityBaby() + " Em bé.");
+                variables.put("departureDate", tourDetails.getDepartureDate());
+                variables.put("arrivalDate", tourDetails.getArrivalDate());
+                variables.put("unitPrice", ReplaceUtils.formatPrice(tourDetails.getUnitPrice()) + " VNĐ");
+                variables.put("orderTotal", ReplaceUtils.formatPrice(orderTotal) + " VNĐ");
+
+                Date currentDate = new Date();
+                long daysRemaining = (tourDetails.getDepartureDate().getTime() - currentDate.getTime()) / (1000 * 60 * 60 * 24);
+                int coc;
+                BigDecimal moneyBack;
+
+                if (bookingToursDto.getPaymentMethod() == 0 && bookingToursDto.getOrderStatus() == 0) {
+                    coc = 0;
+                    moneyBack = BigDecimal.ZERO;
+                } else {
+                    if (daysRemaining >= 30) {
+                        coc = 1;
+                    } else if (daysRemaining >= 26 && daysRemaining <= 29) {
+                        coc = 5;
+                    } else if (daysRemaining >= 15 && daysRemaining <= 25) {
+                        coc = 30;
+                    } else if (daysRemaining >= 8 && daysRemaining <= 14) {
+                        coc = 50;
+                    } else if (daysRemaining >= 2 && daysRemaining <= 7) {
+                        coc = 80;
+                    } else if (daysRemaining >= 0 && daysRemaining <= 1) {
+                        coc = 100;
+                    } else {
+                        coc = 0;
+                    }
+                    BigDecimal cocPercentage = BigDecimal.valueOf(100 - coc).divide(BigDecimal.valueOf(100));
+                    moneyBack = orderTotal.multiply(cocPercentage);
+                }
+
+                variables.put("refund", coc + "%");
+                variables.put("moneyback", ReplaceUtils.formatPrice(moneyBack) + " VNĐ");
+                helper.setFrom(email);
+                helper.setText(thymeleafService.createContent("customer-cancel-tour", variables), true);
+                helper.setSubject("XÁC NHẬN HỦY TOUR.");
+
+                sender.send(message);
+            } catch (MessagingException e) {
+                throw new RuntimeException(e);
+            }
+        }
+    }
+
+    @Override
+    public void queueEmailCustomerCancelTour(BookingToursDto bookingToursDto) {
+    emailQueueCustomerCancelTour.add(bookingToursDto);
+    }
+
     @Scheduled(fixedDelay = 5000)
     public void processRegister() {
         sendMailRegister();
@@ -383,5 +477,10 @@ public class EmailServiceImpl implements EmailService {
     @Scheduled(fixedDelay = 5000)
     public void processForgotMail() {
         sendMailForgot();
+    }
+
+    @Scheduled(fixedDelay = 5000)
+    public void processCustomerCancelTour() {
+        sendMailCustomerCancelTour();
     }
 }

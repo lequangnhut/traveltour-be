@@ -1,8 +1,8 @@
-package com.main.traveltour.restcontroller.customer.forgotpw;
+package com.main.traveltour.restcontroller.customer.infomation;
 
 import com.github.cage.YCage;
-import com.main.traveltour.dto.customer.ChangePassDto;
-import com.main.traveltour.dto.customer.ForgotPasswordDto;
+import com.main.traveltour.dto.customer.infomation.ChangePassDto;
+import com.main.traveltour.dto.customer.infomation.ForgotPasswordDto;
 import com.main.traveltour.entity.PassOTP;
 import com.main.traveltour.entity.ResponseObject;
 import com.main.traveltour.entity.Users;

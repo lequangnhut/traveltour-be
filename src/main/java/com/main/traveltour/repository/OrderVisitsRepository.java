@@ -46,4 +46,9 @@ public interface OrderVisitsRepository extends JpaRepository<OrderVisits, Intege
     List<OrderVisits> findOrderVisitByTourDetailIdAndVisitId(@Param("tourDetailId") String tourDetailId,
                                                              @Param("visitId") String visitId,
                                                              @Param("orderVisitStatus") Integer orderVisitStatus);
+
+    @Query("SELECT ov FROM OrderVisits ov WHERE ov.orderStatus = :orderStatus AND ov.userId = :userId")
+    Page<OrderVisits> findAllBookingVisitsByUserId(@Param("orderStatus") Integer orderStatus, @Param("userId") Integer userId, Pageable pageable);
+
+
 }

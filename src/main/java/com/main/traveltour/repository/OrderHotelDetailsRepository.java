@@ -19,4 +19,7 @@ public interface OrderHotelDetailsRepository extends JpaRepository<OrderHotelDet
     List<OrderHotelDetails> findOrderHotelDetailByTourDetailIdAndHotelId(@Param("tourDetailId") String tourDetailId,
                                                                          @Param("hotelId") String hotelId);
 
+    @Query("SELECT ohd FROM OrderHotelDetails ohd join ohd.roomTypesByRoomTypeId rt where ohd.orderHotelId = :orderHotelId")
+    List<OrderHotelDetails> findOrderHotelDetailByOrderHotelId(@Param("orderHotelId") String orderHotelId);
+
 }

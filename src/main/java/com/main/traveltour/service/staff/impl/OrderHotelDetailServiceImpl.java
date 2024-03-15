@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 @Service
 public class OrderHotelDetailServiceImpl implements OrderHotelDetailService {
@@ -28,5 +29,10 @@ public class OrderHotelDetailServiceImpl implements OrderHotelDetailService {
         BigDecimal price = roomTypeService.findRoomTypeById(orderHotelDetails.getRoomTypeId()).get().getPrice();
         orderHotelDetails.setUnitPrice(price);
         repo.save(orderHotelDetails);
+    }
+
+    @Override
+    public List<OrderHotelDetails> findByOrderHotelId(String orderHotelsId) {
+        return repo.findOrderHotelDetailByOrderHotelId(orderHotelsId);
     }
 }

@@ -110,4 +110,9 @@ public class HotelServiceServiceImpl implements HotelServiceService {
         return repo.getHotelsById(id);
     }
 
+    @Override
+    public Hotels findByRoomTypeId(String roomTypeId) {
+        return repo.findByRoomTypeId(roomTypeId);
+    }
+
 }

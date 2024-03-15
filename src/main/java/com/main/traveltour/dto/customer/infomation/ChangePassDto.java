@@ -1,4 +1,4 @@
-package com.main.traveltour.dto.customer;
+package com.main.traveltour.dto.customer.infomation;
 
 import lombok.Getter;
 import lombok.Setter;

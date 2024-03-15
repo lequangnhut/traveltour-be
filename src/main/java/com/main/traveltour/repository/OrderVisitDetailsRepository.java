@@ -19,4 +19,9 @@ public interface OrderVisitDetailsRepository extends JpaRepository<OrderVisitDet
         List<OrderVisitDetails> findOrderVisitDetailByTourDetailIdAndVisitId(@Param("tourDetailId") String tourDetailId,
                                                                              @Param("visitId") String visitId,
                                                                              @Param("orderVisitStatus") Integer orderVisitStatus);
+
+        @Query("SELECT ovd FROM OrderVisitDetails ovd " +
+                "JOIN ovd.orderVisitsByOrderVisitId ov " +
+                "WHERE ov.id = :orderId")
+        List<OrderVisitDetails> findOrderVisitDetailByOrderVisitId(@Param("orderId") String orderId);
 }

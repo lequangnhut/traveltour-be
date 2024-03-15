@@ -93,5 +93,21 @@ public interface HotelsRepository extends JpaRepository<Hotels, String> {
                                          @Param("searchTerm") String searchTerm,
                                          Pageable pageable);
 
+//    @Query("SELECT h FROM Hotels h " +
+//            "JOIN h.roomTypesById rt " +
+//            "JOIN rt.orderHotelDetailsById ohd " +
+//            "JOIN ohd.orderHotelsByOrderHotelId oh " +
+//            "WHERE (oh.userId = :userId) AND " +
+//            "(oh.orderStatus = :orderHotelStatus)")
+
+    @Query("SELECT h FROM Hotels h JOIN h.roomTypesById rt JOIN rt.orderHotelDetailsById ohd" +
+            " JOIN ohd.orderHotelsByOrderHotelId oh WHERE (oh.userId = :userId) AND" +
+            "(oh.orderStatus = :orderHotelStatus) ")
+    Page<Hotels> findHotelByUserId(@Param("userId") Integer userId,
+                                   @Param("orderHotelStatus") Integer orderHotelStatus,
+                                   Pageable pageable);
+
+    @Query("SELECT h FROM Hotels h JOIN h.roomTypesById rt WHERE rt.id = :roomTypeId")
+    Hotels findByRoomTypeId(@Param("roomTypeId") String roomTypeId);
 
 }
