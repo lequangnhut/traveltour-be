@@ -8,6 +8,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.util.Date;
 import java.util.List;
@@ -18,6 +19,10 @@ public interface TourDetailsRepository extends JpaRepository<TourDetails, Intege
     TourDetails findById(String id);
 
     TourDetails getById(String id);
+
+    @Query("SELECT td FROM TourDetails td " +
+            "WHERE td.tourDetailStatus != 4 ")
+    List<TourDetails> getAllTourDetail();
 
     @Query("SELECT td FROM TourDetails td " +
             "WHERE td.tourDetailStatus != 4 " +
@@ -43,16 +48,18 @@ public interface TourDetailsRepository extends JpaRepository<TourDetails, Intege
             "FROM TourDetails td " +
             "JOIN td.toursByTourId t " +
             "JOIN t.tourTypesByTourTypeId ty " +
-            "WHERE (:fromLocation IS NULL OR td.fromLocation LIKE :fromLocation) " +
-            "AND (:departureDate IS NULL OR td.departureDate >= :arrivalDate) " +
-            "AND (:arrivalDate IS NULL OR td.arrivalDate <= :arrivalDate) " +
+            "WHERE (:searchTerm IS NULL OR " +
+            "(UPPER(td.toursByTourId.tourName) LIKE %:searchTerm% OR " +
+            "UPPER(td.tourDetailNotes) LIKE %:searchTerm% OR " +
+            "UPPER(td.fromLocation) LIKE %:searchTerm% OR " +
+            "UPPER(td.toLocation) LIKE %:searchTerm%)) " +
+            "AND (:departureDate IS NULL OR DATE(td.departureDate) >= :departureDate) " +
             "AND (:price IS NULL OR td.unitPrice <= :price) " +
-            "AND (coalesce(:tourTypesByTourTypeId) IS NULL OR ty.id IN (:tourTypesByTourTypeId)) ")
-    Page<TourDetails> findTTourDetailWithFilter(
-            @Param("fromLocation") String fromLocation,
-            @Param("departureDate") Timestamp departureDate,
-            @Param("arrivalDate") Timestamp arrivalDate,
-            @Param("price") Integer price,
+            "AND (:tourTypesByTourTypeId IS NULL OR ty.id IN (:tourTypesByTourTypeId))")
+    Page<TourDetails> findTourDetailWithFilter(
+            @Param("searchTerm") String searchTerm,
+            @Param("departureDate") Date departureDate,
+            @Param("price") BigDecimal price,
             @Param("tourTypesByTourTypeId") List<Integer> tourTypesByTourTypeId,
             Pageable pageable);
 
