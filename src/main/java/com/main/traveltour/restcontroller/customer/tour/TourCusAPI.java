@@ -10,10 +10,13 @@ import com.main.traveltour.utils.EntityDtoUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-import java.util.Optional;
+import java.math.BigDecimal;
+import java.util.Date;
+import java.util.*;
 
 @RestController
 @CrossOrigin(origins = "http://localhost:3000")
@@ -28,7 +31,8 @@ public class TourCusAPI {
 
     @GetMapping("customer/tour/find-tour-detail-customer")
     private ResponseObject findAllTourDetail(@RequestParam(defaultValue = "0") int page,
-                                             @RequestParam(defaultValue = "9") int size) {
+                                             @RequestParam(defaultValue = "10") int size) {
+
         Page<TourDetails> tourDetailsPage = tourDetailsService.findAll(PageRequest.of(page, size));
         Page<TourDetailsGetDataDto> tourDetailsDtoPage = tourDetailsPage.map(tourDetails -> EntityDtoUtils.convertToDto(tourDetails, TourDetailsGetDataDto.class));
 
@@ -36,6 +40,50 @@ public class TourCusAPI {
             return new ResponseObject("404", "Không tìm thấy dữ liệu", null);
         } else {
             return new ResponseObject("200", "Đã tìm thấy dữ liệu", tourDetailsDtoPage);
+        }
+    }
+
+    @GetMapping("customer/tour/find-tour-detail-customer-by-filters")
+    private ResponseObject findAllTourDetailByFilters(@RequestParam(defaultValue = "0") int page,
+                                                      @RequestParam(defaultValue = "10") int size,
+                                                      @RequestParam(defaultValue = "id") String sortBy,
+                                                      @RequestParam(defaultValue = "asc") String sortDir,
+                                                      @RequestParam(required = false) BigDecimal price,
+                                                      @RequestParam(required = false) List<Integer> tourTypeList,
+                                                      @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) Date checkInDateFiller,
+                                                      @RequestParam(required = false) String searchTerm) {
+
+        Sort sort = sortDir.equalsIgnoreCase(Sort.Direction.ASC.name())
+                ? Sort.by(sortBy).ascending()
+                : Sort.by(sortBy).descending();
+
+        Page<TourDetails> tourDetailsPage = tourDetailsService.findTourDetailWithFilter(searchTerm, checkInDateFiller, price, tourTypeList, PageRequest.of(page, size, sort));
+        Page<TourDetailsGetDataDto> tourDetailsDtoPage = tourDetailsPage.map(tourDetails -> EntityDtoUtils.convertToDto(tourDetails, TourDetailsGetDataDto.class));
+
+        if (tourDetailsDtoPage.isEmpty()) {
+            return new ResponseObject("204", "Không tìm thấy dữ liệu", null);
+        } else {
+            return new ResponseObject("200", "Đã tìm thấy dữ liệu", tourDetailsDtoPage);
+        }
+    }
+
+    @GetMapping("customer/tour/get-tour-detail-customer-data-list")
+    private ResponseObject getAllDataList() {
+        List<TourDetails> tourDetailsList = tourDetailsService.findAll();
+        Set<String> dataSet = new LinkedHashSet<>();
+        for (TourDetails tourDetails : tourDetailsList) {
+            dataSet.add(tourDetails.getToursByTourId().getTourName());
+            dataSet.add(tourDetails.getToursByTourId().getTourTypesByTourTypeId().getTourTypeName());
+            dataSet.add(tourDetails.getUsersByGuideId().getFullName());
+            dataSet.add(tourDetails.getToLocation());
+            dataSet.add(tourDetails.getFromLocation());
+        }
+        List<String> uniqueDataList = new ArrayList<>(dataSet);
+
+        if (uniqueDataList.isEmpty()) {
+            return new ResponseObject("404", "Không tìm thấy dữ liệu", null);
+        } else {
+            return new ResponseObject("200", "Đã tìm thấy dữ liệu", uniqueDataList);
         }
     }
 

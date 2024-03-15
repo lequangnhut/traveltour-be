@@ -8,6 +8,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
+import java.util.Date;
 import java.sql.Timestamp;
 import java.util.List;
 
@@ -24,7 +26,7 @@ public class TourDetailsServiceImpl implements TourDetailsService {
 
     @Override
     public List<TourDetails> findAll() {
-        return tourDetailsRepository.findAll();
+        return tourDetailsRepository.getAllTourDetail();
     }
 
     @Override
@@ -38,9 +40,10 @@ public class TourDetailsServiceImpl implements TourDetailsService {
     }
 
     @Override
-    public Page<TourDetails> findAllCustomer(String fromLocation, Timestamp departureDate, Timestamp arrivalDate, Integer price, List<Integer> tourTypesByTourTypeId, Pageable pageable) {
-        return tourDetailsRepository.findTTourDetailWithFilter(fromLocation, departureDate, arrivalDate, price, tourTypesByTourTypeId, pageable);
+    public Page<TourDetails> findTourDetailWithFilter(String searchTerm, Date departureDate, BigDecimal price, List<Integer> tourTypesByTourTypeId, Pageable pageable) {
+        return tourDetailsRepository.findTourDetailWithFilter(searchTerm, departureDate, price, tourTypesByTourTypeId, pageable);
     }
+
 
     @Override
     public Page<TourDetails> findAllWithSearch(String searchTerm, Pageable pageable) {
