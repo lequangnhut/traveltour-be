@@ -1,5 +1,6 @@
 package com.main.traveltour.repository;
 
+import com.main.traveltour.entity.BookingTourCustomers;
 import com.main.traveltour.entity.TourDetails;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -23,6 +24,13 @@ public interface TourDetailsRepository extends JpaRepository<TourDetails, Intege
     @Query("SELECT td FROM TourDetails td " +
             "WHERE td.tourDetailStatus != 4 ")
     List<TourDetails> getAllTourDetail();
+
+    @Query("SELECT td FROM TourDetails td " +
+            "JOIN td.bookingToursById bt " +
+            "JOIN bt.bookingTourCustomersById btc " +
+            "WHERE td.tourDetailStatus != 4 " +
+            "GROUP BY td.id")
+    List<TourDetails> getAllJoinBooking();
 
     @Query("SELECT td FROM TourDetails td " +
             "WHERE td.tourDetailStatus != 4 " +
@@ -49,7 +57,8 @@ public interface TourDetailsRepository extends JpaRepository<TourDetails, Intege
             "JOIN td.toursByTourId t " +
             "JOIN t.tourTypesByTourTypeId ty " +
             "WHERE (:searchTerm IS NULL OR " +
-            "(UPPER(td.toursByTourId.tourName) LIKE %:searchTerm% OR " +
+            "(UPPER(t.tourName) LIKE %:searchTerm% OR " +
+            "UPPER(ty.tourTypeName) LIKE %:searchTerm% OR " +
             "UPPER(td.tourDetailNotes) LIKE %:searchTerm% OR " +
             "UPPER(td.fromLocation) LIKE %:searchTerm% OR " +
             "UPPER(td.toLocation) LIKE %:searchTerm%)) " +

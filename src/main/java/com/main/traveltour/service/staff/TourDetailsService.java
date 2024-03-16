@@ -16,6 +16,8 @@ public interface TourDetailsService {
 
     List<TourDetails> findAll();
 
+    List<TourDetails> getAllJoinBooking();
+
     List<Object[]> findTourTrend();
 
     Page<TourDetails> findAll(Pageable pageable);

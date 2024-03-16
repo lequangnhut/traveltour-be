@@ -34,6 +34,11 @@ public class TourDetailsServiceImpl implements TourDetailsService {
     }
 
     @Override
+    public List<TourDetails> getAllJoinBooking() {
+        return tourDetailsRepository.getAllJoinBooking();
+    }
+
+    @Override
     public List<Object[]> findTourTrend() {
         return tourDetailsRepository.findTourDetailTrend();
     }
