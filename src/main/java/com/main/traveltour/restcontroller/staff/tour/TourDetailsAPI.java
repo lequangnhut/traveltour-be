@@ -1,5 +1,6 @@
 package com.main.traveltour.restcontroller.staff.tour;
 
+import com.main.traveltour.dto.staff.OrderHotelDetailsGetDataDto;
 import com.main.traveltour.dto.staff.tour.TourDetailImagesDto;
 import com.main.traveltour.dto.staff.tour.TourDetailsDto;
 import com.main.traveltour.dto.staff.tour.TourDetailsGetDataDto;
@@ -78,6 +79,19 @@ public class TourDetailsAPI {
             return new ResponseObject("404", "Không tìm thấy dữ liệu", null);
         } else {
             return new ResponseObject("200", "Đã tìm thấy dữ liệu", tourDetailsDto);
+        }
+    }
+
+    @GetMapping("/find-all-join-booking")
+    public ResponseObject getAllJoinBooking() {
+        List<TourDetails> tourDetailsList = tourDetailsService.getAllJoinBooking();
+        List<TourDetailsGetDataDto> tourDetailsDtoList = tourDetailsList.stream()
+                .map(tourDetail -> EntityDtoUtils.convertToDto(tourDetail, TourDetailsGetDataDto.class))
+                .toList();
+        if (tourDetailsDtoList.isEmpty()) {
+            return new ResponseObject("204", "Không tìm thấy dữ liệu", null);
+        } else {
+            return new ResponseObject("200", "Đã tìm thấy dữ liệu", tourDetailsDtoList);
         }
     }
 
