@@ -11,15 +11,14 @@ import java.util.List;
 @Repository
 public interface PassOTPRepository extends JpaRepository<PassOTP, Integer> {
 
-    PassOTP findByUsersIdAndCodetokenAndIsActiveIsTrue(int id, String token);
+    PassOTP findByUsersIdAndCodeTokenAndIsActiveIsTrue(int id, String token);
 
     @Query("SELECT p FROM PassOTP p WHERE p.usersId = :userId AND p.isActive = true")
     List<PassOTP> findActivePassOTPsByUserId(@Param("userId") int userId);
 
-    PassOTP findByCodetoken(String token);
+    PassOTP findByCodeToken(String token);
+
+    PassOTP findByCodeTokenAndEmail(String codeOTP, String email);
 
     List<PassOTP> findByIsActiveIsTrue();
-
-
-
 }

@@ -27,7 +27,11 @@ public class PassOTP {
 
     @Basic
     @Column(name = "code_token")
-    private String codetoken;
+    private String codeToken;
+
+    @Basic
+    @Column(name = "email")
+    private String email;
 
     @Basic
     @Column(name = "date_created")

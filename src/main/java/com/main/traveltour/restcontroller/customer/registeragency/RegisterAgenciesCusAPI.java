@@ -1,6 +1,6 @@
-package com.main.traveltour.restcontroller.superadmin;
+package com.main.traveltour.restcontroller.customer.registeragency;
 
-import com.main.traveltour.dto.UsersDto;
+import com.main.traveltour.dto.customer.infomation.ForgotPasswordDto;
 import com.main.traveltour.dto.superadmin.AccountDto;
 import com.main.traveltour.dto.superadmin.DataAccountDto;
 import com.main.traveltour.entity.*;
@@ -10,6 +10,7 @@ import com.main.traveltour.service.agent.AgenciesService;
 import com.main.traveltour.service.agent.HotelsService;
 import com.main.traveltour.service.agent.TransportationBrandsService;
 import com.main.traveltour.service.agent.VisitLocationsService;
+import com.main.traveltour.service.customer.PassOTPService;
 import com.main.traveltour.service.utils.EmailService;
 import com.main.traveltour.utils.EntityDtoUtils;
 import com.main.traveltour.utils.GenerateNextID;
@@ -18,19 +19,23 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
 @RestController
 @CrossOrigin(origins = "http://localhost:3000")
-@RequestMapping("api/v1")
-public class AccountAPI {
+@RequestMapping("api/v1/")
+public class RegisterAgenciesCusAPI {
 
     @Autowired
     private UsersService usersService;
 
     @Autowired
     private RolesService rolesService;
+
+    @Autowired
+    private PassOTPService passOTPService;
 
     @Autowired
     private AgenciesService agenciesService;
@@ -50,24 +55,34 @@ public class AccountAPI {
     @Autowired
     private EmailService emailService;
 
-    @GetMapping("superadmin/account/find-all-account-role-is-guild")
-    private ResponseObject findUsersByRolesIsGuild() {
-        List<Users> items = usersService.findUsersByRolesIsGuild();
-        if (items.isEmpty()) {
-            return new ResponseObject("404", "Không tìm thấy dữ liệu", null);
+    @PostMapping("customer/agencies/submit-email")
+    public ResponseObject submitOTP(@RequestBody ForgotPasswordDto forgotPasswordDto) {
+        emailService.queueEmailOTPCus(forgotPasswordDto);
+
+        PassOTP passOTP = new PassOTP();
+        passOTP.setUsersId(1);
+        passOTP.setEmail(forgotPasswordDto.getEmail());
+        passOTP.setCodeToken(forgotPasswordDto.getVerifyCode());
+        passOTP.setIsActive(true);
+        passOTP.setDateCreated(Timestamp.valueOf(LocalDateTime.now()));
+        passOTPService.save(passOTP);
+
+        return new ResponseObject("200", "Đã tìm thấy dữ liệu", forgotPasswordDto);
+    }
+
+    @GetMapping("customer/agencies/find-by-otp/{codeOtp}/{email}")
+    public ResponseObject findByOTPAndEmail(@PathVariable String codeOtp, @PathVariable String email) {
+        PassOTP passOTP = passOTPService.findByOTPAndEmail(codeOtp, email);
+
+        if (passOTP != null && passOTP.getIsActive()) {
+            return new ResponseObject("200", "Đã tìm thấy dữ liệu", passOTP);
         } else {
-            return new ResponseObject("200", "Đã tìm thấy dữ liệu", items);
+            return new ResponseObject("404", "Không tìm thấy dữ liệu", null);
         }
     }
 
-    @GetMapping("superadmin/account/find-by-id/{id}")
-    private UsersDto findById(@PathVariable int id) {
-        Users user = usersService.findById(id);
-        return EntityDtoUtils.convertToDto(user, UsersDto.class);
-    }
-
-    @PostMapping("superadmin/account/create-account")
-    private void createAccount(@RequestBody DataAccountDto dataAccountDto) {
+    @PostMapping("customer/agencies/register-agencies")
+    public ResponseObject registerAgencies(@RequestBody DataAccountDto dataAccountDto) {
         AccountDto accountDto = dataAccountDto.getAccountDto();
         Users user = EntityDtoUtils.convertToEntity(accountDto, Users.class);
 
@@ -77,6 +92,7 @@ public class AccountAPI {
         user.setRoles(rolesList);
         user.setPassword(passwordEncoder.encode(accountDto.getPassword()));
         user.setAddress("Việt Nam");
+        user.setIsActive(Boolean.TRUE);
         user.setDateCreated(new Timestamp(System.currentTimeMillis()));
         usersService.save(user);
 
@@ -94,24 +110,12 @@ public class AccountAPI {
 
             emailService.queueEmailCreateBusiness(dataAccountDto);
         }
-    }
 
-    @PutMapping("superadmin/account/update-account")
-    private void updateAccount(@RequestBody AccountDto accountDto) {
-        Users users = usersService.findById(accountDto.getId());
-        users.setFullName(accountDto.getFullName());
-        users.setPhone(accountDto.getPhone());
-        users.setIsActive(accountDto.getIsActive());
-        users.setCitizenCard(accountDto.getCitizenCard());
-        users.setAddress(accountDto.getAddress());
-        usersService.save(users);
-    }
-
-    @DeleteMapping("superadmin/account/delete-account/{id}")
-    private void deleteAccount(@PathVariable int id) {
-        Users users = usersService.findById(id);
-        users.setIsActive(Boolean.FALSE);
-        usersService.save(users);
+        if (accountDto == null) {
+            return new ResponseObject("200", "Đã tìm thấy dữ liệu", "Thất bại");
+        } else {
+            return new ResponseObject("404", "Không tìm thấy dữ liệu", "Thành công");
+        }
     }
 
     private void registerBusiness(int agenciesId, List<String> roles) {

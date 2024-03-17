@@ -40,4 +40,8 @@ public interface EmailService {
     void sendMailCustomerCancelTour();
 
     void queueEmailCustomerCancelTour(BookingToursDto bookingToursDto);
+
+    void sendMailOTPCus();
+
+    void queueEmailOTPCus(ForgotPasswordDto passwordDto);
 }

@@ -43,6 +43,7 @@ public class EmailServiceImpl implements EmailService {
     private final Queue<BookingDto> emailQueueBookingTour = new LinkedList<>();
     private final Queue<ForgotPasswordDto> emailQueueForgot = new LinkedList<>();
     private final Queue<BookingToursDto> emailQueueCustomerCancelTour = new LinkedList<>();
+    private final Queue<ForgotPasswordDto> emailQueueSendOTPRegisterAgencies = new LinkedList<>();
 
     @Autowired
     private JavaMailSender sender;
@@ -416,7 +417,38 @@ public class EmailServiceImpl implements EmailService {
 
     @Override
     public void queueEmailCustomerCancelTour(BookingToursDto bookingToursDto) {
-    emailQueueCustomerCancelTour.add(bookingToursDto);
+        emailQueueCustomerCancelTour.add(bookingToursDto);
+    }
+
+    @Override
+    public void queueEmailOTPCus(ForgotPasswordDto passwordDto) {
+        emailQueueSendOTPRegisterAgencies.add(passwordDto);
+    }
+
+    @Override
+    public void sendMailOTPCus() {
+        while (!emailQueueSendOTPRegisterAgencies.isEmpty()) {
+            ForgotPasswordDto passwordDto = emailQueueSendOTPRegisterAgencies.poll();
+
+            try {
+                MimeMessage message = sender.createMimeMessage();
+                MimeMessageHelper helper = new MimeMessageHelper(message, MimeMessageHelper.MULTIPART_MODE_MIXED_RELATED, StandardCharsets.UTF_8.name());
+
+                helper.setTo(passwordDto.getEmail());
+
+                Map<String, Object> variables = new HashMap<>();
+                variables.put("email", passwordDto.getEmail());
+                variables.put("otp", passwordDto.getVerifyCode());
+
+                helper.setFrom(passwordDto.getEmail());
+                helper.setText(thymeleafService.createContent("otp-register-agencies", variables), true);
+                helper.setSubject("TRAVELTOUR GỬI MÃ OTP ĐĂNG KÝ TÀI KHOẢN DOANH NGHIỆP");
+
+                sender.send(message);
+            } catch (MessagingException e) {
+                throw new RuntimeException(e);
+            }
+        }
     }
 
     @Scheduled(fixedDelay = 5000)
@@ -449,6 +481,21 @@ public class EmailServiceImpl implements EmailService {
         sendMailBookingTour();
     }
 
+    @Scheduled(fixedDelay = 5000)
+    public void processForgotMail() {
+        sendMailForgot();
+    }
+
+    @Scheduled(fixedDelay = 5000)
+    public void processCustomerCancelTour() {
+        sendMailCustomerCancelTour();
+    }
+
+    @Scheduled(fixedDelay = 5000)
+    public void processEmailRegisterAgencies() {
+        sendMailOTPCus();
+    }
+
     private String convertRolesToVietnamese(List<String> roles) {
         StringBuilder roleString = new StringBuilder();
 
@@ -472,15 +519,5 @@ public class EmailServiceImpl implements EmailService {
         }
 
         return roleString.toString();
-    }
-
-    @Scheduled(fixedDelay = 5000)
-    public void processForgotMail() {
-        sendMailForgot();
-    }
-
-    @Scheduled(fixedDelay = 5000)
-    public void processCustomerCancelTour() {
-        sendMailCustomerCancelTour();
     }
 }

@@ -1,7 +1,6 @@
 package com.main.traveltour.service.customer.Impl;
 
 import com.main.traveltour.entity.PassOTP;
-import com.main.traveltour.entity.TransportationSchedules;
 import com.main.traveltour.repository.PassOTPRepository;
 import com.main.traveltour.service.customer.PassOTPService;
 import jakarta.transaction.Transactional;
@@ -23,7 +22,7 @@ public class PassOTPServiceImpl implements PassOTPService {
 
     @Override
     public PassOTP findByUserIdAndToken(int id, String token) {
-        return passOTPRepository.findByUsersIdAndCodetokenAndIsActiveIsTrue(id, token);
+        return passOTPRepository.findByUsersIdAndCodeTokenAndIsActiveIsTrue(id, token);
     }
 
     @Override
@@ -44,7 +43,12 @@ public class PassOTPServiceImpl implements PassOTPService {
 
     @Override
     public PassOTP findByToken(String token) {
-        return passOTPRepository.findByCodetoken(token);
+        return passOTPRepository.findByCodeToken(token);
+    }
+
+    @Override
+    public PassOTP findByOTPAndEmail(String codeOTP, String email) {
+        return passOTPRepository.findByCodeTokenAndEmail(codeOTP, email);
     }
 
     @Override

@@ -12,5 +12,7 @@ public interface PassOTPService {
 
     PassOTP findByToken(String token);
 
+    PassOTP findByOTPAndEmail(String codeOTP, String email);
+
     void updateActive();
 }

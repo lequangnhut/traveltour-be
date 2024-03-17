@@ -44,7 +44,11 @@ public class DecentralizationAPI {
     private VisitLocationsService visitLocationsService;
 
     @GetMapping("superadmin/decentralization/find-role-staff")
-    private ResponseEntity<Page<Users>> getListUserRoleStaff(@RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int size, @RequestParam(defaultValue = "id") String sortBy, @RequestParam(defaultValue = "asc") String sortDir, @RequestParam(required = false) String searchTerm) {
+    private ResponseEntity<Page<Users>> getListUserRoleStaff(@RequestParam(defaultValue = "0") int page,
+                                                             @RequestParam(defaultValue = "10") int size,
+                                                             @RequestParam(defaultValue = "id") String sortBy,
+                                                             @RequestParam(defaultValue = "asc") String sortDir,
+                                                             @RequestParam(required = false) String searchTerm) {
         Sort sort = sortDir.equalsIgnoreCase(Sort.Direction.ASC.name()) ? Sort.by(sortBy).ascending() : Sort.by(sortBy).descending();
 
         Page<Users> users = searchTerm == null || searchTerm.isEmpty() ? usersService.findDecentralizationStaff(PageRequest.of(page, size, sort)) : usersService.findAllAccountStaffWithSearch(searchTerm, PageRequest.of(page, size, sort));
@@ -52,7 +56,11 @@ public class DecentralizationAPI {
     }
 
     @GetMapping("superadmin/decentralization/find-role-agent")
-    private ResponseEntity<Page<Users>> getListUserRoleAgent(@RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int size, @RequestParam(defaultValue = "id") String sortBy, @RequestParam(defaultValue = "asc") String sortDir, @RequestParam(required = false) String searchTerm) {
+    private ResponseEntity<Page<Users>> getListUserRoleAgent(@RequestParam(defaultValue = "0") int page,
+                                                             @RequestParam(defaultValue = "10") int size,
+                                                             @RequestParam(defaultValue = "id") String sortBy,
+                                                             @RequestParam(defaultValue = "asc") String sortDir,
+                                                             @RequestParam(required = false) String searchTerm) {
         Sort sort = sortDir.equalsIgnoreCase(Sort.Direction.ASC.name()) ? Sort.by(sortBy).ascending() : Sort.by(sortBy).descending();
 
         Page<Users> users = searchTerm == null || searchTerm.isEmpty() ? usersService.findDecentralizationAgent(PageRequest.of(page, size, sort)) : usersService.findAllAccountAgentWithSearch(searchTerm, PageRequest.of(page, size, sort));

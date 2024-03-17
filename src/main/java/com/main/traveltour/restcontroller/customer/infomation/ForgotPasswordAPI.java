@@ -85,7 +85,7 @@ public class ForgotPasswordAPI {
 
         PassOTP passOTP = new PassOTP();
         passOTP.setUsersId(users.getId());
-        passOTP.setCodetoken(verifyCode);
+        passOTP.setCodeToken(verifyCode);
         passOTP.setIsActive(true);
         passOTP.setDateCreated(Timestamp.valueOf(LocalDateTime.now()));
         passOTPService.save(passOTP);
