@@ -3,11 +3,9 @@ package com.main.traveltour.service.staff;
 import com.main.traveltour.entity.TourDetails;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.repository.query.Param;
 
 import java.math.BigDecimal;
 import java.util.Date;
-import java.sql.Timestamp;
 import java.util.List;
 
 public interface TourDetailsService {
@@ -18,6 +16,8 @@ public interface TourDetailsService {
 
     List<TourDetails> getAllJoinBooking();
 
+    Page<TourDetails> getAllTourDetailByStatusIs2AndSearchTerm(String searchTerm, Pageable pageable);
+
     List<Object[]> findTourTrend();
 
     Page<TourDetails> findAll(Pageable pageable);
@@ -26,7 +26,7 @@ public interface TourDetailsService {
                                                Date departureDate,
                                                BigDecimal price,
                                                List<Integer> tourTypesByTourTypeId,
-                                               Pageable pageable)   ;
+                                               Pageable pageable);
 
     Page<TourDetails> findAllWithSearch(String searchTerm, Pageable pageable);
 

@@ -26,10 +26,21 @@ public interface TourDetailsRepository extends JpaRepository<TourDetails, Intege
     List<TourDetails> getAllTourDetail();
 
     @Query("SELECT td FROM TourDetails td " +
+            "WHERE (:searchTerm IS NULL OR " +
+            "(UPPER(td.toursByTourId.tourName) LIKE %:searchTerm% OR " +
+            "UPPER(td.toursByTourId.tourTypesByTourTypeId.tourTypeName) LIKE %:searchTerm% OR " +
+            "UPPER(td.tourDetailNotes) LIKE %:searchTerm% OR " +
+            "UPPER(td.fromLocation) LIKE %:searchTerm% OR " +
+            "UPPER(td.toLocation) LIKE %:searchTerm%)) " +
+            "AND (td.tourDetailStatus = 2)")
+    Page<TourDetails> getAllTourDetailByStatusIs2AndSearchTerm(@Param("searchTerm") String searchTerm,Pageable pageable);
+
+    @Query("SELECT td FROM TourDetails td " +
             "JOIN td.bookingToursById bt " +
             "JOIN bt.bookingTourCustomersById btc " +
             "WHERE td.tourDetailStatus != 4 " +
-            "GROUP BY td.id")
+            "GROUP BY td.id " +
+            "ORDER BY td.id ASC")
     List<TourDetails> getAllJoinBooking();
 
     @Query("SELECT td FROM TourDetails td " +
