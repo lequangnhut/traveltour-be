@@ -18,11 +18,10 @@ public interface BookingTourCustomersRepository extends JpaRepository<BookingTou
             "JOIN btc.bookingToursByBookingTourId bt " +
             "WHERE (bt.tourDetailId = :tourDetailId) AND " +
             "(:searchTerm IS NULL OR " +
-            "(UPPER(bt.customerName) LIKE %:searchTerm% OR " +
-            "UPPER(bt.customerCitizenCard) LIKE %:searchTerm% OR " +
-            "UPPER(bt.customerPhone) LIKE %:searchTerm% OR " +
-            "UPPER(bt.customerEmail) LIKE %:searchTerm% OR " +
-            "CAST(bt.orderTotal AS string) LIKE %:searchTerm%))")
+            "(CAST(btc.id AS STRING) LIKE %:searchTerm% OR " +
+            "UPPER(btc.bookingTourId) LIKE %:searchTerm% OR " +
+            "UPPER(btc.customerName) LIKE %:searchTerm% OR " +
+            "UPPER(btc.customerPhone) LIKE %:searchTerm%))")
     Page<BookingTourCustomers> findBySearchTermAndTourDetailId
             (@Param("tourDetailId") String tourDetailId,
              @Param("searchTerm") String searchTerm,

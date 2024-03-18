@@ -41,6 +41,11 @@ public class TransportationScheduleServiceImpl implements TransportationSchedule
     }
 
     @Override
+    public List<TransportationSchedules> getAllFromLocationAndToLocation() {
+        return repo.getAllFromLocationAndToLocation();
+    }
+
+    @Override
     public TransportationSchedules save(TransportationSchedules schedules) {
         return repo.save(schedules);
     }

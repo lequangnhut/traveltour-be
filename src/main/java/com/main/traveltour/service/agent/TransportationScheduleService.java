@@ -19,6 +19,8 @@ public interface TransportationScheduleService {
 
     List<TransportationSchedules> findAllScheduleByBrandId(String transportBrandId);
 
+    List<TransportationSchedules> getAllFromLocationAndToLocation();
+
     Page<TransportationSchedules> findAllSchedules(String transportBrandId, Pageable pageable);
 
     Page<TransportationSchedules> findAllSchedulesWitchSearch(String transportBrandId, String searchTerm, Pageable pageable);

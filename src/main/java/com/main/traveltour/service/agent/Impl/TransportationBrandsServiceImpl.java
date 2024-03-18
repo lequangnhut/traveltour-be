@@ -8,6 +8,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
+import java.util.Date;
 import java.util.List;
 
 @Service
@@ -39,6 +41,23 @@ public class TransportationBrandsServiceImpl implements TransportationBrandsServ
     @Override
     public TransportationBrands findByTransportBrandId(String transportBrandId) {
         return transportationBrandsRepository.findById(transportBrandId);
+    }
+
+    @Override
+    public Page<TransportationBrands> findAllCustomerWithFilter(String searchTerm,
+                                                                BigDecimal price,
+                                                                String fromLocation,
+                                                                String toLocation,
+                                                                Date checkInDateFiller,
+                                                                List<Integer> mediaTypeList,
+                                                                List<String> listOfVehicleManufacturers,
+                                                                Pageable pageable) {
+        return transportationBrandsRepository.findAllCustomerWithFilter(searchTerm, price, fromLocation, toLocation, checkInDateFiller, mediaTypeList, listOfVehicleManufacturers, pageable);
+    }
+
+    @Override
+    public List<TransportationBrands> findAllCustomerDataList() {
+        return transportationBrandsRepository.findAllCustomerDataList();
     }
 
     @Override
