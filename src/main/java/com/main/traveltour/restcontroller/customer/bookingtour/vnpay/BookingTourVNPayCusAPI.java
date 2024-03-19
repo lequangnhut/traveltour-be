@@ -1,5 +1,6 @@
 package com.main.traveltour.restcontroller.customer.bookingtour.vnpay;
 
+import com.main.traveltour.configpayment.vnpay.VNPayService;
 import com.main.traveltour.dto.customer.booking.BookingDto;
 import com.main.traveltour.dto.customer.booking.BookingToursDto;
 import com.main.traveltour.entity.*;
@@ -10,18 +11,23 @@ import com.main.traveltour.service.utils.EmailService;
 import com.main.traveltour.utils.EntityDtoUtils;
 import com.main.traveltour.utils.GenerateNextID;
 import com.main.traveltour.utils.RandomUtils;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.math.BigDecimal;
 import java.sql.Date;
 import java.sql.Timestamp;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
 @RestController
 @CrossOrigin(origins = "http://localhost:3000")
-@RequestMapping("api/v1/")
+@RequestMapping("api/v1/customer/booking-tour/")
 public class BookingTourVNPayCusAPI {
 
     @Autowired
@@ -34,12 +40,37 @@ public class BookingTourVNPayCusAPI {
     private TourDetailsService tourDetailsService;
 
     @Autowired
+    private HttpServletRequest request;
+
+    @Autowired
+    private VNPayService vnPayService;
+
+    @Autowired
     private EmailService emailService;
+
+    @PostMapping("vnpay/submit-payment")
+    private ResponseEntity<Map<String, Object>> submitOrderVNPay(@RequestParam("tourDetailId") String tourDetailId,
+                                                                 @RequestParam("orderInfo") String orderInfo,
+                                                                 @RequestParam("ticketAdult") int ticketAdult,
+                                                                 @RequestParam("ticketChildren") int ticketChildren) {
+        TourDetails tourDetails = tourDetailsService.findById(tourDetailId);
+        BigDecimal unitPriceDecimal = tourDetails.getUnitPrice();
+        int orderTotal = (int) ((ticketAdult * unitPriceDecimal.intValue()) + (ticketChildren * (unitPriceDecimal.intValue() * 0.3)));
+
+        String baseUrl = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort();
+        baseUrl += "/api/v1/customer/booking-tour/vnpay/success-payment";
+        String vnPayUrl = vnPayService.createOrder(orderTotal, orderInfo, baseUrl);
+
+        Map<String, Object> response = new HashMap<>();
+        response.put("redirectUrl", vnPayUrl);
+
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
 
     /**
      * Thêm mới tour với vnpay
      */
-    @PostMapping("book-tour/create-book-tour-vnpay/{transactionId}")
+    @PostMapping("create-book-tour-vnpay/{transactionId}")
     private ResponseObject updateBookingTour(@RequestBody BookingDto bookingDto, @PathVariable int transactionId) {
         BookingToursDto bookingToursDto = bookingDto.getBookingToursDto();
         List<Map<String, String>> bookingTourCustomersDto = bookingDto.getBookingTourCustomersDto();

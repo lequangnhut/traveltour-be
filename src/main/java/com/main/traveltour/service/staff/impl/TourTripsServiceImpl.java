@@ -34,7 +34,7 @@ public class TourTripsServiceImpl implements TourTripsService {
 
     @Override
     public Page<TourTrips> findTourTripsByTourId(String tourDetailId, Pageable pageable) {
-        return repo.findTourTripsByTourDetailId(tourDetailId, pageable);
+        return repo.findTourTripsByTourDetailIdOrderByDayInTripAsc(tourDetailId, pageable);
     }
 
     @Override

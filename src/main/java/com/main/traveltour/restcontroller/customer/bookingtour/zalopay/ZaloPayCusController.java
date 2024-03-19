@@ -19,7 +19,7 @@ import java.util.*;
 
 @RestController
 @CrossOrigin(origins = "http://localhost:3000")
-@RequestMapping("api/v1")
+@RequestMapping("api/v1/customer/booking-tour/")
 public class ZaloPayCusController {
 
     private static final Map<String, String> config = new HashMap<String, String>() {{

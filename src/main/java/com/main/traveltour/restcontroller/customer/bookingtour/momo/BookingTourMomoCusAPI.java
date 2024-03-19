@@ -1,5 +1,11 @@
 package com.main.traveltour.restcontroller.customer.bookingtour.momo;
 
+import com.main.traveltour.config.URLConfig;
+import com.main.traveltour.configpayment.momo.config.Environment;
+import com.main.traveltour.configpayment.momo.enums.RequestType;
+import com.main.traveltour.configpayment.momo.models.PaymentResponse;
+import com.main.traveltour.configpayment.momo.processor.CreateOrderMoMo;
+import com.main.traveltour.configpayment.momo.shared.utils.LogUtils;
 import com.main.traveltour.dto.customer.booking.BookingDto;
 import com.main.traveltour.dto.customer.booking.BookingToursDto;
 import com.main.traveltour.entity.*;
@@ -11,17 +17,21 @@ import com.main.traveltour.utils.EntityDtoUtils;
 import com.main.traveltour.utils.GenerateNextID;
 import com.main.traveltour.utils.RandomUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.math.BigDecimal;
 import java.sql.Date;
 import java.sql.Timestamp;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
 @RestController
 @CrossOrigin(origins = "http://localhost:3000")
-@RequestMapping("api/v1/")
+@RequestMapping("api/v1/customer/booking-tour/")
 public class BookingTourMomoCusAPI {
 
     @Autowired
@@ -36,10 +46,37 @@ public class BookingTourMomoCusAPI {
     @Autowired
     private EmailService emailService;
 
+    @PostMapping("momo/submit-payment")
+    private ResponseEntity<Map<String, Object>> submitOrderVNPay(@RequestParam("tourDetailId") String tourDetailId,
+                                                                 @RequestParam("bookingTourId") String bookingTourId,
+                                                                 @RequestParam("ticketAdult") int ticketAdult,
+                                                                 @RequestParam("ticketChildren") int ticketChildren) throws Exception {
+        TourDetails tourDetails = tourDetailsService.findById(tourDetailId);
+        BigDecimal unitPriceDecimal = tourDetails.getUnitPrice();
+        int orderTotal = (int) ((ticketAdult * unitPriceDecimal.intValue()) + (ticketChildren * (unitPriceDecimal.intValue() * 0.3)));
+
+        Map<String, Object> response = new HashMap<>();
+
+        LogUtils.init();
+        String requestId = String.valueOf(System.currentTimeMillis());
+        String orderId = String.valueOf(System.currentTimeMillis());
+
+        String orderInfo = "Thanh Toan Don Hang #" + bookingTourId;
+        String returnURL = URLConfig.ConfigUrl + "/api/v1/customer/booking-tour/momo/success-payment";
+        String notifyURL = "/api/v1/momo/success-payment";
+
+        Environment environment = Environment.selectEnv("dev");
+
+        PaymentResponse captureWalletMoMoResponse = CreateOrderMoMo.process(environment, orderId, requestId, Long.toString(orderTotal), orderInfo, returnURL, notifyURL, "", RequestType.CAPTURE_WALLET, Boolean.TRUE);
+
+        response.put("redirectUrl", captureWalletMoMoResponse.getPayUrl());
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
     /**
      * Thêm mới tour với momo
      */
-    @PostMapping("book-tour/create-book-tour-momo/{transactionId}")
+    @PostMapping("create-book-tour-momo/{transactionId}")
     private ResponseObject updateBookingTour(@RequestBody BookingDto bookingDto, @PathVariable int transactionId) {
         BookingToursDto bookingToursDto = bookingDto.getBookingToursDto();
         List<Map<String, String>> bookingTourCustomersDto = bookingDto.getBookingTourCustomersDto();

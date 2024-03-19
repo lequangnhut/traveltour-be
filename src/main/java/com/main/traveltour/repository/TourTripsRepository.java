@@ -15,7 +15,7 @@ public interface TourTripsRepository extends JpaRepository<TourTrips, Integer> {
 
     TourTrips getById(int id);
 
-    Page<TourTrips> findTourTripsByTourDetailId(String tourDetailId, Pageable pageable);
+    Page<TourTrips> findTourTripsByTourDetailIdOrderByDayInTripAsc(String tourDetailId, Pageable pageable);
 
     @Query("SELECT tt.dayInTrip " +
             "FROM TourTrips tt " +
