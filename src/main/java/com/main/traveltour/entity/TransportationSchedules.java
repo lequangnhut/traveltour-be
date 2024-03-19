@@ -80,6 +80,10 @@ public class TransportationSchedules {
     @JsonManagedReference
     private Collection<OrderTransportations> orderTransportationsById;
 
+    @OneToMany(mappedBy = "transportationSchedulesByTransportationScheduleId")
+    @JsonManagedReference
+    private Collection<TransportationScheduleSeats> transportationScheduleSeatsById;
+
     @ManyToOne
     @JoinColumn(name = "transportation_id", referencedColumnName = "id", nullable = false, insertable = false, updatable = false)
     @JsonBackReference

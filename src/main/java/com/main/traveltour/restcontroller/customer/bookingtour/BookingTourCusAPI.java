@@ -22,7 +22,7 @@ import java.util.Optional;
 
 @RestController
 @CrossOrigin(origins = "http://localhost:3000")
-@RequestMapping("api/v1/")
+@RequestMapping("api/v1/customer/booking-tour/")
 public class BookingTourCusAPI {
 
     @Autowired
@@ -37,7 +37,7 @@ public class BookingTourCusAPI {
     @Autowired
     private EmailService emailService;
 
-    @PostMapping("book-tour/create-book-tour")
+    @PostMapping("create-book-tour")
     private ResponseObject createBookingTour(@RequestBody BookingDto bookingDto) {
         BookingToursDto bookingToursDto = bookingDto.getBookingToursDto();
         TourDetails tourDetails = tourDetailsService.findById(bookingToursDto.getTourDetailId());
