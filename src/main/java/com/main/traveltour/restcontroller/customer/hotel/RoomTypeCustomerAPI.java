@@ -45,6 +45,9 @@ public class RoomTypeCustomerAPI {
     @Autowired
     private Gson gson;
 
+    @Autowired
+    private AgenciesService agenciesService;
+
     @GetMapping("customer/room-types/findAllRoomTypesByEncryptedData")
     public ResponseObjectAndPages findAllRoomTypesByEncryptedData(
             @RequestParam("encryptedData") String encryptedData
@@ -73,5 +76,10 @@ public class RoomTypeCustomerAPI {
     public ResponseObject findRoomTypeByIdCustomer(@RequestParam(required = false) List<String> ids)  {
         List<RoomTypeDto> roomTypeDto = EntityDtoUtils.convertToDtoList(roomTypeService.findAllRoomTypeByIds(ids), RoomTypeDto.class);
         return new ResponseObject("200", "OK", roomTypeDto);
+    }
+
+    @GetMapping("customer/room-types/findUserByAgencyId")
+    public ResponseObject findUserByAgencyId(@RequestParam("agencyId") Integer agencyId) {
+        return new ResponseObject("200", "OK", agenciesService.findByAgencyId(agencyId));
     }
 }
