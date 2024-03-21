@@ -1,5 +1,6 @@
 package com.main.traveltour.restcontroller.staff;
 
+import com.main.traveltour.dto.customer.booking.BookingDto;
 import com.main.traveltour.dto.staff.BookingToursDto;
 import com.main.traveltour.dto.staff.TransportationSchedulesDto;
 import com.main.traveltour.entity.BookingTours;
@@ -8,6 +9,8 @@ import com.main.traveltour.entity.ResponseObject;
 import com.main.traveltour.entity.TourDetails;
 import com.main.traveltour.service.staff.BookingTourService;
 import com.main.traveltour.service.staff.HotelServiceService;
+import com.main.traveltour.service.staff.TourDetailsService;
+import com.main.traveltour.service.utils.EmailService;
 import com.main.traveltour.utils.EntityDtoUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -16,8 +19,11 @@ import org.springframework.data.domain.Sort;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.bind.annotation.*;
 
+import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.util.Date;
+import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @RestController
@@ -27,6 +33,12 @@ public class BookingTourAPI {
 
     @Autowired
     private BookingTourService bookingTourService;
+
+    @Autowired
+    private TourDetailsService tourDetailsService;
+
+    @Autowired
+    private EmailService emailService;
 
     @GetMapping("find-all-booking-tour")
     public ResponseObject getAllBookingTour(
@@ -51,6 +63,25 @@ public class BookingTourAPI {
             return new ResponseObject("404", "Không tìm thấy dữ liệu", null);
         } else {
             return new ResponseObject("200", "Đã tìm thấy dữ liệu", bookingToursDtos);
+        }
+    }
+
+    @PutMapping("/update-booking-tour/{id}")
+    public ResponseObject update(@PathVariable String id) {
+        try {
+            BookingTours bookingTour = bookingTourService.findById(id);
+            bookingTour.setOrderStatus(1);
+            bookingTourService.update(bookingTour);
+
+            com.main.traveltour.dto.customer.booking.BookingToursDto bookingToursDtos = EntityDtoUtils.convertToDto(bookingTour, com.main.traveltour.dto.customer.booking.BookingToursDto.class);
+
+            BookingDto bookingDto = new BookingDto();
+            bookingDto.setBookingToursDto(bookingToursDtos);
+            emailService.queueEmailBookingTourInvoices(bookingDto);
+
+            return new ResponseObject("200", "Cập nhật thành công", null);
+        } catch (Exception e) {
+            return new ResponseObject("500", "Cập nhật thất bại", null);
         }
     }
 

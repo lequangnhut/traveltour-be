@@ -15,6 +15,7 @@ import com.main.traveltour.service.staff.TourDetailsService;
 import com.main.traveltour.service.staff.ToursService;
 import com.main.traveltour.service.utils.EmailService;
 import com.main.traveltour.service.utils.ThymeleafService;
+import com.main.traveltour.utils.DateUtils;
 import com.main.traveltour.utils.ReplaceUtils;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
@@ -44,6 +45,8 @@ public class EmailServiceImpl implements EmailService {
     private final Queue<ForgotPasswordDto> emailQueueForgot = new LinkedList<>();
     private final Queue<BookingToursDto> emailQueueCustomerCancelTour = new LinkedList<>();
     private final Queue<ForgotPasswordDto> emailQueueSendOTPRegisterAgencies = new LinkedList<>();
+
+    private final Queue<BookingDto> emailQueueBookingTourInvoices = new LinkedList<>();
 
     @Autowired
     private JavaMailSender sender;
@@ -426,6 +429,69 @@ public class EmailServiceImpl implements EmailService {
     }
 
     @Override
+    public void queueEmailBookingTourInvoices(BookingDto bookingDto) {
+        emailQueueBookingTourInvoices.add(bookingDto);
+    }
+
+    @Override
+    public void sendMailBookingTourInvoices() {
+        while (!emailQueueBookingTourInvoices.isEmpty()) {
+            BookingDto bookingDto = emailQueueBookingTourInvoices.poll();
+            BookingToursDto bookingToursDto = bookingDto.getBookingToursDto();
+
+            TourDetails tourDetails = tourDetailsService.findById(bookingToursDto.getTourDetailId());
+            Optional<Tours> tours = toursService.findById(tourDetails.getTourId());
+
+            String customerEmail = "";
+            if (bookingToursDto.getUserId() != null) {
+                customerEmail = bookingToursDto.getCustomerEmail();
+            }
+
+            try {
+                MimeMessage message = sender.createMimeMessage();
+                MimeMessageHelper helper = new MimeMessageHelper(message, MimeMessageHelper.MULTIPART_MODE_MIXED_RELATED, StandardCharsets.UTF_8.name());
+
+                BigDecimal unitPriceDecimal = tourDetails.getUnitPrice();
+                int capacityAdult = bookingToursDto.getCapacityAdult();
+                int capacityKid = bookingToursDto.getCapacityKid();
+                int unitPrice = unitPriceDecimal.intValue();
+
+                BigDecimal orderTotal = BigDecimal.valueOf((capacityAdult * unitPrice) + (capacityKid * (unitPrice * 0.3)));
+
+                if (bookingToursDto.getUserId() != null) {
+                    helper.setTo(customerEmail);
+                } else {
+                    helper.setTo(bookingToursDto.getCustomerEmail());
+                }
+
+                Map<String, Object> variables = new HashMap<>();
+                variables.put("bookingId", bookingToursDto.getId());
+                variables.put("dateTimeBooking", DateUtils.formatTimestamp(String.valueOf(new Timestamp(System.currentTimeMillis()))));
+                variables.put("tourType", tours.get().getTourTypesByTourTypeId().getTourTypeName());
+                variables.put("customerName", bookingToursDto.getCustomerName());
+                variables.put("customerCitizenCard", bookingToursDto.getCustomerCitizenCard());
+                variables.put("customerPhone", bookingToursDto.getCustomerPhone());
+                variables.put("paymentMethod", "Tiền mặt");
+                variables.put("tourName", tours.get().getTourName());
+                variables.put("totalCapacity", capacityAdult + " Người lớn, " + capacityKid + " Trẻ em, " + bookingToursDto.getCapacityBaby() + " Em bé.");
+                variables.put("departureDate", DateUtils.formatTimestamp(String.valueOf(tourDetails.getDepartureDate())));
+                variables.put("arrivalDate", DateUtils.formatTimestamp(String.valueOf(tourDetails.getArrivalDate())));
+                variables.put("unitPriceAdult", ReplaceUtils.formatPrice(tourDetails.getUnitPrice()) + " VNĐ");
+                variables.put("unitPriceKid", ReplaceUtils.formatPrice(BigDecimal.valueOf(unitPrice * 0.3)) + " VNĐ");
+                variables.put("orderTotal", ReplaceUtils.formatPrice(orderTotal) + " VNĐ");
+
+                helper.setFrom(email);
+                helper.setText(thymeleafService.createContent("order-tour-verify", variables), true);
+                helper.setSubject("DỊCH VỤ LỮ HÀNH TRAVELTOUR XIN CHÂN THÀNH CẢM ƠN QUÝ KHÁCH ĐÃ ĐẶT TOUR CỦA CHÚNG TÔI.");
+
+                sender.send(message);
+            } catch (MessagingException e) {
+                throw new RuntimeException(e);
+            }
+        }
+    }
+
+    @Override
     public void sendMailOTPCus() {
         while (!emailQueueSendOTPRegisterAgencies.isEmpty()) {
             ForgotPasswordDto passwordDto = emailQueueSendOTPRegisterAgencies.poll();
@@ -494,6 +560,11 @@ public class EmailServiceImpl implements EmailService {
     @Scheduled(fixedDelay = 5000)
     public void processEmailRegisterAgencies() {
         sendMailOTPCus();
+    }
+
+    @Scheduled(fixedDelay = 5000)
+    public void processBookingTourInvoices() {
+        sendMailBookingTourInvoices();
     }
 
     private String convertRolesToVietnamese(List<String> roles) {

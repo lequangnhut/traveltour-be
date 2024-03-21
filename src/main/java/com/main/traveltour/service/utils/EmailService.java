@@ -44,4 +44,8 @@ public interface EmailService {
     void sendMailOTPCus();
 
     void queueEmailOTPCus(ForgotPasswordDto passwordDto);
+
+    void queueEmailBookingTourInvoices(BookingDto bookingDto);
+
+    void sendMailBookingTourInvoices();
 }
