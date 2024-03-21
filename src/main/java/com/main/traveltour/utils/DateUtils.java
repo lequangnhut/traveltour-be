@@ -23,4 +23,20 @@ public class DateUtils {
         long timeInMillis = date.getTime();
         return new Timestamp(timeInMillis);
     }
+    public static String formatTimestamp(String originalDateStr) {
+        String newDateString = "";
+        SimpleDateFormat originalFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
+        SimpleDateFormat newFormat = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
+
+        try {
+            Date date = originalFormat.parse(originalDateStr);
+            newDateString = newFormat.format(date);
+        } catch (ParseException e) {
+            System.err.println("Format of the original date string is invalid: " + originalDateStr);
+            return null;
+        }
+
+        return newDateString;
+    }
+
 }
