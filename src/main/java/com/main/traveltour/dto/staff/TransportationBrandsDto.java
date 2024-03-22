@@ -24,4 +24,6 @@ public class TransportationBrandsDto {
     String transportationBrandImg;
 
     String transportationBrandPolicy;
+
+    String transportationBrandAddress;
 }

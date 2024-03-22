@@ -30,7 +30,9 @@ public class OrderTransportationsDto implements Serializable {
 
     String priceFormat;
 
-    Boolean paymentMethod;
+    BigDecimal orderTotal;
+
+    Integer paymentMethod;
 
     String orderCode;
 

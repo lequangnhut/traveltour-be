@@ -1,6 +1,7 @@
 package com.main.traveltour.dto.customer.transport;
 
 import com.main.traveltour.entity.TransportationBrands;
+import com.main.traveltour.entity.TransportationScheduleSeats;
 import com.main.traveltour.entity.TransportationTypes;
 import com.main.traveltour.entity.Transportations;
 import lombok.Data;
@@ -8,6 +9,7 @@ import lombok.Data;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.sql.Timestamp;
+import java.util.Collection;
 
 /**
  * DTO for {@link com.main.traveltour.entity.TransportationSchedules}
@@ -22,6 +24,10 @@ public class TransportationSchedulesDto implements Serializable {
     String fromLocation;
 
     String toLocation;
+
+    String fromAddress;
+
+    String toAddress;
 
     Timestamp departureTime;
 
@@ -48,4 +54,6 @@ public class TransportationSchedulesDto implements Serializable {
     TransportationTypes transportationTypes;
 
     TransportationBrands transportationBrands;
+
+    Collection<TransportationScheduleSeats> transportationScheduleSeatsById;
 }

@@ -1,6 +1,5 @@
 package com.main.traveltour.repository;
 
-import com.main.traveltour.entity.OrderTransportations;
 import com.main.traveltour.entity.TransportationSchedules;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -40,20 +39,20 @@ public interface TransportationSchedulesRepository extends JpaRepository<Transpo
             "WHERE br.id = :brandId AND sc.isStatus = 0 AND sc.isActive = true AND sc.tripType = false")
     Page<TransportationSchedules> findAllTransportScheduleCus(Pageable pageable, @Param("brandId") String brandId);
 
-    @Query("SELECT t FROM TransportationSchedules t " +
-            "JOIN t.transportationsByTransportationId tp " +
+    @Query("SELECT sc FROM TransportationSchedules sc " +
+            "JOIN sc.transportationsByTransportationId tp " +
             "JOIN tp.transportationBrandsByTransportationBrandId tpb " +
-            "WHERE tpb.id = :transportBrandId")
+            "WHERE tpb.id = :transportBrandId AND sc.isStatus != 4 AND sc.isStatus != 3 AND sc.isActive = true")
     Page<TransportationSchedules> findAllSchedules(@Param("transportBrandId") String transportBrandId, Pageable pageable);
 
-    @Query("SELECT t FROM TransportationSchedules t " +
-            "JOIN t.transportationsByTransportationId tp " +
+    @Query("SELECT sc FROM TransportationSchedules sc " +
+            "JOIN sc.transportationsByTransportationId tp " +
             "JOIN tp.transportationBrandsByTransportationBrandId tpb " +
-            "WHERE LOWER(CAST(t.unitPrice AS STRING)) LIKE LOWER(CONCAT('%', :searchTerm, '%')) " +
-            "OR LOWER(t.toLocation) LIKE LOWER(CONCAT('%', :searchTerm, '%')) " +
-            "OR LOWER(t.fromLocation) LIKE LOWER(CONCAT('%', :searchTerm, '%')) " +
-            "OR LOWER(t.id) LIKE LOWER(CONCAT('%', :searchTerm, '%')) " +
-            "AND tpb.id = :transportBrandId")
+            "WHERE LOWER(CAST(sc.unitPrice AS STRING)) LIKE LOWER(CONCAT('%', :searchTerm, '%')) " +
+            "OR LOWER(sc.toLocation) LIKE LOWER(CONCAT('%', :searchTerm, '%')) " +
+            "OR LOWER(sc.fromLocation) LIKE LOWER(CONCAT('%', :searchTerm, '%')) " +
+            "OR LOWER(sc.id) LIKE LOWER(CONCAT('%', :searchTerm, '%')) " +
+            "AND tpb.id = :transportBrandId AND sc.isStatus != 4 AND sc.isStatus != 3 AND sc.isActive = true")
     Page<TransportationSchedules> findAllSchedulesWithSearch(@Param("transportBrandId") String transportBrandId, @Param("searchTerm") String searchTerm, Pageable pageable);
 
 

@@ -22,6 +22,10 @@ public class TransportationSchedulesDto {
 
     String toLocation;
 
+    String fromAddress;
+
+    String toAddress;
+
     Timestamp departureTime;
 
     Timestamp arrivalTime;

@@ -24,7 +24,7 @@ public class TransportationScheduleSeats {
     private Integer id;
 
     @Column(name = "seat_number")
-    private String seatNumber;
+    private Integer seatNumber;
 
     @Column(name = "is_booked")
     private Boolean isBooked;

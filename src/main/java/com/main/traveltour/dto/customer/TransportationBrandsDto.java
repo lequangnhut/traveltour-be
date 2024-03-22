@@ -32,6 +32,8 @@ public class TransportationBrandsDto implements Serializable {
 
     String transportationBrandPolicy;
 
+    String transportationBrandAddress;
+
     Collection<Transportations> transportationsById;
 
     Agencies agenciesByAgenciesId;

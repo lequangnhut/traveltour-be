@@ -2,8 +2,10 @@ package com.main.traveltour.restcontroller.agent.transport;
 
 import com.main.traveltour.dto.agent.transport.TransportationSchedulesDto;
 import com.main.traveltour.entity.ResponseObject;
+import com.main.traveltour.entity.TransportationScheduleSeats;
 import com.main.traveltour.entity.TransportationSchedules;
 import com.main.traveltour.entity.Transportations;
+import com.main.traveltour.service.agent.TransportScheduleSeatService;
 import com.main.traveltour.service.agent.TransportationScheduleService;
 import com.main.traveltour.service.agent.TransportationService;
 import com.main.traveltour.utils.EntityDtoUtils;
@@ -36,6 +38,9 @@ public class TransportSchedulesAPI {
     @Autowired
     private TransportationScheduleService transportationScheduleService;
 
+    @Autowired
+    private TransportScheduleSeatService transportScheduleSeatService;
+
     @GetMapping("/agent/transportation-schedules/find-all-schedules/{transportBrandId}")
     private ResponseEntity<Page<TransportationSchedules>> findAllSchedule(@RequestParam(defaultValue = "0") int page,
                                                                           @RequestParam(defaultValue = "10") int size,
@@ -45,7 +50,9 @@ public class TransportSchedulesAPI {
                                                                           @PathVariable String transportBrandId) {
         Sort sort = sortDir.equalsIgnoreCase(Sort.Direction.ASC.name()) ? Sort.by(sortBy).ascending() : Sort.by(sortBy).descending();
 
-        Page<TransportationSchedules> transportationBrands = searchTerm == null || searchTerm.isEmpty() ? transportationScheduleService.findAllSchedules(transportBrandId, PageRequest.of(page, size, sort)) : transportationScheduleService.findAllSchedulesWitchSearch(transportBrandId, searchTerm, PageRequest.of(page, size, sort));
+        Page<TransportationSchedules> transportationBrands = searchTerm == null || searchTerm.isEmpty()
+                ? transportationScheduleService.findAllSchedules(transportBrandId, PageRequest.of(page, size, sort))
+                : transportationScheduleService.findAllSchedulesWitchSearch(transportBrandId, searchTerm, PageRequest.of(page, size, sort));
         return new ResponseEntity<>(transportationBrands, HttpStatus.OK);
     }
 
@@ -120,6 +127,7 @@ public class TransportSchedulesAPI {
 
         if (transportationsOptional.isPresent()) {
             Transportations transportations = transportationsOptional.get();
+            int totalSeats = transportations.getAmountSeat();
 
             TransportationSchedules schedules = EntityDtoUtils.convertToEntity(scheduleDto, TransportationSchedules.class);
             schedules.setId(scheduleId);
@@ -132,6 +140,17 @@ public class TransportSchedulesAPI {
                 schedules.setBookedSeat(0);
             }
             transportationScheduleService.save(schedules);
+
+            if (!scheduleDto.getTripType()) {
+                for (int i = 1; i <= totalSeats; i++) {
+                    TransportationScheduleSeats scheduleSeats = new TransportationScheduleSeats();
+                    scheduleSeats.setSeatNumber(i);
+                    scheduleSeats.setTransportationScheduleId(scheduleId);
+                    scheduleSeats.setIsBooked(Boolean.FALSE);
+
+                    transportScheduleSeatService.save(scheduleSeats);
+                }
+            }
         }
     }
 
@@ -143,10 +162,25 @@ public class TransportSchedulesAPI {
         Optional<Transportations> transportationsOptional = transportationService.findTransportById(transportId);
 
         if (transportationsOptional.isPresent()) {
+            Transportations transportations = transportationsOptional.get();
+            int totalSeats = transportations.getAmountSeat();
+
             TransportationSchedules schedules = EntityDtoUtils.convertToEntity(scheduleDto, TransportationSchedules.class);
             schedules.setId(scheduleId);
             schedules.setUnitPrice(ReplaceUtils.replacePrice(scheduleDto.getPriceFormat()));
             transportationScheduleService.save(schedules);
+            transportScheduleSeatService.deleteAll(scheduleId);
+
+            if (!scheduleDto.getTripType()) {
+                for (int i = 1; i <= totalSeats; i++) {
+                    TransportationScheduleSeats scheduleSeats = new TransportationScheduleSeats();
+                    scheduleSeats.setSeatNumber(i);
+                    scheduleSeats.setTransportationScheduleId(scheduleId);
+                    scheduleSeats.setIsBooked(Boolean.FALSE);
+
+                    transportScheduleSeatService.save(scheduleSeats);
+                }
+            }
         }
     }
 
@@ -157,6 +191,7 @@ public class TransportSchedulesAPI {
         schedules.setIsActive(Boolean.FALSE);
         schedules.setIsStatus(3);
         transportationScheduleService.save(schedules);
+        transportScheduleSeatService.deleteAll(scheduleId);
     }
 
     private static boolean isOverlap(LocalDateTime startA, LocalDateTime endA, LocalDateTime startB, LocalDateTime endB) {

@@ -3,10 +3,10 @@ package com.main.traveltour.restcontroller.agent.transport;
 import com.main.traveltour.component.ByteArrayMultipartFile;
 import com.main.traveltour.dto.agent.transport.ExportDataOrderTransportDto;
 import com.main.traveltour.dto.agent.transport.OrderTransportationsDto;
-import com.main.traveltour.entity.OrderTransportations;
-import com.main.traveltour.entity.ResponseObject;
-import com.main.traveltour.entity.TransportationSchedules;
+import com.main.traveltour.entity.*;
+import com.main.traveltour.service.agent.OrderTransportDetailService;
 import com.main.traveltour.service.agent.OrderTransportService;
+import com.main.traveltour.service.agent.TransportScheduleSeatService;
 import com.main.traveltour.service.agent.TransportationScheduleService;
 import com.main.traveltour.service.utils.FileUpload;
 import com.main.traveltour.service.utils.QRCodeService;
@@ -47,6 +47,12 @@ public class OrderTransportAPI {
     @Autowired
     private TransportationScheduleService transportationScheduleService;
 
+    @Autowired
+    private TransportScheduleSeatService transportScheduleSeatService;
+
+    @Autowired
+    private OrderTransportDetailService orderTransportDetailService;
+
     @GetMapping("/agent/order-transport/find-all-order-transport/{brandId}")
     private ResponseEntity<Page<OrderTransportations>> findAllTransportBrand(@RequestParam(defaultValue = "0") int page,
                                                                              @RequestParam(defaultValue = "10") int size,
@@ -86,6 +92,17 @@ public class OrderTransportAPI {
         }
     }
 
+    @GetMapping("agent/order-transport/find-all-transport-seats-by-schedule-id/{scheduleId}")
+    public ResponseObject findAllSeatsByScheduleId(@PathVariable String scheduleId) {
+        List<TransportationScheduleSeats> scheduleSeats = transportScheduleSeatService.findAllByScheduleId(scheduleId);
+
+        if (scheduleSeats.isEmpty()) {
+            return new ResponseObject("404", "Không tìm thấy dữ liệu", null);
+        } else {
+            return new ResponseObject("200", "Đã tìm thấy dữ liệu", scheduleSeats);
+        }
+    }
+
     @GetMapping("/agent/order-transport/find-schedule-by-id/{scheduleId}")
     private ResponseObject findScheduleById(@PathVariable String scheduleId) {
         TransportationSchedules transportationSchedules = transportationScheduleService.findBySchedulesId(scheduleId);
@@ -97,14 +114,15 @@ public class OrderTransportAPI {
         }
     }
 
-    @PostMapping("/agent/order-transport/create-order-transport")
-    private void createOrderTransport(@RequestBody OrderTransportationsDto orderTransportationsDto) {
+    @PostMapping("/agent/order-transport/create-order-transport/{seatNumber}")
+    private ResponseObject createOrderTransport(@RequestBody OrderTransportationsDto orderTransportationsDto, @PathVariable List<Integer> seatNumber) {
         String orderTransportId = GenerateNextID.generateNextCode("OTR", orderTransportService.findMaxCode());
         String transportScheduleId = orderTransportationsDto.getTransportationScheduleId();
 
         OrderTransportations orderTransportations = EntityDtoUtils.convertToEntity(orderTransportationsDto, OrderTransportations.class);
         orderTransportations.setId(orderTransportId);
         orderTransportations.setOrderStatus(0); // 0 là đã tạo vé
+        orderTransportations.setPaymentMethod(0); // 0 là thanh toán tại quầy
         orderTransportations.setOrderTotal(ReplaceUtils.parseMoneyString(orderTransportationsDto.getPriceFormat()));
         orderTransportations.setOrderCode(generateQrCode(orderTransportId));
         orderTransportService.save(orderTransportations);
@@ -112,6 +130,22 @@ public class OrderTransportAPI {
         TransportationSchedules schedules = transportationScheduleService.findBySchedulesId(transportScheduleId);
         schedules.setBookedSeat(schedules.getBookedSeat() + orderTransportationsDto.getAmountTicket());
         transportationScheduleService.save(schedules);
+
+        for (Integer seatName : seatNumber) {
+            List<TransportationScheduleSeats> scheduleSeats = transportScheduleSeatService.findAllBySeatNumberScheduleId(seatName, schedules.getId());
+
+            for (TransportationScheduleSeats seats : scheduleSeats) {
+                seats.setIsBooked(Boolean.TRUE);
+                transportScheduleSeatService.save(seats);
+
+                OrderTransportationDetails orderTransportDetails = new OrderTransportationDetails();
+                orderTransportDetails.setOrderTransportationId(orderTransportId);
+                orderTransportDetails.setTransportationScheduleSeatId(seats.getId());
+                orderTransportDetailService.save(orderTransportDetails);
+            }
+        }
+
+        return new ResponseObject("200", "Đã tìm thấy dữ liệu", "Thành công");
     }
 
     @PutMapping("/agent/order-transport/update-order-transport")
@@ -135,11 +169,18 @@ public class OrderTransportAPI {
         transportationScheduleService.save(schedules);
     }
 
-    @GetMapping("/agent/order-transport/delete-order-transport/{orderTransportId}")
-    private void deleteOrderTransport(@PathVariable String orderTransportId) {
+    @GetMapping("/agent/order-transport/delete-order-transport/{orderTransportId}/{scheduleId}")
+    private void deleteOrderTransport(@PathVariable String orderTransportId, @PathVariable String scheduleId) {
         OrderTransportations orderTransportations = orderTransportService.findById(orderTransportId);
         orderTransportations.setOrderStatus(1); // đã hủy vé
         orderTransportService.save(orderTransportations);
+
+        // cập nhật lại chổ ghế ngồi khi xóa thì bằng true
+        List<TransportationScheduleSeats> scheduleSeats = transportScheduleSeatService.findAllByScheduleIdAndOrderId(scheduleId, orderTransportId);
+        for (TransportationScheduleSeats seats : scheduleSeats) {
+            seats.setIsBooked(Boolean.FALSE);
+            transportScheduleSeatService.save(seats);
+        }
     }
 
     private String generateQrCode(String orderTransportId) {

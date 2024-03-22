@@ -37,6 +37,14 @@ public class TransportationSchedules {
     private String toLocation;
 
     @Basic
+    @Column(name = "from_address")
+    private String fromAddress;
+
+    @Basic
+    @Column(name = "to_address")
+    private String toAddress;
+
+    @Basic
     @Column(name = "departure_time")
     private Timestamp departureTime;
 

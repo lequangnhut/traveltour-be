@@ -48,6 +48,10 @@ public class TransportationBrands {
     private Boolean isActive;
 
     @Basic
+    @Column(name = "transportation_brand_address")
+    private String transportationBrandAddress;
+
+    @Basic
     @Column(name = "transportation_brand_img")
     private String transportationBrandImg;
 

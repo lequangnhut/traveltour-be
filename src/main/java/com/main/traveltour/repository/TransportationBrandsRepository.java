@@ -28,7 +28,6 @@ public interface TransportationBrandsRepository extends JpaRepository<Transporta
     @Query("SELECT br FROM TransportationBrands br " +
             "JOIN br.transportationsById tp " +
             "JOIN tp.transportationSchedulesById sc " +
-            "JOIN sc.orderTransportationsById ord " +
             "WHERE br.isAccepted = true AND br.isActive = true AND sc.tripType = false " +
             "GROUP BY br")
     Page<TransportationBrands> findAllCustomer(Pageable pageable);

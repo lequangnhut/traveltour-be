@@ -20,6 +20,10 @@ public class TransportationSchedulesDto implements Serializable {
 
     String toLocation;
 
+    String fromAddress;
+
+    String toAddress;
+
     Timestamp departureTime;
 
     Timestamp arrivalTime;

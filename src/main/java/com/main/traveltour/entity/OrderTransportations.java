@@ -61,7 +61,7 @@ public class OrderTransportations {
 
     @Basic
     @Column(name = "payment_method")
-    private Boolean paymentMethod;
+    private Integer paymentMethod;
 
     @Basic
     @Column(name = "order_code")

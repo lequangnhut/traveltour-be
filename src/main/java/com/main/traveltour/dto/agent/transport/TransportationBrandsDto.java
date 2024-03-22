@@ -25,4 +25,6 @@ public class TransportationBrandsDto implements Serializable {
     Boolean isActive;
 
     String transportationBrandPolicy;
+
+    String transportationBrandAddress;
 }
