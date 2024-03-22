@@ -9,6 +9,7 @@ import org.springframework.data.repository.query.Param;
 
 import java.math.BigDecimal;
 import java.util.Date;
+
 import java.util.List;
 
 public interface TransportationBrandsRepository extends JpaRepository<TransportationBrands, Integer> {
@@ -31,6 +32,7 @@ public interface TransportationBrandsRepository extends JpaRepository<Transporta
             "WHERE br.isAccepted = true AND br.isActive = true AND sc.tripType = false " +
             "GROUP BY br")
     Page<TransportationBrands> findAllCustomer(Pageable pageable);
+
 
     @Query("SELECT br FROM TransportationBrands br " +
             "JOIN br.transportationsById tp " +
@@ -72,4 +74,18 @@ public interface TransportationBrandsRepository extends JpaRepository<Transporta
             "WHERE (br.isAccepted = true AND br.isActive = true AND sc.tripType = false) " +
             "GROUP BY br")
     List<TransportationBrands> findAllCustomerDataList();
+
+    @Query("SELECT br FROM TransportationBrands br " +
+            "join br.agenciesByAgenciesId ag " +
+            "WHERE (ag.isAccepted = 2) and (ag.isActive = true) " +
+            "and br.isAccepted = :isAccepted AND br.isActive = true")
+    Page<TransportationBrands> findAllBrandPost(@Param("isAccepted") Boolean isAccepted, Pageable pageable);
+
+    @Query("SELECT br FROM TransportationBrands br " +
+            "join br.agenciesByAgenciesId ag " +
+            "WHERE (ag.isAccepted = 2) and (ag.isActive = true) " +
+            "and br.isAccepted = :isAccepted AND br.isActive = true " +
+            " and LOWER(br.transportationBrandName) LIKE LOWER(CONCAT('%', :searchTerm, '%'))")
+    Page<TransportationBrands> findAllBrandPostByName(@Param("isAccepted") Boolean isAccepted,Pageable pageable, String searchTerm);
+
 }

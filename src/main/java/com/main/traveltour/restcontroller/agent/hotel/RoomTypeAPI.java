@@ -124,6 +124,7 @@ public class RoomTypeAPI {
             String roomTypeAvatar = fileUploadResize.uploadFileResize(roomTypeAvatarData);
 
             roomTypesAddDto.setId(roomTypeId);
+            roomTypesAddDto.setIsActive(1);
             roomTypesAddDto.setIsDeleted(false);
             roomTypesAddDto.setRoomTypeAvatar(roomTypeAvatar);
 

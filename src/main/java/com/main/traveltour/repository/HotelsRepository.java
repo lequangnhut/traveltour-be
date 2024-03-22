@@ -93,13 +93,6 @@ public interface HotelsRepository extends JpaRepository<Hotels, String> {
                                          @Param("searchTerm") String searchTerm,
                                          Pageable pageable);
 
-//    @Query("SELECT h FROM Hotels h " +
-//            "JOIN h.roomTypesById rt " +
-//            "JOIN rt.orderHotelDetailsById ohd " +
-//            "JOIN ohd.orderHotelsByOrderHotelId oh " +
-//            "WHERE (oh.userId = :userId) AND " +
-//            "(oh.orderStatus = :orderHotelStatus)")
-
     @Query("SELECT h FROM Hotels h JOIN h.roomTypesById rt JOIN rt.orderHotelDetailsById ohd" +
             " JOIN ohd.orderHotelsByOrderHotelId oh WHERE (oh.userId = :userId) AND" +
             "(oh.orderStatus = :orderHotelStatus) ")
@@ -110,4 +103,15 @@ public interface HotelsRepository extends JpaRepository<Hotels, String> {
     @Query("SELECT h FROM Hotels h JOIN h.roomTypesById rt WHERE rt.id = :roomTypeId")
     Hotels findByRoomTypeId(@Param("roomTypeId") String roomTypeId);
 
+    @Query("SELECT h FROM Hotels h join h.agenciesByAgenciesId ag" +
+            " WHERE (h.isAccepted = :isAccepted) and " +
+            "(h.isActive = true) and (h.isDeleted = false) " +
+            "and (ag.isActive) = true and (ag.isAccepted) = 2")
+    Page<Hotels> findAllHotelByAcceptedAndTrueActive(@Param("isAccepted") Boolean isAccepted,Pageable pageable);
+
+    @Query("SELECT h FROM Hotels h  join h.agenciesByAgenciesId ag " +
+            "WHERE (h.isAccepted = :isAccepted) and (h.isActive = true) " +
+            "and (h.isDeleted = false) and LOWER(h.hotelName) " +
+            "LIKE LOWER(CONCAT('%', :searchTerm, '%')) and (ag.isActive) = true and (ag.isAccepted) = 2")
+    Page<Hotels> findAllHotelByAcceptedAndTrueActiveByName(@Param("isAccepted") Boolean isAccepted,Pageable pageable, String searchTerm);
 }

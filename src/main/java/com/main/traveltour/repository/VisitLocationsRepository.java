@@ -1,5 +1,6 @@
 package com.main.traveltour.repository;
 
+import com.main.traveltour.entity.Hotels;
 import com.main.traveltour.entity.VisitLocations;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -72,5 +73,17 @@ public interface VisitLocationsRepository extends JpaRepository<VisitLocations, 
                                                      @Param("orderVisitStatus") Integer orderVisitStatus,
                                                  @Param("searchTerm") String searchTerm,
                                                  Pageable pageable);
+
+
+    @Query("SELECT v FROM VisitLocations v join v.agenciesByAgenciesId ag" +
+            " WHERE (v.isAccepted = :isAccepted) and (v.isActive = true) and " +
+            "(ag.isActive = true) and (ag.isAccepted) = 2")
+    Page<VisitLocations> findAllVisitPostByAcceptedAndTrueActive(@Param("isAccepted") Boolean isAccepted, Pageable pageable);
+
+    @Query("SELECT v FROM VisitLocations v  join v.agenciesByAgenciesId ag " +
+            "WHERE (v.isAccepted = :isAccepted) and (v.isActive = true) " +
+            "and LOWER(v.visitLocationName) " +
+            "LIKE LOWER(CONCAT('%', :searchTerm, '%')) and (ag.isActive) = true and (ag.isAccepted) = 2")
+    Page<VisitLocations> findAllVisitPostByAcceptedAndTrueActiveByName(@Param("isAccepted") Boolean isAccepted,Pageable pageable, String searchTerm);
 
 }

@@ -12,4 +12,6 @@ public interface OrderVisitLocationService {
 
     Page<OrderVisits> findByUserIdAndStatus(Integer orderStatus, Integer userId, Pageable pageable);
 
+    OrderVisits findById(String id);
+
 }

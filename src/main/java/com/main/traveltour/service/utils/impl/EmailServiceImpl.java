@@ -2,20 +2,25 @@ package com.main.traveltour.service.utils.impl;
 
 import com.main.traveltour.dto.agent.hotel.AgenciesDto;
 import com.main.traveltour.dto.auth.RegisterDto;
-import com.main.traveltour.dto.customer.infomation.ForgotPasswordDto;
+import com.main.traveltour.dto.customer.infomation.*;
 import com.main.traveltour.dto.customer.booking.BookingDto;
 import com.main.traveltour.dto.customer.booking.BookingToursDto;
 import com.main.traveltour.dto.superadmin.AccountDto;
 import com.main.traveltour.dto.superadmin.DataAccountDto;
-import com.main.traveltour.entity.TourDetails;
-import com.main.traveltour.entity.Tours;
-import com.main.traveltour.entity.Users;
+import com.main.traveltour.entity.*;
+import com.main.traveltour.repository.HotelsRepository;
+import com.main.traveltour.repository.RoomTypesRepository;
+import com.main.traveltour.repository.VisitLocationsRepository;
 import com.main.traveltour.service.UsersService;
+import com.main.traveltour.service.admin.HotelsServiceAD;
+import com.main.traveltour.service.agent.OrderVisitDetailService;
+import com.main.traveltour.service.staff.OrderHotelDetailService;
 import com.main.traveltour.service.staff.TourDetailsService;
 import com.main.traveltour.service.staff.ToursService;
 import com.main.traveltour.service.utils.EmailService;
 import com.main.traveltour.service.utils.ThymeleafService;
 import com.main.traveltour.utils.DateUtils;
+import com.main.traveltour.utils.EntityDtoUtils;
 import com.main.traveltour.utils.ReplaceUtils;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
@@ -31,6 +36,7 @@ import java.math.BigDecimal;
 import java.nio.charset.StandardCharsets;
 import java.sql.Timestamp;
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 
 @Service
 @EnableScheduling
@@ -43,10 +49,12 @@ public class EmailServiceImpl implements EmailService {
     private final Queue<AgenciesDto> emailQueueDeniedAgency = new LinkedList<>();
     private final Queue<BookingDto> emailQueueBookingTour = new LinkedList<>();
     private final Queue<ForgotPasswordDto> emailQueueForgot = new LinkedList<>();
-    private final Queue<BookingToursDto> emailQueueCustomerCancelTour = new LinkedList<>();
+    private final Queue<CancelBookingTourDTO> emailQueueCustomerCancelTour = new LinkedList<>();
     private final Queue<ForgotPasswordDto> emailQueueSendOTPRegisterAgencies = new LinkedList<>();
-
     private final Queue<BookingDto> emailQueueBookingTourInvoices = new LinkedList<>();
+    private final Queue<CancelOrderHotelsDto> emailQueueCustomerCancelHotel = new LinkedList<>();
+    private final Queue<OrderVisitsDto> emailQueueCustomerCancelVisit = new LinkedList<>();
+    private final Queue<OrderTransportationsDto> emailQueueCustomerCancelTrans = new LinkedList<>();
 
     @Autowired
     private JavaMailSender sender;
@@ -63,8 +71,23 @@ public class EmailServiceImpl implements EmailService {
     @Autowired
     private ToursService toursService;
 
+    @Autowired
+    private OrderHotelDetailService orderHotelDetailService;
+
     @Value("${spring.mail.username}")
     private String email;
+    @Autowired
+    private RoomTypesRepository roomTypesRepository;
+
+    @Autowired
+    private HotelsServiceAD hotelsServiceAD;
+
+    @Autowired
+    private OrderVisitDetailService orderVisitDetailService;
+
+    @Autowired
+    private VisitLocationsRepository visitLocationsRepository;
+
 
     @Override
     public void queueEmailRegister(RegisterDto registerDto) {
@@ -332,7 +355,7 @@ public class EmailServiceImpl implements EmailService {
     @Override
     public void sendMailCustomerCancelTour() {
         while (!emailQueueCustomerCancelTour.isEmpty()) {
-            BookingToursDto bookingToursDto = emailQueueCustomerCancelTour.poll();
+            CancelBookingTourDTO bookingToursDto = emailQueueCustomerCancelTour.poll();
             TourDetails tourDetails = tourDetailsService.findById(bookingToursDto.getTourDetailId());
             Optional<Tours> tours = toursService.findById(tourDetails.getTourId());
 
@@ -344,7 +367,6 @@ public class EmailServiceImpl implements EmailService {
                 int capacityAdult = bookingToursDto.getCapacityAdult();
                 int capacityKid = bookingToursDto.getCapacityKid();
                 int unitPrice = unitPriceDecimal.intValue();
-
                 BigDecimal orderTotal = BigDecimal.valueOf((capacityAdult * unitPrice) + (capacityKid * (unitPrice * 0.3)));
 
                 if (bookingToursDto.getUserId() != null) {
@@ -376,37 +398,8 @@ public class EmailServiceImpl implements EmailService {
                 variables.put("arrivalDate", tourDetails.getArrivalDate());
                 variables.put("unitPrice", ReplaceUtils.formatPrice(tourDetails.getUnitPrice()) + " VNĐ");
                 variables.put("orderTotal", ReplaceUtils.formatPrice(orderTotal) + " VNĐ");
-
-                Date currentDate = new Date();
-                long daysRemaining = (tourDetails.getDepartureDate().getTime() - currentDate.getTime()) / (1000 * 60 * 60 * 24);
-                int coc;
-                BigDecimal moneyBack;
-
-                if (bookingToursDto.getPaymentMethod() == 0 && bookingToursDto.getOrderStatus() == 0) {
-                    coc = 0;
-                    moneyBack = BigDecimal.ZERO;
-                } else {
-                    if (daysRemaining >= 30) {
-                        coc = 1;
-                    } else if (daysRemaining >= 26 && daysRemaining <= 29) {
-                        coc = 5;
-                    } else if (daysRemaining >= 15 && daysRemaining <= 25) {
-                        coc = 30;
-                    } else if (daysRemaining >= 8 && daysRemaining <= 14) {
-                        coc = 50;
-                    } else if (daysRemaining >= 2 && daysRemaining <= 7) {
-                        coc = 80;
-                    } else if (daysRemaining >= 0 && daysRemaining <= 1) {
-                        coc = 100;
-                    } else {
-                        coc = 0;
-                    }
-                    BigDecimal cocPercentage = BigDecimal.valueOf(100 - coc).divide(BigDecimal.valueOf(100));
-                    moneyBack = orderTotal.multiply(cocPercentage);
-                }
-
-                variables.put("refund", coc + "%");
-                variables.put("moneyback", ReplaceUtils.formatPrice(moneyBack) + " VNĐ");
+                variables.put("refund", bookingToursDto.getCoc() + "%");
+                variables.put("moneyback", ReplaceUtils.formatPrice(bookingToursDto.getMoneyBack()) + " VNĐ");
                 helper.setFrom(email);
                 helper.setText(thymeleafService.createContent("customer-cancel-tour", variables), true);
                 helper.setSubject("XÁC NHẬN HỦY TOUR.");
@@ -419,7 +412,7 @@ public class EmailServiceImpl implements EmailService {
     }
 
     @Override
-    public void queueEmailCustomerCancelTour(BookingToursDto bookingToursDto) {
+    public void queueEmailCustomerCancelTour(CancelBookingTourDTO bookingToursDto) {
         emailQueueCustomerCancelTour.add(bookingToursDto);
     }
 
@@ -517,6 +510,94 @@ public class EmailServiceImpl implements EmailService {
         }
     }
 
+    @Override
+    public void sendMailCustomerCancelHotel() {
+        while (!emailQueueCustomerCancelHotel.isEmpty()) {
+            CancelOrderHotelsDto cancelOrderHotelsDto = emailQueueCustomerCancelHotel.poll();
+            List<OrderHotelDetails> orderHotelDetails = orderHotelDetailService.findByOrderHotelId(cancelOrderHotelsDto.getId());
+            List<OrderHotelDetailsDto> orderHotelDetailsDto = EntityDtoUtils.convertToDtoList(orderHotelDetails, OrderHotelDetailsDto.class);
+
+            String name = null;
+            BigDecimal orderTotal = cancelOrderHotelsDto.getOrderTotal(); // Lấy tổng tiền
+
+            for (OrderHotelDetailsDto orderDetail : orderHotelDetailsDto) {
+                RoomTypes roomType = orderDetail.getRoomTypes();
+                Hotels hotelFound = hotelsServiceAD.findById(roomType.getHotelId());
+                name = hotelFound.getHotelName();
+            }
+
+            try {
+                MimeMessage message = sender.createMimeMessage();
+                MimeMessageHelper helper = new MimeMessageHelper(message, MimeMessageHelper.MULTIPART_MODE_MIXED_RELATED, StandardCharsets.UTF_8.name());
+
+                if (cancelOrderHotelsDto.getUserId() != null) {
+                    helper.setTo(cancelOrderHotelsDto.getCustomerEmail());
+                } else {
+                    helper.setTo(cancelOrderHotelsDto.getCustomerEmail());
+                }
+
+                Map<String, Object> variables = new HashMap<>();
+                variables.put("customerEmail", cancelOrderHotelsDto.getCustomerEmail());
+                variables.put("bookingId", cancelOrderHotelsDto.getId());
+                variables.put("dateTimeBooking", cancelOrderHotelsDto.getDateCreated());
+                variables.put("timeDelete", new Timestamp(System.currentTimeMillis()));
+                variables.put("customerName", cancelOrderHotelsDto.getCustomerName());
+                variables.put("customerCitizenCard", cancelOrderHotelsDto.getCustomerCitizenCard());
+                variables.put("customerPhone", cancelOrderHotelsDto.getCustomerPhone());
+
+                if (cancelOrderHotelsDto.getPaymentMethod() == "Momo") {
+                    variables.put("paymentMethod", "VÍ MOMO");
+                } else if (cancelOrderHotelsDto.getPaymentMethod() == "VNPay") {
+                    variables.put("paymentMethod", "VNPAY");
+                } else if (cancelOrderHotelsDto.getPaymentMethod() == "ZaloPay") {
+                    variables.put("paymentMethod", "VÍ ZALOPAY");
+                } else {
+                    variables.put("paymentMethod", "Thanh toán tại quầy");
+                }
+
+                variables.put("hotelName", name);
+                variables.put("departureDate", cancelOrderHotelsDto.getCheckIn());
+                variables.put("arrivalDate", cancelOrderHotelsDto.getCheckOut());
+                variables.put("orderHotelDetails", orderHotelDetails);
+                variables.put("orderTotal", ReplaceUtils.formatPrice(orderTotal) + " VNĐ");
+                variables.put("refund", cancelOrderHotelsDto.getCoc() + "%");
+                variables.put("moneyback", ReplaceUtils.formatPrice(cancelOrderHotelsDto.getMoneyBack()) + " VNĐ");
+                helper.setFrom(email);
+                helper.setText(thymeleafService.createContent("customer-cancel-hotel", variables), true);
+                helper.setSubject("XÁC NHẬN HỦY PHÒNG.");
+
+                sender.send(message);
+            } catch (MessagingException e) {
+                throw new RuntimeException(e);
+            }
+        }
+    }
+
+    @Override
+    public void queueEmailCustomerCancelHotel(CancelOrderHotelsDto cancelOrderHotelsDto) {
+        emailQueueCustomerCancelHotel.add(cancelOrderHotelsDto);
+    }
+
+    @Override
+    public void sendMailCustomerCancelVisit() {
+
+    }
+
+    @Override
+    public void queueEmailCustomerCancelVisit(OrderVisitsDto orderVisitsDto) {
+        emailQueueCustomerCancelVisit.add(orderVisitsDto);
+    }
+
+    @Override
+    public void sendMailCustomerCancelTrans() {
+
+    }
+
+    @Override
+    public void queueEmailCustomerCancelTrans(OrderTransportationsDto orderTransportationsDto) {
+        emailQueueCustomerCancelTrans.add(orderTransportationsDto);
+    }
+
     @Scheduled(fixedDelay = 5000)
     public void processRegister() {
         sendMailRegister();
@@ -565,6 +646,21 @@ public class EmailServiceImpl implements EmailService {
     @Scheduled(fixedDelay = 5000)
     public void processBookingTourInvoices() {
         sendMailBookingTourInvoices();
+    }
+
+    @Scheduled(fixedDelay = 5000)
+    public void processCustomerCancelHotel() {
+        sendMailCustomerCancelHotel();
+    }
+
+    @Scheduled(fixedDelay = 5000)
+    public void processCustomerCancelVisit() {
+        sendMailCustomerCancelVisit();
+    }
+
+    @Scheduled(fixedDelay = 5000)
+    public void processCustomerCancelTrans() {
+        sendMailCustomerCancelTrans();
     }
 
     private String convertRolesToVietnamese(List<String> roles) {

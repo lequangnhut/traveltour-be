@@ -394,7 +394,8 @@
 
                             <p style="text-align: justify; margin-bottom: 5px">
                               Chúng tôi vừa nhận được thông báo bạn vừa thao tác hủy
-                              tour du lịch có mã booking là <strong th:text="${bookingId}"></strong>  vào lúc <strong th:text="${#dates.format(timeDelete, 'dd/MM/yyyy HH:mm:ss')}"></strong>.
+                              tour du lịch có mã booking là <strong th:text="${bookingId}"></strong>  vào lúc
+                              <strong th:text="${#dates.format(timeDelete, 'dd/MM/yyyy HH:mm:ss')}"></strong>.
                             </p>
                             <p style="text-align: justify; margin-bottom: 5px">
                               Dưới đây là chi tiết thông tin được hủy.
@@ -435,36 +436,62 @@
                                                                   line-height:28px; font-weight: bolder; margin: 0;">
                               Thông tin đơn hàng:
                             </p>
-                            <ul style="margin: 0; padding-left: 20px;">
-                              <li><strong>Mã Booking: </strong><span th:text="${bookingId}"></span>
-                              </li>
-                              <li><strong>Ngày booking: </strong><span th:text="${#dates.format(dateTimeBooking, 'dd/MM/yyyy HH:mm:ss')}"></span>
-                              </li>
-                              <li><strong>Tên Tour: </strong><span th:text="${tourName}"></span>
-                              </li>
-                              <li><strong>Số lượng khách: </strong><span th:text="${totalCapacity}"></span>
-                              </li>
-                              <li><strong>Thời gian khởi hành: </strong><span th:text="${#dates.format(departureDate, 'dd/MM/yyyy HH:mm:ss')}" ></span>
-                              </li>
-                              <li><strong>Thời gian trở về: </strong><span th:text="${#dates.format(arrivalDate, 'dd/MM/yyyy HH:mm:ss')}"></span>
-                              </li>
-                              <li><strong>Giá tour: </strong><span th:text="${unitPrice}"></span>
-                              </li>
-                              <li>
-                                <strong>Chi tiết dịch vụ: </strong>
-                                <ul style="margin: 0; padding-left: 20px;">
-                                  <li><strong>Giá người lớn ( > 18 tuổi ): </strong><span>100% giá tour</span>
-                                  </li>
-                                  <li><strong>Giá trẻ em ( 3 - 12 tuổi ): </strong><span> 30% giá tour</span>
-                                  </li>
-                                  <li><strong>Giá em bé ( < 2 tuổi ): </strong><span> Miễn phí</span>
-                                  </li>
-                                </ul>
-                              </li>
-                              <li><strong>Thành tiền: </strong> <br> <span th:text="${orderTotal}"></span>
-                              </li>
-                              <li><strong>Thuế VAT (8%): </strong> <br> Đã bao gồm trong giá tour.</li>
-                            </ul>
+                            <table role="presentation" cellpadding="0" cellspacing="0"
+                                   style="width:100%; border-collapse:collapse;border-spacing:0px;"
+                                   border="0">
+                              <tbody>
+                              <tr>
+                                <td style="text-align:justify; width:80%;" align="left">
+                                  <strong>Mã booking: </strong><span th:text="${bookingId}"></span>
+                                </td>
+
+                              </tr>
+                              <tr>
+                                <td style="width:80%;" align="left">
+                                  <strong>Ngày booking: </strong><span th:text="${#dates.format(dateTimeBooking, 'dd/MM/yyyy HH:mm:ss')}"></span>
+                                </td>
+                              </tr>
+                              <tr>
+                                <td style="text-align:justify; width:100%;" align="left" colspan="2">
+                                  <strong>Tên khách sạn: </strong><span th:text="${hotelName}"></span>
+                                </td>
+                              </tr>
+                              <tr>
+                                <td style="text-align:justify; width:100%;" align="left" colspan="2">
+                                  <strong>Thời gian check-in: </strong><span th:text="${#dates.format(departureDate, 'dd/MM/yyyy HH:mm:ss')}"></span>
+                                </td>
+                              </tr>
+                              <tr>
+                                <td style="text-align:justify; width:100%;" align="left" colspan="2">
+                                  <strong>Thời gian check-out: </strong><span th:text="${#dates.format(arrivalDate, 'dd/MM/yyyy HH:mm:ss')}"></span>
+                                </td>
+                              </tr>
+                              </tbody>
+                            </table>
+
+                            <table class="table mt-2 mb-2" style="border:1px solid #ddd;width: 100%;margin-top: 10px;margin-bottom: 10px">
+                              <thead>
+                              <tr style="text-align: center; border:1px solid #ddd;">
+                                <th scope="col" style="font-size:small; border:1px solid #ddd;width:40%">Tên phòng</th>
+                                <th scope="col" style="font-size:small; border:1px solid #ddd;width:10%">SL</th>
+                                <th scope="col" style="font-size:small; border:1px solid #ddd;width:25%">Đ.Giá(Đ)</th>
+                                <th scope="col" style="font-size:small; border:1px solid #ddd;width:25%">T.Tiền(Đ)</th>
+                              </tr>
+                              </thead>
+                              <tbody>
+                              <tr  th:each="od : ${orderHotelDetails}" style="text-align: center; border:1px solid #ddd;">
+                                <td style="font-size:small; border:1px solid #ddd;text-align: left;" th:text="${od.roomTypesByRoomTypeId.roomTypeName}"></td>
+                                <td style="font-size:small; border:1px solid #ddd;text-align: center;" th:text="${od.amount}"></td>
+                                <td style="font-size:small; border:1px solid #ddd;text-align: right;" th:text="${#numbers.formatDecimal(od.roomTypesByRoomTypeId.price, 0, 'COMMA', 0, 'POINT')}"></td>
+                                <td style="font-size:small; border:1px solid #ddd;text-align: right;" th:text="${#numbers.formatDecimal((od.roomTypesByRoomTypeId.price*od.amount), 0, 'COMMA', 0, 'POINT')}"></td>
+                              </tr>
+                              <tr style="text-align: center; border:1px solid #ddd;">
+                                <td style="font-size:small; border:1px solid #ddd;text-align: center; font-weight: bolder" colspan="2">Tổng cộng</td>
+                                <td style="font-size:small; border:1px solid #ddd;text-align: right;" colspan="2" th:text="${orderTotal}"></td>
+                              </tr>
+                              </tbody>
+                            </table>
+                            <strong>Thuế VAT (8%): </strong><span>Đã bao gồm trong giá tour.</span>
 
                             <p style="text-align: justify; margin-bottom: 5px">
                               <strong>Chi phí hủy (trên tổng giá trị đơn): </strong> <span th:text="${refund}"></span>
@@ -472,7 +499,7 @@
                             <p style="text-align: justify; margin-bottom: 5px">
                               <strong>Chí phí nhận lại: </strong> <span th:text="${moneyback}"></span>
                             </p>
-                            </p>
+                            <hr style="margin-bottom: 5px;margin-top: 5px; border-top: 1px black;">
                             <p style="text-align: justify; margin-bottom: 5px">
                               Trên đây là thông tin cho hoạt động hủy booking của bạn, về thông báo nhận
                               hoàn trả sẽ được cập nhật trên giao diện người dùng của bạn tại

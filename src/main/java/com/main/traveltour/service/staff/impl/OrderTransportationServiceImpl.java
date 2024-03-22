@@ -41,4 +41,9 @@ public class OrderTransportationServiceImpl implements OrderTransportationServic
         return repo.findAllBookingTransByUserId(orderStatus, userId, pageable);
     }
 
+    @Override
+    public OrderTransportations findById(String id) {
+        return repo.findById(id);
+    }
+
 }

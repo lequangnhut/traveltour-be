@@ -5,6 +5,8 @@ import com.main.traveltour.entity.RoomTypes;
 import com.main.traveltour.repository.RoomTypesRepository;
 import com.main.traveltour.service.admin.RoomTypesServiceAD;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -18,5 +20,15 @@ public class RoomTypesServiceImplAD implements RoomTypesServiceAD {
     @Override
     public List<RoomTypes> findByRoomUtilityTypeId(int typeId) {
         return roomTypesRepository.findAllByRoomUtilities(typeId);
+    }
+
+    @Override
+    public Page<RoomTypes> findByHotelId(Integer isActive, String id, Pageable pageable) {
+        return roomTypesRepository.findPostByHotelId(isActive, id, pageable);
+    }
+
+    @Override
+    public Page<RoomTypes> findByHotelIdAndName(Integer isActive, String id, Pageable pageable, String searchTerm) {
+        return roomTypesRepository.findPostByHotelIdByName(isActive, id, pageable, searchTerm);
     }
 }

@@ -1,5 +1,6 @@
 package com.main.traveltour.repository;
 
+import com.main.traveltour.entity.TransportationBrands;
 import com.main.traveltour.entity.Transportations;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -34,5 +35,16 @@ public interface TransportationsRepository extends JpaRepository<Transportations
     Page<Transportations> findByTransportWithSearch(@Param("brandId") String brandId, @Param("searchTerm") String searchTerm, Pageable pageable);
 
     List<Transportations> findAllByTransportationTypeId(int id);
+
+    @Query("SELECT tr FROM Transportations tr " +
+            "WHERE (tr.isActive = :isActive) and " +
+            "(tr.transportationBrandId = :brandId)")
+    Page<Transportations> findAllPostByBrand(@Param("isActive") Boolean isActive, @Param("brandId") String brandId, Pageable pageable);
+
+    @Query("SELECT tr FROM Transportations tr " +
+            "WHERE (tr.isActive = :isActive) and " +
+            "(tr.transportationBrandId = :brandId)" +
+            " and LOWER(tr.licensePlate) LIKE LOWER(CONCAT('%', :searchTerm, '%'))")
+    Page<Transportations> findAllPostByBrandAndName(@Param("isActive") Boolean isActive, @Param("brandId") String brandId, Pageable pageable, String searchTerm);
 
 }

@@ -6,6 +6,8 @@ import com.main.traveltour.service.agent.OrderVisitDetailService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 public class OrderVisitDetailServiceImpl implements OrderVisitDetailService {
 
@@ -15,5 +17,10 @@ public class OrderVisitDetailServiceImpl implements OrderVisitDetailService {
     @Override
     public OrderVisitDetails save(OrderVisitDetails orderVisitDetails) {
         return orderVisitDetailsRepository.save(orderVisitDetails);
+    }
+
+    @Override
+    public List<OrderVisitDetails> findByOrderVisitId(String id) {
+        return orderVisitDetailsRepository.findByOrderVisitId(id);
     }
 }
