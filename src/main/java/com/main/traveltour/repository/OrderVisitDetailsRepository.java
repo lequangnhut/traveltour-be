@@ -24,4 +24,6 @@ public interface OrderVisitDetailsRepository extends JpaRepository<OrderVisitDet
                 "JOIN ovd.orderVisitsByOrderVisitId ov " +
                 "WHERE ov.id = :orderId")
         List<OrderVisitDetails> findOrderVisitDetailByOrderVisitId(@Param("orderId") String orderId);
+
+        List<OrderVisitDetails> findByOrderVisitId(String id);
 }

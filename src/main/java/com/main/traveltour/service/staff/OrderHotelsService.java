@@ -17,4 +17,6 @@ public interface OrderHotelsService {
     void saveOrderHotelCustomer(OrderHotels orderHotels, List<OrderDetailsHotelCustomerDto> orderDetailsHotel);
 
     Page<OrderHotels> getAllByUserId(Integer orderStatus, Integer userId, Pageable pageable);
+
+    OrderHotels findById(String id);
 }

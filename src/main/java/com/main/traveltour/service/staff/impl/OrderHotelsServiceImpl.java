@@ -67,5 +67,9 @@ public class OrderHotelsServiceImpl implements OrderHotelsService {
         return repo.findAllBookingHotelsByUserId(orderStatus, userId, pageable);
     }
 
+    @Override
+    public OrderHotels findById(String id) {
+        return repo.findById(id);
+    }
 
 }

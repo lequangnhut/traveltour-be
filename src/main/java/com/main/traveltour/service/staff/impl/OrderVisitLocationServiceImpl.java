@@ -27,4 +27,9 @@ public class OrderVisitLocationServiceImpl implements OrderVisitLocationService 
     public Page<OrderVisits> findByUserIdAndStatus(Integer orderStatus, Integer userId, Pageable pageable) {
         return repo.findAllBookingVisitsByUserId(orderStatus, userId, pageable);
     }
+
+    @Override
+    public OrderVisits findById(String id) {
+        return repo.findById(id);
+    }
 }

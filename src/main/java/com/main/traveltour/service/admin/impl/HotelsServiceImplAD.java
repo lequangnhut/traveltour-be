@@ -4,6 +4,8 @@ import com.main.traveltour.entity.Hotels;
 import com.main.traveltour.repository.HotelsRepository;
 import com.main.traveltour.service.admin.HotelsServiceAD;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -20,4 +22,20 @@ public class HotelsServiceImplAD implements HotelsServiceAD {
     public List<Hotels> findByUtility(int typeId) {
         return hotelsRepository.findAllByPlaceUtilities(typeId);
     }
+
+    @Override
+    public Page<Hotels> findAllHotelPost(Boolean isAccepted, Pageable pageable) {
+        return hotelsRepository.findAllHotelByAcceptedAndTrueActive(isAccepted, pageable);
+    }
+
+    @Override
+    public Page<Hotels> findAllHotelPostByName(Boolean isAccepted, Pageable pageable, String searchterm) {
+        return hotelsRepository.findAllHotelByAcceptedAndTrueActiveByName(isAccepted, pageable, searchterm);
+    }
+
+    @Override
+    public Hotels findById(String id) {
+        return hotelsRepository.getHotelsById(id);
+    }
+
 }

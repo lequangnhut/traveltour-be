@@ -7,11 +7,11 @@ import java.math.BigDecimal;
 import java.sql.Timestamp;
 
 @Data
-public class CancelBookingTourCusDTO {
+public class CancelBookingTourDTO {
 
     String id;
 
-    int userId;
+    Integer userId;
 
     String tourDetailId;
 
@@ -23,19 +23,25 @@ public class CancelBookingTourCusDTO {
 
     String customerEmail;
 
-    int capacityAdult;
+    Integer capacityAdult;
 
-    int capacityKid;
+    Integer capacityKid;
 
-    int capacityBaby;
+    Integer capacityBaby;
 
     BigDecimal orderTotal;
 
-    int paymentMethod; // 0: travel | 1: VNPay | 2: ZaLoPay | 3: Momo
+    Integer paymentMethod;
 
     String orderCode;
 
     Timestamp dateCreated;
-    
-    TourDetails tourDetails;
+
+    Integer orderStatus;
+
+    String orderNote;
+
+    int coc;
+
+    BigDecimal moneyBack;
 }
