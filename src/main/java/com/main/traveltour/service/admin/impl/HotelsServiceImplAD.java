@@ -38,4 +38,9 @@ public class HotelsServiceImplAD implements HotelsServiceAD {
         return hotelsRepository.getHotelsById(id);
     }
 
+    @Override
+    public Hotels save(Hotels hotels) {
+        return hotelsRepository.save(hotels);
+    }
+
 }

@@ -129,7 +129,8 @@ public interface TransportationSchedulesRepository extends JpaRepository<Transpo
     @Query("SELECT ts FROM TransportationSchedules ts " +
             "where (ts.transportationId = :transId) and " +
             "(ts.isActive = :isActive) " +
-            "and LOWER(ts.fromLocation) LIKE LOWER(CONCAT('%', :searchTerm, '%')) " +
-            "and LOWER(ts.toLocation) LIKE LOWER(CONCAT('%', :searchTerm, '%'))")
+            "and (:searchTerm is null or " +
+            "(LOWER(ts.fromLocation) LIKE LOWER(CONCAT('%', :searchTerm, '%')) " +
+            "or LOWER(ts.toLocation) LIKE LOWER(CONCAT('%', :searchTerm, '%'))))")
     Page<TransportationSchedules> findScheduleByTransIdByName (@Param("isActive") Boolean isActive, @Param("transId") String transId, Pageable pageable, String searchTerm);
 }

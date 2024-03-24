@@ -22,7 +22,14 @@ public interface TransServiceAD {
 
     Page<Transportations> findAllTransPostByName(Boolean isActive, String brandId, Pageable pageable, String searchTerm);
 
-    Page<TransportationSchedules> findAllSchedulesPost(Boolean isActive, String brandId, Pageable pageable);
+    Page<TransportationSchedules> findAllSchedulesPost(Boolean isActive, String transId, Pageable pageable);
 
-    Page<TransportationSchedules> findAllSchedulesPostByName(Boolean isActive, String brandId, Pageable pageable, String searchTerm);
+    Page<TransportationSchedules> findAllSchedulesPostByName(Boolean isActive, String transId, Pageable pageable, String searchTerm);
+
+    TransportationBrands findByBrandId (String id);
+
+    Transportations findByTransId (String id);
+
+    TransportationSchedules findByScheduleId (String id);
+
 }

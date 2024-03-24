@@ -20,4 +20,9 @@ public interface TransportationScheduleSeatsRepository extends JpaRepository<Tra
             "JOIN tps.orderTransportationDetailById ord " +
             "WHERE tps.transportationScheduleId = :scheduleId AND ord.OrderTransportationId = :orderTransportId")
     List<TransportationScheduleSeats> findAllByScheduleIdAndOrderId(@Param("scheduleId") String scheduleId, @Param("orderTransportId") String orderTransportId);
+
+    @Query("SELECT tss FROM TransportationScheduleSeats tss JOIN tss.orderTransportationDetailById otd " +
+            "JOIN otd.orderTransportationById ot WHERE ot.id = :id ")
+    List<TransportationScheduleSeats> findSeatByOrderTd (String id);
+
 }

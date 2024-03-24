@@ -1,19 +1,23 @@
 package com.main.traveltour.dto.customer.infomation;
 
+import com.main.traveltour.entity.OrderTransportationDetails;
 import com.main.traveltour.entity.TransportationBrands;
 import com.main.traveltour.entity.TransportationSchedules;
 import lombok.Data;
+import lombok.ToString;
 import lombok.Value;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.sql.Timestamp;
+import java.util.Collection;
 
 /**
  * DTO for {@link com.main.traveltour.entity.OrderTransportations}
  */
 @Data
-public class OrderTransportationsDto implements Serializable {
+@ToString
+public class CancelOrderTransportationsDto implements Serializable {
     String id;
     Integer userId;
     String transportationScheduleId;
@@ -28,6 +32,9 @@ public class OrderTransportationsDto implements Serializable {
     Timestamp dateCreated;
     Integer orderStatus;
     String orderNote;
-    TransportationSchedules transportationSchedules;
+    int coc;
+    BigDecimal moneyBack;
+    Collection<OrderTransportationDetails> orderTransportationDetails;
+    TransportationSchedules transportationSchedulesByTransportationScheduleId;
     TransportationBrands transportationBrands;
 }

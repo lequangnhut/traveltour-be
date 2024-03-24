@@ -30,4 +30,14 @@ public class VisitLocationsServiceImplAD implements VisitLocationsServiceAD {
     public Page<VisitLocations> findAllVisitPostByName(Boolean isAccepted, Pageable pageable, String searchTerm) {
         return visitLocationsRepository.findAllVisitPostByAcceptedAndTrueActiveByName(isAccepted, pageable, searchTerm);
     }
+
+    @Override
+    public VisitLocations findById(String id) {
+        return visitLocationsRepository.findById(id);
+    }
+
+    @Override
+    public VisitLocations save(VisitLocations visitLocations) {
+        return visitLocationsRepository.save(visitLocations);
+    }
 }

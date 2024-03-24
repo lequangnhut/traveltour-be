@@ -62,7 +62,6 @@ public interface RoomTypesRepository extends JpaRepository<RoomTypes, String>, J
                                  @Param("checkIn") Timestamp checkIn,
                                  @Param("checkOut") Timestamp checkOut);
 
-
     Optional<RoomTypes> findById(String s);
 
     List<RoomTypes> findByIdIn(List<String> ids);
@@ -77,4 +76,7 @@ public interface RoomTypesRepository extends JpaRepository<RoomTypes, String>, J
             "(rt.isDeleted = false) and (ht.id = :id) " +
             "and LOWER(rt.roomTypeName) LIKE LOWER(CONCAT('%', :searchTerm, '%'))")
     Page<RoomTypes> findPostByHotelIdByName(@Param("isActive") Integer isActive, @Param("id") String id, Pageable pageable, String searchTerm);
+
+    @Query("SELECT rt FROM RoomTypes rt WHERE rt.id = :id")
+    RoomTypes findByRoomId(String id);
 }

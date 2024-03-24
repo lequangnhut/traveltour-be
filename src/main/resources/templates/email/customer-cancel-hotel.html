@@ -390,11 +390,11 @@
                                  line-height:28px; text-align:center; margin-bottom:10px;">
                               <strong style="color: #63ab45">XÁC NHẬN HỦY BOOKING</strong>
                             </p>
-                            <p style="text-align: justify; margin-bottom: 5px">Xin chào, <strong th:text="${customerEmail}">!</strong></p>
+                            <p style="text-align: justify; margin-bottom: 5px">Xin chào, <strong th:text="${customerName}"></strong>!</p>
 
                             <p style="text-align: justify; margin-bottom: 5px">
-                              Chúng tôi vừa nhận được thông báo bạn vừa thao tác hủy
-                              tour du lịch có mã booking là <strong th:text="${bookingId}"></strong>  vào lúc
+                              Chúng tôi vừa nhận được thông báo bạn đã thao tác hủy
+                              một lệnh đặt phòng có mã booking là <strong th:text="${bookingId}"></strong>  vào lúc
                               <strong th:text="${#dates.format(timeDelete, 'dd/MM/yyyy HH:mm:ss')}"></strong>.
                             </p>
                             <p style="text-align: justify; margin-bottom: 5px">

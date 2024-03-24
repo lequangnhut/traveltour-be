@@ -59,5 +59,5 @@ public interface EmailService {
 
     void sendMailCustomerCancelTrans();
 
-    void queueEmailCustomerCancelTrans(OrderTransportationsDto orderTransportationsDto);
+    void queueEmailCustomerCancelTrans(CancelOrderTransportationsDto cancelOrderTransportationsDto);
 }
