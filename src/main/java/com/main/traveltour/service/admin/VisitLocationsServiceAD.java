@@ -15,5 +15,7 @@ public interface VisitLocationsServiceAD {
 
     Page<VisitLocations> findAllVisitPostByName(Boolean isAccepted, Pageable pageable, String searchTerm);
 
+    VisitLocations findById (String id);
 
+    VisitLocations save (VisitLocations visitLocations);
 }

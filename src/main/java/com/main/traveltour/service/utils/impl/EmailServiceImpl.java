@@ -14,6 +14,7 @@ import com.main.traveltour.repository.VisitLocationsRepository;
 import com.main.traveltour.service.UsersService;
 import com.main.traveltour.service.admin.HotelsServiceAD;
 import com.main.traveltour.service.agent.OrderVisitDetailService;
+import com.main.traveltour.service.customer.OrderVehicleDetailsService;
 import com.main.traveltour.service.staff.OrderHotelDetailService;
 import com.main.traveltour.service.staff.TourDetailsService;
 import com.main.traveltour.service.staff.ToursService;
@@ -54,7 +55,7 @@ public class EmailServiceImpl implements EmailService {
     private final Queue<BookingDto> emailQueueBookingTourInvoices = new LinkedList<>();
     private final Queue<CancelOrderHotelsDto> emailQueueCustomerCancelHotel = new LinkedList<>();
     private final Queue<OrderVisitsDto> emailQueueCustomerCancelVisit = new LinkedList<>();
-    private final Queue<OrderTransportationsDto> emailQueueCustomerCancelTrans = new LinkedList<>();
+    private final Queue<CancelOrderTransportationsDto> emailQueueCustomerCancelTrans = new LinkedList<>();
 
     @Autowired
     private JavaMailSender sender;
@@ -73,6 +74,10 @@ public class EmailServiceImpl implements EmailService {
 
     @Autowired
     private OrderHotelDetailService orderHotelDetailService;
+
+    @Autowired
+    private OrderVehicleDetailsService orderVehicleDetailsService;
+
 
     @Value("${spring.mail.username}")
     private String email;
@@ -590,12 +595,67 @@ public class EmailServiceImpl implements EmailService {
 
     @Override
     public void sendMailCustomerCancelTrans() {
+        while (!emailQueueCustomerCancelTrans.isEmpty()) {
+            CancelOrderTransportationsDto cancelOrderTransportationsDto = emailQueueCustomerCancelTrans.poll();
 
+            List<OrderTransportationDetails> orderTransportationDetailsList = orderVehicleDetailsService.findByOrderId(cancelOrderTransportationsDto.getId());
+            List<OrderTransportationDetailsDto> orderTransportationDetailsDtos = EntityDtoUtils.convertToDtoList(orderTransportationDetailsList, OrderTransportationDetailsDto.class);
+
+            BigDecimal orderTotal = cancelOrderTransportationsDto.getOrderTotal(); // Lấy tổng tiền
+
+            try {
+                MimeMessage message = sender.createMimeMessage();
+                MimeMessageHelper helper = new MimeMessageHelper(message, MimeMessageHelper.MULTIPART_MODE_MIXED_RELATED, StandardCharsets.UTF_8.name());
+
+                if (cancelOrderTransportationsDto.getUserId() != null) {
+                    helper.setTo(cancelOrderTransportationsDto.getCustomerEmail());
+                } else {
+                    helper.setTo(cancelOrderTransportationsDto.getCustomerEmail());
+                }
+
+                Map<String, Object> variables = new HashMap<>();
+                variables.put("customerEmail", cancelOrderTransportationsDto.getCustomerEmail());
+                variables.put("bookingId", cancelOrderTransportationsDto.getId());
+                variables.put("dateTimeBooking", cancelOrderTransportationsDto.getDateCreated());
+                variables.put("timeDelete", new Timestamp(System.currentTimeMillis()));
+                variables.put("customerName", cancelOrderTransportationsDto.getCustomerName());
+                variables.put("customerCitizenCard", cancelOrderTransportationsDto.getCustomerCitizenCard());
+                variables.put("customerPhone", cancelOrderTransportationsDto.getCustomerPhone());
+
+                if (cancelOrderTransportationsDto.getPaymentMethod() == 1) {
+                    variables.put("paymentMethod", "VÍ VNPAY");
+                } else if (cancelOrderTransportationsDto.getPaymentMethod() == 2) {
+                    variables.put("paymentMethod", "VÍ ZALOPAY");
+                } else if (cancelOrderTransportationsDto.getPaymentMethod() == 3) {
+                    variables.put("paymentMethod", "VÍ MOMO");
+                } else {
+                    variables.put("paymentMethod", "Thanh toán tại quầy");
+                }
+
+                variables.put("brandName", cancelOrderTransportationsDto.getTransportationBrands().getTransportationBrandName());
+                variables.put("tripName", "Từ " + cancelOrderTransportationsDto.getTransportationSchedulesByTransportationScheduleId().getFromLocation() + " - " + cancelOrderTransportationsDto.getTransportationSchedulesByTransportationScheduleId().getToLocation());
+                variables.put("unitPrice", ReplaceUtils.formatPrice(cancelOrderTransportationsDto.getTransportationSchedulesByTransportationScheduleId().getUnitPrice()) + " VNĐ");
+                variables.put("amount", cancelOrderTransportationsDto.getAmountTicket());
+                variables.put("departureDate", cancelOrderTransportationsDto.getTransportationSchedulesByTransportationScheduleId().getDepartureTime());
+                variables.put("arrivalDate",  cancelOrderTransportationsDto.getTransportationSchedulesByTransportationScheduleId().getArrivalTime());
+                variables.put("orderDetails", orderTransportationDetailsDtos);
+                variables.put("orderTotal", ReplaceUtils.formatPrice(orderTotal) + " VNĐ");
+                variables.put("refund", cancelOrderTransportationsDto.getCoc() + "%");
+                variables.put("moneyback", ReplaceUtils.formatPrice(cancelOrderTransportationsDto.getMoneyBack()) + " VNĐ");
+                helper.setFrom(email);
+                helper.setText(thymeleafService.createContent("customer-cancel-trans", variables), true);
+                helper.setSubject("XÁC NHẬN HỦY VÉ XE.");
+
+                sender.send(message);
+            } catch (MessagingException e) {
+                throw new RuntimeException(e);
+            }
+        }
     }
 
     @Override
-    public void queueEmailCustomerCancelTrans(OrderTransportationsDto orderTransportationsDto) {
-        emailQueueCustomerCancelTrans.add(orderTransportationsDto);
+    public void queueEmailCustomerCancelTrans(CancelOrderTransportationsDto cancelOrderTransportationsDto) {
+        emailQueueCustomerCancelTrans.add(cancelOrderTransportationsDto);
     }
 
     @Scheduled(fixedDelay = 5000)

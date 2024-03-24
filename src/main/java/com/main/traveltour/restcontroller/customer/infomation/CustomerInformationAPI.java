@@ -1,11 +1,12 @@
 package com.main.traveltour.restcontroller.customer.infomation;
 
 
-import com.main.traveltour.dto.customer.booking.BookingToursDto;
-import com.main.traveltour.dto.customer.hotel.OrderHotelCustomerDto;
 import com.main.traveltour.dto.customer.infomation.*;
 import com.main.traveltour.entity.*;
-import com.main.traveltour.service.admin.OrderTransportationDetailsServiceAD;
+import com.main.traveltour.repository.TransportationsRepository;
+import com.main.traveltour.service.admin.TransportationSeatServiceAD;
+import com.main.traveltour.service.agent.OrderTransportDetailService;
+import com.main.traveltour.service.customer.OrderVehicleDetailsService;
 import com.main.traveltour.service.staff.*;
 import com.main.traveltour.service.utils.EmailService;
 import com.main.traveltour.utils.EntityDtoUtils;
@@ -53,7 +54,7 @@ public class CustomerInformationAPI {
     private OrderTransportationService orderTransportationService;
 
     @Autowired
-    private OrderTransportationDetailsServiceAD orderTransportationDetailsServiceAD;
+    private OrderVehicleDetailsService orderVehicleDetailsService;
 
     @Autowired
     private OrderVisitLocationService orderVisitLocationService;
@@ -61,6 +62,8 @@ public class CustomerInformationAPI {
     @Autowired
     private OrderVisitLocationDetailService orderVisitLocationDetailService;
 
+    @Autowired
+    TransportationSeatServiceAD transportationSeatServiceAD;
 
 
     @GetMapping("find-all-booking-tour/{userId}")
@@ -153,7 +156,7 @@ public class CustomerInformationAPI {
         }
     }
 
-    @GetMapping("find-orderdetails-by-ordersId/{orderHotelsId}")
+    @GetMapping("find-order-detail-by-ordersId/{orderHotelsId}")
     public ResponseObject findOrderHotelsDetails(@PathVariable String orderHotelsId) {
         try {
             List<OrderHotelDetails> orderHotelDetails = orderHotelDetailService.findByOrderHotelId(orderHotelsId);
@@ -184,6 +187,18 @@ public class CustomerInformationAPI {
         }
     }
 
+    @GetMapping("find-trans-detail-by-ordersId/{orderId}")
+    public ResponseObject findOrderTransDetails(@PathVariable String orderId) {
+        try {
+            List<OrderTransportationDetails> orderTransportationDetailsList = orderVehicleDetailsService.findByOrderId(orderId);
+            List<OrderTransportationDetailsDto> orderTransportationDetailsDtos = EntityDtoUtils.convertToDtoList(orderTransportationDetailsList, OrderTransportationDetailsDto.class);
+
+            return new ResponseObject("200", "Có nè", orderTransportationDetailsDtos);
+        } catch (Exception e) {
+            return new ResponseObject("500", "Hông nè", null);
+        }
+    }
+
     @GetMapping("find-all-order-visits/{userId}")
     public ResponseObject getAllBookingVisitsByUserId(@RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int size,
                                                      @RequestParam(defaultValue = "id") String sortBy, @RequestParam(defaultValue = "asc") String sortDir,
@@ -203,7 +218,7 @@ public class CustomerInformationAPI {
         }
     }
 
-    @GetMapping("find-visitdetails-by-ordersId/{orderId}")
+    @GetMapping("find-visit-detail-by-ordersId/{orderId}")
     public ResponseObject findOrderVisitDetails(@PathVariable String orderId) {
         try {
             List<OrderVisitDetails> orderVisitDetails = orderVisitLocationDetailService.findByOrderVisitId(orderId);
@@ -276,8 +291,8 @@ public class CustomerInformationAPI {
             CancelBookingTourDTO bookingToursDto = EntityDtoUtils.convertToDto(bookingTour, CancelBookingTourDTO.class);
             bookingToursDto.setCoc(coc);
             bookingToursDto.setMoneyBack(moneyBack);
-            System.out.println(bookingToursDto.getCoc());
-            System.out.println(bookingToursDto.getMoneyBack());
+//            System.out.println(bookingToursDto.getCoc());
+//            System.out.println(bookingToursDto.getMoneyBack());
             //Gửi mail
             emailService.queueEmailCustomerCancelTour(bookingToursDto);
 
@@ -314,7 +329,6 @@ public class CustomerInformationAPI {
             long currentDateTime = currentDate.getTime();
             long departureDateTime = departureDate.getTime();
             long diffInDays = (departureDateTime - currentDateTime) / (1000 * 60 * 60 * 24);
-            System.out.println(orderHotels.getPaymentMethod());
 
             if ((orderHotels.getPaymentMethod().equals("TTTT") && orderHotels.getOrderStatus() == 0) || notFree == false) {
                 coc = 0;
@@ -343,9 +357,6 @@ public class CustomerInformationAPI {
 
             emailService.queueEmailCustomerCancelHotel(cancelOrderHotelsDto);
 
-            System.out.println(cancelOrderHotelsDto.getCoc());
-            System.out.println(cancelOrderHotelsDto.getMoneyBack());
-
             return new ResponseObject("200", "Xóa thành công", cancelOrderHotelsDto);
         } catch (Exception e) {
             return new ResponseObject("500", "Xóa thất bại", null);
@@ -372,30 +383,62 @@ public class CustomerInformationAPI {
 
     @DeleteMapping("delete-booking-trans-customer/{id}")
     public ResponseObject deleteTransOrder(@PathVariable String id) {
-//        try {
-//            OrderTransportations orderTransportations = orderTransportationService.findById(id);
-//
-//            orderTransportations.setOrderStatus(2);
-//            orderTransportationService.save(orderTransportations);
-//
-//            OrderTransportationsDto orderTransportationsDto = EntityDtoUtils.convertToDto(orderTransportations, OrderTransportationsDto.class);
-//
-//            List<OrderTransportationDetails> orderTransportationDetailsList = orderTransportationDetailsServiceAD.findByOrderId(orderTransportations.getId());
-//
-////            for (OrderTransportationDetails orderTransportationDetails : orderTransportationDetailsList) {
-////                TransportationScheduleSeats transportationScheduleSeat = orderTransportationDetails.getTransportationScheduleSeatById();
-////                if (transportationScheduleSeat != null) {
-////                    transportationScheduleSeat.setIsBooked(false);
-////                    // Lưu thay đổi vào cơ sở dữ liệu
-////                    transportationScheduleSeatService.save(transportationScheduleSeat);
-////                }
-////            }
-//
-//            emailService.queueEmailCustomerCancelTrans(orderTransportationsDto);
-//
-//            return new ResponseObject("200", "Xóa thành công", orderTransportationsDto);
-//        } catch (Exception e) {
+        try {
+            int coc;
+            BigDecimal moneyBack = null;
+
+            OrderTransportations orderTransportations = orderTransportationService.findById(id);
+            List<OrderTransportationDetails> orderTransportationDetailsList = orderVehicleDetailsService.findByOrderId(orderTransportations.getId());
+            List<OrderTransportationDetailsDto> orderTransportationDetailsDtos = EntityDtoUtils.convertToDtoList(orderTransportationDetailsList, OrderTransportationDetailsDto.class);
+
+            Date currentDate = new Date();
+            Date departureDate = orderTransportations.getTransportationSchedulesByTransportationScheduleId().getDepartureTime();
+            long currentDateTime = currentDate.getTime();
+            long departureDateTime = departureDate.getTime();
+            long diffInDays = (departureDateTime - currentDateTime) / (1000 * 60 * 60 * 24);
+
+//            System.out.println(diffInDays);
+
+            if (orderTransportations.getPaymentMethod() == 0 && orderTransportations.getOrderStatus() == 0) {
+                coc = 0;
+                moneyBack = orderTransportations.getOrderTotal();
+            } else {
+                if (diffInDays >= 2 && diffInDays <= 3) {
+                    coc = 30;
+                } else if (diffInDays >= 0 && diffInDays <= 1) {
+                    coc = 70;
+                } else {
+                    coc = 0;
+                    moneyBack = orderTransportations.getOrderTotal();
+                }
+            }
+
+            BigDecimal cocPercentage = BigDecimal.valueOf(coc);
+            BigDecimal cocAmount = (orderTransportations.getOrderTotal()).multiply(cocPercentage).divide(BigDecimal.valueOf(100));
+            moneyBack = (orderTransportations.getOrderTotal()).subtract(cocAmount);
+
+            orderTransportations.setOrderStatus(2);
+            orderTransportationService.save(orderTransportations);
+
+            List<TransportationScheduleSeats> transportationScheduleSeats = transportationSeatServiceAD.findSeatByOrderTd(orderTransportations.getId());
+            for (TransportationScheduleSeats seat : transportationScheduleSeats) {
+                seat.setIsBooked(false);
+                transportationSeatServiceAD.save(seat);
+            }
+
+            CancelOrderTransportationsDto cancelOrderTransportationsDto = EntityDtoUtils.convertToDto(orderTransportations, CancelOrderTransportationsDto.class);
+            cancelOrderTransportationsDto.setCoc(coc);
+            cancelOrderTransportationsDto.setMoneyBack(moneyBack);
+
+//            System.out.println(cancelOrderTransportationsDto.getCoc());
+//            System.out.println(cancelOrderTransportationsDto.getMoneyBack());
+
+            emailService.queueEmailCustomerCancelTrans(cancelOrderTransportationsDto);
+
+            return new ResponseObject("200", "Xóa thành công", cancelOrderTransportationsDto);
+        } catch (Exception e) {
             return new ResponseObject("500", "Xóa thất bại", null);
-//        }
+      }
     }
+
 }

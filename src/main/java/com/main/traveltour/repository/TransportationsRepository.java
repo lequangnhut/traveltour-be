@@ -1,5 +1,6 @@
 package com.main.traveltour.repository;
 
+import com.main.traveltour.entity.RoomTypes;
 import com.main.traveltour.entity.TransportationBrands;
 import com.main.traveltour.entity.Transportations;
 import org.springframework.data.domain.Page;
@@ -46,5 +47,8 @@ public interface TransportationsRepository extends JpaRepository<Transportations
             "(tr.transportationBrandId = :brandId)" +
             " and LOWER(tr.licensePlate) LIKE LOWER(CONCAT('%', :searchTerm, '%'))")
     Page<Transportations> findAllPostByBrandAndName(@Param("isActive") Boolean isActive, @Param("brandId") String brandId, Pageable pageable, String searchTerm);
+
+    @Query("SELECT tr FROM Transportations tr WHERE tr.id = :id")
+    Transportations findByTransId(String id);
 
 }

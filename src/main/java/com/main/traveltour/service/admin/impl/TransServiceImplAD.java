@@ -52,12 +52,27 @@ public class TransServiceImplAD implements TransServiceAD {
     }
 
     @Override
-    public Page<TransportationSchedules> findAllSchedulesPost(Boolean isActive, String brandId, Pageable pageable) {
-        return transportationSchedulesRepository.findScheduleByTransId(isActive, brandId, pageable);
+    public Page<TransportationSchedules> findAllSchedulesPost(Boolean isActive, String transId, Pageable pageable) {
+        return transportationSchedulesRepository.findScheduleByTransId(isActive, transId, pageable);
     }
 
     @Override
-    public Page<TransportationSchedules> findAllSchedulesPostByName(Boolean isActive, String brandId, Pageable pageable, String searchTerm) {
-        return transportationSchedulesRepository.findScheduleByTransIdByName(isActive, brandId, pageable, searchTerm);
+    public Page<TransportationSchedules> findAllSchedulesPostByName(Boolean isActive, String transId, Pageable pageable, String searchTerm) {
+        return transportationSchedulesRepository.findScheduleByTransIdByName(isActive, transId, pageable, searchTerm);
+    }
+
+    @Override
+    public TransportationBrands findByBrandId(String id) {
+        return transportationBrandsRepository.findById(id);
+    }
+
+    @Override
+    public Transportations findByTransId(String id) {
+        return transportationsRepository.findByTransId(id);
+    }
+
+    @Override
+    public TransportationSchedules findByScheduleId(String id) {
+        return transportationSchedulesRepository.findById(id);
     }
 }

@@ -10,6 +10,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class RoomTypesServiceImplAD implements RoomTypesServiceAD {
@@ -30,5 +31,15 @@ public class RoomTypesServiceImplAD implements RoomTypesServiceAD {
     @Override
     public Page<RoomTypes> findByHotelIdAndName(Integer isActive, String id, Pageable pageable, String searchTerm) {
         return roomTypesRepository.findPostByHotelIdByName(isActive, id, pageable, searchTerm);
+    }
+
+    @Override
+    public RoomTypes findById(String id) {
+        return roomTypesRepository.findByRoomId(id);
+    }
+
+    @Override
+    public RoomTypes save(RoomTypes roomTypes) {
+        return roomTypesRepository.save(roomTypes);
     }
 }

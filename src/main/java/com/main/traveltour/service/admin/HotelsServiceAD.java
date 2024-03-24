@@ -16,4 +16,6 @@ public interface HotelsServiceAD {
     Page<Hotels> findAllHotelPostByName(Boolean isAccepted, Pageable pageable, String searchterm);
 
     Hotels findById(String id);
+
+    Hotels save (Hotels hotels);
 }
