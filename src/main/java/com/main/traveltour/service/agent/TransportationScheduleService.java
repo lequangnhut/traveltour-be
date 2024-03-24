@@ -21,9 +21,9 @@ public interface TransportationScheduleService {
 
     List<TransportationSchedules> getAllFromLocationAndToLocation();
 
-    Page<TransportationSchedules> findAllSchedules(String transportBrandId, Pageable pageable);
+    Page<TransportationSchedules> findAllScheduleAgent(String transportBrandId, Pageable pageable);
 
-    Page<TransportationSchedules> findAllSchedulesWitchSearch(String transportBrandId, String searchTerm, Pageable pageable);
+    Page<TransportationSchedules> findAllScheduleAgentWitchSearch(String transportBrandId, String searchTerm, Pageable pageable);
 
     Page<TransportationSchedules> findAllTransportScheduleCus(Pageable pageable, String brandId);
 

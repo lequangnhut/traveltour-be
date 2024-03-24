@@ -51,8 +51,8 @@ public class TransportSchedulesAPI {
         Sort sort = sortDir.equalsIgnoreCase(Sort.Direction.ASC.name()) ? Sort.by(sortBy).ascending() : Sort.by(sortBy).descending();
 
         Page<TransportationSchedules> transportationBrands = searchTerm == null || searchTerm.isEmpty()
-                ? transportationScheduleService.findAllSchedules(transportBrandId, PageRequest.of(page, size, sort))
-                : transportationScheduleService.findAllSchedulesWitchSearch(transportBrandId, searchTerm, PageRequest.of(page, size, sort));
+                ? transportationScheduleService.findAllScheduleAgent(transportBrandId, PageRequest.of(page, size, sort))
+                : transportationScheduleService.findAllScheduleAgentWitchSearch(transportBrandId, searchTerm, PageRequest.of(page, size, sort));
         return new ResponseEntity<>(transportationBrands, HttpStatus.OK);
     }
 
@@ -156,32 +156,12 @@ public class TransportSchedulesAPI {
 
     @PutMapping("/agent/transportation-schedules/update-schedule")
     private void updateSchedule(@RequestBody TransportationSchedulesDto scheduleDto) {
-        String transportId = scheduleDto.getTransportationId();
         String scheduleId = scheduleDto.getId();
 
-        Optional<Transportations> transportationsOptional = transportationService.findTransportById(transportId);
-
-        if (transportationsOptional.isPresent()) {
-            Transportations transportations = transportationsOptional.get();
-            int totalSeats = transportations.getAmountSeat();
-
-            TransportationSchedules schedules = EntityDtoUtils.convertToEntity(scheduleDto, TransportationSchedules.class);
-            schedules.setId(scheduleId);
-            schedules.setUnitPrice(ReplaceUtils.replacePrice(scheduleDto.getPriceFormat()));
-            transportationScheduleService.save(schedules);
-            transportScheduleSeatService.deleteAll(scheduleId);
-
-            if (!scheduleDto.getTripType()) {
-                for (int i = 1; i <= totalSeats; i++) {
-                    TransportationScheduleSeats scheduleSeats = new TransportationScheduleSeats();
-                    scheduleSeats.setSeatNumber(i);
-                    scheduleSeats.setTransportationScheduleId(scheduleId);
-                    scheduleSeats.setIsBooked(Boolean.FALSE);
-
-                    transportScheduleSeatService.save(scheduleSeats);
-                }
-            }
-        }
+        TransportationSchedules schedules = EntityDtoUtils.convertToEntity(scheduleDto, TransportationSchedules.class);
+        schedules.setId(scheduleId);
+        schedules.setUnitPrice(ReplaceUtils.replacePrice(scheduleDto.getPriceFormat()));
+        transportationScheduleService.save(schedules);
     }
 
     @GetMapping("/agent/transportation-schedules/delete-schedule/{scheduleId}")
@@ -189,9 +169,8 @@ public class TransportSchedulesAPI {
         TransportationSchedules schedules = transportationScheduleService.findBySchedulesId(scheduleId);
         schedules.setDateDeleted(new Timestamp(System.currentTimeMillis()));
         schedules.setIsActive(Boolean.FALSE);
-        schedules.setIsStatus(3);
+        schedules.setIsStatus(4);
         transportationScheduleService.save(schedules);
-        transportScheduleSeatService.deleteAll(scheduleId);
     }
 
     private static boolean isOverlap(LocalDateTime startA, LocalDateTime endA, LocalDateTime startB, LocalDateTime endB) {

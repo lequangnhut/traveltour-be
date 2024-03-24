@@ -1,6 +1,7 @@
 package com.main.traveltour.entity;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -9,7 +10,9 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
 @Getter
 @Setter
@@ -68,4 +71,9 @@ public class Transportations {
     @JoinColumn(name = "transportation_type_id", referencedColumnName = "id", nullable = false, insertable = false, updatable = false)
     @JsonBackReference
     private TransportationTypes transportationTypesByTransportationTypeId;
+
+    @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @JoinTable(name = "transport_add_utilities", joinColumns = {@JoinColumn(name = "transportation_id", referencedColumnName = "id")}, inverseJoinColumns = {@JoinColumn(name = "transportation_utilities_id", referencedColumnName = "id")})
+    @JsonIgnoreProperties("transportUtilities")
+    private List<TransportUtilities> transportUtilities = new ArrayList<>();
 }

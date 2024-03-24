@@ -53,19 +53,20 @@ public class OrderTransportAPI {
     @Autowired
     private OrderTransportDetailService orderTransportDetailService;
 
-    @GetMapping("/agent/order-transport/find-all-order-transport/{brandId}")
+    @GetMapping("/agent/order-transport/find-all-order-transport/{brandId}/{scheduleId}")
     private ResponseEntity<Page<OrderTransportations>> findAllTransportBrand(@RequestParam(defaultValue = "0") int page,
                                                                              @RequestParam(defaultValue = "10") int size,
                                                                              @RequestParam(defaultValue = "id") String sortBy,
                                                                              @RequestParam(defaultValue = "asc") String sortDir,
                                                                              @RequestParam(required = false) String searchTerm,
-                                                                             @PathVariable String brandId) {
+                                                                             @PathVariable String brandId,
+                                                                             @PathVariable String scheduleId) {
         Sort sort = sortDir.equalsIgnoreCase(Sort.Direction.ASC.name())
                 ? Sort.by(sortBy).ascending() : Sort.by(sortBy).descending();
 
         Page<OrderTransportations> orderTransportations = searchTerm == null || searchTerm.isEmpty()
-                ? orderTransportService.findAllOrderTransport(brandId, PageRequest.of(page, size, sort))
-                : orderTransportService.findAllOrderTransportWithSearch(brandId, searchTerm, PageRequest.of(page, size, sort));
+                ? orderTransportService.findAllOrderTransportAgent(brandId, scheduleId, PageRequest.of(page, size, sort))
+                : orderTransportService.findAllOrderTransportAgentWithSearch(brandId, scheduleId, searchTerm, PageRequest.of(page, size, sort));
         return new ResponseEntity<>(orderTransportations, HttpStatus.OK);
     }
 

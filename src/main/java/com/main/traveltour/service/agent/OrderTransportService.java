@@ -12,7 +12,7 @@ public interface OrderTransportService {
 
     OrderTransportations save(OrderTransportations orderTransportations);
 
-    Page<OrderTransportations> findAllOrderTransport(String transportBrandId, Pageable pageable);
+    Page<OrderTransportations> findAllOrderTransportAgent(String transportBrandId, String scheduleId, Pageable pageable);
 
-    Page<OrderTransportations> findAllOrderTransportWithSearch(String transportBrandId, String searchTerm, Pageable pageable);
+    Page<OrderTransportations> findAllOrderTransportAgentWithSearch(String transportBrandId, String scheduleId, String searchTerm, Pageable pageable);
 }

@@ -12,30 +12,30 @@ import org.springframework.stereotype.Service;
 public class OrderTransportServiceImpl implements OrderTransportService {
 
     @Autowired
-    private OrderTransportationsRepository orderTransportationsRepository;
+    private OrderTransportationsRepository repo;
 
     @Override
     public String findMaxCode() {
-        return orderTransportationsRepository.findMaxCode();
+        return repo.findMaxCode();
     }
 
     @Override
     public OrderTransportations findById(String id) {
-        return orderTransportationsRepository.findById(id);
+        return repo.findById(id);
     }
 
     @Override
     public OrderTransportations save(OrderTransportations orderTransportations) {
-        return orderTransportationsRepository.save(orderTransportations);
+        return repo.save(orderTransportations);
     }
 
     @Override
-    public Page<OrderTransportations> findAllOrderTransport(String transportBrandId, Pageable pageable) {
-        return orderTransportationsRepository.findAllOrderTransport(transportBrandId, pageable);
+    public Page<OrderTransportations> findAllOrderTransportAgent(String transportBrandId, String scheduleId, Pageable pageable) {
+        return repo.findAllOrderTransportAgent(transportBrandId, scheduleId, pageable);
     }
 
     @Override
-    public Page<OrderTransportations> findAllOrderTransportWithSearch(String transportBrandId, String searchTerm, Pageable pageable) {
-        return orderTransportationsRepository.findAllOrderTransportWithSearch(transportBrandId, searchTerm, pageable);
+    public Page<OrderTransportations> findAllOrderTransportAgentWithSearch(String transportBrandId, String scheduleId, String searchTerm, Pageable pageable) {
+        return repo.findAllOrderTransportAgentWithSearch(transportBrandId, scheduleId, searchTerm, pageable);
     }
 }

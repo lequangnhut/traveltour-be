@@ -51,13 +51,13 @@ public class TransportationScheduleServiceImpl implements TransportationSchedule
     }
 
     @Override
-    public Page<TransportationSchedules> findAllSchedules(String transportBrandId, Pageable pageable) {
-        return repo.findAllSchedules(transportBrandId, pageable);
+    public Page<TransportationSchedules> findAllScheduleAgent(String transportBrandId, Pageable pageable) {
+        return repo.findAllSchedulesAgent(transportBrandId, pageable);
     }
 
     @Override
-    public Page<TransportationSchedules> findAllSchedulesWitchSearch(String transportBrandId, String searchTerm, Pageable pageable) {
-        return repo.findAllSchedulesWithSearch(transportBrandId, searchTerm, pageable);
+    public Page<TransportationSchedules> findAllScheduleAgentWitchSearch(String transportBrandId, String searchTerm, Pageable pageable) {
+        return repo.findAllSchedulesAgentWithSearch(transportBrandId, searchTerm, pageable);
     }
 
     @Override

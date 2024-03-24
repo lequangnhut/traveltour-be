@@ -21,8 +21,8 @@ public interface OrderTransportationsRepository extends JpaRepository<OrderTrans
             "JOIN ort.transportationSchedulesByTransportationScheduleId tsc " +
             "JOIN tsc.transportationsByTransportationId t " +
             "JOIN t.transportationBrandsByTransportationBrandId tbr " +
-            "WHERE tbr.id = :transportBrandId AND ort.orderStatus = 0")
-    Page<OrderTransportations> findAllOrderTransport(@Param("transportBrandId") String transportBrandId, Pageable pageable);
+            "WHERE tbr.id = :transportBrandId AND tsc.id = :scheduleId AND ort.orderStatus = 0")
+    Page<OrderTransportations> findAllOrderTransportAgent(@Param("transportBrandId") String transportBrandId, @Param("scheduleId") String scheduleId, Pageable pageable);
 
     @Query("SELECT ort FROM OrderTransportations ort " +
             "JOIN ort.transportationSchedulesByTransportationScheduleId tsc " +
@@ -35,8 +35,8 @@ public interface OrderTransportationsRepository extends JpaRepository<OrderTrans
             "OR LOWER(ort.customerPhone) LIKE LOWER(CONCAT('%', :searchTerm, '%')) " +
             "OR LOWER(ort.customerEmail) LIKE LOWER(CONCAT('%', :searchTerm, '%')) " +
             "OR LOWER(CAST(ort.dateCreated AS STRING) ) LIKE LOWER(CONCAT('%', :searchTerm, '%')) " +
-            "AND t.id = :transportBrandId AND ort.orderStatus = 0")
-    Page<OrderTransportations> findAllOrderTransportWithSearch(@Param("transportBrandId") String transportBrandId, @Param("searchTerm") String searchTerm, Pageable pageable);
+            "AND t.id = :transportBrandId AND tsc.id = :scheduleId AND ort.orderStatus = 0")
+    Page<OrderTransportations> findAllOrderTransportAgentWithSearch(@Param("transportBrandId") String transportBrandId, @Param("scheduleId") String scheduleId, @Param("searchTerm") String searchTerm, Pageable pageable);
 
     List<OrderTransportations> findAllByTransportationScheduleId(String transportationScheduleId);
 

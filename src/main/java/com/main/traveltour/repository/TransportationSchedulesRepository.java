@@ -42,8 +42,9 @@ public interface TransportationSchedulesRepository extends JpaRepository<Transpo
     @Query("SELECT sc FROM TransportationSchedules sc " +
             "JOIN sc.transportationsByTransportationId tp " +
             "JOIN tp.transportationBrandsByTransportationBrandId tpb " +
-            "WHERE tpb.id = :transportBrandId AND sc.isStatus != 4 AND sc.isStatus != 3 AND sc.isActive = true")
-    Page<TransportationSchedules> findAllSchedules(@Param("transportBrandId") String transportBrandId, Pageable pageable);
+            "WHERE tpb.id = :transportBrandId AND sc.isActive = true " +
+            "ORDER BY sc.isStatus ASC")
+    Page<TransportationSchedules> findAllSchedulesAgent(@Param("transportBrandId") String transportBrandId, Pageable pageable);
 
     @Query("SELECT sc FROM TransportationSchedules sc " +
             "JOIN sc.transportationsByTransportationId tp " +
@@ -52,8 +53,8 @@ public interface TransportationSchedulesRepository extends JpaRepository<Transpo
             "OR LOWER(sc.toLocation) LIKE LOWER(CONCAT('%', :searchTerm, '%')) " +
             "OR LOWER(sc.fromLocation) LIKE LOWER(CONCAT('%', :searchTerm, '%')) " +
             "OR LOWER(sc.id) LIKE LOWER(CONCAT('%', :searchTerm, '%')) " +
-            "AND tpb.id = :transportBrandId AND sc.isStatus != 4 AND sc.isStatus != 3 AND sc.isActive = true")
-    Page<TransportationSchedules> findAllSchedulesWithSearch(@Param("transportBrandId") String transportBrandId, @Param("searchTerm") String searchTerm, Pageable pageable);
+            "AND tpb.id = :transportBrandId AND sc.isActive = true")
+    Page<TransportationSchedules> findAllSchedulesAgentWithSearch(@Param("transportBrandId") String transportBrandId, @Param("searchTerm") String searchTerm, Pageable pageable);
 
 
     @Query(value = "SELECT ts.* " +
