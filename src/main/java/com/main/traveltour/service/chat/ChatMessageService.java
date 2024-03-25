@@ -11,7 +11,7 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 public class ChatMessageService {
-    private final ChatMessageRepository repository;
+    private final ChatMessageRepository chatMessageRepository;
     private final ChatRoomService chatRoomService;
     private final ChatMessageRepositoryCustom chatMessageRepositoryCustom;
 
@@ -26,7 +26,11 @@ public class ChatMessageService {
 
     public List<ChatMessage> findChatMessages(String senderId, String recipientId) {
         var chatId = chatRoomService.getChatRoomId(senderId, recipientId, false);
-        return chatId.map(repository::findByChatId).orElse(new ArrayList<>());
+        return chatId.map(chatMessageRepository::findByChatId).orElse(new ArrayList<>());
+    }
+
+    public Integer getCountChatMessageBySenderIdAndRecipientId(String senderId, String recipientId) {
+        return chatMessageRepository.countBySenderIdAndRecipientIdIs(senderId, recipientId);
     }
 
     public void updateStatusMessengerAgency (String chatId, String agencyId){

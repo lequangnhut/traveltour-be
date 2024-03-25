@@ -1,5 +1,6 @@
 package com.main.traveltour.restcontroller.chat;
 
+import com.main.traveltour.dto.chat.UpdateMessageDto;
 import com.main.traveltour.dto.chat.UserChatDto;
 import com.main.traveltour.dto.chat.UserChatResponseDto;
 import com.main.traveltour.dto.chat.UserDataDto;
@@ -9,11 +10,13 @@ import com.main.traveltour.repository.ChatMessageRepository;
 import com.main.traveltour.repository.UserChatRepository;
 import com.main.traveltour.service.UsersService;
 import com.main.traveltour.service.agent.AgenciesService;
+import com.main.traveltour.service.chat.ChatMessageRepositoryCustom;
 import com.main.traveltour.service.chat.ChatMessageService;
 import com.main.traveltour.service.chat.ChatRoomService;
 import com.main.traveltour.service.chat.UserChatService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.messaging.Message;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.messaging.handler.annotation.SendTo;
@@ -21,9 +24,7 @@ import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @RestController
@@ -82,147 +83,58 @@ public class UserChatController {
         }
     }
 
-    @MessageMapping("/chat.findStaffSupportOnline")
-    @SendTo("/user/public")
-    public List<UserChat> findStaffSupportOnline() {
-
-        return userChatService.findStaffSupportOnline();
-    }
-
     /**
      * Phương thức tìm lịch sử nhắn tin của tất cả khách hàng
      * @param userDataDto thông tin của đối tác
-     * @return danh sách khách hàng
+     * Trả về danh sách người dùng đã nhắn tin
      */
-    @MessageMapping("/chat.findUsersWithChatHistoryAdmin")
-    @SendTo("/user/admin")
-    public List<UserChatResponseDto> findUsersWithChatHistory(@Payload UserDataDto userDataDto) {
-        List<UserChatResponseDto> userChatResponseDtos = new ArrayList<>();
+    @MessageMapping("{userId}/chat.findUsersChat")
+    public void findUsersWithChatHistory(@Payload UserDataDto userDataDto) {
+        List<UserChatResponseDto> userChatResponseDto = new ArrayList<>();
 
-        if (userDataDto.getUserId() != null && userDataDto.getRole() != null) {
-            Optional<UserChat> userOptional = userChatService.findByUserId(userDataDto.getUserId());
+        if(userDataDto.getUserId() != null && userDataDto.getRole() != null) {
+            List<ChatRooms> listChatRoom = chatRoomService.findChatRoomsByRecipientId(userDataDto.getUserId());
+            for (ChatRooms room : listChatRoom) {
+                UserChat getSender = userChatService.findByUserId(room.getSenderId()).get();
+                ChatMessage chatNewMessage = chatMessageRepository.findFirstByChatIdOrderByTimestampDesc(room.getChatId());
+                Integer countMessageUnRead = chatMessageRepository.countByChatIdAndRecipientIdAndStatusIs(room.getChatId(), room.getRecipientId(), false);
 
-            if (userOptional.isPresent()) {
-                List<ChatRooms> chatRooms = chatRoomService.findChatRoomsByRecipientId(String.valueOf(userDataDto.getUserId()));
-                List<String> senderIds = chatRooms.stream()
-                        .map(ChatRooms::getSenderId)
-                        .collect(Collectors.toList());
-                List<UserChat> userChats = userChatService.findAllByUserIds(senderIds);
+                UserChatResponseDto user = UserChatResponseDto.builder()
+                        .id(getSender.getId())
+                        .userId(getSender.getUserId())
+                        .avatar(getSender.getAvatar())
+                        .fullName(getSender.getFullName())
+                        .status(getSender.getStatus())
+                        .lastUpdated(getSender.getLastUpdated())
+                        .role(getSender.getRole())
+                        .countMessageUnread(countMessageUnRead)
+                        .newMessage(chatNewMessage.getContent())
+                        .timeMessage(chatNewMessage.getTimestamp())
+                        .statusMessage(chatNewMessage.getStatus())
+                        .build();
 
-                for (UserChat userChat : userChats) {
-                    Integer countUnreadMessages = chatMessageRepository.countByChatIdAndRecipientIdAndStatusIs(chatRooms.get(0).getChatId(), chatRooms.get(0).getRecipientId(), false);
-                    List<ChatMessage> newChatMessage = chatMessageRepository.findByChatIdOrderByTimestampDesc(chatRooms.get(0).getChatId());
-                    boolean statusMessage = countUnreadMessages > 0;
-
-                    UserChatResponseDto userChatResponseDto = UserChatResponseDto.builder()
-                            .id(userChat.getId())
-                            .userId(userChat.getUserId())
-                            .fullName(userChat.getFullName())
-                            .status(userChat.getStatus())
-                            .avatar(userChat.getAvatar())
-                            .lastUpdated(userChat.getLastUpdated())
-                            .role(userChat.getRole())
-                            .countMessageUnread(countUnreadMessages)
-                            .statusMessage(statusMessage)
-                            .newMessage(newChatMessage.get(0).getContent())
-                            .timeMessage(newChatMessage.get(0).getTimestamp())
-                            .build();
-
-                    userChatResponseDtos.add(userChatResponseDto);
-                }
+                userChatResponseDto.add(user);
             }
-        }
-        return userChatResponseDtos;
-    }
-
-    @MessageMapping("/chat.updateStatusMessengerAgency")
-    public void updateStatusMessengerAgency(@Payload UserDataDto userDataDto) {
-
-        List<UserChatResponseDto> userChatResponseDtos = new ArrayList<>();
-
-        if (userDataDto.getUserId() != null && userDataDto.getRole() != null) {
-            Optional<UserChat> userOptional = userChatService.findByUserId(userDataDto.getUserId());
-
-            if (userOptional.isPresent()) {
-                List<ChatRooms> chatRooms = chatRoomService.findChatRoomsByRecipientId(String.valueOf(userDataDto.getUserId()));
-                chatMessageService.updateStatusMessengerAgency(chatRooms.get(0).getChatId(), userOptional.get().getUserId());
-
-                List<String> senderIds = chatRooms.stream()
-                        .map(ChatRooms::getSenderId)
-                        .collect(Collectors.toList());
-                List<UserChat> userChats = userChatService.findAllByUserIds(senderIds);
-
-                for (UserChat userChat : userChats) {
-                    Integer countUnreadMessages = chatMessageRepository.countByChatIdAndRecipientIdAndStatusIs(chatRooms.get(0).getChatId(), chatRooms.get(0).getRecipientId(),false);
-                    boolean statusMessage = countUnreadMessages > 0;
-
-                    List<ChatMessage> newChatMessage = chatMessageRepository.findByChatIdOrderByTimestampDesc(chatRooms.get(0).getChatId());
-
-                    UserChatResponseDto userChatResponseDto = UserChatResponseDto.builder()
-                            .id(userChat.getId())
-                            .userId(userChat.getUserId())
-                            .fullName(userChat.getFullName())
-                            .status(userChat.getStatus())
-                            .avatar(userChat.getAvatar())
-                            .lastUpdated(userChat.getLastUpdated())
-                            .role(userChat.getRole())
-                            .countMessageUnread(countUnreadMessages)
-                            .statusMessage(statusMessage)
-                            .newMessage(newChatMessage.get(0).getContent())
-                            .timeMessage(newChatMessage.get(0).getTimestamp())
-                            .build();
-
-                    userChatResponseDtos.add(userChatResponseDto);
+            userChatResponseDto.sort(new Comparator<UserChatResponseDto>() {
+                @Override
+                public int compare(UserChatResponseDto o1, UserChatResponseDto o2) {
+                    return o2.getTimeMessage().compareTo(o1.getTimeMessage());
                 }
-            }
+            });
             messagingTemplate.convertAndSendToUser(
-                    userDataDto.getUserId(), "/queue/updateStatusMessengerAgency",
-                    userChatResponseDtos
+                    userDataDto.getUserId(), "/chat/findUsersChat",
+                    userChatResponseDto
             );
         }
     }
 
-    @MessageMapping("/chat.findUsersWithChatHistoryCustomer")
-    @SendTo("/user/customer")
-    public List<UserChatResponseDto> findUsersWithChatHistoryCustomer(@Payload UserDataDto userDataDto) {
-        List<UserChatResponseDto> userChatResponseDtos = new ArrayList<>();
-        if (userDataDto.getUserId() != null && userDataDto.getRole() != null) {
-            Optional<UserChat> userOptional = userChatService.findByUserId(userDataDto.getUserId());
-
-            if (userOptional.isPresent()) {
-                List<ChatRooms> chatRooms = chatRoomService.findChatRoomsByRecipientId(String.valueOf(userDataDto.getUserId()));
-                chatMessageService.updateStatusMessengerAgency(chatRooms.get(0).getChatId(), userOptional.get().getUserId());
-
-                List<String> senderIds = chatRooms.stream()
-                        .map(ChatRooms::getSenderId)
-                        .collect(Collectors.toList());
-                List<UserChat> userChats = userChatService.findAllByUserIds(senderIds);
-
-                for (UserChat userChat : userChats) {
-                    Integer countUnreadMessages = chatMessageRepository.countByChatIdAndRecipientIdAndStatusIs(chatRooms.get(0).getChatId(), chatRooms.get(0).getRecipientId(),false);
-                    boolean statusMessage = countUnreadMessages > 0;
-
-                    List<ChatMessage> newChatMessage = chatMessageRepository.findByChatIdOrderByTimestampDesc(chatRooms.get(0).getChatId());
-
-                    UserChatResponseDto userChatResponseDto = UserChatResponseDto.builder()
-                            .id(userChat.getId())
-                            .userId(userChat.getUserId())
-                            .fullName(userChat.getFullName())
-                            .status(userChat.getStatus())
-                            .avatar(userChat.getAvatar())
-                            .lastUpdated(userChat.getLastUpdated())
-                            .role(userChat.getRole())
-                            .countMessageUnread(countUnreadMessages)
-                            .statusMessage(statusMessage)
-                            .newMessage(newChatMessage.get(0).getContent())
-                            .timeMessage(newChatMessage.get(0).getTimestamp())
-                            .build();
-
-                    userChatResponseDtos.add(userChatResponseDto);
-                }
-            }
+    @MessageMapping("{userId}/chat.updateStatusMessenger")
+    public void updateStatusMessengerAgency(@Payload UpdateMessageDto updateMessageDto) {
+        System.out.println(updateMessageDto);
+        if(updateMessageDto.getSenderId() != null && updateMessageDto.getRecipientId() != null) {
+            ChatRooms chatRooms = chatRoomService.findChatRoomsBySenderIdAndRecipientId(updateMessageDto.getSenderId(), updateMessageDto.getRecipientId());
+            chatMessageService.updateStatusMessengerAgency(chatRooms.getChatId(), updateMessageDto.getRecipientId());
         }
-        return userChatResponseDtos;
     }
 
     @MessageMapping("/chat.findAgencyId")
@@ -230,5 +142,7 @@ public class UserChatController {
     public Optional<UserChat> findByAgencyId(@Payload("agencyId") Integer agencyId) {
         return userChatService.findByUserId(String.valueOf(agencyId));
     }
+
+
 
 }

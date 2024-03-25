@@ -28,4 +28,13 @@ public class ChatMessageController {
         return ResponseEntity
                 .ok(chatMessageService.findChatMessages(senderId, recipientId));
     }
+
+    @GetMapping("/messages/{senderId}/{recipientId}/checkNoChatMessage")
+    public ResponseObject checkNoChatMessage(@PathVariable String senderId,
+                                             @PathVariable String recipientId) {
+        Integer listChatMessage = chatMessageService.getCountChatMessageBySenderIdAndRecipientId(senderId, recipientId);
+
+        return new ResponseObject("200", "OK", listChatMessage);
+
+    }
 }
