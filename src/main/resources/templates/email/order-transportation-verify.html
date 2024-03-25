@@ -1,5 +1,5 @@
 <!doctype html>
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
 
 <head>
     <title></title>
@@ -10,14 +10,6 @@
     <style type="text/css">
         #outlook a {
             padding: 0;
-        }
-
-        .ReadMsgBody {
-            width: 100%;
-        }
-
-        .ExternalClass {
-            width: 100%;
         }
 
         .ExternalClass * {
@@ -278,19 +270,24 @@
                                                 <td style="word-wrap:break-word;padding:0px;"
                                                     align="center">
                                                     <table role="presentation" cellpadding="0" cellspacing="0"
-                                                           style="width:100%; border-collapse:collapse;border-spacing:0px;" border="0">
+                                                           style="width:100%; border-collapse:collapse;border-spacing:0px;"
+                                                           border="0">
                                                         <tbody>
                                                         <tr>
-                                                            <td style="width:30%" align="left" >
-                                                                <img src="https://i.imgur.com/NDxqwA6.png" width="100%" editable="true" border="0" alt="" />
+                                                            <td style="width:30%" align="left">
+                                                                <img src="https://i.imgur.com/NDxqwA6.png" width="100%"
+                                                                     editable="true" border="0" alt=""/>
                                                             </td>
                                                             <td style="width:70%;" align="right">
                                                                 <p class="link" style="color:#000001; font-size:small; margin: 0; text-decoration:none;
-                                                                   font-family:TW-Averta-Regular, Averta, Helvetica, Arial, sans-serif !important;">Tourism and Travel services</p>
+                                                                   font-family:TW-Averta-Regular, Averta, Helvetica, Arial, sans-serif !important;">
+                                                                    Tourism and Travel services</p>
                                                                 <p class="link" style="color:#000001; font-size:small; margin: 0; text-decoration:none;
-                                                                    font-family:TW-Averta-Regular, Averta, Helvetica, Arial, sans-serif !important;">Website: traveltour.ser.com</p>
+                                                                    font-family:TW-Averta-Regular, Averta, Helvetica, Arial, sans-serif !important;">
+                                                                    Website: traveltour.ser.com</p>
                                                                 <p class="link" style="color:#000001; font-size:small; margin: 0; text-decoration:none;
-                                                                    font-family:TW-Averta-Regular, Averta, Helvetica, Arial, sans-serif !important;">Hotline: 1900 2000</p>
+                                                                    font-family:TW-Averta-Regular, Averta, Helvetica, Arial, sans-serif !important;">
+                                                                    Hotline: 1900 2000</p>
                                                             </td>
                                                         </tr>
                                                         </tbody>
@@ -302,7 +299,10 @@
                                     </div>
                                     <table width="100%" border="0" cellspacing="0" cellpadding="0">
                                         <tr>
-                                            <td class="separator" style="padding-top: 20px; border-bottom:2px solid #706f6f; font-size:0pt; line-height:0pt;">&nbsp;</td>
+                                            <td class="separator"
+                                                style="padding-top: 20px; border-bottom:2px solid #706f6f; font-size:0pt; line-height:0pt;">
+                                                &nbsp;
+                                            </td>
                                         </tr>
                                     </table>
                                     <!--[if mso | IE]>
@@ -381,22 +381,25 @@
                                                 <td style="word-wrap:break-word;padding:0px;"
                                                     align="center">
                                                     <table role="presentation" cellpadding="0" cellspacing="0"
-                                                           style="width:100%; border-collapse:collapse;border-spacing:0px;" border="0">
+                                                           style="width:100%; border-collapse:collapse;border-spacing:0px;"
+                                                           border="0">
                                                         <tbody>
                                                         <tr>
-                                                            <td style="width:50%;font-weight: bolder;padding-top: 10px;" align="left" >
+                                                            <td style="width:50%;font-weight: bolder;padding-top: 10px;"
+                                                                align="left">
                                                                 Mã booking:
                                                             </td>
-                                                            <td style="width:50%;font-weight: bolder;padding-top: 10px;" align="right" >
+                                                            <td style="width:50%;font-weight: bolder;padding-top: 10px;"
+                                                                align="right">
                                                                 Ngày booking:
                                                             </td>
                                                         </tr>
                                                         <tr>
                                                             <td style="width:50%; font-style: italic;" align="left">
-                                                                DH01532662
+                                                                <span th:text="${bookingId}">DH01532662</span>
                                                             </td>
                                                             <td style="width:50%; font-style: italic;" align="right">
-                                                                24/02/2024
+                                                                <span th:text="${dateTimeBooking}">24/02/2024</span>
                                                             </td>
                                                         </tr>
                                                         <tr>
@@ -416,221 +419,182 @@
                                             </tbody>
                                         </table>
                             </tr>
-                                            <tr>
-                                                <td style="word-wrap:break-word;font-size:0px;padding:0px;"
-                                                    align="left">
-                                                    <div style="cursor:auto;color:#5d7079;font-family:TW-Averta-Regular, Averta, Helvetica, Arial;font-size:16px;line-height:24px;letter-spacing:0.4px;text-align:left;">
-                                                        <p></p>
-                                                        <p style="color:#000000; font-family:TW-Averta-Regular, Averta, Helvetica, Arial; font-size:x-large;
+                            <tr>
+                                <td style="word-wrap:break-word;font-size:0px;padding:0px;"
+                                    align="left">
+                                    <div style="cursor:auto;color:#5d7079;font-family:TW-Averta-Regular, Averta, Helvetica, Arial;font-size:16px;line-height:24px;letter-spacing:0.4px;text-align:left;">
+                                        <p></p>
+                                        <p style="color:#000000; font-family:TW-Averta-Regular, Averta, Helvetica, Arial; font-size:x-large;
                                  line-height:28px; text-align:center; margin-bottom:10px;">
-                                                            <strong style="color: #63ab45">XÁC NHẬN BOOKING</strong>
-                                                        </p>
+                                            <strong style="color: #63ab45">XÁC NHẬN BOOKING</strong>
+                                        </p>
 
-                                                        <p style="text-align: justify; margin-bottom: 5px">Xin chào,<strong>[tên người dùng]!</strong></p>
+                                        <p style="text-align: justify; margin-bottom: 5px">Xin chào,
+                                            <strong th:text="${customerName}">[tên người dùng]!</strong></p>
 
-                                                        <p style="text-align: justify; margin-bottom: 5px">
-                                                            Chúng tôi vừa nhận được thông báo bạn đã booking
-                                                            <strong>[loại dịch vụ]</strong> vào lúc
-                                                            <strong>[thời gian]</strong> của TravelTour.
-                                                        </p>
+                                        <p style="text-align: justify; margin-bottom: 5px">
+                                            Chúng tôi vừa nhận được thông báo bạn đã đặt
+                                            xe vào lúc <strong th:text="${dateTimeBooking}">[thời gian]</strong>
+                                            của TravelTour.
+                                        </p>
 
-                                                        <p style="color: #ed0000; font-family:TW-Averta-Regular, Averta, Helvetica, Arial;
-                                                                  line-height:28px; font-weight: bolder; margin: 0;">Thông tin người mua:
-                                                        </p>
-                                                        <table role="presentation" cellpadding="0" cellspacing="0"
-                                                               style="width:100%; border-collapse:collapse;border-spacing:0px;" border="0">
-                                                            <tbody>
-                                                            <tr>
-                                                                <td style="text-align:justify; width:80%;" align="left" >
-                                                                    <strong>Họ tên: </strong> Nguyễn Ngọc Thanh Uyên
-                                                                </td>
-                                                                <td style="text-align:right; width: 20%;" align="right" rowspan="3" valign="top">
-                                                                    <img src="https://api.qrserver.com/v1/create-qr-code/?size=120x120&data=[Dữ Liệu QR Code]"
-                                                                         alt="QR Code" style="width: 80%">
-                                                                </td>
-                                                            </tr>
-                                                            <tr>
-                                                                <td style="text-align:justify; width:80%;" align="left">
-                                                                    <strong>Công ty: </strong>Mường Thanh Luxury
-                                                                </td>
-                                                            </tr>
-                                                            <tr>
-                                                                <td style="width:80%;" align="left">
-                                                                    <strong>MST: </strong>125636598745
-                                                                </td>
-                                                            </tr>
-                                                            <tr>
-                                                                <td style="text-align:justify; width:100%;" align="left" colspan="2">
-                                                                    <strong>Địa chỉ: </strong>12 Trần Phú, Cái Khế, Ninh Kiều, Cần Thơ
-                                                                </td>
-                                                            </tr>
-                                                            <tr>
-                                                                <td style="text-align:justify; width:100%;" align="left" colspan="2">
-                                                                    <strong>HT thanh toán: </strong>Chuyển khoản VNPay
-                                                                </td>
-                                                            </tr>
-                                                            <tr>
-                                                                <td style="text-align:justify; width:100%;" align="left" colspan="2">
-                                                                    <strong>STK: </strong>125636985475
-                                                                </td>
-                                                            </tr>
-                                                            </tbody>
-                                                        </table>
-                                                        <p style="color: #ed0000; font-family:TW-Averta-Regular, Averta, Helvetica, Arial;
-                                                                  line-height:28px; font-weight: bolder; margin: 0;">Thông tin đơn hàng:
-                                                        </p>
-                                                        <ul style="margin: 0; padding-left: 20px;">
-                                                            <li><strong>Hãng xe: </strong>Futa Bus</li>
-                                                            <li><strong>Mã chuyến đi: </strong>TSD00635</li>
-                                                            <li><strong>Số ghế bạn đặt: </strong>4</li>
-                                                            <li><strong>Điểm đi - đến: </strong>Cần Thơ - Hồ Chí Minh</li>
-                                                            <li><strong>Thời gian xuất phát: </strong>02/01/2024 14:30:00</li>
-                                                            <li><strong>Thành tiền: </strong> <br> 7.000.000 VND - Bảy triệu đồng.</li>
-                                                            <li><strong>Thuế VAT (8%): </strong> <br> Đã bao gồm trong giá tour.</li>
-                                                        </ul>
-
-                                                        <p style="color: #ed0000; font-family:TW-Averta-Regular, Averta, Helvetica, Arial;
-                                                                  line-height:28px; font-weight: bolder; margin: 0;">Chính sách dịch vụ:
-                                                        </p>
-                                                        <p style="text-align: justify; margin-bottom: 5px">
-                                                            <strong>Điều kiện hủy vé: </strong>
-                                                        </p>
-
-                                                        <p style="text-align: justify; margin-bottom: 5px">- Hủy vé trong vòng 24 giờ hoặc ngay ngày khởi hành, phải trả 70%%
-                                                            giá trị đơn hàng.</p>
-                                                        <p style="text-align: justify; margin-bottom: 5px">- Hủy vé trước ngày khởi hành từ 2 - 3 ngày, phải trả 10% giá
-                                                            trị đơn hàng.</p>
-                                                        <p style="text-align: justify; margin-bottom: 5px">- Hủy vé trước ngày khởi hành từ 4 ngày trở lên, sẽ được hoàn
-                                                            tiền 100%.</p>
-                                                        <p style="text-align: justify; margin-bottom: 5px">
-                                                            <strong>Lưu ý:</strong>
-                                                        </p>
-
-                                                        <p style="text-align: justify; margin-bottom: 5px">- Chỉ được phép miễn phí hoàn tiền đối với các loại vé thuộc diện được
-                                                            miễn phí hoàn tiền.</p>
-                                                        <p style="text-align: justify; margin-bottom: 5px">- Các đơn hàng trong ngày lễ, tết sẽ áp dụng điều kiện hủy riêng.</p>
-
-                                                        <p style="text-align: justify; margin-bottom: 5px">
-                                                            Trên đây là thông tin cho hoạt động booking của bạn tại
-                                                            <strong>Travel Tour</strong>. Nếu có bất kì thắc mắc nào, hay liên hệ với
-                                                            chúng tôi.
-                                                        </p>
-
-                                                        <p style="text-align: justify; margin-bottom: 5px; font-weight: bolder;">
-                                                            Trân trọng,
-                                                            <br/>
-                                                            <span style="font-weight: bolder; font-family: TW-Averta-Regular, Averta, Helvetica, Arial; color: #63ab45">Dịch vụ du lịch Travel Tour</span>
-                                                        </p>
-                                                        <p class="mt-2 mb-3" style="font-style: italic; font-size: 12px; margin: 0;margin-bottom: 10px;"><span
-                                                                class="text-danger mt-3" style="font-weight: bolder"> (*):</span> Mời bạn quét mã QR
-                                                            để nhận thêm thông tin đơn hàng!</p>
-                                                        <p class="separator" style="; border-bottom:2px solid #706f6f; font-size:0pt; line-height:0pt;">&nbsp;</p>
-                                                        <table width="100%" border="0" cellspacing="0" cellpadding="0">
-                                                            <tr>
-                                                                <td class="text-socials" style="color:#000000; font-family:system-ui; font-size:16px; line-height:22px; text-align:center; text-transform:uppercase;">
-                                                                    <multiline>Theo dõi chúng tôi</multiline>
-                                                                </td>
-                                                            </tr>
-                                                            <tr>
-                                                                <td style="padding: 10px 0px 10px 0px;" align="center">
-                                                                    <table class="center" border="0" cellspacing="0" cellpadding="0" style="text-align:center;">
-                                                                        <tr>
-                                                                            <td class="img" width="52" style="font-size:0pt; line-height:0pt; text-align:left;">
-                                                                                <a href="" target="_blank">
-                                                                                    <img src="https://i.imgur.com/877kqQV.jpg" width="42" height="42" editable="true" border="0" alt="" />
-                                                                                </a>
-                                                                            </td>
-                                                                            <td class="img" width="52" style="font-size:0pt; line-height:0pt; text-align:left;">
-                                                                                <a href="" target="_blank">
-                                                                                    <img src="https://i.imgur.com/33AwFOF.jpg" width="42" height="42" editable="true" border="0" alt="" />
-                                                                                </a>
-                                                                            </td>
-                                                                            <td class="img" width="52" style="font-size:0pt; line-height:0pt; text-align:left;">
-                                                                                <a href="" target="_blank">
-                                                                                    <img src="https://i.imgur.com/U8ws7yM.jpg" width="42" height="42" editable="true" border="0" alt="" />
-                                                                                </a>
-                                                                            </td>
-                                                                            <td class="img" width="42" style="font-size:0pt; line-height:0pt; text-align:left;">
-                                                                                <a href="" target="_blank">
-                                                                                    <img src="https://i.imgur.com/y7HcGhJ.jpg" width="42" height="42" editable="true" border="0" alt="" />
-                                                                                </a>
-                                                                            </td>
-                                                                        </tr>
-                                                                    </table>
-                                                                </td>
-                                                            </tr>
-                                                        </table>
-
-                                                    </div>
+                                        <p style="color: #ed0000; font-family:TW-Averta-Regular, Averta, Helvetica, Arial;
+                                                                  line-height:28px; font-weight: bolder; margin: 0;">
+                                            Thông tin người mua:
+                                        </p>
+                                        <table role="presentation" cellpadding="0" cellspacing="0"
+                                               style="width:100%; border-collapse:collapse;border-spacing:0px;"
+                                               border="0">
+                                            <tbody>
+                                            <tr>
+                                                <td style="text-align:justify; width:80%;" align="left">
+                                                    <strong>Họ tên: </strong> <span th:text="${customerName}">Nguyễn Ngọc Thanh Uyên</span>
+                                                </td>
+                                                <td style="text-align:right; width: 20%;" align="right" rowspan="3"
+                                                    valign="top">
+                                                    <img src="https://api.qrserver.com/v1/create-qr-code/?size=120x120&data=[Dữ Liệu QR Code]"
+                                                         alt="QR Code" style="width: 80%">
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td style="text-align:justify; width:80%;" align="left">
+                                                    <strong>Số điện thoại: </strong> <span th:text="${customerPhone}">0909102390</span>
+                                                </td>
+                                                <td style="text-align:right; width: 20%;" align="right" rowspan="3"
+                                                    valign="top">
+                                                    <img src="https://api.qrserver.com/v1/create-qr-code/?size=120x120&data=[Dữ Liệu QR Code]"
+                                                         alt="QR Code" style="width: 80%">
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td style="text-align:justify; width:80%;" align="left">
+                                                    <strong>Email: </strong> <span th:text="${customerEmail}">Nguyễn Ngọc Thanh Uyên</span>
+                                                </td>
+                                                <td style="text-align:right; width: 20%;" align="right" rowspan="3"
+                                                    valign="top">
+                                                    <img src="https://api.qrserver.com/v1/create-qr-code/?size=120x120&data=[Dữ Liệu QR Code]"
+                                                         alt="QR Code" style="width: 80%">
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td style="text-align:justify; width:100%;" align="left" colspan="2">
+                                                    <strong>Hình thức thanh toán: </strong>
+                                                    <span th:text="${paymentMethod}">Chuyển khoản VNPay</span>
                                                 </td>
                                             </tr>
                                             </tbody>
                                         </table>
-                                    </div>
-                                    <!--[if mso | IE]>
-                                    </td>
-                                    </tr>
-                                    </table>
-                                    <![endif]-->
-                                </td>
-                            </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                    <!--[if mso | IE]>
-                    </td>
-                    </tr>
-                    </table>
-                    <![endif]-->
-                </td>
-            </tr>
-            </tbody>
-        </table>
-    </div>
-    <!--[if mso | IE]>
-    </td>
-    </tr>
-    </table>
-    <![endif]-->
+                                        <p style="color: #ed0000; font-family:TW-Averta-Regular, Averta, Helvetica, Arial;
+                                                                  line-height:28px; font-weight: bolder; margin: 0;">
+                                            Thông tin đơn hàng:
+                                        </p>
+                                        <ul style="margin: 0; padding-left: 20px;">
+                                            <li><strong>Hãng xe: </strong><span th:text="${transportBrand}">Futa Bus</span></li>
+                                            <li><strong>Mã chuyến đi: </strong><span th:text="${scheduleId}">TSD00635</span></li>
+                                            <li><strong>Số ghế bạn đặt: </strong><span th:text="${amountTicket}">4</span></li>
+                                            <li><strong>Điểm đi - đến: </strong><span th:text="${locationSchedule}"></span></li>
+                                            <li><strong>Thời gian xuất phát: </strong><span th:text="${departureTime}">02/01/2024 14:30:00</span></li>
+                                            <li><strong>Thành tiền: </strong><span th:text="${orderTotal}">7.000.000 VND - Bảy triệu đồng.</span></li>
+                                            <li><strong>Thuế VAT (8%): </strong> <br> Đã bao gồm trong giá tour.</li>
+                                        </ul>
 
-    <!--[if mso | IE]>
-    <table role="presentation" border="0" cellpadding="0" cellspacing="0" width="600"
-           align="center" style="width:600px;">
-        <tr>
-            <td style="line-height:0px;font-size:0px;mso-line-height-rule:exactly;">
-    <![endif]-->
-    <div style="margin:0px auto;max-width:600px;background:transparent;">
-        <table role="presentation" cellpadding="0" cellspacing="0"
-               style="font-size:0px;width:100%;background:transparent;"
-               align="center" border="0">
-            <tbody>
-            <tr>
-                <td style="text-align:center;vertical-align:top;direction:ltr;font-size:0px;padding:0px;">
-                    <!--[if mso | IE]>
-                    <table role="presentation" border="0" cellpadding="0" cellspacing="0">
-                        <tr>
-                            <td style="vertical-align:top;width:600px;">
-                    <![endif]-->
-                    <div class="mj-column-per-100 outlook-group-fix"
-                         style="vertical-align:top;display:inline-block;direction:ltr;font-size:13px;text-align:left;width:100%;">
-                        <table role="presentation" cellpadding="0" cellspacing="0" width="100%" border="0">
-                            <tbody>
-                            <tr>
-                                <td style="word-wrap:break-word;font-size:0px;padding:0px;" align="center">
-                                    <table role="presentation" cellpadding="0" cellspacing="0"
-                                           style="border-collapse:collapse;border-spacing:0px;"
-                                           align="center" border="0">
-                                        <tbody>
-                                        <tr>
-                                            <td style="width:1px;">
-                                                <img alt="" title="" height="1"
-                                                     src="https://api.transferwise.com/v1/notification-flow/messages/c6180a31-5cdb-477a-8c36-756232726efc/channels/EMAIL/open.gif"
-                                                     style="border:none;border-radius:0px;display:block;font-size:13px;outline:none;text-decoration:none;width:100%;height:1px;"
-                                                     width="1">
-                                            </td>
-                                        </tr>
-                                        </tbody>
-                                    </table>
+                                        <p style="color: #ed0000; font-family:TW-Averta-Regular, Averta, Helvetica, Arial;
+                                                                  line-height:28px; font-weight: bolder; margin: 0;">
+                                            Chính sách dịch vụ:
+                                        </p>
+                                        <p style="text-align: justify; margin-bottom: 5px">
+                                            <strong>Điều kiện hủy vé: </strong>
+                                        </p>
+
+                                        <p style="text-align: justify; margin-bottom: 5px">- Hủy vé trong vòng 24 giờ
+                                            hoặc ngay ngày khởi hành, phải trả 70%%
+                                            giá trị đơn hàng.</p>
+                                        <p style="text-align: justify; margin-bottom: 5px">- Hủy vé trước ngày khởi hành
+                                            từ 2 - 3 ngày, phải trả 10% giá
+                                            trị đơn hàng.</p>
+                                        <p style="text-align: justify; margin-bottom: 5px">- Hủy vé trước ngày khởi hành
+                                            từ 4 ngày trở lên, sẽ được hoàn
+                                            tiền 100%.</p>
+                                        <p style="text-align: justify; margin-bottom: 5px">
+                                            <strong>Lưu ý:</strong>
+                                        </p>
+
+                                        <p style="text-align: justify; margin-bottom: 5px">- Chỉ được phép miễn phí hoàn
+                                            tiền đối với các loại vé thuộc diện được
+                                            miễn phí hoàn tiền.</p>
+                                        <p style="text-align: justify; margin-bottom: 5px">- Các đơn hàng trong ngày lễ,
+                                            tết sẽ áp dụng điều kiện hủy riêng.</p>
+
+                                        <p style="text-align: justify; margin-bottom: 5px">
+                                            Trên đây là thông tin cho hoạt động booking của bạn tại
+                                            <strong>Travel Tour</strong>. Nếu có bất kì thắc mắc nào, hay liên hệ với
+                                            chúng tôi.
+                                        </p>
+
+                                        <p style="text-align: justify; margin-bottom: 5px; font-weight: bolder;">
+                                            Trân trọng,
+                                            <br/>
+                                            <span style="font-weight: bolder; font-family: TW-Averta-Regular, Averta, Helvetica, Arial; color: #63ab45">Dịch vụ du lịch Travel Tour</span>
+                                        </p>
+                                        <p class="mt-2 mb-3"
+                                           style="font-style: italic; font-size: 12px; margin: 0;margin-bottom: 10px;"><span
+                                                class="text-danger mt-3" style="font-weight: bolder"> (*):</span> Mời
+                                            bạn quét mã QR
+                                            để nhận thêm thông tin đơn hàng!</p>
+                                        <p class="separator"
+                                           style="; border-bottom:2px solid #706f6f; font-size:0pt; line-height:0pt;">
+                                            &nbsp;</p>
+                                        <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                                            <tr>
+                                                <td class="text-socials"
+                                                    style="color:#000000; font-family:system-ui; font-size:16px; line-height:22px; text-align:center; text-transform:uppercase;">
+                                                    <multiline>Theo dõi chúng tôi</multiline>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td style="padding: 10px 0px 10px 0px;" align="center">
+                                                    <table class="center" border="0" cellspacing="0" cellpadding="0"
+                                                           style="text-align:center;">
+                                                        <tr>
+                                                            <td class="img" width="52"
+                                                                style="font-size:0pt; line-height:0pt; text-align:left;">
+                                                                <a href="" target="_blank">
+                                                                    <img src="https://i.imgur.com/877kqQV.jpg"
+                                                                         width="42" height="42" editable="true"
+                                                                         border="0" alt=""/>
+                                                                </a>
+                                                            </td>
+                                                            <td class="img" width="52"
+                                                                style="font-size:0pt; line-height:0pt; text-align:left;">
+                                                                <a href="" target="_blank">
+                                                                    <img src="https://i.imgur.com/33AwFOF.jpg"
+                                                                         width="42" height="42" editable="true"
+                                                                         border="0" alt=""/>
+                                                                </a>
+                                                            </td>
+                                                            <td class="img" width="52"
+                                                                style="font-size:0pt; line-height:0pt; text-align:left;">
+                                                                <a href="" target="_blank">
+                                                                    <img src="https://i.imgur.com/U8ws7yM.jpg"
+                                                                         width="42" height="42" editable="true"
+                                                                         border="0" alt=""/>
+                                                                </a>
+                                                            </td>
+                                                            <td class="img" width="42"
+                                                                style="font-size:0pt; line-height:0pt; text-align:left;">
+                                                                <a href="" target="_blank">
+                                                                    <img src="https://i.imgur.com/y7HcGhJ.jpg"
+                                                                         width="42" height="42" editable="true"
+                                                                         border="0" alt=""/>
+                                                                </a>
+                                                            </td>
+                                                        </tr>
+                                                    </table>
+                                                </td>
+                                            </tr>
+                                        </table>
+
+                                    </div>
                                 </td>
                             </tr>
                             </tbody>
@@ -651,6 +615,75 @@
     </tr>
     </table>
     <![endif]-->
+    </td>
+    </tr>
+    </tbody>
+    </table>
+</div>
+<!--[if mso | IE]>
+</td>
+</tr>
+</table>
+<![endif]-->
+
+<!--[if mso | IE]>
+<table role="presentation" border="0" cellpadding="0" cellspacing="0" width="600"
+       align="center" style="width:600px;">
+    <tr>
+        <td style="line-height:0px;font-size:0px;mso-line-height-rule:exactly;">
+<![endif]-->
+<div style="margin:0px auto;max-width:600px;background:transparent;">
+    <table role="presentation" cellpadding="0" cellspacing="0"
+           style="font-size:0px;width:100%;background:transparent;"
+           align="center" border="0">
+        <tbody>
+        <tr>
+            <td style="text-align:center;vertical-align:top;direction:ltr;font-size:0px;padding:0px;">
+                <!--[if mso | IE]>
+                <table role="presentation" border="0" cellpadding="0" cellspacing="0">
+                    <tr>
+                        <td style="vertical-align:top;width:600px;">
+                <![endif]-->
+                <div class="mj-column-per-100 outlook-group-fix"
+                     style="vertical-align:top;display:inline-block;direction:ltr;font-size:13px;text-align:left;width:100%;">
+                    <table role="presentation" cellpadding="0" cellspacing="0" width="100%" border="0">
+                        <tbody>
+                        <tr>
+                            <td style="word-wrap:break-word;font-size:0px;padding:0px;" align="center">
+                                <table role="presentation" cellpadding="0" cellspacing="0"
+                                       style="border-collapse:collapse;border-spacing:0px;"
+                                       align="center" border="0">
+                                    <tbody>
+                                    <tr>
+                                        <td style="width:1px;">
+                                            <img alt="" title="" height="1"
+                                                 src="https://api.transferwise.com/v1/notification-flow/messages/c6180a31-5cdb-477a-8c36-756232726efc/channels/EMAIL/open.gif"
+                                                 style="border:none;border-radius:0px;display:block;font-size:13px;outline:none;text-decoration:none;width:100%;height:1px;"
+                                                 width="1">
+                                        </td>
+                                    </tr>
+                                    </tbody>
+                                </table>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <!--[if mso | IE]>
+                </td>
+                </tr>
+                </table>
+                <![endif]-->
+            </td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+<!--[if mso | IE]>
+</td>
+</tr>
+</table>
+<![endif]-->
 </div>
 
 </body>

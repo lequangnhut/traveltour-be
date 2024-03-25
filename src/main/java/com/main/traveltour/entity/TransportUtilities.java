@@ -1,5 +1,7 @@
 package com.main.traveltour.entity;
 
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -14,6 +16,7 @@ import java.util.List;
 @AllArgsConstructor
 @Entity
 @Table(name = "transport_utilities", schema = "travel_tour")
+@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
 public class TransportUtilities {
 
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -26,9 +29,13 @@ public class TransportUtilities {
     private String icon;
 
     @Basic
+    @Column(name = "title")
+    private String title;
+
+    @Basic
     @Column(name = "description")
     private String description;
 
     @ManyToMany(mappedBy = "transportUtilities")
-    private List<Transportations> users;
+    private List<Transportations> transportationsList;
 }

@@ -1,23 +1,25 @@
 package com.main.traveltour.service.utils.impl;
 
 import com.main.traveltour.dto.agent.hotel.AgenciesDto;
+import com.main.traveltour.dto.agent.transport.OrderTransportationsDto;
 import com.main.traveltour.dto.auth.RegisterDto;
-import com.main.traveltour.dto.customer.infomation.*;
 import com.main.traveltour.dto.customer.booking.BookingDto;
 import com.main.traveltour.dto.customer.booking.BookingToursDto;
+import com.main.traveltour.dto.customer.infomation.*;
 import com.main.traveltour.dto.superadmin.AccountDto;
 import com.main.traveltour.dto.superadmin.DataAccountDto;
 import com.main.traveltour.entity.*;
-import com.main.traveltour.repository.HotelsRepository;
 import com.main.traveltour.repository.RoomTypesRepository;
 import com.main.traveltour.repository.VisitLocationsRepository;
 import com.main.traveltour.service.UsersService;
 import com.main.traveltour.service.admin.HotelsServiceAD;
 import com.main.traveltour.service.agent.OrderVisitDetailService;
+import com.main.traveltour.service.agent.TransportationService;
 import com.main.traveltour.service.customer.OrderVehicleDetailsService;
 import com.main.traveltour.service.staff.OrderHotelDetailService;
 import com.main.traveltour.service.staff.TourDetailsService;
 import com.main.traveltour.service.staff.ToursService;
+import com.main.traveltour.service.staff.TransportationScheduleService;
 import com.main.traveltour.service.utils.EmailService;
 import com.main.traveltour.service.utils.ThymeleafService;
 import com.main.traveltour.utils.DateUtils;
@@ -37,7 +39,6 @@ import java.math.BigDecimal;
 import java.nio.charset.StandardCharsets;
 import java.sql.Timestamp;
 import java.util.*;
-import java.util.concurrent.TimeUnit;
 
 @Service
 @EnableScheduling
@@ -56,6 +57,7 @@ public class EmailServiceImpl implements EmailService {
     private final Queue<CancelOrderHotelsDto> emailQueueCustomerCancelHotel = new LinkedList<>();
     private final Queue<OrderVisitsDto> emailQueueCustomerCancelVisit = new LinkedList<>();
     private final Queue<CancelOrderTransportationsDto> emailQueueCustomerCancelTrans = new LinkedList<>();
+    private final Queue<OrderTransportationsDto> emailQueueCustomerBookingTrans = new LinkedList<>();
 
     @Autowired
     private JavaMailSender sender;
@@ -77,6 +79,12 @@ public class EmailServiceImpl implements EmailService {
 
     @Autowired
     private OrderVehicleDetailsService orderVehicleDetailsService;
+
+    @Autowired
+    private TransportationScheduleService transportationScheduleService;
+
+    @Autowired
+    private TransportationService transportationService;
 
 
     @Value("${spring.mail.username}")
@@ -490,6 +498,70 @@ public class EmailServiceImpl implements EmailService {
     }
 
     @Override
+    public void sendMailCustomerBookingTransport() {
+        while (!emailQueueCustomerBookingTrans.isEmpty()) {
+            OrderTransportationsDto orderTransportDto = emailQueueCustomerBookingTrans.poll();
+            TransportationSchedules schedules = transportationScheduleService.findById(orderTransportDto.getTransportationScheduleId());
+            Optional<Transportations> transportationsOptional = transportationService.findTransportById(schedules.getTransportationId());
+            Transportations transportations = transportationsOptional.get();
+
+            String customerEmail = "";
+            if (orderTransportDto.getUserId() != null) {
+                customerEmail = orderTransportDto.getCustomerEmail();
+            }
+
+            BigDecimal orderTotal = new BigDecimal(orderTransportDto.getAmountTicket()).multiply(new BigDecimal(schedules.getUnitPrice().intValue()));
+
+            try {
+                MimeMessage message = sender.createMimeMessage();
+                MimeMessageHelper helper = new MimeMessageHelper(message, MimeMessageHelper.MULTIPART_MODE_MIXED_RELATED, StandardCharsets.UTF_8.name());
+
+                if (orderTransportDto.getUserId() != null) {
+                    helper.setTo(customerEmail);
+                } else {
+                    helper.setTo(orderTransportDto.getCustomerEmail());
+                }
+
+                Map<String, Object> variables = new HashMap<>();
+                variables.put("bookingId", orderTransportDto.getId());
+                variables.put("dateTimeBooking", DateUtils.formatTimestamp(String.valueOf(new Timestamp(System.currentTimeMillis()))));
+                variables.put("customerName", orderTransportDto.getCustomerName());
+                variables.put("customerPhone", orderTransportDto.getCustomerPhone());
+                variables.put("customerEmail", orderTransportDto.getCustomerEmail());
+
+                if (orderTransportDto.getPaymentMethod() == 1) {
+                    variables.put("paymentMethod", "VÍ VNPAY");
+                } else if (orderTransportDto.getPaymentMethod() == 2) {
+                    variables.put("paymentMethod", "VÍ ZALOPAY");
+                } else if (orderTransportDto.getPaymentMethod() == 3) {
+                    variables.put("paymentMethod", "VÍ MOMO");
+                } else {
+                    variables.put("paymentMethod", "Thanh toán tại quầy");
+                }
+
+                variables.put("transportBrand", transportations.getTransportationBrandsByTransportationBrandId().getTransportationBrandName());
+                variables.put("scheduleId", schedules.getId());
+                variables.put("amountTicket", orderTransportDto.getAmountTicket());
+                variables.put("locationSchedule", schedules.getFromLocation() + " - " + schedules.getToLocation());
+                variables.put("departureTime", schedules.getDepartureTime());
+                variables.put("orderTotal", ReplaceUtils.formatPrice(orderTotal) + "VNĐ");
+
+                helper.setFrom(email);
+                helper.setText(thymeleafService.createContent("order-transportation-verify", variables), true);
+                helper.setSubject("DỊCH VỤ LỮ HÀNH TRAVELTOUR XIN CHÂN THÀNH CẢM ƠN QUÝ KHÁCH ĐÃ ĐẶT VÉ XE CỦA CHÚNG TÔI.");
+                sender.send(message);
+            } catch (MessagingException e) {
+                throw new RuntimeException(e);
+            }
+        }
+    }
+
+    @Override
+    public void queueEmailCustomerBookingTransport(OrderTransportationsDto orderTransportationsDto) {
+        emailQueueCustomerBookingTrans.add(orderTransportationsDto);
+    }
+
+    @Override
     public void sendMailOTPCus() {
         while (!emailQueueSendOTPRegisterAgencies.isEmpty()) {
             ForgotPasswordDto passwordDto = emailQueueSendOTPRegisterAgencies.poll();
@@ -637,7 +709,7 @@ public class EmailServiceImpl implements EmailService {
                 variables.put("unitPrice", ReplaceUtils.formatPrice(cancelOrderTransportationsDto.getTransportationSchedulesByTransportationScheduleId().getUnitPrice()) + " VNĐ");
                 variables.put("amount", cancelOrderTransportationsDto.getAmountTicket());
                 variables.put("departureDate", cancelOrderTransportationsDto.getTransportationSchedulesByTransportationScheduleId().getDepartureTime());
-                variables.put("arrivalDate",  cancelOrderTransportationsDto.getTransportationSchedulesByTransportationScheduleId().getArrivalTime());
+                variables.put("arrivalDate", cancelOrderTransportationsDto.getTransportationSchedulesByTransportationScheduleId().getArrivalTime());
                 variables.put("orderDetails", orderTransportationDetailsDtos);
                 variables.put("orderTotal", ReplaceUtils.formatPrice(orderTotal) + " VNĐ");
                 variables.put("refund", cancelOrderTransportationsDto.getCoc() + "%");
@@ -686,6 +758,11 @@ public class EmailServiceImpl implements EmailService {
     @Scheduled(fixedDelay = 5000)
     public void processBookingTour() {
         sendMailBookingTour();
+    }
+
+    @Scheduled(fixedDelay = 5000)
+    public void processBookingTransport() {
+        sendMailCustomerBookingTransport();
     }
 
     @Scheduled(fixedDelay = 5000)

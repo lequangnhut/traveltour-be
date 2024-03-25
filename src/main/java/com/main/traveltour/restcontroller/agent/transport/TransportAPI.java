@@ -1,9 +1,11 @@
 package com.main.traveltour.restcontroller.agent.transport;
 
-import com.main.traveltour.dto.agent.transport.TransportationImageDto;
+import com.main.traveltour.dto.TransportUtilitiesDto;
 import com.main.traveltour.dto.agent.transport.TransportGetDataDto;
+import com.main.traveltour.dto.agent.transport.TransportationImageDto;
 import com.main.traveltour.dto.agent.transport.TransportationsDto;
 import com.main.traveltour.entity.*;
+import com.main.traveltour.service.admin.TransportUtilityServiceAD;
 import com.main.traveltour.service.agent.TransportationBrandsService;
 import com.main.traveltour.service.agent.TransportationImageService;
 import com.main.traveltour.service.agent.TransportationService;
@@ -21,7 +23,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.IOException;
 import java.sql.Timestamp;
 import java.util.HashMap;
 import java.util.List;
@@ -48,20 +49,25 @@ public class TransportAPI {
     @Autowired
     private TransportationImageService transportationImageService;
 
+    @Autowired
+    private TransportUtilityServiceAD transportUtilityServiceAD;
+
     @GetMapping("/agent/transportation/find-all-transportation/{brandId}")
-    private ResponseEntity<Page<Transportations>> findAllTransportBrand(@RequestParam(defaultValue = "0") int page,
-                                                                        @RequestParam(defaultValue = "10") int size,
-                                                                        @RequestParam(defaultValue = "id") String sortBy,
-                                                                        @RequestParam(defaultValue = "asc") String sortDir,
-                                                                        @RequestParam(required = false) String searchTerm,
-                                                                        @PathVariable String brandId) {
+    private ResponseEntity<Page<TransportGetDataDto>> findAllTransportBrand(@RequestParam(defaultValue = "0") int page,
+                                                                            @RequestParam(defaultValue = "10") int size,
+                                                                            @RequestParam(defaultValue = "id") String sortBy,
+                                                                            @RequestParam(defaultValue = "asc") String sortDir,
+                                                                            @RequestParam(required = false) String searchTerm,
+                                                                            @PathVariable String brandId) {
         Sort sort = sortDir.equalsIgnoreCase(Sort.Direction.ASC.name())
                 ? Sort.by(sortBy).ascending() : Sort.by(sortBy).descending();
 
-        Page<Transportations> transportationBrands = searchTerm == null || searchTerm.isEmpty()
+        Page<Transportations> transportationsPage = searchTerm == null || searchTerm.isEmpty()
                 ? transportationService.findAllTransports(brandId, PageRequest.of(page, size, sort))
                 : transportationService.findAllTransportWithSearch(brandId, searchTerm, PageRequest.of(page, size, sort));
-        return new ResponseEntity<>(transportationBrands, HttpStatus.OK);
+
+        Page<TransportGetDataDto> transportGetDataDto = transportationsPage.map(brands -> EntityDtoUtils.convertToDto(brands, TransportGetDataDto.class));
+        return new ResponseEntity<>(transportGetDataDto, HttpStatus.OK);
     }
 
     @GetMapping("/agent/transportation/find-all-transportation-type")
@@ -75,6 +81,18 @@ public class TransportAPI {
         }
     }
 
+    @GetMapping("/agent/transportation/find-all-transportation-utilities")
+    private ResponseObject findAllTransportUtilities() {
+        List<TransportUtilities> transportUtilities = transportUtilityServiceAD.findAllTransUtilityAgent();
+        List<TransportUtilitiesDto> transportUtilitiesDto = EntityDtoUtils.convertToDtoList(transportUtilities, TransportUtilitiesDto.class);
+
+        if (transportUtilities.isEmpty()) {
+            return new ResponseObject("404", "Không tìm thấy dữ liệu", null);
+        } else {
+            return new ResponseObject("200", "Đã tìm thấy dữ liệu", transportUtilitiesDto);
+        }
+    }
+
     @GetMapping("/agent/transportation/find-image-by-transportId/{transportId}")
     private ResponseObject findImageByTransportId(@PathVariable String transportId) {
         List<TransportationImage> transportationImages = transportationImageService.findByTransportId(transportId);
@@ -83,6 +101,17 @@ public class TransportAPI {
             return new ResponseObject("404", "Không tìm thấy dữ liệu", null);
         } else {
             return new ResponseObject("200", "Đã tìm thấy dữ liệu", transportationImages);
+        }
+    }
+
+    @GetMapping("/agent/transportation/find-by-transportation-utilities-by-id/{transportUtilityId}")
+    private ResponseObject findByTransportUtilityId(@PathVariable int transportUtilityId) {
+        TransportUtilities utilities = transportUtilityServiceAD.findTransUtilityADById(transportUtilityId);
+
+        if (utilities == null) {
+            return new ResponseObject("404", "Không tìm thấy dữ liệu", null);
+        } else {
+            return new ResponseObject("200", "Đã tìm thấy dữ liệu", utilities);
         }
     }
 
@@ -110,14 +139,16 @@ public class TransportAPI {
 
     @GetMapping("/agent/transportation/find-by-transportation-id/{transportId}")
     private ResponseObject findByTransportId(@PathVariable String transportId) {
+        Map<String, Object> response = new HashMap<>();
+
         Optional<Transportations> transportations = transportationService.findTransportById(transportId);
         TransportGetDataDto transportGetDataDto = EntityDtoUtils.convertOptionalToDto(transportations, TransportGetDataDto.class);
+        List<TransportUtilities> transportUtilities = transportations.get().getTransportUtilities();
 
-        if (transportations.isEmpty()) {
-            return new ResponseObject("404", "Không tìm thấy dữ liệu", null);
-        } else {
-            return new ResponseObject("200", "Đã tìm thấy dữ liệu", transportGetDataDto);
-        }
+        response.put("transportGetDataDto", transportGetDataDto);
+        response.put("transportUtilities", transportUtilities);
+
+        return new ResponseObject("200", "Đã tìm thấy dữ liệu", response);
     }
 
     @GetMapping("/agent/transportation/check-duplicate-license-plate/{licensePlate}")
@@ -129,49 +160,63 @@ public class TransportAPI {
         return response;
     }
 
-    @PostMapping(value = "/agent/transportation/create-transportation", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    private void createTrans(@RequestPart("transportationsDto") TransportationsDto transportationsDto,
-                             @RequestPart("transportTypeImg") List<MultipartFile> transportTypeImg,
-                             @RequestPart("transportationImg") MultipartFile transportationImg) throws IOException {
-        String transportId = GenerateNextID.generateNextCode("TP", transportationService.findMaxCode());
-        String avatarTransport = fileUpload.uploadFile(transportationImg);
+    @PostMapping(value = "/agent/transportation/create-transportation/{selectedUtilities}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    private ResponseObject createTrans(@RequestPart("transportationsDto") TransportationsDto transportationsDto,
+                                       @RequestPart("transportTypeImg") List<MultipartFile> transportTypeImg,
+                                       @RequestPart("transportationImg") MultipartFile transportationImg,
+                                       @PathVariable List<Integer> selectedUtilities) {
+        try {
+            List<TransportUtilities> utilities = selectedUtilities.stream().map(transportUtilityServiceAD::findTransUtilityADById).toList();
+            String transportId = GenerateNextID.generateNextCode("TP", transportationService.findMaxCode());
+            String avatarTransport = fileUpload.uploadFile(transportationImg);
 
-        Transportations transportation = EntityDtoUtils.convertToEntity(transportationsDto, Transportations.class);
-        transportation.setId(transportId);
-        transportation.setIsActive(Boolean.TRUE);
-        transportation.setDateCreated(new Timestamp(System.currentTimeMillis()));
-        transportation.setTransportationImg(avatarTransport);
-        transportationService.save(transportation);
+            Transportations transportation = EntityDtoUtils.convertToEntity(transportationsDto, Transportations.class);
+            transportation.setId(transportId);
+            transportation.setIsActive(Boolean.TRUE);
+            transportation.setDateCreated(new Timestamp(System.currentTimeMillis()));
+            transportation.setTransportUtilities(utilities);
+            transportation.setTransportationImg(avatarTransport);
+            transportationService.save(transportation);
 
-        for (MultipartFile file : transportTypeImg) {
-            String imgPath = fileUpload.uploadFile(file);
-            TransportationImage image = new TransportationImage();
-            image.setTransportationId(transportId);
-            image.setImagePath(imgPath);
-            transportationImageService.save(image);
+            for (MultipartFile file : transportTypeImg) {
+                String imgPath = fileUpload.uploadFile(file);
+                TransportationImage image = new TransportationImage();
+                image.setTransportationId(transportId);
+                image.setImagePath(imgPath);
+                transportationImageService.save(image);
+            }
+            return new ResponseObject("200", "Thành công", null);
+        } catch (Exception e) {
+            return new ResponseObject("404", "Thất bại", null);
         }
     }
 
-    @PutMapping(value = "/agent/transportation/update-transportation", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    private void updateTrans(@RequestPart("transportationsDto") TransportationsDto transportationsDto,
-                             @RequestPart(value = "transportationImg", required = false) MultipartFile transportationImg) throws IOException {
-        Optional<Transportations> transportationsOptional = transportationService.findTransportById(transportationsDto.getId());
+    @PutMapping(value = "/agent/transportation/update-transportation/{selectedUtilities}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    private ResponseObject updateTrans(@RequestPart("transportationsDto") TransportationsDto transportationsDto,
+                                       @RequestPart(value = "transportationImg", required = false) MultipartFile transportationImg,
+                                       @PathVariable List<Integer> selectedUtilities) {
+        try {
+            List<TransportUtilities> utilities = selectedUtilities.stream().map(transportUtilityServiceAD::findTransUtilityADById).toList();
+            Optional<Transportations> transportationsOptional = transportationService.findTransportById(transportationsDto.getId());
 
-        if (transportationsOptional.isPresent()) {
-            Transportations transportations = transportationsOptional.get();
+            if (transportationsOptional.isPresent()) {
+                Transportations transportations = transportationsOptional.get();
 
-            if (transportationImg != null) {
-                String avatarTransport = fileUpload.uploadFile(transportationImg);
-                transportations.setTransportationImg(avatarTransport);
-                transportationService.save(transportations);
-            } else {
-                transportations.setTransportationBrandId(transportationsDto.getTransportationBrandId());
-                transportations.setTransportationTypeId(transportationsDto.getTransportationTypeId());
-                transportations.setLicensePlate(transportationsDto.getLicensePlate());
-                transportations.setAmountSeat(transportationsDto.getAmountSeat());
-                transportations.setIsActive(transportationsDto.getIsActive());
-                transportationService.save(transportations);
+                if (transportationImg != null) {
+                    String avatarTransport = fileUpload.uploadFile(transportationImg);
+                    transportations.setTransportationImg(avatarTransport);
+                    transportationService.save(transportations);
+                } else {
+                    Transportations transportation = EntityDtoUtils.convertToEntity(transportationsDto, Transportations.class);
+                    transportation.setId(transportationsDto.getId());
+                    transportation.setTransportationImg(transportations.getTransportationImg());
+                    transportation.setTransportUtilities(utilities);
+                    transportationService.save(transportation);
+                }
             }
+            return new ResponseObject("200", "Thành công", null);
+        } catch (Exception e) {
+            return new ResponseObject("404", "Thất bại", null);
         }
     }
 

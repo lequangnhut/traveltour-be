@@ -1,10 +1,10 @@
 package com.main.traveltour.service.utils;
 
 import com.main.traveltour.dto.agent.hotel.AgenciesDto;
+import com.main.traveltour.dto.agent.transport.OrderTransportationsDto;
 import com.main.traveltour.dto.auth.RegisterDto;
-import com.main.traveltour.dto.customer.booking.BookingToursDto;
-import com.main.traveltour.dto.customer.infomation.*;
 import com.main.traveltour.dto.customer.booking.BookingDto;
+import com.main.traveltour.dto.customer.infomation.*;
 import com.main.traveltour.dto.superadmin.DataAccountDto;
 
 public interface EmailService {
@@ -60,4 +60,8 @@ public interface EmailService {
     void sendMailCustomerCancelTrans();
 
     void queueEmailCustomerCancelTrans(CancelOrderTransportationsDto cancelOrderTransportationsDto);
+
+    void sendMailCustomerBookingTransport();
+
+    void queueEmailCustomerBookingTransport(OrderTransportationsDto orderTransportationsDto);
 }

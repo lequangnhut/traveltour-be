@@ -7,6 +7,7 @@ import com.main.traveltour.service.agent.OrderTransportDetailService;
 import com.main.traveltour.service.agent.OrderTransportService;
 import com.main.traveltour.service.agent.TransportScheduleSeatService;
 import com.main.traveltour.service.agent.TransportationScheduleService;
+import com.main.traveltour.service.utils.EmailService;
 import com.main.traveltour.utils.EntityDtoUtils;
 import com.main.traveltour.utils.RandomUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,6 +38,9 @@ public class BookingTransportCusAPI {
     @Autowired
     private TransportScheduleSeatService transportScheduleSeatService;
 
+    @Autowired
+    private EmailService emailService;
+
     @PostMapping("create-booking-transport/{seatNumber}")
     private ResponseObject createBookingTransport(@RequestBody OrderTransportationsDto orderTransportationsDto,
                                                   @PathVariable List<Integer> seatNumber) {
@@ -61,6 +65,7 @@ public class BookingTransportCusAPI {
             } else {
                 orderTransportationSuccess = createUserPayment(orderTransportationsDto, seatNumber);
             }
+            emailService.queueEmailCustomerBookingTransport(orderTransportationsDto);
             return new ResponseObject("200", "Thành công", orderTransportationSuccess);
         } catch (Exception e) {
             return new ResponseObject("404", "Thất bại", null);

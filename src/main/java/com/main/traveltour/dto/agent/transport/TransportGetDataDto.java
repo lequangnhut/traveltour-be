@@ -1,5 +1,6 @@
 package com.main.traveltour.dto.agent.transport;
 
+import com.main.traveltour.entity.TransportUtilities;
 import com.main.traveltour.entity.TransportationBrands;
 import com.main.traveltour.entity.TransportationImage;
 import com.main.traveltour.entity.TransportationTypes;
@@ -8,6 +9,7 @@ import lombok.Data;
 import java.io.Serializable;
 import java.sql.Timestamp;
 import java.util.Collection;
+import java.util.List;
 
 /**
  * DTO for {@link com.main.traveltour.entity.Transportations}
@@ -32,6 +34,8 @@ public class TransportGetDataDto implements Serializable {
     Boolean isActive;
 
     Collection<TransportationImage> transportationImagesById;
+
+    List<TransportUtilities> transportUtilities;
 
     TransportationBrands transportationBrandsByTransportationBrandId;
 
