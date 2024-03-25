@@ -105,8 +105,6 @@ public class CustomerAPI {
         try {
             String imagesPath = fileUpload.uploadFile(customerAvatar);
             Users user = usersService.findById(id);
-
-            user.setEmail(customerDto.getEmail());
             user.setGender(customerDto.getGender());
             user.setFullName(customerDto.getFullName());
             user.setBirth(customerDto.getBirth());
