@@ -88,6 +88,7 @@ public class VisitLocationsAPI {
                                      @RequestPart("visitLocationImage") MultipartFile visitImage,
                                      @RequestPart(value = "selectedTickets", required = false) List<String> selectedTickets,
                                      @RequestPart(value = "unitPrices", required = false) Map<String, String> unitPrices) throws IOException {
+
         String visitLocationImage = fileUpload.uploadFile(visitImage);
         String visitId = GenerateNextID.generateNextCode("PLA", visitLocationsService.findMaxCode());
 

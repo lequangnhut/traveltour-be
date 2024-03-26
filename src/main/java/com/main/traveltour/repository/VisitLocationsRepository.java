@@ -1,5 +1,6 @@
 package com.main.traveltour.repository;
 
+import com.main.traveltour.dto.customer.visit.VisitLocationTrendDTO;
 import com.main.traveltour.entity.Hotels;
 import com.main.traveltour.entity.VisitLocations;
 import org.springframework.data.domain.Page;
@@ -7,7 +8,9 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+import org.springframework.web.bind.annotation.RequestParam;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 public interface VisitLocationsRepository extends JpaRepository<VisitLocations, Integer> {
@@ -42,17 +45,50 @@ public interface VisitLocationsRepository extends JpaRepository<VisitLocations, 
             "UPPER(vl.ward) LIKE %:searchTerm% AND " +
             "UPPER(vlt.ticketTypeName) LIKE %:searchTerm% AND " +
             "UPPER(CAST(vlt.unitPrice AS string)) LIKE %:searchTerm% AND " +
-            "vl.isActive = TRUE AND vl.isAccepted = TRUE")
+            "vl.isActive = TRUE AND vl.isAccepted = TRUE " +
+            "GROUP BY vl.id")
     Page<VisitLocations> findBySearchTerm(@Param("searchTerm") String searchTerm, Pageable pageable);
+
+    @Query("SELECT vl FROM VisitLocations vl " +
+            "JOIN vl.visitLocationTicketsById vlt " +
+            "WHERE (:searchTerm IS NULL OR " +
+            "(UPPER(vl.visitLocationName) LIKE %:searchTerm% OR " +
+            "UPPER(vl.phone) LIKE %:searchTerm% OR " +
+            "UPPER(vl.province) LIKE %:searchTerm% OR " +
+            "UPPER(vl.district) LIKE %:searchTerm% OR " +
+            "UPPER(vl.ward) LIKE %:searchTerm% AND " +
+            "UPPER(vlt.ticketTypeName) LIKE %:searchTerm% AND " +
+            "UPPER(vl.agenciesByAgenciesId.nameAgency) LIKE %:searchTerm%)) AND " +
+            "(vl.isActive = TRUE AND vl.isAccepted = TRUE) AND " +
+            "(vlt.unitPrice <= :price) AND " +
+            "(:tickerTypeList IS NULL OR vlt.ticketTypeName IN (:tickerTypeList)) AND " +
+            "(:locationTypeList IS NULL OR vl.visitLocationTypesByVisitLocationTypeId.id IN (:locationTypeList))" +
+            "GROUP BY vl.id")
+    Page<VisitLocations> findByFilters(
+            @Param("searchTerm") String searchTerm,
+            @Param("price") BigDecimal price,
+            @Param("tickerTypeList") List<String> tickerTypeList,
+            @Param("locationTypeList") List<Integer> locationTypeList,
+            Pageable pageable);
 
 
     @Query("SELECT vl FROM VisitLocations vl " +
             "JOIN vl.visitLocationTicketsById vlt " +
             "WHERE (:location IS NULL OR UPPER(vl.province) LIKE CONCAT('%', UPPER(:location), '%'))AND " +
-            "vl.isActive = TRUE AND vl.isAccepted = TRUE")
+            "vl.isActive = TRUE AND vl.isAccepted = TRUE " +
+            "GROUP BY vl.id")
     Page<VisitLocations> findVisitLocationsByProvince(
             @Param("location") String location,
             Pageable pageable);
+
+
+    @Query("SELECT new com.main.traveltour.dto.customer.visit.VisitLocationTrendDTO(vl.id, vl.visitLocationName, vl.visitLocationImage, COUNT(ov)   ) " +
+            "FROM VisitLocations vl " +
+            "JOIN vl.orderVisitsById ov " +
+            "WHERE vl.isActive = TRUE AND vl.isAccepted = TRUE " +
+            "GROUP BY vl.id, vl.visitLocationName, vl.visitLocationImage " +
+            "ORDER BY COUNT(ov) DESC LIMIT 5")
+    List<VisitLocationTrendDTO> findVisitLocationsTrend();
 
     //fill tham quan theo tour
 
@@ -70,7 +106,7 @@ public interface VisitLocationsRepository extends JpaRepository<VisitLocations, 
             "UPPER(vl.phone) LIKE CONCAT('%', UPPER(:searchTerm), '%'))) " +
             "GROUP BY vl.id")
     Page<VisitLocations> findVisitByTourDetailId(@Param("tourDetailId") String tourDetailId,
-                                                     @Param("orderVisitStatus") Integer orderVisitStatus,
+                                                 @Param("orderVisitStatus") Integer orderVisitStatus,
                                                  @Param("searchTerm") String searchTerm,
                                                  Pageable pageable);
 
@@ -84,6 +120,6 @@ public interface VisitLocationsRepository extends JpaRepository<VisitLocations, 
             "WHERE (v.isAccepted = :isAccepted) and (v.isActive = true) " +
             "and LOWER(v.visitLocationName) " +
             "LIKE LOWER(CONCAT('%', :searchTerm, '%')) and (ag.isActive) = true and (ag.isAccepted) = 2")
-    Page<VisitLocations> findAllVisitPostByAcceptedAndTrueActiveByName(@Param("isAccepted") Boolean isAccepted,Pageable pageable, String searchTerm);
+    Page<VisitLocations> findAllVisitPostByAcceptedAndTrueActiveByName(@Param("isAccepted") Boolean isAccepted, Pageable pageable, String searchTerm);
 
 }

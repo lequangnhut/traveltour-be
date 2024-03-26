@@ -1,9 +1,9 @@
 package com.main.traveltour.restcontroller.customer.location;
 
+import com.main.traveltour.dto.customer.visit.VisitLocationTrendDTO;
 import com.main.traveltour.dto.staff.VisitLocationsDto;
-import com.main.traveltour.entity.ResponseObject;
-import com.main.traveltour.entity.VisitLocationTypes;
-import com.main.traveltour.entity.VisitLocations;
+import com.main.traveltour.entity.*;
+import com.main.traveltour.service.agent.VisitLocationTicketService;
 import com.main.traveltour.service.agent.VisitLocationTypeService;
 import com.main.traveltour.service.staff.VisitLocationService;
 import com.main.traveltour.utils.EntityDtoUtils;
@@ -13,20 +13,21 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
+import java.util.Collection;
 import java.util.List;
 
 @RestController
 @CrossOrigin(origins = "http://localhost:3000")
-@RequestMapping("api/v1/")
-public class LocationCusAPI {
+@RequestMapping("api/v1/customer/location-detail/")
+public class LocationDetailCusAPI {
 
     @Autowired
     private VisitLocationService visitLocationService;
 
     @Autowired
-    private VisitLocationTypeService visitLocationTypeService;
+    private VisitLocationTicketService visitLocationTicketService;
 
-    @GetMapping("customer/location/find-all-location")
+    @GetMapping("find-all-location")
     private ResponseObject findAllLocation(@RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int size, @RequestParam(required = false) String searchTerm) {
         Page<VisitLocations> visitLocations = searchTerm != null && !searchTerm.isEmpty() ? visitLocationService.findBySearchTerm(searchTerm, PageRequest.of(page, size)) : visitLocationService.getAllByIsActiveIsTrueAndIsAcceptedIsTrue(PageRequest.of(page, size));
 
@@ -39,34 +40,32 @@ public class LocationCusAPI {
         }
     }
 
-    @GetMapping("customer/location/find-all-location-by-filters")
-    private ResponseObject findAllLocationByFilters(
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size,
-            @RequestParam(required = false) String searchTerm,
-            @RequestParam(required = false) BigDecimal price,
-            @RequestParam(required = false) List<String> TickerTypeList,
-            @RequestParam(required = false) List<Integer> LocationTypeList) {
+    @GetMapping("find-by-id/{id}")
+    private ResponseObject findAllLocationType(@PathVariable String id) {
+        VisitLocations visitLocations = visitLocationService.findByIdAndIsActiveIsTrue(id);
 
-        Page<VisitLocations> visitLocations = visitLocationService.findByFilters(searchTerm, price, TickerTypeList, LocationTypeList, PageRequest.of(page, size));
+        VisitLocationsDto visitLocationsDto = EntityDtoUtils.convertToDto(visitLocations, VisitLocationsDto.class);
 
-        Page<VisitLocationsDto> visitLocationsDto = visitLocations.map(visitLocation -> EntityDtoUtils.convertToDto(visitLocation, VisitLocationsDto.class));
-
-        if (visitLocationsDto.isEmpty()) {
+        if (visitLocationsDto == null) {
             return new ResponseObject("404", "Không tìm thấy dữ liệu", null);
         } else {
             return new ResponseObject("200", "Đã tìm thấy dữ liệu", visitLocationsDto);
         }
     }
 
-    @GetMapping("customer/location/find-all-location-type")
-    private ResponseObject findAllLocationType() {
-        List<VisitLocationTypes> visitLocationTypes = visitLocationTypeService.findAllForRegisterAgency();
+    @GetMapping("find-all-trend")
+    private ResponseObject findAllTourTrend() {
+        List<VisitLocationTrendDTO> visitLocationsTrend = visitLocationService.findVisitLocationsTrend();
 
-        if (visitLocationTypes.isEmpty()) {
+        for (VisitLocationTrendDTO trend : visitLocationsTrend) {
+            Collection<VisitLocationTickets> tickets = visitLocationTicketService.findByVisitLocationId(trend.getVisitLocationId());
+            trend.setVisitLocationTicketsById(tickets);
+        }
+        if (visitLocationsTrend.isEmpty()) {
             return new ResponseObject("404", "Không tìm thấy dữ liệu", null);
         } else {
-            return new ResponseObject("200", "Đã tìm thấy dữ liệu", visitLocationTypes);
+            return new ResponseObject("200", "Đã tìm thấy dữ liệu", visitLocationsTrend);
         }
     }
+
 }

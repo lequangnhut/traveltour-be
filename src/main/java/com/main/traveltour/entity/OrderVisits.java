@@ -68,7 +68,7 @@ public class OrderVisits {
 
     @Basic
     @Column(name = "payment_method")
-    private Boolean paymentMethod;
+    private Integer paymentMethod; //0: vày, 1: vnp, 2: momo, 3: zalo
 
     @Basic
     @Column(name = "order_code")
