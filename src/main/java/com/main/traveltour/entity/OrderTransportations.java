@@ -61,7 +61,7 @@ public class OrderTransportations {
 
     @Basic
     @Column(name = "payment_method")
-    private Integer paymentMethod;
+    private Integer paymentMethod; // 0: travel | 1: VNPay | 2: ZaLoPay | 3: Momo
 
     @Basic
     @Column(name = "order_code")
