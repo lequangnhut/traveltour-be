@@ -25,6 +25,7 @@ import com.main.traveltour.service.utils.ThymeleafService;
 import com.main.traveltour.utils.DateUtils;
 import com.main.traveltour.utils.EntityDtoUtils;
 import com.main.traveltour.utils.ReplaceUtils;
+import com.main.traveltour.utils.TimeUtils;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -543,7 +544,7 @@ public class EmailServiceImpl implements EmailService {
                 variables.put("scheduleId", schedules.getId());
                 variables.put("amountTicket", orderTransportDto.getAmountTicket());
                 variables.put("locationSchedule", schedules.getFromLocation() + " - " + schedules.getToLocation());
-                variables.put("departureTime", schedules.getDepartureTime());
+                variables.put("departureTime", TimeUtils.formatTime(schedules.getDepartureTime()));
                 variables.put("orderTotal", ReplaceUtils.formatPrice(orderTotal) + "VNĐ");
 
                 helper.setFrom(email);

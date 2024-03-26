@@ -1,6 +1,7 @@
 package com.main.traveltour.utils;
 
 import java.sql.Time;
+import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -15,5 +16,10 @@ public class TimeUtils {
         String timeOnly = timeFormat.format(date);
 
         return Time.valueOf(timeOnly);
+    }
+
+    public static String formatTime(Date date) {
+        DateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
+        return dateFormat.format(date);
     }
 }

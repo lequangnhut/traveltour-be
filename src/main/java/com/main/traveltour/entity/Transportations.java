@@ -54,6 +54,10 @@ public class Transportations {
     @Column(name = "is_active")
     private Boolean isActive;
 
+    @Basic
+    @Column(name = "is_transport_bed")
+    private Boolean isTransportBed; // false là xe ghế | true là xe giường
+
     @OneToMany(mappedBy = "transportationsByTransportationId")
     @JsonManagedReference
     private Collection<TransportationSchedules> transportationSchedulesById;

@@ -33,6 +33,8 @@ public class TransportGetDataDto implements Serializable {
 
     Boolean isActive;
 
+    Boolean isTransportBed;
+
     Collection<TransportationImage> transportationImagesById;
 
     List<TransportUtilities> transportUtilities;

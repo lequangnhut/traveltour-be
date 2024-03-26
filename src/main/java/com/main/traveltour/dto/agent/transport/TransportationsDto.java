@@ -1,7 +1,6 @@
 package com.main.traveltour.dto.agent.transport;
 
 import lombok.Data;
-import lombok.Value;
 
 import java.io.Serializable;
 import java.sql.Timestamp;
@@ -25,4 +24,6 @@ public class TransportationsDto implements Serializable {
     Timestamp dateCreated;
 
     Boolean isActive;
+
+    Boolean isTransportBed;
 }

@@ -15,13 +15,24 @@ import java.util.Collection;
 @Data
 public class TransportationsDto implements Serializable {
     String id;
+
     String transportationBrandId;
+
     Integer transportationTypeId;
+
     String transportationImg;
+
     String licensePlate;
+
     Integer amountSeat;
+
     Timestamp dateCreated;
+
     Boolean isActive;
+
+    Boolean isTransportBed;
+
     TransportationTypes transportationTypes;
+
     Collection<TransportationImage> transportationImagesById;
 }

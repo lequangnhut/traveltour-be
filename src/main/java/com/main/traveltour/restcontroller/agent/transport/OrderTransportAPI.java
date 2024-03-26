@@ -3,6 +3,7 @@ package com.main.traveltour.restcontroller.agent.transport;
 import com.main.traveltour.component.ByteArrayMultipartFile;
 import com.main.traveltour.dto.agent.transport.ExportDataOrderTransportDto;
 import com.main.traveltour.dto.agent.transport.OrderTransportationsDto;
+import com.main.traveltour.dto.customer.transport.TransportationSchedulesDto;
 import com.main.traveltour.entity.*;
 import com.main.traveltour.service.agent.OrderTransportDetailService;
 import com.main.traveltour.service.agent.OrderTransportService;
@@ -85,11 +86,12 @@ public class OrderTransportAPI {
     @GetMapping("/agent/order-transport/find-all-schedule-by-brandId/{brandId}")
     private ResponseObject findAllScheduleByBrandId(@PathVariable String brandId) {
         List<TransportationSchedules> transportationSchedules = transportationScheduleService.findAllScheduleByBrandId(brandId);
+        List<TransportationSchedulesDto> transportationSchedulesDto = EntityDtoUtils.convertToDtoList(transportationSchedules, TransportationSchedulesDto.class);
 
-        if (transportationSchedules == null) {
+        if (transportationSchedulesDto.isEmpty()) {
             return new ResponseObject("404", "Không tìm thấy dữ liệu", null);
         } else {
-            return new ResponseObject("200", "Đã tìm thấy dữ liệu", transportationSchedules);
+            return new ResponseObject("200", "Đã tìm thấy dữ liệu", transportationSchedulesDto);
         }
     }
 
