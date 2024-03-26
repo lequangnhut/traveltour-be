@@ -24,6 +24,7 @@ import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.sql.Timestamp;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -90,43 +91,82 @@ public class UserChatController {
      */
     @MessageMapping("{userId}/chat.findUsersChat")
     public void findUsersWithChatHistory(@Payload UserDataDto userDataDto) {
-        List<UserChatResponseDto> userChatResponseDto = new ArrayList<>();
+        if (userDataDto.getUserId() != null && userDataDto.getRole() != null) {
+            List<UserChatResponseDto> userChatResponseDto = new ArrayList<>();
 
-        if(userDataDto.getUserId() != null && userDataDto.getRole() != null) {
             List<ChatRooms> listChatRoom = chatRoomService.findChatRoomsByRecipientId(userDataDto.getUserId());
             for (ChatRooms room : listChatRoom) {
-                UserChat getSender = userChatService.findByUserId(room.getSenderId()).get();
-                ChatMessage chatNewMessage = chatMessageRepository.findFirstByChatIdOrderByTimestampDesc(room.getChatId());
-                Integer countMessageUnRead = chatMessageRepository.countByChatIdAndRecipientIdAndStatusIs(room.getChatId(), room.getRecipientId(), false);
+                try {
+                    UserChat getSender = userChatService.findByUserId(room.getSenderId()).orElse(null);
+                    if (getSender == null) {
+                        continue; // Bỏ qua nếu không tìm thấy thông tin người gửi
+                    }
 
-                UserChatResponseDto user = UserChatResponseDto.builder()
-                        .id(getSender.getId())
-                        .userId(getSender.getUserId())
-                        .avatar(getSender.getAvatar())
-                        .fullName(getSender.getFullName())
-                        .status(getSender.getStatus())
-                        .lastUpdated(getSender.getLastUpdated())
-                        .role(getSender.getRole())
-                        .countMessageUnread(countMessageUnRead)
-                        .newMessage(chatNewMessage.getContent())
-                        .timeMessage(chatNewMessage.getTimestamp())
-                        .statusMessage(chatNewMessage.getStatus())
-                        .build();
+                    ChatMessage chatNewMessage = chatMessageRepository.findFirstByChatIdOrderByTimestampDesc(room.getChatId());
+                    Integer countMessageUnRead = chatMessageRepository.countByChatIdAndRecipientIdAndStatusIs(room.getChatId(), room.getRecipientId(), false);
 
-                userChatResponseDto.add(user);
+                    UserChatResponseDto user;
+                    if (chatNewMessage != null) {
+                        user = UserChatResponseDto.builder()
+                                .id(getSender.getId())
+                                .userId(getSender.getUserId())
+                                .avatar(getSender.getAvatar())
+                                .fullName(getSender.getFullName())
+                                .status(getSender.getStatus())
+                                .lastUpdated(getSender.getLastUpdated())
+                                .role(getSender.getRole())
+                                .countMessageUnread(countMessageUnRead)
+                                .newMessage(chatNewMessage.getContent())
+                                .timeMessage(chatNewMessage.getTimestamp())
+                                .statusMessage(chatNewMessage.getStatus())
+                                .build();
+                    } else {
+                        user = UserChatResponseDto.builder()
+                                .id(getSender.getId())
+                                .userId(getSender.getUserId())
+                                .avatar(getSender.getAvatar())
+                                .fullName(getSender.getFullName())
+                                .status(getSender.getStatus())
+                                .lastUpdated(getSender.getLastUpdated())
+                                .role(getSender.getRole())
+                                .countMessageUnread(0)
+                                .newMessage(null)
+                                .timeMessage(null)
+                                .statusMessage(true)
+                                .build();
+                    }
+                    userChatResponseDto.add(user);
+                } catch (Exception e) {
+                    // Xử lý ngoại lệ nếu có
+                    e.printStackTrace();
+                    // Bỏ qua và tiếp tục với cuộc trò chuyện tiếp theo
+                }
             }
-            userChatResponseDto.sort(new Comparator<UserChatResponseDto>() {
-                @Override
-                public int compare(UserChatResponseDto o1, UserChatResponseDto o2) {
-                    return o2.getTimeMessage().compareTo(o1.getTimeMessage());
+
+            // Sắp xếp danh sách người dùng theo thời gian tin nhắn mới nhất
+            userChatResponseDto.sort((o1, o2) -> {
+                Timestamp timeMessage1 = o1.getTimeMessage();
+                Timestamp timeMessage2 = o2.getTimeMessage();
+
+                if (timeMessage1 == null && timeMessage2 == null) {
+                    return 0;
+                } else if (timeMessage1 == null) {
+                    return 1;
+                } else if (timeMessage2 == null) {
+                    return -1;
+                } else {
+                    return timeMessage2.compareTo(timeMessage1);
                 }
             });
+
+            // Gửi danh sách người dùng tới người dùng
             messagingTemplate.convertAndSendToUser(
                     userDataDto.getUserId(), "/chat/findUsersChat",
                     userChatResponseDto
             );
         }
     }
+
 
     @MessageMapping("{userId}/chat.updateStatusMessenger")
     public void updateStatusMessengerAgency(@Payload UpdateMessageDto updateMessageDto) {

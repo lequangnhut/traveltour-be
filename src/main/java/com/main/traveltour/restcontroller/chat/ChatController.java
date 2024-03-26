@@ -70,25 +70,43 @@ public class ChatController {
                 List<UserChat> userChats = userChatService.findAllByUserIds(senderIds);
 
                 for (UserChat userChat : userChats) {
-                    Integer countUnreadMessages = chatMessageRepository.countByChatIdAndRecipientIdAndStatusIs(chatRooms.get(0).getChatId(), chatRooms.get(0).getRecipientId(), false);
-                    List<ChatMessage> newChatMessage = chatMessageRepository.findByChatIdOrderByTimestampDesc(chatRooms.get(0).getChatId());
-                    boolean statusMessage = countUnreadMessages > 0;
+                    if(!chatRooms.isEmpty()){
+                        Integer countUnreadMessages = chatMessageRepository.countByChatIdAndRecipientIdAndStatusIs(chatRooms.get(0).getChatId(), chatRooms.get(0).getRecipientId(), false);
+                        List<ChatMessage> newChatMessage = chatMessageRepository.findByChatIdOrderByTimestampDesc(chatRooms.get(0).getChatId());
+                        boolean statusMessage = countUnreadMessages > 0;
 
-                    UserChatResponseDto userChatResponseDto = UserChatResponseDto.builder()
-                            .id(userChat.getId())
-                            .userId(userChat.getUserId())
-                            .fullName(userChat.getFullName())
-                            .status(userChat.getStatus())
-                            .avatar(userChat.getAvatar())
-                            .lastUpdated(userChat.getLastUpdated())
-                            .role(userChat.getRole())
-                            .countMessageUnread(countUnreadMessages)
-                            .statusMessage(statusMessage)
-                            .newMessage(newChatMessage.get(0).getContent())
-                            .timeMessage(newChatMessage.get(0).getTimestamp())
-                            .build();
+                        UserChatResponseDto userChatResponseDto = UserChatResponseDto.builder()
+                                .id(userChat.getId())
+                                .userId(userChat.getUserId())
+                                .fullName(userChat.getFullName())
+                                .status(userChat.getStatus())
+                                .avatar(userChat.getAvatar())
+                                .lastUpdated(userChat.getLastUpdated())
+                                .role(userChat.getRole())
+                                .countMessageUnread(countUnreadMessages)
+                                .statusMessage(statusMessage)
+                                .newMessage(newChatMessage.get(0).getContent())
+                                .timeMessage(newChatMessage.get(0).getTimestamp())
+                                .build();
 
-                    userChatResponseDtos.add(userChatResponseDto);
+                        userChatResponseDtos.add(userChatResponseDto);
+                    }else{
+                        UserChatResponseDto userChatResponseDto = UserChatResponseDto.builder()
+                                .id(userChat.getId())
+                                .userId(userChat.getUserId())
+                                .fullName(userChat.getFullName())
+                                .status(userChat.getStatus())
+                                .avatar(userChat.getAvatar())
+                                .lastUpdated(userChat.getLastUpdated())
+                                .role(userChat.getRole())
+                                .countMessageUnread(0)
+                                .statusMessage(true)
+                                .newMessage(null)
+                                .timeMessage(null)
+                                .build();
+
+                        userChatResponseDtos.add(userChatResponseDto);
+                    }
                 }
             }
         }
