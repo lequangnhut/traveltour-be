@@ -40,6 +40,8 @@ public class VisitLocationsDto {
 
     Boolean isActive;
 
+    String detailDescription;
+
     int visitLocationTypeId;
 
     int agenciesId;

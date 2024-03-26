@@ -20,7 +20,7 @@ public class OrderVisitsDto {
     Integer capacityKid;
     Timestamp checkIn;
     BigDecimal orderTotal;
-    Boolean paymentMethod;
+    Integer paymentMethod;
     String orderCode;
     Timestamp dateCreated;
     Integer orderStatus;

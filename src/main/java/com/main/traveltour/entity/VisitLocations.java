@@ -81,6 +81,10 @@ public class VisitLocations {
     private Boolean isActive;
 
     @Basic
+    @Column(name = "detail_description", columnDefinition = "LONGTEXT")
+    private String detailDescription;
+
+    @Basic
     @Column(name = "visit_location_type_id", nullable = false, length = 30)
     private int visitLocationTypeId;
 

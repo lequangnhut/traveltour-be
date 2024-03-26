@@ -36,6 +36,8 @@ public class VisitLocationsDto implements Serializable {
 
     Boolean isAccepted;
 
+    String detailDescription;
+
     Boolean isActive;
 
     int visitLocationTypeId;

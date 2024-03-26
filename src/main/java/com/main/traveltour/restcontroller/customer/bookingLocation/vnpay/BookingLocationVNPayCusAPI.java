@@ -1,0 +1,185 @@
+package com.main.traveltour.restcontroller.customer.bookingLocation.vnpay;
+
+import com.main.traveltour.configpayment.vnpay.VNPayService;
+import com.main.traveltour.dto.staff.OrderVisitsDto;
+import com.main.traveltour.entity.*;
+import com.main.traveltour.service.UsersService;
+import com.main.traveltour.service.agent.OrderVisitDetailService;
+import com.main.traveltour.service.agent.VisitLocationTicketService;
+import com.main.traveltour.service.staff.OrderVisitLocationService;
+import com.main.traveltour.service.staff.VisitLocationService;
+import com.main.traveltour.service.utils.EmailService;
+import com.main.traveltour.utils.EntityDtoUtils;
+import com.main.traveltour.utils.RandomUtils;
+import com.main.traveltour.utils.SessionAttr;
+import jakarta.servlet.http.HttpServletRequest;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.*;
+
+import java.math.BigDecimal;
+import java.sql.Timestamp;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+
+@Controller
+@CrossOrigin(origins = "http://localhost:3000")
+@RequestMapping("api/v1/customer/booking-location/")
+public class BookingLocationVNPayCusAPI {
+
+    @Autowired
+    private UsersService usersService;
+
+    @Autowired
+    private OrderVisitLocationService orderVisitLocationService;
+
+    @Autowired
+    private OrderVisitDetailService orderVisitDetailsService;
+
+    @Autowired
+    private VisitLocationTicketService visitLocationTicketService;
+
+    @Autowired
+    private HttpServletRequest request;
+
+    @Autowired
+    private VNPayService vnPayService;
+
+    @Autowired
+    private EmailService emailService;
+
+    @PostMapping("vnpay/submit-payment")
+    private ResponseEntity<Map<String, Object>> submitOrderVNPay(@RequestPart OrderVisitsDto orderVisitsDto) {
+        List<VisitLocationTickets> locationTickets = visitLocationTicketService.findByVisitLocationId(orderVisitsDto.getVisitLocationId());
+        BigDecimal adultPrice = BigDecimal.ZERO;
+        BigDecimal childrenPrice = BigDecimal.ZERO;
+
+        for (VisitLocationTickets tickets : locationTickets) {
+            String ticketName = tickets.getTicketTypeName().toLowerCase();
+            if (ticketName.equals("vé người lớn")) {
+                adultPrice = tickets.getUnitPrice();
+            } else if (ticketName.equals("vé trẻ em")) {
+                childrenPrice = tickets.getUnitPrice();
+            }
+        }
+        int capacityAdult = orderVisitsDto.getCapacityAdult();
+        int capacityKid = orderVisitsDto.getCapacityKid();
+
+        BigDecimal totalAdultPrice = adultPrice.multiply(BigDecimal.valueOf(capacityAdult));
+        BigDecimal totalChildrenPrice = childrenPrice.multiply(BigDecimal.valueOf(capacityKid));
+
+        BigDecimal orderTotal = totalAdultPrice.add(totalChildrenPrice);
+
+        String baseUrl = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort();
+        baseUrl += "/api/v1/customer/booking-location/vnpay/success-payment";
+        String vnPayUrl = vnPayService.createOrder(orderTotal.intValue(), orderVisitsDto.getId(), baseUrl);
+
+        Map<String, Object> response = new HashMap<>();
+        response.put("redirectUrl", vnPayUrl);
+
+        SessionAttr.ORDER_LOCATIONS_DTO = orderVisitsDto;
+
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+    @GetMapping("vnpay/success-payment")
+    private String submitOrderVNPaySuccess(HttpServletRequest request) {
+
+        int paymentStatus = vnPayService.orderReturn(request);
+
+        OrderVisits orderVisitSuccess = null;
+        OrderVisitsDto orderVisitsDto = SessionAttr.ORDER_LOCATIONS_DTO;
+
+        List<VisitLocationTickets> locationTickets = visitLocationTicketService.findByVisitLocationId(orderVisitsDto.getVisitLocationId());
+        Integer userId = orderVisitsDto.getUserId();
+        BigDecimal adultPrice = BigDecimal.ZERO;
+        BigDecimal childrenPrice = BigDecimal.ZERO;
+        Integer adultTicketId = null;
+        Integer childrenTicketId = null;
+
+        try {
+            if (userId == null) {
+                userId = createUserPayment(orderVisitsDto);
+            }
+
+            for (VisitLocationTickets tickets : locationTickets) {
+                String ticketName = tickets.getTicketTypeName().toLowerCase();
+                if (ticketName.equals("vé người lớn")) {
+                    adultPrice = tickets.getUnitPrice();
+                    adultTicketId = tickets.getId();
+                } else if (ticketName.equals("vé trẻ em")) {
+                    childrenPrice = tickets.getUnitPrice();
+                    childrenTicketId = tickets.getId();
+                }
+            }
+
+            int capacityAdult = orderVisitsDto.getCapacityAdult();
+            int capacityKid = orderVisitsDto.getCapacityKid();
+
+            BigDecimal totalAdultPrice = adultPrice.multiply(BigDecimal.valueOf(capacityAdult));
+            BigDecimal totalChildrenPrice = childrenPrice.multiply(BigDecimal.valueOf(capacityKid));
+
+            BigDecimal orderTotal = totalAdultPrice.add(totalChildrenPrice);
+
+            if (paymentStatus == 1) {
+                OrderVisits orderVisits = EntityDtoUtils.convertToEntity(orderVisitsDto, OrderVisits.class);
+                orderVisits.setOrderTotal(orderTotal);
+                orderVisits.setOrderStatus(1); // thành công
+                orderVisits.setUserId(userId);
+                orderVisits.setDateCreated(new Timestamp(System.currentTimeMillis()));
+                orderVisitSuccess = orderVisitLocationService.save(orderVisits);
+
+                if (capacityAdult > 0) {
+                    saveOrderVisitDetail(orderVisits, adultPrice, capacityAdult, adultTicketId);
+                }
+                if (capacityKid > 0) {
+                    saveOrderVisitDetail(orderVisits, childrenPrice, capacityKid, childrenTicketId);
+                }
+            } else {
+                OrderVisits orderVisits = EntityDtoUtils.convertToEntity(orderVisitsDto, OrderVisits.class);
+                orderVisits.setOrderTotal(orderTotal);
+                orderVisits.setOrderStatus(2); // thất bại
+                orderVisits.setDateCreated(new Timestamp(System.currentTimeMillis()));
+                orderVisitSuccess = orderVisitLocationService.save(orderVisits);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return "redirect:http://localhost:3000/tourism-location/tourism-location-detail/" + orderVisitsDto.getVisitLocationId() + "/booking-location/customer-information/check-information/payment-success?orderVisitId=" + orderVisitSuccess.getId() + "&orderStatus=" + orderVisitSuccess.getOrderStatus();
+    }
+
+    private void saveOrderVisitDetail(OrderVisits orderVisits, BigDecimal unitPrice, int capacity, Integer ticketId) {
+        OrderVisitDetails detail = new OrderVisitDetails();
+        detail.setOrderVisitId(orderVisits.getId());
+        detail.setUnitPrice(unitPrice);
+        detail.setAmount(capacity);
+        detail.setVisitLocationTicketId(ticketId);
+        orderVisitDetailsService.save(detail);
+    }
+
+    private Integer createUserPayment(OrderVisitsDto orderVisitsDto) {
+        String email = orderVisitsDto.getCustomerEmail();
+        String fullName = orderVisitsDto.getCustomerName();
+        String phone = orderVisitsDto.getCustomerPhone();
+        Users userPhone = usersService.findByPhone(phone);
+        Optional<Users> currentUserOptional = Optional.ofNullable(usersService.findByEmail(email));
+
+        Users user = currentUserOptional.orElseGet(() -> {
+            Users newUser = new Users();
+            newUser.setEmail(email);
+            newUser.setPassword(RandomUtils.RandomToken(10));
+            newUser.setFullName(fullName);
+            if (userPhone == null) {
+                newUser.setPhone(phone);
+            }
+            newUser.setIsActive(Boolean.TRUE);
+            usersService.authenticateRegister(newUser);
+            return newUser;
+        });
+        return user.getId();
+    }
+}
