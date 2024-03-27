@@ -2,9 +2,16 @@ package com.main.traveltour.utils;
 
 import com.google.gson.Gson;
 
+import java.util.Base64;
+
 public class Base64Utils {
 
     private static final Gson gson = new Gson();
+
+    // Mã hóa orderStatus thành Base64
+    public static String encodeData(String data) {
+        return Base64.getEncoder().encodeToString(data.getBytes());
+    }
 
     public static <T> T decodeToObject(String base64Data, Class<T> clazz) {
         // Giải mã dữ liệu từ Base64

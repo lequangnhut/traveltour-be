@@ -1,7 +1,11 @@
-package com.main.traveltour.restcontroller.customer.bookingtransport.vnpay;
+package com.main.traveltour.restcontroller.customer.bookingtransport.momo;
 
 import com.main.traveltour.config.DomainURL;
-import com.main.traveltour.configpayment.vnpay.VNPayService;
+import com.main.traveltour.configpayment.momo.config.Environment;
+import com.main.traveltour.configpayment.momo.enums.RequestType;
+import com.main.traveltour.configpayment.momo.models.PaymentResponse;
+import com.main.traveltour.configpayment.momo.processor.CreateOrderMoMo;
+import com.main.traveltour.configpayment.momo.shared.utils.LogUtils;
 import com.main.traveltour.dto.agent.transport.OrderTransportationsDto;
 import com.main.traveltour.entity.OrderTransportations;
 import com.main.traveltour.entity.TransportationSchedules;
@@ -28,10 +32,7 @@ import java.util.Map;
 @Controller
 @CrossOrigin(origins = "http://localhost:3000")
 @RequestMapping("api/v1/customer/transport/")
-public class BookingTransportVNPayCusAPI {
-
-    @Autowired
-    private OrderTransportService orderTransportService;
+public class BookingTransportMomoCusAPI {
 
     @Autowired
     private TransportationScheduleService transportationScheduleService;
@@ -40,51 +41,45 @@ public class BookingTransportVNPayCusAPI {
     private BookingTransportService bookingTransportService;
 
     @Autowired
+    private OrderTransportService orderTransportService;
+
+    @Autowired
     private EmailService emailService;
 
-    @Autowired
-    private HttpServletRequest request;
+    @PostMapping("momo/submit-payment")
+    private ResponseEntity<Map<String, Object>> submitOrderMomo(@RequestParam("seatNumber") List<Integer> seatNumber,
+                                                                @RequestBody OrderTransportationsDto orderTransport) throws Exception {
+        String scheduleId = orderTransport.getTransportationScheduleId();
+        String bookingTransportId = orderTransport.getId();
+        Integer amountTicket = orderTransport.getAmountTicket();
 
-    @Autowired
-    private VNPayService vnPayService;
-
-    /**
-     * phương thức gửi api
-     *
-     * @param scheduleId     mã chuyến đi
-     * @param orderInfo      mã đơn hàng
-     * @param amountTicket   số lượng
-     * @param seatNumber     mã ghế
-     * @param orderTransport đối tượng lưu db
-     */
-    @PostMapping("vnpay/submit-payment")
-    private ResponseEntity<Map<String, Object>> submitOrderVNPay(@RequestParam("scheduleId") String scheduleId,
-                                                                 @RequestParam("orderInfo") String orderInfo,
-                                                                 @RequestParam("amountTicket") int amountTicket,
-                                                                 @RequestParam("seatNumber") List<Integer> seatNumber,
-                                                                 @RequestBody OrderTransportationsDto orderTransport) {
         TransportationSchedules schedules = transportationScheduleService.findBySchedulesId(scheduleId);
         BigDecimal orderTotal = new BigDecimal(amountTicket).multiply(new BigDecimal(schedules.getUnitPrice().intValue()));
-
-        String baseUrl = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort();
-        baseUrl += "/api/v1/customer/transport/vnpay/success-payment";
-        String vnPayUrl = vnPayService.createOrder(orderTotal.intValue(), orderInfo, baseUrl);
 
         SessionAttr.ORDER_TRANSPORTATIONS_DTO = orderTransport;
         SessionAttr.SEAT_NUMBER = seatNumber;
 
         Map<String, Object> response = new HashMap<>();
-        response.put("redirectUrl", vnPayUrl);
 
+        LogUtils.init();
+        String requestId = String.valueOf(System.currentTimeMillis());
+        String orderId = String.valueOf(System.currentTimeMillis());
+
+        String orderInfo = "Thanh Toan Don Hang #" + bookingTransportId;
+        String returnURL = DomainURL.BACKEND_URL + "/api/v1/customer/transport/momo/success-payment";
+        String notifyURL = DomainURL.BACKEND_URL + "/api/v1/customer/transport/momo/success-payment";
+
+        Environment environment = Environment.selectEnv("dev");
+        PaymentResponse captureWalletMoMoResponse = CreateOrderMoMo.process(environment, orderId, requestId, Long.toString(orderTotal.intValue()), orderInfo, returnURL, notifyURL, "", RequestType.CAPTURE_WALLET, Boolean.TRUE);
+        assert captureWalletMoMoResponse != null;
+        response.put("redirectUrl", captureWalletMoMoResponse.getPayUrl());
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
-    /**
-     * phương thức lưu db khi giao dịch thành công
-     */
-    @GetMapping("vnpay/success-payment")
-    private String successBookingTransportVNPAY(HttpServletRequest request) {
-        int paymentStatus = vnPayService.orderReturn(request);
+    @GetMapping("momo/success-payment")
+    private String successBookingTransportMomo(HttpServletRequest request) {
+        String payType = request.getParameter("payType");
+        int paymentStatus = payType.equals("qr") ? 1 : 0;
 
         List<Integer> seatNumber = SessionAttr.SEAT_NUMBER;
         OrderTransportations orderTransportationSuccess = null;

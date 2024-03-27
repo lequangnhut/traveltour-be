@@ -1,4 +1,4 @@
-package com.main.traveltour.restcontroller.customer.bookingLocation;
+package com.main.traveltour.restcontroller.customer.bookinglocation;
 
 import com.main.traveltour.dto.staff.OrderVisitsDto;
 import com.main.traveltour.entity.*;

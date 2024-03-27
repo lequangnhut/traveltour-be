@@ -1,4 +1,4 @@
-package com.main.traveltour.restcontroller.customer.bookingLocation.vnpay;
+package com.main.traveltour.restcontroller.customer.bookinglocation.vnpay;
 
 import com.main.traveltour.configpayment.vnpay.VNPayService;
 import com.main.traveltour.dto.staff.OrderVisitsDto;
@@ -7,7 +7,6 @@ import com.main.traveltour.service.UsersService;
 import com.main.traveltour.service.agent.OrderVisitDetailService;
 import com.main.traveltour.service.agent.VisitLocationTicketService;
 import com.main.traveltour.service.staff.OrderVisitLocationService;
-import com.main.traveltour.service.staff.VisitLocationService;
 import com.main.traveltour.service.utils.EmailService;
 import com.main.traveltour.utils.EntityDtoUtils;
 import com.main.traveltour.utils.RandomUtils;

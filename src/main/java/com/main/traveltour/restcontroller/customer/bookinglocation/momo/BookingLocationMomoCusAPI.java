@@ -1,6 +1,6 @@
-package com.main.traveltour.restcontroller.customer.bookingLocation.momo;
+package com.main.traveltour.restcontroller.customer.bookinglocation.momo;
 
-import com.main.traveltour.config.URLConfig;
+import com.main.traveltour.config.DomainURL;
 import com.main.traveltour.configpayment.momo.config.Environment;
 import com.main.traveltour.configpayment.momo.enums.RequestType;
 import com.main.traveltour.configpayment.momo.models.PaymentResponse;
@@ -62,7 +62,7 @@ public class BookingLocationMomoCusAPI {
         String orderId = String.valueOf(System.currentTimeMillis());
 
         String orderInfo = "Thanh Toan Don Hang #" + bookingTourId;
-        String returnURL = URLConfig.ConfigUrl + "/api/v1/customer/booking-tour/momo/success-payment";
+        String returnURL = DomainURL.BACKEND_URL + "/api/v1/customer/booking-tour/momo/success-payment";
         String notifyURL = "/api/v1/momo/success-payment";
 
         Environment environment = Environment.selectEnv("dev");
