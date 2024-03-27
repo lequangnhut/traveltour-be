@@ -1,5 +1,6 @@
 package com.main.traveltour.component;
 
+import com.main.traveltour.service.agent.TransportScheduleSeatService;
 import com.main.traveltour.service.agent.TransportationScheduleService;
 import com.main.traveltour.service.customer.PassOTPService;
 import com.main.traveltour.service.staff.TourDetailsService;
@@ -14,6 +15,9 @@ public class ScheduledTasks {
 
     @Autowired
     private TransportationScheduleService transportationScheduleService;
+
+    @Autowired
+    private TransportScheduleSeatService transportScheduleSeatService;
 
     @Autowired
     private TourDetailsService tourDetailsService;
@@ -34,5 +38,10 @@ public class ScheduledTasks {
     @Scheduled(fixedDelay = 5000)
     public void checkFailOtpForgot() {
         passOTPService.updateActive();
+    }
+
+    @Scheduled(fixedDelay = 1000)
+    public void checkTimeBookingTransport() {
+        transportScheduleSeatService.checkTimeBookingTransport();
     }
 }

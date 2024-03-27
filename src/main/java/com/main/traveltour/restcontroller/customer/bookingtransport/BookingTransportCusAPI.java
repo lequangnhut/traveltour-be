@@ -4,7 +4,7 @@ import com.main.traveltour.dto.agent.transport.OrderTransportationsDto;
 import com.main.traveltour.entity.OrderTransportations;
 import com.main.traveltour.entity.ResponseObject;
 import com.main.traveltour.entity.TransportationSchedules;
-import com.main.traveltour.restcontroller.customer.bookingtransport.service.BookingTransportService;
+import com.main.traveltour.restcontroller.customer.bookingtransport.service.BookingTransportAPIService;
 import com.main.traveltour.service.agent.OrderTransportService;
 import com.main.traveltour.service.agent.TransportationScheduleService;
 import com.main.traveltour.service.utils.EmailService;
@@ -25,7 +25,7 @@ public class BookingTransportCusAPI {
     private OrderTransportService orderTransportService;
 
     @Autowired
-    private BookingTransportService bookingTransportService;
+    private BookingTransportAPIService bookingTransportAPIService;
 
     @Autowired
     private TransportationScheduleService transportationScheduleService;
@@ -53,9 +53,9 @@ public class BookingTransportCusAPI {
                 schedules.setBookedSeat(schedules.getBookedSeat() + orderTransportationsDto.getAmountTicket()); // set chổ ngồi đã đặt trong lịch trình
                 transportationScheduleService.save(schedules);
 
-                bookingTransportService.createOrderDetailScheduleSeat(schedules, orderTransportations.getId(), seatNumber);
+                bookingTransportAPIService.createOrderDetailScheduleSeat(schedules, orderTransportations.getId(), seatNumber);
             } else {
-                orderTransportationSuccess = bookingTransportService.createUserPayment(orderTransportationsDto, seatNumber, 0); // chờ thanh toán
+                orderTransportationSuccess = bookingTransportAPIService.createUserPayment(orderTransportationsDto, seatNumber, 0); // chờ thanh toán
             }
 
             emailService.queueEmailCustomerBookingTransport(orderTransportationsDto);

@@ -8,6 +8,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.sql.Timestamp;
 import java.util.Collection;
 
 @Getter
@@ -28,6 +29,9 @@ public class TransportationScheduleSeats {
 
     @Column(name = "is_booked")
     private Boolean isBooked;
+
+    @Column(name = "delay_booking")
+    private Timestamp delayBooking;
 
     @Basic
     @Column(name = "transportation_schedule_id", nullable = false, length = 30)

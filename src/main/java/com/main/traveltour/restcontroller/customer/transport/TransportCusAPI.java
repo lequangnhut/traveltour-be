@@ -1,10 +1,10 @@
 package com.main.traveltour.restcontroller.customer.transport;
 
+import com.github.javafaker.Bool;
 import com.main.traveltour.dto.customer.TransportationBrandsDto;
 import com.main.traveltour.dto.customer.transport.TransportationSchedulesDto;
-import com.main.traveltour.entity.ResponseObject;
-import com.main.traveltour.entity.TransportationBrands;
-import com.main.traveltour.entity.TransportationSchedules;
+import com.main.traveltour.entity.*;
+import com.main.traveltour.service.agent.TransportScheduleSeatService;
 import com.main.traveltour.service.agent.TransportationBrandsService;
 import com.main.traveltour.service.agent.TransportationScheduleService;
 import com.main.traveltour.utils.EntityDtoUtils;
@@ -16,6 +16,8 @@ import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
+import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -26,6 +28,9 @@ public class TransportCusAPI {
 
     @Autowired
     private TransportationScheduleService transportationScheduleService;
+
+    @Autowired
+    private TransportScheduleSeatService transportScheduleSeatService;
 
     @Autowired
     private TransportationBrandsService transportationBrandsService;
@@ -52,6 +57,48 @@ public class TransportCusAPI {
             return new ResponseObject("404", "Không tìm thấy dữ liệu", null);
         } else {
             return new ResponseObject("200", "Đã tìm thấy dữ liệu", brandsDto);
+        }
+    }
+
+    @GetMapping("customer/transport/find-seat-by-seat-number-and-schedule-id/{scheduleId}/{seatNumber}")
+    public ResponseObject findBySeatNumberAndScheduleId(@PathVariable String scheduleId, @PathVariable List<Integer> seatNumber) {
+        try {
+            LocalDateTime now = LocalDateTime.now();
+            LocalDateTime cancelTime = now.plusMinutes(10);
+
+            for (Integer seatName : seatNumber) {
+                List<TransportationScheduleSeats> scheduleSeats = transportScheduleSeatService.findAllBySeatNumberScheduleId(seatName, scheduleId);
+
+                for (TransportationScheduleSeats seats : scheduleSeats) {
+                    seats.setIsBooked(true);
+                    seats.setDelayBooking(Timestamp.valueOf(cancelTime));
+
+                    transportScheduleSeatService.save(seats);
+                }
+            }
+
+            return new ResponseObject("200", "Thành công", null);
+        } catch (Exception e) {
+            return new ResponseObject("404", "Thất bại", null);
+        }
+    }
+
+    @GetMapping("customer/transport/check-seat-by-seat-number-and-schedule-id/{scheduleId}/{seatNumber}")
+    public ResponseObject checkSeatNumberAndScheduleId(@PathVariable String scheduleId, @PathVariable List<Integer> seatNumber) {
+        try {
+            Boolean isBooked = false;
+
+            for (Integer seatName : seatNumber) {
+                List<TransportationScheduleSeats> scheduleSeats = transportScheduleSeatService.findAllBySeatNumberScheduleId(seatName, scheduleId);
+
+                for (TransportationScheduleSeats seats : scheduleSeats) {
+                    isBooked = seats.getIsBooked();
+                }
+            }
+
+            return new ResponseObject("200", "Thành công", isBooked);
+        } catch (Exception e) {
+            return new ResponseObject("404", "Thất bại", null);
         }
     }
 

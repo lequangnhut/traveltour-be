@@ -2,7 +2,7 @@ package com.main.traveltour.restcontroller.customer.bookingtransport.service.imp
 
 import com.main.traveltour.dto.agent.transport.OrderTransportationsDto;
 import com.main.traveltour.entity.*;
-import com.main.traveltour.restcontroller.customer.bookingtransport.service.BookingTransportService;
+import com.main.traveltour.restcontroller.customer.bookingtransport.service.BookingTransportAPIService;
 import com.main.traveltour.service.UsersService;
 import com.main.traveltour.service.agent.OrderTransportDetailService;
 import com.main.traveltour.service.agent.OrderTransportService;
@@ -19,7 +19,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
-public class BookingTransportServiceImpl implements BookingTransportService {
+public class BookingTransportAPIServiceImpl implements BookingTransportAPIService {
 
     @Autowired
     private UsersService usersService;

@@ -5,7 +5,7 @@ import com.main.traveltour.configpayment.vnpay.VNPayService;
 import com.main.traveltour.dto.agent.transport.OrderTransportationsDto;
 import com.main.traveltour.entity.OrderTransportations;
 import com.main.traveltour.entity.TransportationSchedules;
-import com.main.traveltour.restcontroller.customer.bookingtransport.service.BookingTransportService;
+import com.main.traveltour.restcontroller.customer.bookingtransport.service.BookingTransportAPIService;
 import com.main.traveltour.service.agent.OrderTransportService;
 import com.main.traveltour.service.agent.TransportationScheduleService;
 import com.main.traveltour.service.utils.EmailService;
@@ -37,7 +37,7 @@ public class BookingTransportVNPayCusAPI {
     private TransportationScheduleService transportationScheduleService;
 
     @Autowired
-    private BookingTransportService bookingTransportService;
+    private BookingTransportAPIService bookingTransportAPIService;
 
     @Autowired
     private EmailService emailService;
@@ -109,10 +109,10 @@ public class BookingTransportVNPayCusAPI {
                     schedules.setBookedSeat(schedules.getBookedSeat() + orderTransportationsDto.getAmountTicket()); // set chổ ngồi đã đặt trong lịch trình
                     transportationScheduleService.save(schedules);
 
-                    bookingTransportService.createOrderDetailScheduleSeat(schedules, orderTransportations.getId(), seatNumber);
+                    bookingTransportAPIService.createOrderDetailScheduleSeat(schedules, orderTransportations.getId(), seatNumber);
                 } else {
                     // nếu người dùng không đăng nhập
-                    orderTransportationSuccess = bookingTransportService.createUserPayment(orderTransportationsDto, seatNumber, 1); // đã thanh toán
+                    orderTransportationSuccess = bookingTransportAPIService.createUserPayment(orderTransportationsDto, seatNumber, 1); // đã thanh toán
                 }
             } else {
                 // nếu thất bại

@@ -1,7 +1,6 @@
 package com.main.traveltour.service.agent;
 
 import com.main.traveltour.entity.TransportationScheduleSeats;
-import org.springframework.data.repository.query.Param;
 
 import java.util.List;
 
@@ -15,5 +14,5 @@ public interface TransportScheduleSeatService {
 
     TransportationScheduleSeats save(TransportationScheduleSeats seats);
 
-    void deleteAll(String scheduleId);
+    void checkTimeBookingTransport();
 }

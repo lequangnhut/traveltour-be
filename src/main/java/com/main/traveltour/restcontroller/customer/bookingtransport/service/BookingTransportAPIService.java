@@ -6,7 +6,7 @@ import com.main.traveltour.entity.TransportationSchedules;
 
 import java.util.List;
 
-public interface BookingTransportService {
+public interface BookingTransportAPIService {
 
     OrderTransportations createUserPayment(OrderTransportationsDto orderTransportationsDto, List<Integer> seatNumber, Integer orderStatus);
 
