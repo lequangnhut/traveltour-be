@@ -1,9 +1,11 @@
 package com.main.traveltour.restcontroller.customer.transport;
 
-import com.github.javafaker.Bool;
 import com.main.traveltour.dto.customer.TransportationBrandsDto;
 import com.main.traveltour.dto.customer.transport.TransportationSchedulesDto;
-import com.main.traveltour.entity.*;
+import com.main.traveltour.entity.ResponseObject;
+import com.main.traveltour.entity.TransportationBrands;
+import com.main.traveltour.entity.TransportationScheduleSeats;
+import com.main.traveltour.entity.TransportationSchedules;
 import com.main.traveltour.service.agent.TransportScheduleSeatService;
 import com.main.traveltour.service.agent.TransportationBrandsService;
 import com.main.traveltour.service.agent.TransportationScheduleService;
@@ -66,18 +68,39 @@ public class TransportCusAPI {
             LocalDateTime now = LocalDateTime.now();
             LocalDateTime cancelTime = now.plusMinutes(10);
 
+            boolean shouldSave = true;
+
             for (Integer seatName : seatNumber) {
                 List<TransportationScheduleSeats> scheduleSeats = transportScheduleSeatService.findAllBySeatNumberScheduleId(seatName, scheduleId);
 
                 for (TransportationScheduleSeats seats : scheduleSeats) {
-                    seats.setIsBooked(true);
-                    seats.setDelayBooking(Timestamp.valueOf(cancelTime));
+                    if (seats.getIsBooked()) {
+                        shouldSave = false;
+                        break;
+                    }
+                }
 
-                    transportScheduleSeatService.save(seats);
+                if (!shouldSave) {
+                    break;
                 }
             }
 
-            return new ResponseObject("200", "Thành công", null);
+            if (shouldSave) {
+                for (Integer seatName : seatNumber) {
+                    List<TransportationScheduleSeats> scheduleSeats = transportScheduleSeatService.findAllBySeatNumberScheduleId(seatName, scheduleId);
+
+                    for (TransportationScheduleSeats seats : scheduleSeats) {
+                        seats.setIsBooked(true);
+                        seats.setDelayBooking(Timestamp.valueOf(cancelTime));
+
+                        transportScheduleSeatService.save(seats);
+                    }
+                }
+
+                return new ResponseObject("200", "Thành công", null);
+            } else {
+                return new ResponseObject("400", "Không thêm dữ liệu mới vì đã có ít nhất một ghế đã được đặt", null);
+            }
         } catch (Exception e) {
             return new ResponseObject("404", "Thất bại", null);
         }
@@ -86,13 +109,16 @@ public class TransportCusAPI {
     @GetMapping("customer/transport/check-seat-by-seat-number-and-schedule-id/{scheduleId}/{seatNumber}")
     public ResponseObject checkSeatNumberAndScheduleId(@PathVariable String scheduleId, @PathVariable List<Integer> seatNumber) {
         try {
-            Boolean isBooked = false;
+            boolean isBooked = false;
 
             for (Integer seatName : seatNumber) {
                 List<TransportationScheduleSeats> scheduleSeats = transportScheduleSeatService.findAllBySeatNumberScheduleId(seatName, scheduleId);
 
                 for (TransportationScheduleSeats seats : scheduleSeats) {
-                    isBooked = seats.getIsBooked();
+                    if (seats.getIsBooked()) {
+                        isBooked = true;
+                        break;
+                    }
                 }
             }
 

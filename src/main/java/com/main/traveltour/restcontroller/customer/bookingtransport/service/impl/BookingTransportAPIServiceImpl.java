@@ -87,6 +87,7 @@ public class BookingTransportAPIServiceImpl implements BookingTransportAPIServic
 
             for (TransportationScheduleSeats seats : scheduleSeats) {
                 seats.setIsBooked(Boolean.TRUE);
+                seats.setDelayBooking(null);
                 transportScheduleSeatService.save(seats);
 
                 OrderTransportationDetails orderTransportDetails = new OrderTransportationDetails();

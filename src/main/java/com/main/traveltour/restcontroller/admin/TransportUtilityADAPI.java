@@ -1,6 +1,7 @@
 package com.main.traveltour.restcontroller.admin;
 
-import com.main.traveltour.dto.TransportUtilitiesDto;
+import com.main.traveltour.dto.admin.TransportUtilitiesDto;
+import com.main.traveltour.dto.admin.TransportUtilitiesGetDataDTO;
 import com.main.traveltour.entity.ResponseObject;
 import com.main.traveltour.entity.TransportUtilities;
 import com.main.traveltour.service.admin.TransportUtilityServiceAD;
@@ -38,10 +39,12 @@ public class TransportUtilityADAPI {
         Page<TransportUtilities> transportUtilities = searchTerm == null || searchTerm.isEmpty()
                 ? transportUtilityServiceAD.findAllTransUtilityAD(PageRequest.of(page, size, sort))
                 : transportUtilityServiceAD.findAllWithSearchTransUtilityAD(searchTerm, PageRequest.of(page, size, sort));
-        if (transportUtilities.isEmpty()) {
+        Page<TransportUtilitiesGetDataDTO> transportUtilitiesDto = transportUtilities.map(utilities -> EntityDtoUtils.convertToDto(utilities, TransportUtilitiesGetDataDTO.class));
+
+        if (transportUtilitiesDto.isEmpty()) {
             return new ResponseObject("404", "Không tìm thấy dữ liệu", null);
         } else {
-            return new ResponseObject("200", "Đã tìm thấy dữ liệu", transportUtilities);
+            return new ResponseObject("200", "Đã tìm thấy dữ liệu", transportUtilitiesDto);
         }
     }
 

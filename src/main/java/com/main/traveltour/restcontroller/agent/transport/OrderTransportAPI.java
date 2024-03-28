@@ -119,15 +119,14 @@ public class OrderTransportAPI {
 
     @PostMapping("/agent/order-transport/create-order-transport/{seatNumber}")
     private ResponseObject createOrderTransport(@RequestBody OrderTransportationsDto orderTransportationsDto, @PathVariable List<Integer> seatNumber) {
-        String orderTransportId = GenerateNextID.generateNextCode("OTR", orderTransportService.findMaxCode());
         String transportScheduleId = orderTransportationsDto.getTransportationScheduleId();
 
         OrderTransportations orderTransportations = EntityDtoUtils.convertToEntity(orderTransportationsDto, OrderTransportations.class);
-        orderTransportations.setId(orderTransportId);
+        orderTransportations.setId(orderTransportationsDto.getId());
         orderTransportations.setOrderStatus(0); // 0 là đã tạo vé
         orderTransportations.setPaymentMethod(0); // 0 là thanh toán tại quầy
         orderTransportations.setOrderTotal(ReplaceUtils.parseMoneyString(orderTransportationsDto.getPriceFormat()));
-        orderTransportations.setOrderCode(generateQrCode(orderTransportId));
+        orderTransportations.setOrderCode(generateQrCode(orderTransportationsDto.getId()));
         orderTransportService.save(orderTransportations);
 
         TransportationSchedules schedules = transportationScheduleService.findBySchedulesId(transportScheduleId);
@@ -139,10 +138,11 @@ public class OrderTransportAPI {
 
             for (TransportationScheduleSeats seats : scheduleSeats) {
                 seats.setIsBooked(Boolean.TRUE);
+                seats.setDelayBooking(null);
                 transportScheduleSeatService.save(seats);
 
                 OrderTransportationDetails orderTransportDetails = new OrderTransportationDetails();
-                orderTransportDetails.setOrderTransportationId(orderTransportId);
+                orderTransportDetails.setOrderTransportationId(orderTransportationsDto.getId());
                 orderTransportDetails.setTransportationScheduleSeatId(seats.getId());
                 orderTransportDetailService.save(orderTransportDetails);
             }
