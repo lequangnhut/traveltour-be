@@ -6,6 +6,7 @@ import com.main.traveltour.dto.auth.RegisterDto;
 import com.main.traveltour.dto.customer.booking.BookingDto;
 import com.main.traveltour.dto.customer.booking.BookingToursDto;
 import com.main.traveltour.dto.customer.infomation.*;
+import com.main.traveltour.dto.customer.visit.BookingLocationCusDto;
 import com.main.traveltour.dto.superadmin.AccountDto;
 import com.main.traveltour.dto.superadmin.DataAccountDto;
 import com.main.traveltour.entity.*;
@@ -16,10 +17,7 @@ import com.main.traveltour.service.admin.HotelsServiceAD;
 import com.main.traveltour.service.agent.OrderVisitDetailService;
 import com.main.traveltour.service.agent.TransportationService;
 import com.main.traveltour.service.customer.OrderVehicleDetailsService;
-import com.main.traveltour.service.staff.OrderHotelDetailService;
-import com.main.traveltour.service.staff.TourDetailsService;
-import com.main.traveltour.service.staff.ToursService;
-import com.main.traveltour.service.staff.TransportationScheduleService;
+import com.main.traveltour.service.staff.*;
 import com.main.traveltour.service.utils.EmailService;
 import com.main.traveltour.service.utils.ThymeleafService;
 import com.main.traveltour.utils.DateUtils;
@@ -59,6 +57,7 @@ public class EmailServiceImpl implements EmailService {
     private final Queue<OrderVisitsDto> emailQueueCustomerCancelVisit = new LinkedList<>();
     private final Queue<CancelOrderTransportationsDto> emailQueueCustomerCancelTrans = new LinkedList<>();
     private final Queue<OrderTransportationsDto> emailQueueCustomerBookingTrans = new LinkedList<>();
+    private final Queue<BookingLocationCusDto> emailQueueCustomerBookingLocation = new LinkedList<>();
 
     @Autowired
     private JavaMailSender sender;
@@ -86,6 +85,12 @@ public class EmailServiceImpl implements EmailService {
 
     @Autowired
     private TransportationService transportationService;
+
+    @Autowired
+    private VisitLocationService visitLocationService;
+
+    @Autowired
+    private OrderVisitLocationDetailService orderVisitLocationDetailService;
 
 
     @Value("${spring.mail.username}")
@@ -499,6 +504,63 @@ public class EmailServiceImpl implements EmailService {
     }
 
     @Override
+    public void queueEmailBookingLocation(BookingLocationCusDto bookingLocationCusDto) {
+        emailQueueCustomerBookingLocation.add(bookingLocationCusDto);
+    }
+
+
+    @Override
+    public void sendMailBookingLocation() {
+        while (!emailQueueCustomerBookingLocation.isEmpty()) {
+            BookingLocationCusDto bookingLocationCusDto = emailQueueCustomerBookingLocation.poll();
+            com.main.traveltour.dto.staff.OrderVisitsDto orderVisitsDto = bookingLocationCusDto.getOrderVisitsDto();
+            OrderVisits orderVisits = bookingLocationCusDto.getOrderVisits();
+            List<OrderVisitDetails> orderVisitDetails = orderVisitLocationDetailService.findByOrderVisitId(orderVisits.getId());
+            VisitLocations visitLocations = visitLocationService.findByIdAndIsActiveIsTrue(orderVisits.getVisitLocationId());
+
+            String customerEmail = orderVisitsDto.getCustomerEmail();
+
+            try {
+                MimeMessage message = sender.createMimeMessage();
+                MimeMessageHelper helper = new MimeMessageHelper(message, MimeMessageHelper.MULTIPART_MODE_MIXED_RELATED, StandardCharsets.UTF_8.name());
+
+                helper.setTo(customerEmail);
+
+                Map<String, Object> variables = new HashMap<>();
+
+                if (orderVisits.getPaymentMethod() == 1) {
+                    variables.put("paymentMethod", "VÍ VNPAY");
+                } else if (orderVisits.getPaymentMethod() == 2) {
+                    variables.put("paymentMethod", "VÍ ZALOPAY");
+                } else if (orderVisits.getPaymentMethod() == 3) {
+                    variables.put("paymentMethod", "VÍ MOMO");
+                } else {
+                    variables.put("paymentMethod", "Thanh toán tại quầy");
+                }
+
+                variables.put("bookingId", orderVisits.getId());
+                variables.put("dateTimeBooking", DateUtils.formatTimestamp(String.valueOf(new Timestamp(System.currentTimeMillis()))));
+                variables.put("locationName", visitLocations.getVisitLocationName());
+                variables.put("customerName", orderVisits.getCustomerName());
+                variables.put("customerCitizenCard", orderVisits.getCustomerCitizenCard());
+                variables.put("customerPhone", orderVisits.getCustomerPhone());
+                variables.put("checkIn", DateUtils.formatTimestamp(String.valueOf(orderVisits.getCheckIn())));
+                variables.put("orderTotal", orderVisits.getOrderTotal());
+
+                variables.put("orderVisitDetails", orderVisitDetails);
+
+                helper.setFrom(email);
+                helper.setText(thymeleafService.createContent("order-location-verify", variables), true);
+                helper.setSubject("DỊCH VỤ LỮ HÀNH TRAVELTOUR XIN CHÂN THÀNH CẢM ƠN QUÝ KHÁCH ĐÃ ĐẶT VÉ THAM QUAN CỦA CHÚNG TÔI.");
+
+                sender.send(message);
+            } catch (MessagingException e) {
+                throw new RuntimeException(e);
+            }
+        }
+    }
+
+    @Override
     public void sendMailCustomerBookingTransport() {
         while (!emailQueueCustomerBookingTrans.isEmpty()) {
             OrderTransportationsDto orderTransportDto = emailQueueCustomerBookingTrans.poll();
@@ -784,6 +846,11 @@ public class EmailServiceImpl implements EmailService {
     @Scheduled(fixedDelay = 5000)
     public void processBookingTourInvoices() {
         sendMailBookingTourInvoices();
+    }
+
+    @Scheduled(fixedDelay = 5000)
+    public void processBookingLocation() {
+        sendMailBookingLocation();
     }
 
     @Scheduled(fixedDelay = 5000)
