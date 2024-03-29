@@ -63,7 +63,7 @@ public interface EmailService {
 
     void sendMailCustomerCancelVisit();
 
-    void queueEmailCustomerCancelVisit(OrderVisitsDto orderVisitsDto);
+    void queueEmailCustomerCancelVisit(CancelOrderVisitsDto cancelOrderVisitsDto);
 
     void sendMailCustomerCancelTrans();
 

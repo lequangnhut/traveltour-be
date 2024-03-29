@@ -40,4 +40,6 @@ public interface UsersService {
     List<Users> findUsersByRolesIsGuild();
 
     Users checkMailForgot(String email);
+
+    Long countUsers();
 }

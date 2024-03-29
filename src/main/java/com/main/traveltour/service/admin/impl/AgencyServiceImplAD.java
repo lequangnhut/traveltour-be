@@ -91,4 +91,9 @@ public class AgencyServiceImplAD implements AgencyServiceAD {
         return agenciesRepository.findAllById(id);
     }
 
+    @Override
+    public Long countAgency() {
+        return agenciesRepository.countAgencies();
+    }
+
 }

@@ -141,4 +141,9 @@ public class UsersServiceImpl implements UsersService {
     public Users checkMailForgot(String email) {
         return usersRepository.findByEmailAndActive(email);
     }
+
+    @Override
+    public Long countUsers() {
+        return usersRepository.countUsers();
+    }
 }

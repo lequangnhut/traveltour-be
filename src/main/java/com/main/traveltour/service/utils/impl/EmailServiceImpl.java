@@ -54,7 +54,7 @@ public class EmailServiceImpl implements EmailService {
     private final Queue<ForgotPasswordDto> emailQueueSendOTPRegisterAgencies = new LinkedList<>();
     private final Queue<BookingDto> emailQueueBookingTourInvoices = new LinkedList<>();
     private final Queue<CancelOrderHotelsDto> emailQueueCustomerCancelHotel = new LinkedList<>();
-    private final Queue<OrderVisitsDto> emailQueueCustomerCancelVisit = new LinkedList<>();
+    private final Queue<CancelOrderVisitsDto> emailQueueCustomerCancelVisit = new LinkedList<>();
     private final Queue<CancelOrderTransportationsDto> emailQueueCustomerCancelTrans = new LinkedList<>();
     private final Queue<OrderTransportationsDto> emailQueueCustomerBookingTrans = new LinkedList<>();
     private final Queue<BookingLocationCusDto> emailQueueCustomerBookingLocation = new LinkedList<>();
@@ -87,10 +87,10 @@ public class EmailServiceImpl implements EmailService {
     private TransportationService transportationService;
 
     @Autowired
-    private VisitLocationService visitLocationService;
+    private OrderVisitLocationDetailService orderVisitLocationDetailService;
 
     @Autowired
-    private OrderVisitLocationDetailService orderVisitLocationDetailService;
+    private VisitLocationService visitLocationService;
 
 
     @Value("${spring.mail.username}")
@@ -508,7 +508,6 @@ public class EmailServiceImpl implements EmailService {
         emailQueueCustomerBookingLocation.add(bookingLocationCusDto);
     }
 
-
     @Override
     public void sendMailBookingLocation() {
         while (!emailQueueCustomerBookingLocation.isEmpty()) {
@@ -720,12 +719,62 @@ public class EmailServiceImpl implements EmailService {
 
     @Override
     public void sendMailCustomerCancelVisit() {
+        while (!emailQueueCustomerCancelVisit.isEmpty()) {
+            CancelOrderVisitsDto cancelOrderVisitsDto = emailQueueCustomerCancelVisit.poll();
+            List<OrderVisitDetails> orderVisitDetailsList = orderVisitLocationDetailService.findByOrderVisitId(cancelOrderVisitsDto.getId());
+            List<OrderVisitDetailsDto> orderVisitDetailsDtoList = EntityDtoUtils.convertToDtoList(orderVisitDetailsList, OrderVisitDetailsDto.class);
 
+            BigDecimal orderTotal = cancelOrderVisitsDto.getOrderTotal(); // Lấy tổng tiền
+
+            try {
+                MimeMessage message = sender.createMimeMessage();
+                MimeMessageHelper helper = new MimeMessageHelper(message, MimeMessageHelper.MULTIPART_MODE_MIXED_RELATED, StandardCharsets.UTF_8.name());
+
+                if (cancelOrderVisitsDto.getUserId() != null) {
+                    helper.setTo(cancelOrderVisitsDto.getCustomerEmail());
+                } else {
+                    helper.setTo(cancelOrderVisitsDto.getCustomerEmail());
+                }
+
+                Map<String, Object> variables = new HashMap<>();
+                variables.put("customerEmail", cancelOrderVisitsDto.getCustomerEmail());
+                variables.put("bookingId", cancelOrderVisitsDto.getId());
+                variables.put("dateTimeBooking", cancelOrderVisitsDto.getDateCreated());
+                variables.put("timeDelete", new Timestamp(System.currentTimeMillis()));
+                variables.put("customerName", cancelOrderVisitsDto.getCustomerName());
+                variables.put("customerCitizenCard", cancelOrderVisitsDto.getCustomerCitizenCard());
+                variables.put("customerPhone", cancelOrderVisitsDto.getCustomerPhone());
+
+                if (cancelOrderVisitsDto.getPaymentMethod() == 1) {
+                    variables.put("paymentMethod", "VÍ VNPAY");
+                } else if (cancelOrderVisitsDto.getPaymentMethod() == 2) {
+                    variables.put("paymentMethod", "VÍ ZALOPAY");
+                } else if (cancelOrderVisitsDto.getPaymentMethod() == 3) {
+                    variables.put("paymentMethod", "VÍ MOMO");
+                } else {
+                    variables.put("paymentMethod", "Thanh toán tại quầy");
+                }
+
+                variables.put("visitName", cancelOrderVisitsDto.getVisitLocations().getVisitLocationName());
+                variables.put("departureDate", cancelOrderVisitsDto.getCheckIn());
+                variables.put("orderDetails", orderVisitDetailsDtoList);
+                variables.put("orderTotal", ReplaceUtils.formatPrice(orderTotal) + " VNĐ");
+                variables.put("refund", cancelOrderVisitsDto.getCoc() + "%");
+                variables.put("moneyback", ReplaceUtils.formatPrice(cancelOrderVisitsDto.getMoneyBack()) + " VNĐ");
+                helper.setFrom(email);
+                helper.setText(thymeleafService.createContent("customer-cancel-visit", variables), true);
+                helper.setSubject("XÁC NHẬN HỦY VÉ THAM QUAN.");
+
+                sender.send(message);
+            } catch (MessagingException e) {
+                throw new RuntimeException(e);
+            }
+        }
     }
 
     @Override
-    public void queueEmailCustomerCancelVisit(OrderVisitsDto orderVisitsDto) {
-        emailQueueCustomerCancelVisit.add(orderVisitsDto);
+    public void queueEmailCustomerCancelVisit(CancelOrderVisitsDto cancelOrderVisitsDto) {
+        emailQueueCustomerCancelVisit.add(cancelOrderVisitsDto);
     }
 
     @Override
@@ -849,23 +898,21 @@ public class EmailServiceImpl implements EmailService {
     }
 
     @Scheduled(fixedDelay = 5000)
-    public void processBookingLocation() {
-        sendMailBookingLocation();
-    }
-
-    @Scheduled(fixedDelay = 5000)
     public void processCustomerCancelHotel() {
         sendMailCustomerCancelHotel();
     }
 
     @Scheduled(fixedDelay = 5000)
     public void processCustomerCancelVisit() {
-        sendMailCustomerCancelVisit();
-    }
-
+        sendMailCustomerCancelVisit();}
     @Scheduled(fixedDelay = 5000)
     public void processCustomerCancelTrans() {
         sendMailCustomerCancelTrans();
+    }
+
+    @Scheduled(fixedDelay = 5000)
+    public void processBookingLocation() {
+        sendMailBookingLocation();
     }
 
     private String convertRolesToVietnamese(List<String> roles) {

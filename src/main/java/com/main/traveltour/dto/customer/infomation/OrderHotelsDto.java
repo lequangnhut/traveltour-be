@@ -1,22 +1,22 @@
 package com.main.traveltour.dto.customer.infomation;
 
-import com.main.traveltour.entity.OrderVisitDetails;
-import com.main.traveltour.entity.VisitLocations;
+
+
+import com.main.traveltour.entity.OrderHotelDetails;
 import lombok.Data;
-import lombok.Value;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.sql.Timestamp;
+import java.util.Collection;
 
 /**
- * DTO for {@link com.main.traveltour.entity.OrderVisits}
+ * DTO for {@link com.main.traveltour.entity.OrderHotels}
  */
 @Data
-public class OrderVisitsDto implements Serializable {
+public class OrderHotelsDto implements Serializable {
     String id;
     Integer userId;
-    String visitLocationId;
     String customerName;
     String customerCitizenCard;
     String customerPhone;
@@ -24,11 +24,12 @@ public class OrderVisitsDto implements Serializable {
     Integer capacityAdult;
     Integer capacityKid;
     Timestamp checkIn;
+    Timestamp checkOut;
     BigDecimal orderTotal;
-    Integer paymentMethod;
+    String paymentMethod;
     String orderCode;
     Timestamp dateCreated;
     Integer orderStatus;
     String orderNote;
-    VisitLocations visitLocationsByVisitLocationId;
+    Collection<OrderHotelDetails> orderHotelDetailsById;
 }

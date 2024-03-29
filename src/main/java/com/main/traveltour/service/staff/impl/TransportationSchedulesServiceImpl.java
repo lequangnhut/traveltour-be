@@ -51,4 +51,9 @@ public class TransportationSchedulesServiceImpl implements TransportationSchedul
     public void update(TransportationSchedules transportationSchedules) {
         repo.save(transportationSchedules);
     }
+
+    @Override
+    public Long countSchedules() {
+        return repo.countTransportationSchedules();
+    }
 }

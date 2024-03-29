@@ -103,4 +103,10 @@ public class TourDetailsServiceImpl implements TourDetailsService {
         String sql = "UPDATE tour_details SET tour_detail_status = ? WHERE id = ?";
         jdbcTemplate.update(sql, tourDetails.getTourDetailStatus(), tourDetails.getId());
     }
+
+    @Override
+    public Long countTourDetails() {
+        return tourDetailsRepository.countTourDetails();
+    }
+
 }

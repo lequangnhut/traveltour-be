@@ -47,4 +47,9 @@ public class VisitLocationServiceImpl implements VisitLocationService {
     public List<VisitLocationTrendDTO> findVisitLocationsTrend() {
         return repo.findVisitLocationsTrend();
     }
+
+    @Override
+    public Long countVisit() {
+        return repo.countVisitLocations();
+    }
 }

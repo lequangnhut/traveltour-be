@@ -62,4 +62,7 @@ public interface AgenciesRepository extends JpaRepository<Agencies, Integer> {
     Page<Agencies> findByIsAcceptedEqualsAndNameAgencyContainingIgnoreCase(int isAccepted, String searchTerm, Pageable pageable);
 
     List<Agencies> findAllById(int id);
+
+    @Query("SELECT COUNT(a) FROM Agencies a")
+    Long countAgencies ();
 }

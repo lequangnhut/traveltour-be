@@ -52,4 +52,9 @@ public class BookingTourCustomerServiceImpl implements BookingTourCustomerServic
     public void delete(Integer id) {
         repo.deleteById(id);
     }
+
+    @Override
+    public Long countCustomer() {
+        return repo.countBookingTourCustomers();
+    }
 }

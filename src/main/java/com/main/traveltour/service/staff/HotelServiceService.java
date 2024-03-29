@@ -17,5 +17,6 @@ public interface HotelServiceService {
 
     Hotels findByRoomTypeId(String roomTypeId);
 
+    Long countHotels();
 
 }

@@ -20,4 +20,6 @@ public interface BookingTourCustomerService {
     BookingTourCustomers update(BookingTourCustomers bookingTourCustomers);
 
     void delete(Integer id);
+
+    Long countCustomer();
 }

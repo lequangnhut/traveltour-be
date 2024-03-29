@@ -122,4 +122,6 @@ public interface VisitLocationsRepository extends JpaRepository<VisitLocations, 
             "LIKE LOWER(CONCAT('%', :searchTerm, '%')) and (ag.isActive) = true and (ag.isAccepted) = 2")
     Page<VisitLocations> findAllVisitPostByAcceptedAndTrueActiveByName(@Param("isAccepted") Boolean isAccepted, Pageable pageable, String searchTerm);
 
+    @Query("SELECT COUNT(vs) FROM VisitLocations vs")
+    Long countVisitLocations ();
 }

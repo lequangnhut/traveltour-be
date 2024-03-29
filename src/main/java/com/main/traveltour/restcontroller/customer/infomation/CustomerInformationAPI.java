@@ -6,6 +6,8 @@ import com.main.traveltour.entity.*;
 import com.main.traveltour.repository.TransportationsRepository;
 import com.main.traveltour.service.admin.TransportationSeatServiceAD;
 import com.main.traveltour.service.agent.OrderTransportDetailService;
+import com.main.traveltour.service.agent.TransportationScheduleService;
+import com.main.traveltour.service.customer.CancelOrdersService;
 import com.main.traveltour.service.customer.OrderVehicleDetailsService;
 import com.main.traveltour.service.staff.*;
 import com.main.traveltour.service.utils.EmailService;
@@ -17,6 +19,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
+import java.sql.Timestamp;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -65,15 +68,17 @@ public class CustomerInformationAPI {
     @Autowired
     TransportationSeatServiceAD transportationSeatServiceAD;
 
+    @Autowired
+    TransportationScheduleService transportationScheduleService;
+
+    @Autowired
+    CancelOrdersService cancelOrdersService;
+
 
     @GetMapping("find-all-booking-tour/{userId}")
-    public ResponseObject getAllBookingTourById(
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size,
-            @RequestParam(defaultValue = "id") String sortBy,
-            @RequestParam(defaultValue = "asc") String sortDir,
-            @RequestParam(required = false) Integer orderStatus,
-            @PathVariable int userId) {
+    public ResponseObject getAllBookingTourById(@RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int size,
+            @RequestParam(defaultValue = "id") String sortBy, @RequestParam(defaultValue = "asc") String sortDir,
+            @RequestParam(required = false) Integer orderStatus, @PathVariable int userId) {
 
         Sort sort = sortDir.equalsIgnoreCase(Sort.Direction.ASC.name())
                 ? Sort.by(sortBy).ascending()
@@ -128,6 +133,7 @@ public class CustomerInformationAPI {
                 : Sort.by(sortBy).descending();
 
         Page<OrderHotels> orderHotels = orderHotelsService.getAllByUserId(orderStatus, userId, PageRequest.of(page, size, sort));
+        //Page<OrderHotelsDto> orderHotelsDtos = orderHotels.map(orderTransportations1 -> EntityDtoUtils.convertToDto(orderTransportations1, OrderHotelsDto.class));
 
         if (orderHotels.isEmpty()) {
             return new ResponseObject("204", "Không tìm thấy dữ liệu", null);
@@ -267,7 +273,7 @@ public class CustomerInformationAPI {
                     coc = 50;
                 } else if (diffInDays >= 2 && diffInDays <= 7) {
                     coc = 80;
-                } else if (diffInDays >= 0 && diffInDays <= 1) {
+                } else if (diffInDays <= 1) {
                     coc = 100;
                 } else {
                     coc = 0;
@@ -291,8 +297,20 @@ public class CustomerInformationAPI {
             CancelBookingTourDTO bookingToursDto = EntityDtoUtils.convertToDto(bookingTour, CancelBookingTourDTO.class);
             bookingToursDto.setCoc(coc);
             bookingToursDto.setMoneyBack(moneyBack);
-//            System.out.println(bookingToursDto.getCoc());
-//            System.out.println(bookingToursDto.getMoneyBack());
+
+            //Entity của các đơn hủy
+            CancelOrders cancelOrders = new CancelOrders();
+            cancelOrders.setOrderId(bookingToursDto.getId());
+            cancelOrders.setCategogy(0);
+            cancelOrders.setDepositValue(bookingToursDto.getCoc());
+            BigDecimal price = bookingToursDto.getOrderTotal().subtract(bookingToursDto.getMoneyBack());
+            cancelOrders.setDepositPrice(price);
+            cancelOrders.setDateCreated(new Timestamp(System.currentTimeMillis()));
+            cancelOrdersService.save(cancelOrders);
+
+            //System.out.println(diffInDays);
+            //System.out.println(bookingToursDto.getCoc());
+            //System.out.println(bookingToursDto.getMoneyBack());
             //Gửi mail
             emailService.queueEmailCustomerCancelTour(bookingToursDto);
 
@@ -336,7 +354,7 @@ public class CustomerInformationAPI {
             } else {
                 if (diffInDays >= 2 && diffInDays <= 4) {
                     coc = 50;
-                } else if (diffInDays >= 0 && diffInDays <= 1) {
+                } else if (diffInDays <= 1) {
                     coc = 100;
                 } else {
                     coc = 0;
@@ -355,6 +373,21 @@ public class CustomerInformationAPI {
             cancelOrderHotelsDto.setCoc(coc);
             cancelOrderHotelsDto.setMoneyBack(moneyBack);
 
+            //Entity của các đơn hủy
+            CancelOrders cancelOrders = new CancelOrders();
+            cancelOrders.setOrderId(cancelOrderHotelsDto.getId());
+            cancelOrders.setCategogy(1);
+            cancelOrders.setDepositValue(cancelOrderHotelsDto.getCoc());
+            BigDecimal price = cancelOrderHotelsDto.getOrderTotal().subtract(cancelOrderHotelsDto.getMoneyBack());
+            cancelOrders.setDepositPrice(price);
+            cancelOrders.setDateCreated(new Timestamp(System.currentTimeMillis()));
+            cancelOrdersService.save(cancelOrders);
+
+
+            //System.out.println(diffInDays);
+            //System.out.println(cancelOrderHotelsDto.getCoc());
+            //System.out.println(cancelOrderHotelsDto.getMoneyBack());
+
             emailService.queueEmailCustomerCancelHotel(cancelOrderHotelsDto);
 
             return new ResponseObject("200", "Xóa thành công", cancelOrderHotelsDto);
@@ -365,20 +398,68 @@ public class CustomerInformationAPI {
 
     @DeleteMapping("delete-booking-visit-customer/{id}")
     public ResponseObject deleteVisitOrder(@PathVariable String id) {
-//        try {
-//            OrderVisits orderVisits = orderVisitLocationService.findById(id);
-//
-//            orderVisits.setOrderStatus(2);
-//            orderVisitLocationService.save(orderVisits);
-//
-//            OrderVisitsDto orderVisitsDto = EntityDtoUtils.convertToDto(orderVisits, OrderVisitsDto.class);
-//
-//            emailService.queueEmailCustomerCancelVisit(orderVisitsDto);
-//
-//            return new ResponseObject("200", "Xóa thành công", orderVisitsDto);
-//        } catch (Exception e) {
+        try {
+            int coc;
+            BigDecimal moneyBack = null;
+
+            OrderVisits orderVisits = orderVisitLocationService.findById(id);
+            List<OrderVisitDetails> orderVisitDetailsList = orderVisitLocationDetailService.findByOrderVisitId(orderVisits.getId());
+            List<OrderVisitDetailsDto> orderVisitDetailsDtoList = EntityDtoUtils.convertToDtoList(orderVisitDetailsList, OrderVisitDetailsDto.class);
+
+            Date currentDate = new Date();
+            Date departureDate = orderVisits.getCheckIn();
+            long currentDateTime = currentDate.getTime();
+            long departureDateTime = departureDate.getTime();
+            long diffInDays = (departureDateTime - currentDateTime) / (1000 * 60 * 60 * 24);
+
+
+            if (orderVisits.getPaymentMethod() == 0 && orderVisits.getOrderStatus() == 0) {
+                coc = 0;
+                moneyBack = orderVisits.getOrderTotal();
+            } else {
+                if (diffInDays >= 2 && diffInDays <= 3) {
+                    coc = 30;
+                } else if (diffInDays <= 1) {
+                    coc = 80;
+                } else {
+                    coc = 0;
+                    moneyBack = orderVisits.getOrderTotal();
+                }
+            }
+
+            BigDecimal cocPercentage = BigDecimal.valueOf(coc);
+            BigDecimal cocAmount = (orderVisits.getOrderTotal()).multiply(cocPercentage).divide(BigDecimal.valueOf(100));
+            moneyBack = (orderVisits.getOrderTotal()).subtract(cocAmount);
+
+            //Đổi trạng thái order
+            orderVisits.setOrderStatus(2);
+            orderVisitLocationService.save(orderVisits);
+
+            //DTO của hủy xe
+            CancelOrderVisitsDto cancelOrderVisitsDto = EntityDtoUtils.convertToDto(orderVisits, CancelOrderVisitsDto.class);
+            cancelOrderVisitsDto.setCoc(coc);
+            cancelOrderVisitsDto.setMoneyBack(moneyBack);
+
+            //Entity của các đơn hủy
+            CancelOrders cancelOrders = new CancelOrders();
+            cancelOrders.setOrderId(cancelOrderVisitsDto.getId());
+            cancelOrders.setCategogy(3);
+            cancelOrders.setDepositValue(cancelOrderVisitsDto.getCoc());
+            BigDecimal price = cancelOrderVisitsDto.getOrderTotal().subtract(cancelOrderVisitsDto.getMoneyBack());
+            cancelOrders.setDepositPrice(price);
+            cancelOrders.setDateCreated(new Timestamp(System.currentTimeMillis()));
+            cancelOrdersService.save(cancelOrders);
+
+            //System.out.println(diffInDays);
+            //System.out.println(cancelOrderVisitsDto.getCoc());
+            //System.out.println(cancelOrderVisitsDto.getMoneyBack());
+
+            emailService.queueEmailCustomerCancelVisit(cancelOrderVisitsDto);
+
+            return new ResponseObject("200", "Xóa thành công", cancelOrderVisitsDto);
+        } catch (Exception e) {
             return new ResponseObject("500", "Xóa thất bại", null);
-//        }
+      }
     }
 
     @DeleteMapping("delete-booking-trans-customer/{id}")
@@ -397,15 +478,13 @@ public class CustomerInformationAPI {
             long departureDateTime = departureDate.getTime();
             long diffInDays = (departureDateTime - currentDateTime) / (1000 * 60 * 60 * 24);
 
-//            System.out.println(diffInDays);
-
             if (orderTransportations.getPaymentMethod() == 0 && orderTransportations.getOrderStatus() == 0) {
                 coc = 0;
                 moneyBack = orderTransportations.getOrderTotal();
             } else {
                 if (diffInDays >= 2 && diffInDays <= 3) {
                     coc = 30;
-                } else if (diffInDays >= 0 && diffInDays <= 1) {
+                } else if (diffInDays <= 1) {
                     coc = 70;
                 } else {
                     coc = 0;
@@ -417,21 +496,42 @@ public class CustomerInformationAPI {
             BigDecimal cocAmount = (orderTransportations.getOrderTotal()).multiply(cocPercentage).divide(BigDecimal.valueOf(100));
             moneyBack = (orderTransportations.getOrderTotal()).subtract(cocAmount);
 
+            //Đổi trạng thái order
             orderTransportations.setOrderStatus(2);
             orderTransportationService.save(orderTransportations);
 
+            //Đổi rạng thái các chỗ đã đặt
             List<TransportationScheduleSeats> transportationScheduleSeats = transportationSeatServiceAD.findSeatByOrderTd(orderTransportations.getId());
             for (TransportationScheduleSeats seat : transportationScheduleSeats) {
                 seat.setIsBooked(false);
                 transportationSeatServiceAD.save(seat);
             }
 
+            //Trừ lại số chỗ trên chuyến xe
+            TransportationSchedules ts = transportationScheduleService.findBySchedulesId(orderTransportations.getTransportationScheduleId());
+            Integer whole_booked = ts.getBookedSeat();
+            Integer order_booked = orderTransportations.getAmountTicket();
+            ts.setBookedSeat(whole_booked - order_booked);
+            transportationScheduleService.save(ts);
+
+            //DTO của hủy xe
             CancelOrderTransportationsDto cancelOrderTransportationsDto = EntityDtoUtils.convertToDto(orderTransportations, CancelOrderTransportationsDto.class);
             cancelOrderTransportationsDto.setCoc(coc);
             cancelOrderTransportationsDto.setMoneyBack(moneyBack);
 
-//            System.out.println(cancelOrderTransportationsDto.getCoc());
-//            System.out.println(cancelOrderTransportationsDto.getMoneyBack());
+            //Entity của các đơn hủy
+            CancelOrders cancelOrders = new CancelOrders();
+            cancelOrders.setOrderId(cancelOrderTransportationsDto.getId());
+            cancelOrders.setCategogy(2);
+            cancelOrders.setDepositValue(cancelOrderTransportationsDto.getCoc());
+            BigDecimal price = cancelOrderTransportationsDto.getOrderTotal().subtract(cancelOrderTransportationsDto.getMoneyBack());
+            cancelOrders.setDepositPrice(price);
+            cancelOrders.setDateCreated(new Timestamp(System.currentTimeMillis()));
+            cancelOrdersService.save(cancelOrders);
+
+            //System.out.println(diffInDays);
+            //System.out.println(cancelOrderTransportationsDto.getCoc());
+            //System.out.println(cancelOrderTransportationsDto.getMoneyBack());
 
             emailService.queueEmailCustomerCancelTrans(cancelOrderTransportationsDto);
 
