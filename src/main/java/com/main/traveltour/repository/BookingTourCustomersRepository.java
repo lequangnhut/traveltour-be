@@ -34,5 +34,6 @@ public interface BookingTourCustomersRepository extends JpaRepository<BookingTou
             "WHERE (bt.tourDetailId = :tourDetailId)")
     List<BookingTourCustomers> findByTourDetailId(@Param("tourDetailId") String tourDetailId);
 
-
+    @Query("SELECT COUNT(btc) FROM BookingTourCustomers btc")
+    Long countBookingTourCustomers ();
 }

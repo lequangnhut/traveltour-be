@@ -33,7 +33,7 @@ public class TransportUtilityServiceImplAD implements TransportUtilityServiceAD 
 
     @Override
     public Page<TransportUtilities> findAllWithSearchTransUtilityAD(String searchTerm, Pageable pageable) {
-        return repo.findByDescriptionContainingIgnoreCase(searchTerm, pageable);
+        return repo.findByTitleContainingIgnoreCase(searchTerm, pageable);
     }
 
     @Override
@@ -44,5 +44,20 @@ public class TransportUtilityServiceImplAD implements TransportUtilityServiceAD 
     @Override
     public TransportUtilities delete(TransportUtilities transportUtilities) {
         return null;
+    }
+
+    @Override
+    public TransportUtilities findByDescription(String name) {
+        return repo.findByTitle(name);
+    }
+
+    @Override
+    public List<TransportUtilities> findAllByUtilityId(int id) {
+        return repo.findAllByUtilityId(id);
+    }
+
+    @Override
+    public TransportUtilities delete(int id) {
+        return repo.deleteById(id);
     }
 }

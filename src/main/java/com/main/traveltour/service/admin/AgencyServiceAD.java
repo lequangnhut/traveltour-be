@@ -37,4 +37,6 @@ public interface AgencyServiceAD {
     Agencies save(Agencies agencies);
 
     List<Agencies> findByIdAgencyId(int id);
+
+    Long countAgency();
 }

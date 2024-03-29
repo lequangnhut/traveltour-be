@@ -134,4 +134,7 @@ public interface TransportationSchedulesRepository extends JpaRepository<Transpo
             "(LOWER(ts.fromLocation) LIKE LOWER(CONCAT('%', :searchTerm, '%')) " +
             "or LOWER(ts.toLocation) LIKE LOWER(CONCAT('%', :searchTerm, '%'))))")
     Page<TransportationSchedules> findScheduleByTransIdByName (@Param("isActive") Boolean isActive, @Param("transId") String transId, Pageable pageable, String searchTerm);
+
+    @Query("SELECT COUNT(ts) FROM TransportationSchedules ts")
+    Long countTransportationSchedules ();
 }

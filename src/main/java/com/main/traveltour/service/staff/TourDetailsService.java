@@ -39,4 +39,6 @@ public interface TourDetailsService {
     void delete(TourDetails tourDetails);
 
     void updateStatusAndActive();
+
+    Long countTourDetails();
 }

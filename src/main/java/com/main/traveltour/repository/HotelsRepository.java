@@ -114,4 +114,7 @@ public interface HotelsRepository extends JpaRepository<Hotels, String> {
             "and (h.isDeleted = false) and LOWER(h.hotelName) " +
             "LIKE LOWER(CONCAT('%', :searchTerm, '%')) and (ag.isActive) = true and (ag.isAccepted) = 2")
     Page<Hotels> findAllHotelByAcceptedAndTrueActiveByName(@Param("isAccepted") Boolean isAccepted,Pageable pageable, String searchTerm);
+
+    @Query("SELECT COUNT(ht) FROM Hotels ht")
+    Long countHotels ();
 }

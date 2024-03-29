@@ -3,6 +3,7 @@ package com.main.traveltour.restcontroller.admin;
 import com.main.traveltour.dto.admin.TransportUtilitiesDto;
 import com.main.traveltour.dto.admin.TransportUtilitiesGetDataDTO;
 import com.main.traveltour.entity.ResponseObject;
+import com.main.traveltour.entity.RoomBeds;
 import com.main.traveltour.entity.TransportUtilities;
 import com.main.traveltour.service.admin.TransportUtilityServiceAD;
 import com.main.traveltour.service.utils.FileUpload;
@@ -14,6 +15,10 @@ import org.springframework.data.domain.Sort;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 @RestController
 @CrossOrigin(origins = "http://localhost:3000")
@@ -82,9 +87,11 @@ public class TransportUtilityADAPI {
             if (icon != null) {
                 String iconUtility = fileUpload.uploadFile(icon);
                 transportUtilities.setIcon(iconUtility);
+                transportUtilities.setTitle(transportUtilitiesDto.getTitle());
                 transportUtilities.setDescription(transportUtilitiesDto.getDescription());
                 transportUtilityServiceAD.save(transportUtilities);
             } else {
+                transportUtilities.setTitle(transportUtilitiesDto.getTitle());
                 transportUtilities.setDescription(transportUtilities.getDescription());
                 transportUtilityServiceAD.save(transportUtilities);
             }
@@ -94,13 +101,33 @@ public class TransportUtilityADAPI {
         }
     }
 
-    @GetMapping("delete-transport-utilities/{transUtilityId}")
-    private ResponseObject deleteTransUtility(@PathVariable int transUtilityId) {
-        try {
-            TransportUtilities transportUtilities = transportUtilityServiceAD.findTransUtilityADById(transUtilityId);
-            return new ResponseObject("200", "Thành công", transportUtilities);
-        } catch (Exception e) {
-            return new ResponseObject("404", "Thất bại", null);
+    @DeleteMapping("delete-transport-utilities/{transUtilityId}")
+    private void deleteAccount(@PathVariable int transUtilityId) {
+        transportUtilityServiceAD.delete(transUtilityId);
+    }
+
+    @GetMapping("check-duplicate-trans-utility-name/{name}")
+    private ResponseObject checkDuplicateTransUtilityName(@PathVariable String name) {
+        boolean exists = transportUtilityServiceAD.findByDescription(name) != null;
+        Map<String, Boolean> response = new HashMap<>();
+        response.put("exists", exists);
+        if (exists) {
+            return new ResponseObject("404", "Tên loại bị trùng lặp", response);
+        } else {
+            return new ResponseObject("200", "Tên hợp lệ", response);
+        }
+    }
+
+    @GetMapping("check-trans-utility-working/{id}")
+    private ResponseObject checkTransUtilityIsUsing(@PathVariable int id) {
+        List<TransportUtilities> utility = transportUtilityServiceAD.findAllByUtilityId(id);
+        Map<String, Boolean> response = new HashMap<>();
+        boolean exists = !utility.isEmpty();
+        response.put("exists", exists);
+        if (exists) {
+            return new ResponseObject("200", "Đã tìm thấy dữ liệu", response);
+        } else {
+            return new ResponseObject("404", "Không tìm thấy dữ liệu", response);
         }
     }
 }

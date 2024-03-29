@@ -27,4 +27,6 @@ public interface TransportationScheduleService {
             Pageable pageable);
 
     void update(TransportationSchedules transportationSchedules);
+
+    Long countSchedules();
 }

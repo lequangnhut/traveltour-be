@@ -8,12 +8,13 @@ import lombok.Value;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.sql.Timestamp;
+import java.util.List;
 
 /**
  * DTO for {@link com.main.traveltour.entity.OrderVisits}
  */
 @Data
-public class OrderVisitsDto implements Serializable {
+public class CancelOrderVisitsDto implements Serializable {
     String id;
     Integer userId;
     String visitLocationId;
@@ -30,5 +31,8 @@ public class OrderVisitsDto implements Serializable {
     Timestamp dateCreated;
     Integer orderStatus;
     String orderNote;
-    VisitLocations visitLocationsByVisitLocationId;
+    int coc;
+    BigDecimal moneyBack;
+    VisitLocations visitLocations;
+    List<OrderVisitDetails> orderVisitDetailsById;
 }
