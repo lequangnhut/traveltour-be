@@ -23,6 +23,7 @@ public class DateUtils {
         long timeInMillis = date.getTime();
         return new Timestamp(timeInMillis);
     }
+
     public static String formatTimestamp(String originalDateStr) {
         String newDateString = "";
         SimpleDateFormat originalFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");

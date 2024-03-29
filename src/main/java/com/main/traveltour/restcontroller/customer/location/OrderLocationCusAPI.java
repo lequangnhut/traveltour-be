@@ -16,7 +16,6 @@ public class OrderLocationCusAPI {
 
     @GetMapping("find-by-id/{id}")
     private ResponseObject findOrderLocationById(@PathVariable String id) {
-        System.out.println("cc");
         try {
             OrderVisits orderVisits = orderVisitLocationService.findById(id);
 
