@@ -104,6 +104,10 @@ public class Users {
     @JsonManagedReference
     private Collection<PassOTP> passOtpById;
 
+    @OneToMany(mappedBy = "usersByUserId")
+    @JsonManagedReference
+    private Collection<UserLikes> userLikesById;
+
     @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     @JoinTable(name = "roles_users", joinColumns = {@JoinColumn(name = "user_id", referencedColumnName = "id")}, inverseJoinColumns = {@JoinColumn(name = "role_id", referencedColumnName = "id")})
     @JsonIgnoreProperties("users")

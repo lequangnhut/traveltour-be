@@ -4,6 +4,7 @@ import com.main.traveltour.dto.customer.booking.BookingToursDto;
 import com.main.traveltour.entity.*;
 import com.main.traveltour.restcontroller.customer.bookingtour.service.BookingTourAPIService;
 import com.main.traveltour.service.UsersService;
+import com.main.traveltour.service.customer.BookingTourService;
 import com.main.traveltour.service.staff.TourDetailsService;
 import com.main.traveltour.utils.EntityDtoUtils;
 import com.main.traveltour.utils.GenerateNextID;
@@ -25,13 +26,13 @@ public class BookingTourAPIServiceImpl implements BookingTourAPIService {
     private UsersService usersService;
 
     @Autowired
-    private com.main.traveltour.service.customer.BookingTourService bookingTourService;
+    private BookingTourService bookingTourService;
 
     @Autowired
     private TourDetailsService tourDetailsService;
 
     @Override
-    public void createUser(BookingToursDto bookingToursDto, List<Map<String, String>> bookingTourCustomersDto, Integer totalAmountBook, Integer orderStatus) {
+    public void createUser(BookingToursDto bookingToursDto, List<Map<String, String>> bookingTourCustomersDto, Integer totalAmountBook, Integer orderStatus, Integer paymentStatus) {
         TourDetails tourDetails = tourDetailsService.findById(bookingToursDto.getTourDetailId());
 
         String email = bookingToursDto.getCustomerEmail();
@@ -71,10 +72,13 @@ public class BookingTourAPIServiceImpl implements BookingTourAPIService {
         bookingTourDto.setOrderStatus(orderStatus); // 0: chờ thanh toán
         bookingTourService.saveBookingTour(bookingTourDto);
 
-        createBookingTourCustomers(bookingTourDto.getId(), bookingTourCustomersDto);
-        createInvoices(bookingToursDto.getId());
-        createContracts(bookingToursDto.getId());
-        decreaseAmountTour(bookingTourDto.getTourDetailId(), totalAmountBook);
+        createBookingTourCustomers(bookingTourDto.getId(), bookingTourCustomersDto); // tạo danh sách khách hàng
+
+        if (paymentStatus == 1) { // nếu bằng 1 thì thành công còn ngược lại thì thất bại
+            decreaseAmountTour(bookingTourDto.getTourDetailId(), totalAmountBook); // trừ số lượng tour detail
+            createInvoices(bookingToursDto.getId()); // tạo hóa đơn
+            createContracts(bookingToursDto.getId()); // tạo hợp đồng
+        }
     }
 
     @Override

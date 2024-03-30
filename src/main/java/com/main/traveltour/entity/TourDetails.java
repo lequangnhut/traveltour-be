@@ -55,13 +55,14 @@ public class TourDetails {
     @Basic
     @Column(name = "unit_price")
     private BigDecimal unitPrice;
+
     @Basic
     @Column(name = "tour_detail_notes")
     private String tourDetailNotes;
 
     @Basic
     @Column(name = "tour_detail_status")
-    private Integer tourDetailStatus;
+    private Integer tourDetailStatus; // 1: chờ vận hành | 2: đang vận hành | 3: đã hoàn thành | 4: đã hủy
 
     @Basic
     @Column(name = "date_created")

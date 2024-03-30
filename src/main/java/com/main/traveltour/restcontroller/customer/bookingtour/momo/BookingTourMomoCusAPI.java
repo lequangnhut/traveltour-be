@@ -43,6 +43,11 @@ public class BookingTourMomoCusAPI {
     @Autowired
     private EmailService emailService;
 
+    /**
+     * phương thức gọi tới api momo để thanh toán
+     *
+     * @param bookingDto dữ liệu bên FE trả qua để thanh toán
+     */
     @PostMapping("momo/submit-payment")
     private ResponseEntity<Map<String, Object>> submitOrderMomo(@RequestBody BookingDto bookingDto) throws Exception {
         SessionAttr.BOOKING_DTO = bookingDto;
@@ -70,17 +75,20 @@ public class BookingTourMomoCusAPI {
 
         Environment environment = Environment.selectEnv("dev");
 
-        PaymentResponse captureWalletMoMoResponse = CreateOrderMoMo.process(environment, orderId, requestId, Long.toString(orderTotal.intValue()), orderInfo, returnURL, notifyURL, "", RequestType.CAPTURE_WALLET, Boolean.TRUE);
+        PaymentResponse captureWalletMoMoResponse = CreateOrderMoMo.process(environment, orderId, requestId, Long.toString(orderTotal.intValue()), orderInfo, returnURL, notifyURL, "", RequestType.PAY_WITH_ATM, Boolean.TRUE);
 
         assert captureWalletMoMoResponse != null;
         response.put("redirectUrl", captureWalletMoMoResponse.getPayUrl());
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
+    /**
+     * phương thức giao dịch thành công của momo trả về
+     */
     @GetMapping("momo/success-payment")
     private String successBookingMomo(HttpServletRequest request) {
         String payType = request.getParameter("payType");
-        int paymentStatus = payType.equals("qr") ? 1 : 0;
+        int paymentStatus = payType.equals("napas") ? 1 : 0;
 
         BookingDto bookingDto = SessionAttr.BOOKING_DTO;
         BookingToursDto bookingToursDto = bookingDto.getBookingToursDto();
@@ -101,7 +109,7 @@ public class BookingTourMomoCusAPI {
                     bookingTourAPIService.createContracts(bookingTours.getId());
                     bookingTourAPIService.decreaseAmountTour(bookingTours.getTourDetailId(), totalAmountBook);
                 } else {
-                    bookingTourAPIService.createUser(bookingToursDto, bookingTourCustomersDto, totalAmountBook, 1); // thành công
+                    bookingTourAPIService.createUser(bookingToursDto, bookingTourCustomersDto, totalAmountBook, 1, paymentStatus); // thành công
                 }
                 orderStatus = 1;
                 emailService.queueEmailBookingTour(bookingDto);
@@ -113,9 +121,8 @@ public class BookingTourMomoCusAPI {
 
                     bookingTourAPIService.createInvoices(bookingTours.getId());
                     bookingTourAPIService.createContracts(bookingTours.getId());
-                    bookingTourAPIService.decreaseAmountTour(bookingTours.getTourDetailId(), totalAmountBook);
                 } else {
-                    bookingTourAPIService.createUser(bookingToursDto, bookingTourCustomersDto, totalAmountBook, 2);
+                    bookingTourAPIService.createUser(bookingToursDto, bookingTourCustomersDto, totalAmountBook, 2, paymentStatus);
                 }
                 orderStatus = 2;
             }
