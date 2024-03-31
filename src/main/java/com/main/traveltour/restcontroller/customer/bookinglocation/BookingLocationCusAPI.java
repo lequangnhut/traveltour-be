@@ -49,15 +49,6 @@ public class BookingLocationCusAPI {
 
         try {
             Users user = createUserPayment(orderVisitsDto);
-//            else {
-//                Optional<Users> usersOptional = Optional.ofNullable(usersService.findById(userId));
-//                if (usersOptional.isPresent()) {
-//                    user = usersOptional.get();
-//                    orderVisitsDto.setCustomerEmail(user.getEmail());
-//                    orderVisitsDto.setCustomerName(user.getFullName());
-//                    orderVisitsDto.setCustomerPhone(user.getPhone());
-//                }
-//            }
 
             for (VisitLocationTickets tickets : locationTickets) {
                 String ticketName = tickets.getTicketTypeName().toLowerCase();
@@ -82,7 +73,7 @@ public class BookingLocationCusAPI {
             orderVisits.setUserId(user.getId());
             orderVisits.setCustomerName(user.getFullName());
             orderVisits.setCustomerCitizenCard(user.getCitizenCard());
-            orderVisits.setCustomerPhone(user.getPhone());
+            orderVisits.setCustomerPhone(orderVisitsDto.getCustomerPhone());
             orderVisits.setCustomerEmail(user.getEmail());
             orderVisits.setOrderTotal(orderTotal);
             orderVisits.setDateCreated(new Timestamp(System.currentTimeMillis()));

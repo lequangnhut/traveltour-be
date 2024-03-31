@@ -1,5 +1,6 @@
 package com.main.traveltour.restcontroller.customer.bookingLocation.vnpay;
 
+import com.main.traveltour.config.DomainURL;
 import com.main.traveltour.configpayment.vnpay.VNPayService;
 import com.main.traveltour.dto.customer.visit.BookingLocationCusDto;
 import com.main.traveltour.dto.staff.OrderVisitsDto;
@@ -9,6 +10,7 @@ import com.main.traveltour.service.agent.OrderVisitDetailService;
 import com.main.traveltour.service.agent.VisitLocationTicketService;
 import com.main.traveltour.service.staff.OrderVisitLocationService;
 import com.main.traveltour.service.utils.EmailService;
+import com.main.traveltour.utils.Base64Utils;
 import com.main.traveltour.utils.EntityDtoUtils;
 import com.main.traveltour.utils.RandomUtils;
 import com.main.traveltour.utils.SessionAttr;
@@ -155,13 +157,15 @@ public class BookingLocationVNPayCusAPI {
             if (capacityKid > 0) {
                 saveOrderVisitDetail(orderVisits, childrenPrice, capacityKid, childrenTicketId);
             }
-//nhớ gửi mail
+            //nhớ gửi mail
             emailService.queueEmailBookingLocation(new BookingLocationCusDto(orderVisitsDto, orderVisits));
-
         } catch (Exception e) {
             e.printStackTrace();
         }
-        return "redirect:http://localhost:3000/tourism-location/tourism-location-detail/" + orderVisitsDto.getVisitLocationId() + "/booking-location/customer-information/check-information/payment-success?orderVisitId=" + orderVisitSuccess.getId() + "&orderStatus=" + orderVisitSuccess.getOrderStatus() + "&paymentMethod=VNPAY";
+        String orderStatusBase64 = Base64Utils.encodeData(String.valueOf(orderVisitSuccess.getOrderStatus()));
+        String orderVisitLocationIdBase64 = Base64Utils.encodeData(String.valueOf(orderVisitSuccess.getVisitLocationId()));
+        String orderIdBase64 = Base64Utils.encodeData(String.valueOf(orderVisitSuccess.getId()));
+        return "redirect:" + DomainURL.FRONTEND_URL + "/tourism-location/tourism-location-detail/" + orderVisitLocationIdBase64 + "/booking-location/customer-information/check-information/payment-success?orderVisitId=" + orderIdBase64 + "&orderStatus=" + orderStatusBase64 + "&paymentMethod=VNPAY";
     }
 
     private void saveOrderVisitDetail(OrderVisits orderVisits, BigDecimal unitPrice, int capacity, Integer ticketId) {
