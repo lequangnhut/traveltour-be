@@ -49,6 +49,11 @@ public class VisitLocationServiceImpl implements VisitLocationService {
     }
 
     @Override
+    public List<VisitLocations> getAllVisitLocation() {
+        return repo.getAllVisitLocation();
+    }
+
+    @Override
     public Long countVisit() {
         return repo.countVisitLocations();
     }

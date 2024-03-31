@@ -23,5 +23,7 @@ public interface VisitLocationService {
 
     List<VisitLocationTrendDTO> findVisitLocationsTrend();
 
+    List<VisitLocations> getAllVisitLocation();
+
     Long countVisit();
 }

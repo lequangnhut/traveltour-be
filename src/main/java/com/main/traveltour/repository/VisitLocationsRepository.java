@@ -90,6 +90,13 @@ public interface VisitLocationsRepository extends JpaRepository<VisitLocations, 
             "ORDER BY COUNT(ov) DESC LIMIT 5")
     List<VisitLocationTrendDTO> findVisitLocationsTrend();
 
+    @Query("SELECT vl " +
+            "FROM VisitLocations vl " +
+            "JOIN vl.visitLocationTicketsById vlt " +
+            "WHERE vl.isActive = TRUE AND vl.isAccepted = TRUE " +
+            "GROUP BY vl.id")
+    List<VisitLocations> getAllVisitLocation();
+
     //fill tham quan theo tour
 
     @Query("SELECT vl FROM VisitLocations vl " +

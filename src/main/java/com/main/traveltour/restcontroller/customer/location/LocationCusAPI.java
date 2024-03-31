@@ -1,9 +1,7 @@
 package com.main.traveltour.restcontroller.customer.location;
 
 import com.main.traveltour.dto.staff.VisitLocationsDto;
-import com.main.traveltour.entity.ResponseObject;
-import com.main.traveltour.entity.VisitLocationTypes;
-import com.main.traveltour.entity.VisitLocations;
+import com.main.traveltour.entity.*;
 import com.main.traveltour.service.agent.VisitLocationTypeService;
 import com.main.traveltour.service.staff.VisitLocationService;
 import com.main.traveltour.utils.EntityDtoUtils;
@@ -13,7 +11,8 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @RestController
 @CrossOrigin(origins = "http://localhost:3000")
@@ -67,6 +66,39 @@ public class LocationCusAPI {
             return new ResponseObject("404", "Không tìm thấy dữ liệu", null);
         } else {
             return new ResponseObject("200", "Đã tìm thấy dữ liệu", visitLocationTypes);
+        }
+    }
+
+    @GetMapping("customer/location/get-location-customer-data-list")
+    private ResponseObject getAllDataList() {
+        Map<String, Object> response = new HashMap<>();
+
+        List<VisitLocations> visitLocations = visitLocationService.getAllVisitLocation();
+
+        List<String> uniqueDataList = visitLocations.stream().flatMap(visitLocation -> {
+            Set<String> visit = new LinkedHashSet<>();
+            visit.add(visitLocation.getAgenciesByAgenciesId().getNameAgency());
+            visit.add(visitLocation.getVisitLocationName());
+            visit.add(visitLocation.getDistrict());
+            visit.add(visitLocation.getProvince());
+            visit.add(visitLocation.getDistrict() + " - " +
+                    visitLocation.getProvince());
+            visit.add(visitLocation.getWard() + " - " +
+                    visitLocation.getDistrict() + " - " +
+                    visitLocation.getProvince());
+            visitLocation.getVisitLocationTicketsById().forEach(item -> {
+                visit.add(item.getTicketTypeName());
+                visit.add(String.valueOf(item.getUnitPrice()));
+            });
+            return visit.stream();
+        }).distinct().collect(Collectors.toList());
+
+        response.put("uniqueDataList", uniqueDataList);
+
+        if (uniqueDataList.isEmpty()) {
+            return new ResponseObject("404", "Không tìm thấy dữ liệu", null);
+        } else {
+            return new ResponseObject("200", "Đã tìm thấy dữ liệu", response);
         }
     }
 }

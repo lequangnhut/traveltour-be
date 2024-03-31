@@ -28,7 +28,9 @@ public class LocationDetailCusAPI {
     private VisitLocationTicketService visitLocationTicketService;
 
     @GetMapping("find-all-location")
-    private ResponseObject findAllLocation(@RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int size, @RequestParam(required = false) String searchTerm) {
+    private ResponseObject findAllLocation(@RequestParam(defaultValue = "0") int page,
+                                           @RequestParam(defaultValue = "10") int size,
+                                           @RequestParam(required = false) String searchTerm) {
         Page<VisitLocations> visitLocations = searchTerm != null && !searchTerm.isEmpty() ? visitLocationService.findBySearchTerm(searchTerm, PageRequest.of(page, size)) : visitLocationService.getAllByIsActiveIsTrueAndIsAcceptedIsTrue(PageRequest.of(page, size));
 
         Page<VisitLocationsDto> visitLocationsDto = visitLocations.map(visitLocation -> EntityDtoUtils.convertToDto(visitLocation, VisitLocationsDto.class));
