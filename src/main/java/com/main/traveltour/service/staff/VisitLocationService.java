@@ -4,7 +4,6 @@ import com.main.traveltour.dto.customer.visit.VisitLocationTrendDTO;
 import com.main.traveltour.entity.VisitLocations;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.repository.query.Param;
 
 import java.math.BigDecimal;
 import java.util.List;

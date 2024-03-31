@@ -22,7 +22,7 @@ public interface InvoicesRepository extends JpaRepository<Invoices, Integer> {
             "CAST(i.bookingToursByBookingTourId.orderTotal AS STRING) LIKE %:searchTerm% OR " +
             "UPPER(i.bookingToursByBookingTourId.tourDetailId) LIKE %:searchTerm% OR " +
             "UPPER(CONCAT(i.bookingToursByBookingTourId.tourDetailId, ' - ', i.bookingToursByBookingTourId.tourDetailsByTourDetailId.tourId)) LIKE %:searchTerm% OR " +
-            "UPPER(i.bookingToursByBookingTourId.tourDetailsByTourDetailId.tourId) LIKE %:searchTerm%)")
+            "UPPER(i.bookingToursByBookingTourId.tourDetailsByTourDetailId.tourId) LIKE %:searchTerm%) ORDER BY i.dateCreated DESC ")
     Page<Invoices> findAllBySearchTerm(@Param("searchTerm") String searchTerm, Pageable pageable);
 
 }
