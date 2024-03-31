@@ -77,6 +77,7 @@ public class VisitLocationsAPI {
         visitLocations.setOpeningTime(visitLocationsDto.getOpeningTime());
         visitLocations.setClosingTime(visitLocationsDto.getClosingTime());
         visitLocations.setVisitLocationTypeId(visitLocationsDto.getVisitLocationTypeId());
+        visitLocations.setDetailDescription(visitLocationsDto.getDetailDescription());
         visitLocations.setIsAccepted(Boolean.TRUE);
         visitLocationsService.save(visitLocations);
 
@@ -122,8 +123,6 @@ public class VisitLocationsAPI {
             visitLocations.setVisitLocationImage(visitLocationsService.findByVisitLocationId(visitLocationId).getVisitLocationImage());
             visitLocationsService.save(visitLocations);
         }
-
-        updateVisitTickets(visitLocationId, selectedTickets, unitPrices);
     }
 
     @GetMapping("/agent/visit/delete-visit-location/{visitLocationId}")

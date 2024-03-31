@@ -3,8 +3,6 @@ package com.main.traveltour.configpayment.momo.shared.utils;
 import org.apache.log4j.BasicConfigurator;
 import org.apache.log4j.Logger;
 
-
-
 /***
  * @author uyen.tran
  */

@@ -1,4 +1,4 @@
-package com.main.traveltour.restcontroller.customer.bookinglocation.momo;
+package com.main.traveltour.restcontroller.customer.bookingLocation.momo;
 
 import com.main.traveltour.config.DomainURL;
 import com.main.traveltour.configpayment.momo.config.Environment;
@@ -6,30 +6,34 @@ import com.main.traveltour.configpayment.momo.enums.RequestType;
 import com.main.traveltour.configpayment.momo.models.PaymentResponse;
 import com.main.traveltour.configpayment.momo.processor.CreateOrderMoMo;
 import com.main.traveltour.configpayment.momo.shared.utils.LogUtils;
-import com.main.traveltour.dto.customer.booking.BookingDto;
-import com.main.traveltour.dto.customer.booking.BookingToursDto;
+import com.main.traveltour.dto.agent.transport.OrderTransportationsDto;
+import com.main.traveltour.dto.customer.visit.BookingLocationCusDto;
+import com.main.traveltour.dto.staff.OrderVisitsDto;
 import com.main.traveltour.entity.*;
+import com.main.traveltour.restcontroller.customer.bookingtransport.service.BookingTransportAPIService;
 import com.main.traveltour.service.UsersService;
-import com.main.traveltour.service.customer.BookingTourService;
-import com.main.traveltour.service.staff.TourDetailsService;
+import com.main.traveltour.service.agent.OrderTransportService;
+import com.main.traveltour.service.agent.OrderVisitDetailService;
+import com.main.traveltour.service.agent.TransportationScheduleService;
+import com.main.traveltour.service.agent.VisitLocationTicketService;
+import com.main.traveltour.service.staff.OrderVisitLocationService;
 import com.main.traveltour.service.utils.EmailService;
-import com.main.traveltour.utils.EntityDtoUtils;
-import com.main.traveltour.utils.GenerateNextID;
-import com.main.traveltour.utils.RandomUtils;
+import com.main.traveltour.utils.*;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
-import java.sql.Date;
 import java.sql.Timestamp;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-@RestController
+@Controller
 @CrossOrigin(origins = "http://localhost:3000")
 @RequestMapping("api/v1/customer/booking-location/")
 public class BookingLocationMomoCusAPI {
@@ -38,22 +42,40 @@ public class BookingLocationMomoCusAPI {
     private UsersService usersService;
 
     @Autowired
-    private BookingTourService bookingTourService;
+    private OrderVisitLocationService orderVisitLocationService;
 
     @Autowired
-    private TourDetailsService tourDetailsService;
+    private OrderVisitDetailService orderVisitDetailsService;
+
+    @Autowired
+    private VisitLocationTicketService visitLocationTicketService;
 
     @Autowired
     private EmailService emailService;
 
     @PostMapping("momo/submit-payment")
-    private ResponseEntity<Map<String, Object>> submitOrderVNPay(@RequestParam("tourDetailId") String tourDetailId,
-                                                                 @RequestParam("bookingTourId") String bookingTourId,
-                                                                 @RequestParam("ticketAdult") int ticketAdult,
-                                                                 @RequestParam("ticketChildren") int ticketChildren) throws Exception {
-        TourDetails tourDetails = tourDetailsService.findById(tourDetailId);
-        BigDecimal unitPriceDecimal = tourDetails.getUnitPrice();
-        int orderTotal = (int) ((ticketAdult * unitPriceDecimal.intValue()) + (ticketChildren * (unitPriceDecimal.intValue() * 0.3)));
+    private ResponseEntity<Map<String, Object>> submitOrderMomo(@RequestPart OrderVisitsDto orderVisitsDto) throws Exception {
+        List<VisitLocationTickets> locationTickets = visitLocationTicketService.findByVisitLocationId(orderVisitsDto.getVisitLocationId());
+        BigDecimal adultPrice = BigDecimal.ZERO;
+        BigDecimal childrenPrice = BigDecimal.ZERO;
+
+        for (VisitLocationTickets tickets : locationTickets) {
+            String ticketName = tickets.getTicketTypeName().toLowerCase();
+            if (ticketName.equals("vé người lớn")) {
+                adultPrice = tickets.getUnitPrice();
+            } else if (ticketName.equals("vé trẻ em")) {
+                childrenPrice = tickets.getUnitPrice();
+            }
+        }
+        int capacityAdult = orderVisitsDto.getCapacityAdult();
+        int capacityKid = orderVisitsDto.getCapacityKid();
+
+        BigDecimal totalAdultPrice = adultPrice.multiply(BigDecimal.valueOf(capacityAdult));
+        BigDecimal totalChildrenPrice = childrenPrice.multiply(BigDecimal.valueOf(capacityKid));
+
+        BigDecimal orderTotal = totalAdultPrice.add(totalChildrenPrice);
+
+        SessionAttr.ORDER_LOCATIONS_DTO = orderVisitsDto;
 
         Map<String, Object> response = new HashMap<>();
 
@@ -61,165 +83,119 @@ public class BookingLocationMomoCusAPI {
         String requestId = String.valueOf(System.currentTimeMillis());
         String orderId = String.valueOf(System.currentTimeMillis());
 
-        String orderInfo = "Thanh Toan Don Hang #" + bookingTourId;
-        String returnURL = DomainURL.BACKEND_URL + "/api/v1/customer/booking-tour/momo/success-payment";
-        String notifyURL = "/api/v1/momo/success-payment";
+        String orderInfo = "Thanh Toan Don Hang #" + orderVisitsDto.getId();
+        String returnURL = DomainURL.BACKEND_URL + "/api/v1/customer/booking-location/momo/success-payment";
+        String notifyURL = DomainURL.BACKEND_URL + "/api/v1/customer/booking-location/momo/success-payment";// có cung đc, ko có cũng ko
 
         Environment environment = Environment.selectEnv("dev");
-
-        PaymentResponse captureWalletMoMoResponse = CreateOrderMoMo.process(environment, orderId, requestId, Long.toString(orderTotal), orderInfo, returnURL, notifyURL, "", RequestType.CAPTURE_WALLET, Boolean.TRUE);
-
+        PaymentResponse captureWalletMoMoResponse = CreateOrderMoMo.process(environment, orderId, requestId, Long.toString(orderTotal.intValue()), orderInfo, returnURL, notifyURL, "", RequestType.CAPTURE_WALLET, Boolean.TRUE);
+        assert captureWalletMoMoResponse != null;
         response.put("redirectUrl", captureWalletMoMoResponse.getPayUrl());
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
-    /**
-     * Thêm mới tour với momo
-     */
-    @PostMapping("create-book-tour-momo/{transactionId}")
-    private ResponseObject updateBookingTour(@RequestBody BookingDto bookingDto, @PathVariable int transactionId) {
-        BookingToursDto bookingToursDto = bookingDto.getBookingToursDto();
-        List<Map<String, String>> bookingTourCustomersDto = bookingDto.getBookingTourCustomersDto();
+    @GetMapping("momo/success-payment")
+    private String successBookingTransportMomo(HttpServletRequest request) {
+        String payType = request.getParameter("payType");
+        int paymentStatus = payType.equals("qr") ? 1 : 0;
 
-        Integer userId = bookingToursDto.getUserId();
-        Integer totalAmountBook = bookingToursDto.getCapacityAdult() + bookingToursDto.getCapacityKid() + bookingToursDto.getCapacityBaby();
+        OrderVisits orderVisitSuccess = null;
+        OrderVisitsDto orderVisitsDto = SessionAttr.ORDER_LOCATIONS_DTO;
+
+        List<VisitLocationTickets> locationTickets = visitLocationTicketService.findByVisitLocationId(orderVisitsDto.getVisitLocationId());
+        BigDecimal adultPrice = BigDecimal.ZERO;
+        BigDecimal childrenPrice = BigDecimal.ZERO;
+        Integer adultTicketId = null;
+        Integer childrenTicketId = null;
+
         try {
-            if (transactionId != 0) {
-                if (userId != null) {
-                    BookingTours bookingTours = EntityDtoUtils.convertToEntity(bookingToursDto, BookingTours.class);
-                    bookingTours.setDateCreated(new Timestamp(System.currentTimeMillis()));
-                    createBookingTour(bookingToursDto, bookingTours, bookingTourCustomersDto, totalAmountBook, 1);
+            Users user = createUserPayment(orderVisitsDto);
 
-                    createInvoices(bookingTours.getId());
-                    createContracts(bookingTours.getId());
-                    decreaseAmountTour(bookingTours.getTourDetailId(), totalAmountBook);
-                } else {
-                    createUser(bookingToursDto, bookingTourCustomersDto, totalAmountBook, transactionId);
-                }
-            } else {
-                if (userId != null) {
-                    BookingTours bookingTours = EntityDtoUtils.convertToEntity(bookingToursDto, BookingTours.class);
-                    bookingTours.setDateCreated(new Timestamp(System.currentTimeMillis()));
-                    createBookingTour(bookingToursDto, bookingTours, bookingTourCustomersDto, totalAmountBook, 2);
-
-                    createInvoices(bookingTours.getId());
-                    createContracts(bookingTours.getId());
-                    decreaseAmountTour(bookingTours.getTourDetailId(), totalAmountBook);
-                } else {
-                    createUser(bookingToursDto, bookingTourCustomersDto, totalAmountBook, transactionId);
+            for (VisitLocationTickets tickets : locationTickets) {
+                String ticketName = tickets.getTicketTypeName().toLowerCase();
+                if (ticketName.equals("vé người lớn")) {
+                    adultPrice = tickets.getUnitPrice();
+                    adultTicketId = tickets.getId();
+                } else if (ticketName.equals("vé trẻ em")) {
+                    childrenPrice = tickets.getUnitPrice();
+                    childrenTicketId = tickets.getId();
                 }
             }
-            emailService.queueEmailBookingTour(bookingDto);
-            return new ResponseObject("200", "Thành công", bookingDto);
+
+            int capacityAdult = orderVisitsDto.getCapacityAdult();
+            int capacityKid = orderVisitsDto.getCapacityKid();
+
+            BigDecimal totalAdultPrice = adultPrice.multiply(BigDecimal.valueOf(capacityAdult));
+            BigDecimal totalChildrenPrice = childrenPrice.multiply(BigDecimal.valueOf(capacityKid));
+
+            BigDecimal orderTotal = totalAdultPrice.add(totalChildrenPrice);
+
+            OrderVisits orderVisits = EntityDtoUtils.convertToEntity(orderVisitsDto, OrderVisits.class);
+            orderVisits.setUserId(user.getId());
+            orderVisits.setCustomerName(user.getFullName());
+            orderVisits.setCustomerCitizenCard(user.getCitizenCard());
+            orderVisits.setCustomerPhone(user.getPhone());
+            orderVisits.setCustomerEmail(user.getEmail());
+            orderVisits.setOrderTotal(orderTotal);
+            orderVisits.setDateCreated(new Timestamp(System.currentTimeMillis()));
+
+            if (paymentStatus == 1) {
+                orderVisits.setOrderStatus(1); // đã thanh toán
+                orderVisitSuccess = orderVisitLocationService.save(orderVisits);
+            } else {
+                orderVisits.setOrderStatus(2); // thất bại
+                orderVisitSuccess = orderVisitLocationService.save(orderVisits);
+            }
+
+            if (capacityAdult > 0) {
+                saveOrderVisitDetail(orderVisits, adultPrice, capacityAdult, adultTicketId);
+            }
+            if (capacityKid > 0) {
+                saveOrderVisitDetail(orderVisits, childrenPrice, capacityKid, childrenTicketId);
+            }
+            //nhớ gửi mail
+            emailService.queueEmailBookingLocation(new BookingLocationCusDto(orderVisitsDto, orderVisits));
+
         } catch (Exception e) {
             e.printStackTrace();
-            return new ResponseObject("404", "Thất bại", null);
         }
+
+        assert orderVisitSuccess != null;
+        String orderStatusBase64 = Base64Utils.encodeData(String.valueOf(orderVisitSuccess.getOrderStatus()));
+        String orderVisitLocationIdBase64 = Base64Utils.encodeData(String.valueOf(orderVisitSuccess.getVisitLocationId()));
+        String orderIdBase64 = Base64Utils.encodeData(String.valueOf(orderVisitSuccess.getId()));
+        return "redirect:" + DomainURL.FRONTEND_URL + "/tourism-location/tourism-location-detail/" + orderVisitLocationIdBase64 + "/booking-location/customer-information/check-information/payment-success?orderVisitId=" + orderIdBase64 + "&orderStatus=" + orderStatusBase64 + "&paymentMethod=MOMO";
     }
 
-    private void createUser(BookingToursDto bookingToursDto, List<Map<String, String>> bookingTourCustomersDto, Integer totalAmountBook, int transactionId) {
-        String email = bookingToursDto.getCustomerEmail();
-        String phone = bookingToursDto.getCustomerPhone();
-        String citizenCard = bookingToursDto.getCustomerCitizenCard();
+    private void saveOrderVisitDetail(OrderVisits orderVisits, BigDecimal unitPrice, int capacity, Integer ticketId) {
+        OrderVisitDetails detail = new OrderVisitDetails();
+        detail.setOrderVisitId(orderVisits.getId());
+        detail.setUnitPrice(unitPrice);
+        detail.setAmount(capacity);
+        detail.setVisitLocationTicketId(ticketId);
+        orderVisitDetailsService.save(detail);
+    }
 
+    private Users createUserPayment(OrderVisitsDto orderVisitsDto) {
+        String email = orderVisitsDto.getCustomerEmail();
+        String fullName = orderVisitsDto.getCustomerName();
+        String phone = orderVisitsDto.getCustomerPhone();
         Users userPhone = usersService.findByPhone(phone);
-        Users userCitizenCard = usersService.findByCardId(citizenCard);
         Optional<Users> currentUserOptional = Optional.ofNullable(usersService.findByEmail(email));
 
-        Users user = currentUserOptional.orElseGet(() -> {
+        if (currentUserOptional.isPresent()) {
+            return currentUserOptional.get();
+        } else if (userPhone != null) {
+            return userPhone;
+        } else {
             Users newUser = new Users();
-            newUser.setEmail(bookingToursDto.getCustomerEmail());
+            newUser.setEmail(email);
             newUser.setPassword(RandomUtils.RandomToken(10));
-            newUser.setFullName(bookingToursDto.getCustomerName());
-            if (userPhone == null) {
-                newUser.setPhone(bookingToursDto.getCustomerPhone());
-            } else if (userCitizenCard == null) {
-                newUser.setCitizenCard(bookingToursDto.getCustomerCitizenCard());
-            }
+            newUser.setFullName(fullName);
+            newUser.setPhone(phone);
             newUser.setIsActive(Boolean.TRUE);
             usersService.authenticateRegister(newUser);
             return newUser;
-        });
-
-        if (transactionId != 0) {
-            BookingTours bookingTours = EntityDtoUtils.convertToEntity(bookingToursDto, BookingTours.class);
-            bookingTours.setUserId(user.getId());
-            bookingTours.setDateCreated(new Timestamp(System.currentTimeMillis()));
-            createBookingTour(bookingToursDto, bookingTours, bookingTourCustomersDto, totalAmountBook, 1);
-
-            createInvoices(bookingTours.getId());
-            createContracts(bookingTours.getId());
-            decreaseAmountTour(bookingTours.getTourDetailId(), totalAmountBook);
-        } else {
-            BookingTours bookingTours = EntityDtoUtils.convertToEntity(bookingToursDto, BookingTours.class);
-            bookingTours.setUserId(user.getId());
-            bookingTours.setDateCreated(new Timestamp(System.currentTimeMillis()));
-            createBookingTour(bookingToursDto, bookingTours, bookingTourCustomersDto, totalAmountBook, 2);
         }
-    }
-
-    private void createBookingTour(BookingToursDto bookingToursDto, BookingTours bookingTours, List<Map<String, String>> bookingTourCustomersDto, Integer totalAmountBook, int orderStatus) {
-        String bookingTourId = bookingToursDto.getId();
-
-        if (bookingToursDto.getPaymentMethod() == 3) { // 3: Momo
-            bookingTours.setOrderStatus(orderStatus);
-        }
-        bookingTourService.saveBookingTour(bookingTours);
-
-        createBookingTourCustomers(bookingTourId, bookingTourCustomersDto);
-    }
-
-    private void createBookingTourCustomers(String bookingTourId, List<Map<String, String>> bookingTourCustomersDto) {
-        for (Map<String, String> data : bookingTourCustomersDto) {
-            BookingTourCustomers bookingTourCustomers = new BookingTourCustomers();
-
-            for (Map.Entry<String, String> entry : data.entrySet()) {
-                String key = entry.getKey();
-                String value = entry.getValue();
-
-                if (key.startsWith("NameKH")) {
-                    int index = Integer.parseInt(key.substring(6));
-
-                    bookingTourCustomers.setBookingTourId(bookingTourId);
-                    bookingTourCustomers.setCustomerName(value);
-                    bookingTourCustomers.setCustomerBirth(Date.valueOf(data.get("BirthKH" + index)));
-                    bookingTourCustomers.setCustomerPhone(data.get("PhoneKH" + index));
-
-                    bookingTourService.saveBookingTourCustomer(bookingTourCustomers);
-                }
-            }
-        }
-    }
-
-    private void decreaseAmountTour(String tourDetailId, Integer totalAmountBook) {
-        TourDetails details = tourDetailsService.getById(tourDetailId);
-
-        int currentBookSeat = details.getBookedSeat();
-        int numberOfGuest = details.getNumberOfGuests();
-        int newBookSeat = currentBookSeat + totalAmountBook;
-
-        if (newBookSeat > numberOfGuest) {
-            details.setBookedSeat(currentBookSeat);
-            tourDetailsService.save(details);
-        } else {
-            details.setBookedSeat(currentBookSeat + totalAmountBook);
-            tourDetailsService.save(details);
-        }
-    }
-
-    private void createInvoices(String bookingTourId) {
-        Invoices invoices = new Invoices();
-        invoices.setId(GenerateNextID.generateNextInvoiceID(bookingTourService.findMaxCodeInvoices()));
-        invoices.setBookingTourId(bookingTourId);
-        invoices.setDateCreated(new Timestamp(System.currentTimeMillis()));
-        bookingTourService.saveBookingInvoices(invoices);
-    }
-
-    private void createContracts(String bookingTourId) {
-        Contracts contracts = new Contracts();
-        contracts.setId(GenerateNextID.generateNextContractID(bookingTourService.findMaxCodeContracts()));
-        contracts.setBookingTourId(bookingTourId);
-        contracts.setDateCreated(new Timestamp(System.currentTimeMillis()));
-        bookingTourService.saveBookingContracts(contracts);
     }
 }
