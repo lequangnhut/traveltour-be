@@ -62,8 +62,8 @@ public interface TransportationSchedulesRepository extends JpaRepository<Transpo
             "JOIN transportations t ON ts.transportation_id = t.id " +
             "JOIN transportation_brands tb ON t.transportation_brand_id = tb.id " +
             "JOIN transportation_types tt ON t.transportation_type_id = tt.id " +
-            "WHERE (ts.from_location = :fromLocation) " +
-            "AND (ts.to_location = :toLocation) " +
+            "WHERE (ts.from_location LIKE :fromLocation) " +
+            "AND (ts.to_location LIKE :toLocation) " +
             "AND (ts.departure_time BETWEEN :departureTime AND (:departureTime + INTERVAL 1 HOUR)) " +
             "AND (ts.arrival_time BETWEEN (:arrivalTime - INTERVAL 1 HOUR) AND :arrivalTime) " +
             "AND (t.amount_seat >= :amountSeat) " +
@@ -76,8 +76,8 @@ public interface TransportationSchedulesRepository extends JpaRepository<Transpo
                     "INNER JOIN transportations t ON ts.transportation_id = t.id " +
                     "INNER JOIN transportation_brands tb ON t.transportation_brand_id = tb.id " +
                     "INNER JOIN transportation_types tt ON t.transportation_type_id = tt.id " +
-                    "WHERE (ts.from_location = :fromLocation) " +
-                    "AND (ts.to_location = :toLocation) " +
+                    "WHERE (ts.from_location LIKE :fromLocation) " +
+                    "AND (ts.to_location LIKE :toLocation) " +
                     "AND (ts.departure_time BETWEEN :departureTime AND (:departureTime + INTERVAL 1 HOUR)) " +
                     "AND (ts.arrival_time BETWEEN (:arrivalTime - INTERVAL 1 HOUR) AND :arrivalTime) " +
                     "AND (t.amount_seat >= :amountSeat) " +

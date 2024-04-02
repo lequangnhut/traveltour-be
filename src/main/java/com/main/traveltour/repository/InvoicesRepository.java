@@ -16,13 +16,15 @@ public interface InvoicesRepository extends JpaRepository<Invoices, Integer> {
 
     @Query("SELECT i FROM Invoices i " +
             "JOIN i.bookingToursByBookingTourId bt " +
-            "WHERE :searchTerm IS NULL OR " +
+            "WHERE (:searchTerm IS NULL OR " +
             "(UPPER(i.id) LIKE %:searchTerm% OR " +
             "UPPER(i.bookingTourId) LIKE %:searchTerm% OR " +
             "CAST(i.bookingToursByBookingTourId.orderTotal AS STRING) LIKE %:searchTerm% OR " +
             "UPPER(i.bookingToursByBookingTourId.tourDetailId) LIKE %:searchTerm% OR " +
             "UPPER(CONCAT(i.bookingToursByBookingTourId.tourDetailId, ' - ', i.bookingToursByBookingTourId.tourDetailsByTourDetailId.tourId)) LIKE %:searchTerm% OR " +
-            "UPPER(i.bookingToursByBookingTourId.tourDetailsByTourDetailId.tourId) LIKE %:searchTerm%) ORDER BY i.dateCreated DESC ")
+            "UPPER(i.bookingToursByBookingTourId.tourDetailsByTourDetailId.tourId) LIKE %:searchTerm%))" +
+            "AND bt.orderStatus = 1 " +
+            "ORDER BY i.dateCreated DESC ")
     Page<Invoices> findAllBySearchTerm(@Param("searchTerm") String searchTerm, Pageable pageable);
 
 }

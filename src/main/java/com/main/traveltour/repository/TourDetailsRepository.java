@@ -33,7 +33,7 @@ public interface TourDetailsRepository extends JpaRepository<TourDetails, Intege
             "UPPER(td.fromLocation) LIKE %:searchTerm% OR " +
             "UPPER(td.toLocation) LIKE %:searchTerm%)) " +
             "AND (td.tourDetailStatus = 2)")
-    Page<TourDetails> getAllTourDetailByStatusIs2AndSearchTerm(@Param("searchTerm") String searchTerm,Pageable pageable);
+    Page<TourDetails> getAllTourDetailByStatusIs2AndSearchTerm(@Param("searchTerm") String searchTerm, Pageable pageable);
 
     @Query("SELECT td FROM TourDetails td " +
             "JOIN td.bookingToursById bt " +
@@ -44,8 +44,7 @@ public interface TourDetailsRepository extends JpaRepository<TourDetails, Intege
     List<TourDetails> getAllJoinBooking();
 
     @Query("SELECT td FROM TourDetails td " +
-            "WHERE td.tourDetailStatus != 4 " +
-            "ORDER BY td.tourDetailStatus ASC, td.dateCreated DESC")
+            "WHERE td.tourDetailStatus != 4")
     Page<TourDetails> findAllTourDetail(Pageable pageable);
 
     @Query("SELECT td FROM TourDetails td WHERE " +
@@ -97,6 +96,6 @@ public interface TourDetailsRepository extends JpaRepository<TourDetails, Intege
     List<TourDetails> findTourCompleted();
 
     @Query("SELECT COUNT(t) FROM TourDetails t")
-    Long countTourDetails ();
+    Long countTourDetails();
 
 }

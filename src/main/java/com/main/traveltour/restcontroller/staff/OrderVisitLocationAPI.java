@@ -26,12 +26,9 @@ public class OrderVisitLocationAPI {
     private TourDetailsService tourDetailsService;
 
     @PostMapping(value = "create-order-visit-location")
-    public ResponseObject createOrderVisit(@RequestPart OrderVisitsDto orderVisitsDto, @RequestPart("tourDetailId") String tourDetailId) {
+    public ResponseObject createOrderVisit(@RequestPart OrderVisitsDto orderVisitsDto, @RequestPart String tourDetailId) {
         try {
-            String orderVisitId = GenerateNextID.generateNextCode("OVS", orderVisitLocationService.maxCode());
-
             OrderVisits orderVisits = EntityDtoUtils.convertToEntity(orderVisitsDto, OrderVisits.class);
-            orderVisits.setId(orderVisitId);
 
             List<TourDetails> tourDetailsList = new ArrayList<>();
             TourDetails tourDetails = tourDetailsService.findById(tourDetailId);
