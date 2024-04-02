@@ -72,22 +72,24 @@ public class BookingTourTransportationAPI {
         }
     }
 
-    @PutMapping("/restore-order-transportation-and-transportation-schedule-by-transportation-schedule-id")
-    public ResponseObject restore(@RequestParam(required = false) String transportationScheduleId) {
+    @PutMapping("/pay-order-transportation-and-transportation-schedule-by-transportation-schedule-id")
+    public ResponseObject pay(@RequestParam(required = false) String transportationScheduleId, @RequestParam(required = false) Integer payment) {
         try {
-            List<OrderTransportations> orderTransportations = orderTransportationService.findAllByTransportationScheduleId(transportationScheduleId);
-            for (OrderTransportations orderTransport : orderTransportations) {
-                orderTransport.setOrderStatus(0); // Giả sử 0 là trạng thái khôi phục
-                orderTransportationService.update(orderTransport);
-            }
-
             TransportationSchedules transportationSchedule = transportationScheduleService.findById(transportationScheduleId);
-            transportationSchedule.setIsStatus(0); // Giả sử 0 là trạng thái khôi phục
-            transportationScheduleService.update(transportationSchedule);
-
-            return new ResponseObject("204", "Khôi phục thành công", null);
+            if (transportationSchedule.getIsStatus() != 3) {
+                List<OrderTransportations> orderTransportations = orderTransportationService.findAllByTransportationScheduleId(transportationScheduleId);
+                for (OrderTransportations orderTransport : orderTransportations) {
+                    orderTransport.setOrderStatus(1);
+                    orderTransport.setPaymentMethod(payment);
+                    orderTransportationService.update(orderTransport);
+                }
+            } else {
+                return new ResponseObject("500", "Thanh toán thất bại", null);
+            }
+            return new ResponseObject("204", "Thanh toán thành công", null);
         } catch (Exception e) {
-            return new ResponseObject("500", "Khôi phục thất bại", null);
+            e.printStackTrace();
+            return new ResponseObject("500", "Thanh toán thất bại", null);
         }
     }
 

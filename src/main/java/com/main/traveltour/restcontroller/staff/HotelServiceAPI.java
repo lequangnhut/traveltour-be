@@ -26,8 +26,8 @@ public class HotelServiceAPI {
     public ResponseObject searchHotels(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "5") int size,
-            @RequestParam(defaultValue = "id") String sortBy,
-            @RequestParam(defaultValue = "asc") String sortDir,
+            @RequestParam(defaultValue = "dateCreated") String sortBy,
+            @RequestParam(defaultValue = "DESC") String sortDir,
             @RequestParam(required = false) String searchTerm,
             @RequestParam(required = false) String location,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) Date departureDate,

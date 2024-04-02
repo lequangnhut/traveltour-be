@@ -78,14 +78,16 @@ public class BookingTourVisitAPI {
         }
     }
 
-    @PutMapping("/restore-booking-tour-visit-by-tour-detail-id-and-visit-id")
+    @PutMapping("/pay-booking-tour-visit-by-tour-detail-id-and-visit-id")
     public ResponseObject restore(@RequestParam(required = false) String tourDetailId,
                                   @RequestParam(required = false) String visitId,
-                                  @RequestParam(required = false) Integer orderVisitStatus) {
+                                  @RequestParam(required = false) Integer orderVisitStatus,
+                                  @RequestParam(required = false) Integer payment) {
         try {
             List<OrderVisits> orderVisitsList = bookingTourVisitService.findOrderVisitByTourDetailIdAndVisitId(tourDetailId, visitId, orderVisitStatus);
             for (OrderVisits orderVisit : orderVisitsList) {
-                orderVisit.setOrderStatus(0);
+                orderVisit.setOrderStatus(1);
+                orderVisit.setPaymentMethod(payment);
                 bookingTourVisitService.update(orderVisit);
             }
             return new ResponseObject("204", "Xóa thành công", null);

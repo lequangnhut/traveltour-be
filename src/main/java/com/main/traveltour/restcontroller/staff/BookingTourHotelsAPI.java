@@ -76,13 +76,15 @@ public class BookingTourHotelsAPI {
         }
     }
 
-    @PutMapping("/restore-booking-tour-hotel-by-tour-detail-id-and-hotel-id")
-    public ResponseObject restore(@RequestParam(required = false) String tourDetailId,
-                                  @RequestParam(required = false) String hotelId) {
+    @PutMapping("/pay-booking-tour-hotel-by-tour-detail-id-and-hotel-id")
+    public ResponseObject pay(@RequestParam(required = false) String tourDetailId,
+                              @RequestParam(required = false) String hotelId,
+                              @RequestParam(required = false) String payment) {
         try {
             List<OrderHotels> orderHotelsList = bookingTourHotelService.findOrderHotelByTourDetailIdAndHotelId(tourDetailId, hotelId);
             for (OrderHotels orderHotel : orderHotelsList) {
-                orderHotel.setOrderStatus(0);
+                orderHotel.setOrderStatus(1);
+                orderHotel.setPaymentMethod(payment);
                 bookingTourHotelService.update(orderHotel);
             }
             return new ResponseObject("204", "Xóa thành công", null);

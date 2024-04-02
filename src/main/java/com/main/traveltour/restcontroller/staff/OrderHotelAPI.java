@@ -28,7 +28,7 @@ public class OrderHotelAPI {
     private TourDetailsService tourDetailsService;
 
     @PostMapping(value = "create-order-hotel")
-    public ResponseObject createOrderHotel(@RequestPart OrderHotelsDto orderHotelsDto, @RequestPart("tourDetailId") String tourDetailId) {
+    public ResponseObject createOrderHotel(@RequestPart OrderHotelsDto orderHotelsDto, @RequestPart String tourDetailId) {
         try {
             OrderHotels orderHotels = EntityDtoUtils.convertToEntity(orderHotelsDto, OrderHotels.class);
 

@@ -87,7 +87,8 @@ public interface HotelsRepository extends JpaRepository<Hotels, String> {
             "UPPER(h.address) LIKE %:searchTerm% OR " +
             "UPPER(h.phone) LIKE %:searchTerm% OR " +
             "CAST(h.floorNumber AS string) LIKE %:searchTerm%)) " +
-            "GROUP BY h.id")
+            "GROUP BY h.id " +
+            "ORDER BY h.dateCreated DESC")
     Page<Hotels> findHotelByTourDetailId(@Param("tourDetailId") String tourDetailId,
                                          @Param("orderHotelStatus") Integer orderHotelStatus,
                                          @Param("searchTerm") String searchTerm,
