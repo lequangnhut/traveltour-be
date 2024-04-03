@@ -10,6 +10,7 @@ import com.main.traveltour.service.agent.RoomTypeService;
 import com.main.traveltour.service.utils.FileUploadResize;
 import com.main.traveltour.utils.GenerateNextID;
 import jakarta.persistence.EntityManager;
+import jakarta.persistence.Query;
 import jakarta.persistence.criteria.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -138,8 +139,15 @@ public class RoomTypeServiceImpl implements RoomTypeService {
 
         if (locationFilter != null && !locationFilter.isEmpty()) {
             Join<RoomTypes, Hotels> hotelsJoin = root.join("hotelsByHotelId", JoinType.LEFT);
-            predicates.add(builder.like(hotelsJoin.get("province"), "%" + locationFilter + "%"));
+            Predicate locationPredicate = builder.or(
+                    builder.like(hotelsJoin.get("hotelName"), "%" + locationFilter + "%"),
+                    builder.like(hotelsJoin.get("province"), "%" + locationFilter + "%"),
+                    builder.like(hotelsJoin.get("district"), "%" + locationFilter + "%"),
+                    builder.like(hotelsJoin.get("ward"), "%" + locationFilter + "%")
+            );
+            predicates.add(locationPredicate);
         }
+
 
         if (capacityAdultsFilter != null && capacityAdultsFilter > 0) {
             predicates.add(builder.lessThanOrEqualTo(root.get("capacityAdults"), capacityAdultsFilter));

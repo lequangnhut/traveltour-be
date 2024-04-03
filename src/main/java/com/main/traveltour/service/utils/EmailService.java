@@ -4,12 +4,16 @@ import com.main.traveltour.dto.agent.hotel.AgenciesDto;
 import com.main.traveltour.dto.agent.transport.OrderTransportationsDto;
 import com.main.traveltour.dto.auth.RegisterDto;
 import com.main.traveltour.dto.customer.booking.BookingDto;
+import com.main.traveltour.dto.customer.hotel.OrderDetailsHotelCustomerDto;
+import com.main.traveltour.dto.customer.hotel.OrderHotelCustomerDto;
 import com.main.traveltour.dto.customer.infomation.*;
 import com.main.traveltour.dto.customer.visit.BookingLocationCusDto;
 import com.main.traveltour.dto.superadmin.DataAccountDto;
 import com.main.traveltour.entity.OrderVisitDetails;
 import com.main.traveltour.entity.OrderVisits;
 import com.main.traveltour.entity.VisitLocations;
+
+import java.util.List;
 
 public interface EmailService {
 
@@ -72,4 +76,6 @@ public interface EmailService {
     void sendMailCustomerBookingTransport();
 
     void queueEmailCustomerBookingTransport(OrderTransportationsDto orderTransportationsDto);
+
+    void sendEmailBookingHotel(OrderHotelCustomerDto orderHotelCustomerDto, List<OrderDetailsHotelCustomerDto> orderDetailsHotelCustomerDtos);
 }
