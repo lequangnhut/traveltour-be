@@ -17,4 +17,9 @@ public class PaymentMethodServiceImpl implements PaymentMethodService {
     public List<PaymentMethod> getAllPaymentMethod() {
         return paymentMethodRepository.findAll();
     }
+
+    @Override
+    public PaymentMethod findById(String id) {
+        return paymentMethodRepository.findById(id).get();
+    }
 }

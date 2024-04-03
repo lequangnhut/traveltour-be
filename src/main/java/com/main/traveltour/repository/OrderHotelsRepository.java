@@ -1,8 +1,6 @@
 package com.main.traveltour.repository;
 
-import com.main.traveltour.entity.BookingTours;
 import com.main.traveltour.entity.OrderHotels;
-import org.aspectj.weaver.ast.Or;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -30,4 +28,6 @@ public interface OrderHotelsRepository extends JpaRepository<OrderHotels, Intege
     Page<OrderHotels> findAllBookingHotelsByUserId(@Param("orderStatus") Integer orderStatus, @Param("userId") Integer userId, Pageable pageable);
 
     OrderHotels findById(String id);
+
+    Page<OrderHotels> findByIdIn(List<String> orderIds, Pageable pageable);
 }

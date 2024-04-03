@@ -5,6 +5,8 @@ import com.main.traveltour.dto.agent.transport.OrderTransportationsDto;
 import com.main.traveltour.dto.auth.RegisterDto;
 import com.main.traveltour.dto.customer.booking.BookingDto;
 import com.main.traveltour.dto.customer.booking.BookingToursDto;
+import com.main.traveltour.dto.customer.hotel.OrderDetailsHotelCustomerDto;
+import com.main.traveltour.dto.customer.hotel.OrderHotelCustomerDto;
 import com.main.traveltour.dto.customer.infomation.*;
 import com.main.traveltour.dto.customer.visit.BookingLocationCusDto;
 import com.main.traveltour.dto.superadmin.AccountDto;
@@ -15,6 +17,7 @@ import com.main.traveltour.repository.VisitLocationsRepository;
 import com.main.traveltour.service.UsersService;
 import com.main.traveltour.service.admin.HotelsServiceAD;
 import com.main.traveltour.service.agent.OrderVisitDetailService;
+import com.main.traveltour.service.agent.PaymentMethodService;
 import com.main.traveltour.service.agent.TransportationService;
 import com.main.traveltour.service.customer.OrderVehicleDetailsService;
 import com.main.traveltour.service.staff.*;
@@ -26,6 +29,7 @@ import com.main.traveltour.utils.ReplaceUtils;
 import com.main.traveltour.utils.TimeUtils;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
+import org.apache.commons.lang3.text.WordUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.javamail.JavaMailSender;
@@ -38,6 +42,7 @@ import java.math.BigDecimal;
 import java.nio.charset.StandardCharsets;
 import java.sql.Timestamp;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 @EnableScheduling
@@ -58,6 +63,7 @@ public class EmailServiceImpl implements EmailService {
     private final Queue<CancelOrderTransportationsDto> emailQueueCustomerCancelTrans = new LinkedList<>();
     private final Queue<OrderTransportationsDto> emailQueueCustomerBookingTrans = new LinkedList<>();
     private final Queue<BookingLocationCusDto> emailQueueCustomerBookingLocation = new LinkedList<>();
+    private final Queue<OrderDetailsHotelCustomerDto> orderDetailsHotelCustomerDto = new LinkedList<>();
 
     @Autowired
     private JavaMailSender sender;
@@ -107,6 +113,11 @@ public class EmailServiceImpl implements EmailService {
     @Autowired
     private VisitLocationsRepository visitLocationsRepository;
 
+    @Autowired
+    private OrderHotelsService orderHotelsService;
+
+    @Autowired
+    private PaymentMethodService paymentMethodService;
 
     @Override
     public void queueEmailRegister(RegisterDto registerDto) {
@@ -624,6 +635,97 @@ public class EmailServiceImpl implements EmailService {
     }
 
     @Override
+    public void sendEmailBookingHotel(OrderHotelCustomerDto orderHotelCustomerDto, List<OrderDetailsHotelCustomerDto> orderDetailsHotelCustomerDtos) {
+
+        OrderHotels orderHotels = orderHotelsService.findById(orderHotelCustomerDto.getId());
+        List<OrderHotelDetails> orderHotelDetails = orderHotelDetailService.findByOrderHotelId(orderHotels.getId());
+
+        orderHotels.setOrderHotelDetailsById(orderHotelDetails);
+        List<RoomTypes> roomTypes = orderHotels.getOrderHotelDetailsById().stream()
+                .map(item -> roomTypesRepository.findById(item.getRoomTypeId()))
+                .filter(Optional::isPresent)
+                .map(Optional::get)
+                .collect(Collectors.toList());
+
+        for (var order : orderHotels.getOrderHotelDetailsById()) {
+            for(var roomType : roomTypes){
+                if(roomType.getId() == order.getRoomTypeId()) {
+                    order.setRoomTypesByRoomTypeId(roomType);
+                }
+                if(orderHotels.getId() == order.getOrderHotelId()){
+                    order.setOrderHotelsByOrderHotelId(orderHotels);
+                }
+            }
+        }
+
+        String customerEmail = orderHotelCustomerDto.getCustomerEmail();
+        PaymentMethod paymentMethod = paymentMethodService.findById(orderHotelCustomerDto.getPaymentMethod());
+
+        BigDecimal totalAmount = orderHotels.getOrderHotelDetailsById().stream()
+                .map(item -> BigDecimal.valueOf(item.getAmount()).multiply(item.getUnitPrice()))
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+
+        try {
+            MimeMessage message = sender.createMimeMessage();
+            MimeMessageHelper helper = new MimeMessageHelper(message, MimeMessageHelper.MULTIPART_MODE_MIXED_RELATED, StandardCharsets.UTF_8.name());
+
+            helper.setTo(customerEmail);
+
+            Map<String, Object> variables = new HashMap<>();
+
+            variables.put("paymentMethod", paymentMethod.getDescription());
+
+            variables.put("id", orderHotels.getId());
+            variables.put("dateCreate", orderHotels.getDateCreated());
+            variables.put("customerEmail", orderHotels.getCustomerEmail());
+            variables.put("customerName", orderHotels.getCustomerName());
+            variables.put("customerPhone", orderHotels.getCustomerPhone());
+            variables.put("checkIn", DateUtils.formatTimestamp(String.valueOf(orderHotels.getCheckIn())));
+            variables.put("orderTotal", orderHotels.getOrderTotal());
+            variables.put("capacityAdult", orderHotels.getCapacityAdult());
+            variables.put("capacityKid", orderHotels.getCapacityKid());
+            variables.put("rooms", orderHotels.getOrderHotelDetailsById());
+            variables.put("totalAmount", totalAmount);
+
+            helper.setFrom(email);
+            helper.setText(thymeleafService.createContent("order-hotel-verify", variables), true);
+            helper.setSubject("DỊCH VỤ LỮ HÀNH TRAVELTOUR XIN CHÂN THÀNH CẢM ƠN QUÝ KHÁCH ĐÃ ĐẶT VÉ THAM QUAN CỦA CHÚNG TÔI.");
+
+            sender.send(message);
+
+            for (var emailCustomer : orderDetailsHotelCustomerDtos) {
+                if(emailCustomer.getCustomerEmail() != null) {
+
+                    helper.setTo(emailCustomer.getCustomerEmail());
+
+                    variables.put("paymentMethod", paymentMethod.getDescription());
+
+                    variables.put("id", orderHotels.getId());
+                    variables.put("dateCreate", orderHotels.getDateCreated());
+                    variables.put("customerEmail", orderHotels.getCustomerEmail());
+                    variables.put("customerName", orderHotels.getCustomerName());
+                    variables.put("customerPhone", orderHotels.getCustomerPhone());
+                    variables.put("checkIn", DateUtils.formatTimestamp(String.valueOf(orderHotels.getCheckIn())));
+                    variables.put("orderTotal", orderHotels.getOrderTotal());
+                    variables.put("capacityAdult", orderHotels.getCapacityAdult());
+                    variables.put("capacityKid", orderHotels.getCapacityKid());
+                    variables.put("rooms", orderHotels.getOrderHotelDetailsById());
+                    variables.put("totalAmount", totalAmount);
+
+                    helper.setFrom(email);
+                    helper.setText(thymeleafService.createContent("order-hotel-verify", variables), true);
+                    helper.setSubject("DỊCH VỤ LỮ HÀNH TRAVELTOUR XIN CHÂN THÀNH CẢM ƠN QUÝ KHÁCH ĐÃ ĐẶT VÉ THAM QUAN CỦA CHÚNG TÔI.");
+
+                    sender.send(message);
+                }
+            }
+        } catch (MessagingException e) {
+            throw new RuntimeException(e);
+        }
+
+    }
+
+    @Override
     public void sendMailOTPCus() {
         while (!emailQueueSendOTPRegisterAgencies.isEmpty()) {
             ForgotPasswordDto passwordDto = emailQueueSendOTPRegisterAgencies.poll();
@@ -904,7 +1006,9 @@ public class EmailServiceImpl implements EmailService {
 
     @Scheduled(fixedDelay = 5000)
     public void processCustomerCancelVisit() {
-        sendMailCustomerCancelVisit();}
+        sendMailCustomerCancelVisit();
+    }
+
     @Scheduled(fixedDelay = 5000)
     public void processCustomerCancelTrans() {
         sendMailCustomerCancelTrans();
