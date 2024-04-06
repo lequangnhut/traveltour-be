@@ -64,10 +64,6 @@ public class Transportations {
 
     @OneToMany(mappedBy = "transportationsByTransportationId")
     @JsonManagedReference
-    private Collection<RequestCarDetail> requestCarDetailsById;
-
-    @OneToMany(mappedBy = "transportationsByTransportationId")
-    @JsonManagedReference
     private Collection<TransportationImage> transportationImagesById;
 
     @ManyToOne

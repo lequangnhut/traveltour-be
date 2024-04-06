@@ -11,7 +11,8 @@ public interface RequestCarRepository extends JpaRepository<RequestCar, Integer>
 
     @Query("SELECT rqc FROM RequestCar rqc " +
             "JOIN rqc.requestCarDetailsById rqcd " +
-            "JOIN rqcd.transportationsByTransportationId tp " +
+            "JOIN rqcd.transportationSchedulesByTransportationScheduleId tsc " +
+            "JOIN tsc.transportationsByTransportationId tp " +
             "JOIN tp.transportationBrandsByTransportationBrandId br " +
             "WHERE rqc.id = :requestCarId AND br.id = :transportBrandId")
     RequestCar findTransportBrandSubmitted(@Param("requestCarId") Integer requestCarId, @Param("transportBrandId") String transportBrandId);

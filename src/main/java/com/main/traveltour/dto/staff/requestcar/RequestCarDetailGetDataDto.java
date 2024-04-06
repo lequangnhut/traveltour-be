@@ -4,7 +4,6 @@ import com.main.traveltour.entity.*;
 import lombok.Data;
 
 import java.io.Serializable;
-import java.math.BigDecimal;
 import java.sql.Timestamp;
 
 /**
@@ -17,11 +16,7 @@ public class RequestCarDetailGetDataDto implements Serializable {
 
     Integer requestCarId;
 
-    String transportationId;
-
     String transportationScheduleId;
-
-    BigDecimal unitPrice;
 
     Timestamp dateCreated;
 

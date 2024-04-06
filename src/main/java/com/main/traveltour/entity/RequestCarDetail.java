@@ -7,7 +7,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.math.BigDecimal;
 import java.sql.Timestamp;
 
 @Getter
@@ -28,16 +27,8 @@ public class RequestCarDetail {
     private Integer requestCarId;
 
     @Basic
-    @Column(name = "transportation_id", nullable = false, length = 30)
-    private String transportationId;
-
-    @Basic
-    @Column(name = "transportation_schedule_id", length = 30)
+    @Column(name = "transportation_schedule_id", nullable = false, length = 30)
     private String transportationScheduleId;
-
-    @Basic
-    @Column(name = "unit_price")
-    private BigDecimal unitPrice;
 
     @Basic
     @Column(name = "date_created")
@@ -48,9 +39,9 @@ public class RequestCarDetail {
     private Boolean isAccepted;
 
     @ManyToOne
-    @JoinColumn(name = "transportation_id", referencedColumnName = "id", nullable = false, insertable = false, updatable = false)
+    @JoinColumn(name = "transportation_schedule_id", referencedColumnName = "id", nullable = false, insertable = false, updatable = false)
     @JsonBackReference
-    private Transportations transportationsByTransportationId;
+    private TransportationSchedules transportationSchedulesByTransportationScheduleId;
 
     @ManyToOne
     @JoinColumn(name = "request_car_id", referencedColumnName = "id", nullable = false, insertable = false, updatable = false)

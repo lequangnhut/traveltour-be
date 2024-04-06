@@ -36,6 +36,11 @@ public class TransportationScheduleServiceImpl implements TransportationSchedule
     }
 
     @Override
+    public List<TransportationSchedules> findAllScheduleByBrandIdRequestCar(String transportBrandId) {
+        return repo.findAllScheduleByBrandIdRequestCar(transportBrandId);
+    }
+
+    @Override
     public List<TransportationSchedules> findAllScheduleByBrandId(String transportBrandId) {
         return repo.findAllScheduleByBrandId(transportBrandId);
     }

@@ -1,12 +1,13 @@
 package com.main.traveltour.restcontroller.agent.transport;
 
+import com.main.traveltour.dto.customer.transport.TransportationSchedulesDto;
 import com.main.traveltour.dto.staff.requestcar.RequestCarDetailDto;
 import com.main.traveltour.dto.staff.requestcar.RequestCarGetDataDto;
 import com.main.traveltour.entity.RequestCar;
 import com.main.traveltour.entity.RequestCarDetail;
 import com.main.traveltour.entity.ResponseObject;
-import com.main.traveltour.entity.Transportations;
-import com.main.traveltour.service.agent.TransportationService;
+import com.main.traveltour.entity.TransportationSchedules;
+import com.main.traveltour.service.agent.TransportationScheduleService;
 import com.main.traveltour.service.staff.RequestCarDetailService;
 import com.main.traveltour.service.staff.RequestCarService;
 import com.main.traveltour.utils.EntityDtoUtils;
@@ -31,7 +32,7 @@ public class RequestCarAGAPI {
     private RequestCarDetailService requestCarDetailService;
 
     @Autowired
-    private TransportationService transportationService;
+    private TransportationScheduleService transportationScheduleService;
 
     @GetMapping("find-all-request-car")
     private ResponseObject findAllRequestCar(@RequestParam(defaultValue = "0") int page,
@@ -79,11 +80,13 @@ public class RequestCarAGAPI {
         }
     }
 
-    @GetMapping("find-all-transport-by-transport-brand-id/{transportBrandId}")
+    @GetMapping("find-all-transport-schedule-by-transport-brand-id/{transportBrandId}")
     private ResponseObject findAllTransportByBrandId(@PathVariable String transportBrandId) {
         try {
-            List<Transportations> transportations = transportationService.findAllByTransportBrandId(transportBrandId);
-            return new ResponseObject("200", "Thành công", transportations);
+            List<TransportationSchedules> transportationSchedules = transportationScheduleService.findAllScheduleByBrandIdRequestCar(transportBrandId);
+            List<TransportationSchedulesDto> transportationSchedulesDto = EntityDtoUtils.convertToDtoList(transportationSchedules, TransportationSchedulesDto.class);
+
+            return new ResponseObject("200", "Thành công", transportationSchedulesDto);
         } catch (Exception e) {
             return new ResponseObject("400", "Thất bại", null);
         }

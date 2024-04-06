@@ -24,6 +24,12 @@ public interface TransportationSchedulesRepository extends JpaRepository<Transpo
     @Query("SELECT t FROM TransportationSchedules t " +
             "JOIN t.transportationsByTransportationId tp " +
             "JOIN tp.transportationBrandsByTransportationBrandId tpb " +
+            "WHERE tpb.id = :transportBrandId AND t.tripType = true AND t.isStatus = 0 AND t.isActive = true")
+    List<TransportationSchedules> findAllScheduleByBrandIdRequestCar(@Param("transportBrandId") String transportBrandId);
+
+    @Query("SELECT t FROM TransportationSchedules t " +
+            "JOIN t.transportationsByTransportationId tp " +
+            "JOIN tp.transportationBrandsByTransportationBrandId tpb " +
             "WHERE tpb.id = :transportBrandId AND t.tripType = false")
     List<TransportationSchedules> findAllScheduleByBrandId(@Param("transportBrandId") String transportBrandId);
 
@@ -42,8 +48,7 @@ public interface TransportationSchedulesRepository extends JpaRepository<Transpo
     @Query("SELECT sc FROM TransportationSchedules sc " +
             "JOIN sc.transportationsByTransportationId tp " +
             "JOIN tp.transportationBrandsByTransportationBrandId tpb " +
-            "WHERE tpb.id = :transportBrandId AND sc.isActive = true " +
-            "ORDER BY sc.isStatus ASC")
+            "WHERE tpb.id = :transportBrandId AND sc.isActive = true")
     Page<TransportationSchedules> findAllSchedulesAgent(@Param("transportBrandId") String transportBrandId, Pageable pageable);
 
     @Query("SELECT sc FROM TransportationSchedules sc " +
@@ -122,10 +127,11 @@ public interface TransportationSchedulesRepository extends JpaRepository<Transpo
     Page<TransportationSchedules> findTransportationSchedulesByTourDetailId(@Param("tourDetailId") String tourDetailId,
                                                                             @Param("orderStatus") Integer orderStatus, @Param("searchTerm") String searchTerm,
                                                                             Pageable pageable);
+
     @Query("SELECT ts FROM TransportationSchedules ts " +
             "where (ts.transportationId = :transId) and " +
             "(ts.isActive = :isActive)")
-    Page<TransportationSchedules> findScheduleByTransId (@Param("isActive") Boolean isActive, @Param("transId") String transId, Pageable pageable);
+    Page<TransportationSchedules> findScheduleByTransId(@Param("isActive") Boolean isActive, @Param("transId") String transId, Pageable pageable);
 
     @Query("SELECT ts FROM TransportationSchedules ts " +
             "where (ts.transportationId = :transId) and " +
@@ -133,8 +139,8 @@ public interface TransportationSchedulesRepository extends JpaRepository<Transpo
             "and (:searchTerm is null or " +
             "(LOWER(ts.fromLocation) LIKE LOWER(CONCAT('%', :searchTerm, '%')) " +
             "or LOWER(ts.toLocation) LIKE LOWER(CONCAT('%', :searchTerm, '%'))))")
-    Page<TransportationSchedules> findScheduleByTransIdByName (@Param("isActive") Boolean isActive, @Param("transId") String transId, Pageable pageable, String searchTerm);
+    Page<TransportationSchedules> findScheduleByTransIdByName(@Param("isActive") Boolean isActive, @Param("transId") String transId, Pageable pageable, String searchTerm);
 
     @Query("SELECT COUNT(ts) FROM TransportationSchedules ts")
-    Long countTransportationSchedules ();
+    Long countTransportationSchedules();
 }

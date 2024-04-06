@@ -90,6 +90,10 @@ public class TransportationSchedules {
 
     @OneToMany(mappedBy = "transportationSchedulesByTransportationScheduleId")
     @JsonManagedReference
+    private Collection<RequestCarDetail> requestCarDetailsById;
+
+    @OneToMany(mappedBy = "transportationSchedulesByTransportationScheduleId")
+    @JsonManagedReference
     private Collection<TransportationScheduleSeats> transportationScheduleSeatsById;
 
     @ManyToOne

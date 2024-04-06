@@ -44,7 +44,7 @@ public class TransportSchedulesAPI {
     private ResponseEntity<Page<TransportationSchedules>> findAllSchedule(@RequestParam(defaultValue = "0") int page,
                                                                           @RequestParam(defaultValue = "10") int size,
                                                                           @RequestParam(defaultValue = "id") String sortBy,
-                                                                          @RequestParam(defaultValue = "asc") String sortDir,
+                                                                          @RequestParam(defaultValue = "desc") String sortDir,
                                                                           @RequestParam(required = false) String searchTerm,
                                                                           @PathVariable String transportBrandId) {
         Sort sort = sortDir.equalsIgnoreCase(Sort.Direction.ASC.name()) ? Sort.by(sortBy).ascending() : Sort.by(sortBy).descending();
