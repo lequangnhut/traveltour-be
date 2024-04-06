@@ -11,6 +11,8 @@ import org.springframework.stereotype.Service;
 import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
+import java.util.OptionalInt;
 
 @Service
 public class TransportationBrandsServiceImpl implements TransportationBrandsService {
@@ -63,5 +65,10 @@ public class TransportationBrandsServiceImpl implements TransportationBrandsServ
     @Override
     public TransportationBrands save(TransportationBrands transportationBrands) {
         return transportationBrandsRepository.save(transportationBrands);
+    }
+
+    @Override
+    public Optional<TransportationBrands> findById(String id) {
+        return Optional.ofNullable(transportationBrandsRepository.findById(id));
     }
 }
