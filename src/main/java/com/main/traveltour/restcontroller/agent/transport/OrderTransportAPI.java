@@ -12,7 +12,6 @@ import com.main.traveltour.service.agent.TransportationScheduleService;
 import com.main.traveltour.service.utils.FileUpload;
 import com.main.traveltour.service.utils.QRCodeService;
 import com.main.traveltour.utils.EntityDtoUtils;
-import com.main.traveltour.utils.GenerateNextID;
 import com.main.traveltour.utils.ReplaceUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -32,7 +31,6 @@ import java.util.List;
 import java.util.Map;
 
 @RestController
-@CrossOrigin(origins = "http://localhost:3000")
 @RequestMapping("api/v1")
 public class OrderTransportAPI {
 

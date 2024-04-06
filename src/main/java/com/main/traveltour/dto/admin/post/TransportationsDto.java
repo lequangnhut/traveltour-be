@@ -32,6 +32,8 @@ public class TransportationsDto implements Serializable {
 
     Boolean isTransportBed;
 
+    Integer columnSeat;
+
     TransportationTypes transportationTypes;
 
     Collection<TransportationImage> transportationImagesById;

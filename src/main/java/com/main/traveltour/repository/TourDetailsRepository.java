@@ -1,6 +1,5 @@
 package com.main.traveltour.repository;
 
-import com.main.traveltour.entity.BookingTourCustomers;
 import com.main.traveltour.entity.TourDetails;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -10,7 +9,6 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.math.BigDecimal;
-import java.sql.Timestamp;
 import java.util.Date;
 import java.util.List;
 
@@ -24,6 +22,10 @@ public interface TourDetailsRepository extends JpaRepository<TourDetails, Intege
     @Query("SELECT td FROM TourDetails td " +
             "WHERE td.tourDetailStatus != 4 ")
     List<TourDetails> getAllTourDetail();
+
+    @Query("SELECT td FROM TourDetails td " +
+            "WHERE td.tourDetailStatus = 1 ")
+    List<TourDetails> findAllTourDetailUseRequestCar();
 
     @Query("SELECT td FROM TourDetails td " +
             "WHERE (:searchTerm IS NULL OR " +
@@ -57,10 +59,6 @@ public interface TourDetailsRepository extends JpaRepository<TourDetails, Intege
 
     @Query("SELECT COALESCE(MAX(td.id), 'TD0000') FROM TourDetails td")
     String getMaxCodeTourDetailId();
-
-    List<TourDetails> findAllByDepartureDate(Date departureDate);
-
-    List<TourDetails> findAllByArrivalDate(Date arrivalDate);
 
     @Query("SELECT td " +
             "FROM TourDetails td " +

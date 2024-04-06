@@ -30,7 +30,6 @@ import java.util.Map;
 import java.util.Optional;
 
 @RestController
-@CrossOrigin(origins = "http://localhost:3000")
 @RequestMapping("api/v1")
 public class TransportAPI {
 
@@ -160,11 +159,11 @@ public class TransportAPI {
         return response;
     }
 
-    @PostMapping(value = "/agent/transportation/create-transportation/{selectedUtilities}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @PostMapping(value = "/agent/transportation/create-transportation", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     private ResponseObject createTrans(@RequestPart("transportationsDto") TransportationsDto transportationsDto,
                                        @RequestPart("transportTypeImg") List<MultipartFile> transportTypeImg,
                                        @RequestPart("transportationImg") MultipartFile transportationImg,
-                                       @PathVariable List<Integer> selectedUtilities) {
+                                       @RequestPart(required = false) List<Integer> selectedUtilities) {
         try {
             List<TransportUtilities> utilities = selectedUtilities.stream().map(transportUtilityServiceAD::findTransUtilityADById).toList();
             String transportId = GenerateNextID.generateNextCode("TP", transportationService.findMaxCode());
@@ -191,10 +190,10 @@ public class TransportAPI {
         }
     }
 
-    @PutMapping(value = "/agent/transportation/update-transportation/{selectedUtilities}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @PutMapping(value = "/agent/transportation/update-transportation", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     private ResponseObject updateTrans(@RequestPart("transportationsDto") TransportationsDto transportationsDto,
                                        @RequestPart(value = "transportationImg", required = false) MultipartFile transportationImg,
-                                       @PathVariable List<Integer> selectedUtilities) {
+                                       @RequestPart(required = false) List<Integer> selectedUtilities) {
         try {
             List<TransportUtilities> utilities = selectedUtilities.stream().map(transportUtilityServiceAD::findTransUtilityADById).toList();
             Optional<Transportations> transportationsOptional = transportationService.findTransportById(transportationsDto.getId());

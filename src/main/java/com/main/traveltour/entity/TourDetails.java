@@ -104,6 +104,10 @@ public class TourDetails {
     @JsonManagedReference
     private Collection<TourTrips> tourTripsById;
 
+    @OneToMany(mappedBy = "tourDetailsByTourDetailId")
+    @JsonManagedReference
+    private Collection<RequestCar> requestCarsById;
+
     @ManyToOne
     @JoinColumn(name = "tour_id", referencedColumnName = "id", nullable = false, insertable = false, updatable = false)
     @JsonBackReference

@@ -1,5 +1,6 @@
 package com.main.traveltour.restcontroller.auth;
 
+import com.main.traveltour.config.DomainURL;
 import com.main.traveltour.dto.UsersDto;
 import com.main.traveltour.entity.PassOTP;
 import com.main.traveltour.entity.ResponseObject;
@@ -40,7 +41,7 @@ public class AuthController {
             users.setIsActive(Boolean.TRUE);
             usersService.save(users);
         }
-        return "redirect:http://localhost:3000/verify-success/" + token;
+        return "redirect:" + DomainURL.FRONTEND_URL + "/verify-success/" + token;
     }
 
     @GetMapping("auth/login/google")
@@ -64,26 +65,26 @@ public class AuthController {
             if (diffInMinutes > 10) {
                 passOTP.setIsActive(false);
                 passOTPService.save(passOTP);
-                return "redirect:http://localhost:3000/account/forgot-pass";
+                return "redirect:" + DomainURL.FRONTEND_URL + "/account/forgot-pass";
             } else {
-                return "redirect:http://localhost:3000/account/forgot-pass/" + verifyCode;
+                return "redirect:" + DomainURL.FRONTEND_URL + "/account/forgot-pass/" + verifyCode;
             }
         }
-        return "redirect:http://localhost:3000/account/forgot-pass";
+        return "redirect:" + DomainURL.FRONTEND_URL + "/account/forgot-pass";
     }
 
     @GetMapping("/auth/login/google/success")
     private String redirectSuccess(Principal principal, OAuth2AuthenticationToken oauth) {
         if (principal != null && oauth != null) {
             OAuth2User oauth2User = oauth.getPrincipal();
-
             Users users = usersService.findByEmail(oauth2User.getAttribute("email"));
+
             if (users != null) {
                 if (users.getIsActive()) {
                     userSession = users;
-                    return "redirect:http://localhost:3000/home";
+                    return "redirect:" + DomainURL.FRONTEND_URL + "/home";
                 } else {
-                    return "redirect:http://localhost:3000/sign-in";
+                    return "redirect:" + DomainURL.FRONTEND_URL + "/sign-in";
                 }
             } else {
                 Users user = new Users();
@@ -95,11 +96,11 @@ public class AuthController {
 
                 usersService.authenticateRegister(user);
                 userSession = user;
-                return "redirect:http://localhost:3000/home";
+                return "redirect:" + DomainURL.FRONTEND_URL + "/home";
             }
         }
 
-        return "redirect:http://localhost:3000/sign-in";
+        return "redirect:" + DomainURL.FRONTEND_URL + "/sign-in";
     }
 
     @ResponseBody

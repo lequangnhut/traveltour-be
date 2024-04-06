@@ -39,6 +39,11 @@ public class TourDetailsServiceImpl implements TourDetailsService {
     }
 
     @Override
+    public List<TourDetails> findAllTourDetailUseRequestCar() {
+        return tourDetailsRepository.findAllTourDetailUseRequestCar();
+    }
+
+    @Override
     public Page<TourDetails> getAllTourDetailByStatusIs2AndSearchTerm(String searchTerm, Pageable pageable) {
         return tourDetailsRepository.getAllTourDetailByStatusIs2AndSearchTerm(searchTerm, pageable);
     }

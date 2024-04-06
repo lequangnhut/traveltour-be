@@ -26,4 +26,6 @@ public class TransportationsDto implements Serializable {
     Boolean isActive;
 
     Boolean isTransportBed;
+
+    Integer columnSeat;
 }

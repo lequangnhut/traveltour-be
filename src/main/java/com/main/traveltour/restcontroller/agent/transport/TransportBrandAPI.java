@@ -16,7 +16,6 @@ import java.sql.Timestamp;
 import java.util.List;
 
 @RestController
-@CrossOrigin(origins = "http://localhost:3000")
 @RequestMapping("api/v1")
 public class TransportBrandAPI {
 

@@ -16,6 +16,8 @@ public interface TourDetailsService {
 
     List<TourDetails> getAllJoinBooking();
 
+    List<TourDetails> findAllTourDetailUseRequestCar();
+
     Page<TourDetails> getAllTourDetailByStatusIs2AndSearchTerm(String searchTerm, Pageable pageable);
 
     List<Object[]> findTourTrend();
