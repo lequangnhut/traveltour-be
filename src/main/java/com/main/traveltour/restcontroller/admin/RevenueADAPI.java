@@ -58,5 +58,4 @@ public class RevenueADAPI {
 
         return new ResponseObject("200", "Đã tìm thấy dữ liệu", revenueDtoAD);
     }
-
 }

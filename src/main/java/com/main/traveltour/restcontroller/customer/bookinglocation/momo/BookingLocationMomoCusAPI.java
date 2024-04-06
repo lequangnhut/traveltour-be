@@ -90,7 +90,16 @@ public class BookingLocationMomoCusAPI {
         String notifyURL = DomainURL.BACKEND_URL + "/api/v1/customer/booking-location/momo/success-payment";// có cung đc, ko có cũng ko
 
         Environment environment = Environment.selectEnv("dev");
-        PaymentResponse captureWalletMoMoResponse = CreateOrderMoMo.process(environment, orderId, requestId, Long.toString(orderTotal.intValue()), orderInfo, returnURL, notifyURL, "", RequestType.CAPTURE_WALLET, Boolean.TRUE);
+
+        PaymentResponse captureWalletMoMoResponse;
+        BigDecimal limitAmount = BigDecimal.valueOf(1000000);
+
+        if (orderTotal.compareTo(limitAmount) < 0) {
+            captureWalletMoMoResponse = CreateOrderMoMo.process(environment, orderId, requestId, Long.toString(orderTotal.intValue()), orderInfo, returnURL, notifyURL, "", RequestType.CAPTURE_WALLET, Boolean.TRUE);
+        } else {
+            captureWalletMoMoResponse = CreateOrderMoMo.process(environment, orderId, requestId, Long.toString(orderTotal.intValue()), orderInfo, returnURL, notifyURL, "", RequestType.PAY_WITH_ATM, Boolean.TRUE);
+        }
+
         assert captureWalletMoMoResponse != null;
         response.put("redirectUrl", captureWalletMoMoResponse.getPayUrl());
         return new ResponseEntity<>(response, HttpStatus.OK);
@@ -99,7 +108,7 @@ public class BookingLocationMomoCusAPI {
     @GetMapping("momo/success-payment")
     private String successBookingTransportMomo(HttpServletRequest request) {
         String payType = request.getParameter("payType");
-        int paymentStatus = payType.equals("qr") ? 1 : 0;
+        int paymentStatus = payType.equals("qr") || payType.equals("napas") ? 1 : 0;
 
         OrderVisits orderVisitSuccess = null;
         OrderVisitsDto orderVisitsDto = SessionAttr.ORDER_LOCATIONS_DTO;

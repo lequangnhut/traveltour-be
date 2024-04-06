@@ -1,7 +1,8 @@
-package com.main.traveltour.restcontroller.customer.bookingLocation.vnpay;
+package com.main.traveltour.restcontroller.customer.bookinglocation.zalopay;
 
 import com.main.traveltour.config.DomainURL;
-import com.main.traveltour.configpayment.vnpay.VNPayService;
+import com.main.traveltour.configpayment.momo.shared.utils.LogUtils;
+import com.main.traveltour.configpayment.zalopay.ZaloPayUtil;
 import com.main.traveltour.dto.customer.visit.BookingLocationCusDto;
 import com.main.traveltour.dto.staff.OrderVisitsDto;
 import com.main.traveltour.entity.*;
@@ -31,7 +32,8 @@ import java.util.Optional;
 @Controller
 @CrossOrigin(origins = "http://localhost:3000")
 @RequestMapping("api/v1/customer/booking-location/")
-public class BookingLocationVNPayCusAPI {
+public class BookingLocationZaloPayController {
+
 
     @Autowired
     private UsersService usersService;
@@ -46,16 +48,11 @@ public class BookingLocationVNPayCusAPI {
     private VisitLocationTicketService visitLocationTicketService;
 
     @Autowired
-    private HttpServletRequest request;
-
-    @Autowired
-    private VNPayService vnPayService;
-
-    @Autowired
     private EmailService emailService;
 
-    @PostMapping("vnpay/submit-payment")
-    private ResponseEntity<Map<String, Object>> submitOrderVNPay(@RequestPart OrderVisitsDto orderVisitsDto) {
+    @PostMapping("zalopay/submit-payment")
+    public ResponseEntity<Map<String, Object>> submitZALOPayPayment(@RequestPart OrderVisitsDto orderVisitsDto) {
+
         List<VisitLocationTickets> locationTickets = visitLocationTicketService.findByVisitLocationId(orderVisitsDto.getVisitLocationId());
         BigDecimal adultPrice = BigDecimal.ZERO;
         BigDecimal childrenPrice = BigDecimal.ZERO;
@@ -76,28 +73,38 @@ public class BookingLocationVNPayCusAPI {
 
         BigDecimal orderTotal = totalAdultPrice.add(totalChildrenPrice);
 
-        String baseUrl = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort();
-        baseUrl += "/api/v1/customer/booking-location/vnpay/success-payment";
-        String vnPayUrl = vnPayService.createOrder(orderTotal.intValue(), orderVisitsDto.getId(), baseUrl);
-
-        Map<String, Object> response = new HashMap<>();
-        response.put("redirectUrl", vnPayUrl);
-
         SessionAttr.ORDER_LOCATIONS_DTO = orderVisitsDto;
 
-        return new ResponseEntity<>(response, HttpStatus.OK);
+        Map<String, Object> response = new HashMap<>();
+
+        // Use ZaloPayUtil to create and submit the order to ZaloPay
+        Map<String, Object> order = ZaloPayUtil.createZaloPayOrder(orderTotal.intValue(), orderVisitsDto.getId().toString());
+        String paymentUrl = ZaloPayUtil.submitPayment(order);
+
+        if (paymentUrl == null) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of("message", "Error processing ZaloPay payment."));
+        }
+        String returnURL = DomainURL.BACKEND_URL + "/api/v1/customer/booking-location/zaloPay/success-payment";
+        response.put("redirectUrl", paymentUrl);
+        return ResponseEntity.ok(response);
     }
 
-    @GetMapping("vnpay/success-payment")
-    private String submitOrderVNPaySuccess(HttpServletRequest request) {
+    @PostMapping("zaloPay/success-payment")
+    private String successBookingTransportMomo(HttpServletRequest request) {
+        System.out.println("success =================================================================");
+        // Parse the request parameters sent by ZaloPay
+        String appTransId = request.getParameter("apptransid"); // Replace with actual ZaloPay parameter name if different
+        String zpTransId = request.getParameter("zptranstoken"); // Replace with actual ZaloPay parameter name if different
 
-        int paymentStatus = vnPayService.orderReturn(request);
-
+//        LogUtils.logInfo("ZaloPay Successful Payment Callback: appTransId=" + appTransId + ", zpTransId=" + zpTransId);
+//
+//        // Validate payment with ZaloPay
+//        boolean isValid = ZaloPayUtil.validateCallback(appTransId, zpTransId);
+        boolean isValid = appTransId != null || zpTransId != null;
         OrderVisits orderVisitSuccess = null;
         OrderVisitsDto orderVisitsDto = SessionAttr.ORDER_LOCATIONS_DTO;
 
         List<VisitLocationTickets> locationTickets = visitLocationTicketService.findByVisitLocationId(orderVisitsDto.getVisitLocationId());
-//        Integer userId = orderVisitsDto.getUserId();
         BigDecimal adultPrice = BigDecimal.ZERO;
         BigDecimal childrenPrice = BigDecimal.ZERO;
         Integer adultTicketId = null;
@@ -134,7 +141,7 @@ public class BookingLocationVNPayCusAPI {
             orderVisits.setOrderTotal(orderTotal);
             orderVisits.setDateCreated(new Timestamp(System.currentTimeMillis()));
 
-            if (paymentStatus == 1) {
+            if (isValid) {
                 orderVisits.setOrderStatus(1); // đã thanh toán
                 orderVisitSuccess = orderVisitLocationService.save(orderVisits);
             } else {
@@ -150,13 +157,16 @@ public class BookingLocationVNPayCusAPI {
             }
             //nhớ gửi mail
             emailService.queueEmailBookingLocation(new BookingLocationCusDto(orderVisitsDto, orderVisits));
+
         } catch (Exception e) {
             e.printStackTrace();
         }
+
+        assert orderVisitSuccess != null;
         String orderStatusBase64 = Base64Utils.encodeData(String.valueOf(orderVisitSuccess.getOrderStatus()));
         String orderVisitLocationIdBase64 = Base64Utils.encodeData(String.valueOf(orderVisitSuccess.getVisitLocationId()));
         String orderIdBase64 = Base64Utils.encodeData(String.valueOf(orderVisitSuccess.getId()));
-        return "redirect:" + DomainURL.FRONTEND_URL + "/tourism-location/tourism-location-detail/" + orderVisitLocationIdBase64 + "/booking-location/customer-information/check-information/payment-success?orderVisitId=" + orderIdBase64 + "&orderStatus=" + orderStatusBase64 + "&paymentMethod=VNPAY";
+        return "redirect:" + DomainURL.FRONTEND_URL + "/tourism-location/tourism-location-detail/" + orderVisitLocationIdBase64 + "/booking-location/customer-information/check-information/payment-success?orderVisitId=" + orderIdBase64 + "&orderStatus=" + orderStatusBase64 + "&paymentMethod=ZALOPAY";
     }
 
     private void saveOrderVisitDetail(OrderVisits orderVisits, BigDecimal unitPrice, int capacity, Integer ticketId) {
