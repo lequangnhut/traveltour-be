@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class VisitLocationsServiceImpl implements VisitLocationsService {
@@ -43,4 +44,10 @@ public class VisitLocationsServiceImpl implements VisitLocationsService {
     public VisitLocations save(VisitLocations visitLocations) {
         return visitLocationsRepository.save(visitLocations);
     }
+
+    @Override
+    public Optional<VisitLocations> findById(String visitLocationId) {
+        return Optional.ofNullable(visitLocationsRepository.findById(visitLocationId));
+    }
+
 }

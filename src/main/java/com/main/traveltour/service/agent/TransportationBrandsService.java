@@ -8,6 +8,7 @@ import org.springframework.data.repository.query.Param;
 import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
 public interface TransportationBrandsService {
 
@@ -34,4 +35,6 @@ public interface TransportationBrandsService {
     List<TransportationBrands> findAllCustomerDataList();
 
     TransportationBrands save(TransportationBrands transportationBrands);
+
+    Optional<TransportationBrands> findById (String id);
 }

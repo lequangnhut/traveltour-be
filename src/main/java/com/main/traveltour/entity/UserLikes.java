@@ -2,15 +2,13 @@ package com.main.traveltour.entity;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 @Entity
 @Table(name = "user_likes", schema = "travel_tour")
 public class UserLikes {
@@ -25,8 +23,8 @@ public class UserLikes {
     private String serviceId;
 
     @Basic
-    @Column(name = "categogy") //0: tour, 1: hotel, 2: vehicle, 3: visit
-    private Integer cateGoGy;
+    @Column(name = "category") //0: tour, 1: hotel, 2: vehicle, 3: visit
+    private Integer category;
 
     @Basic
     @Column(name = "user_id")
