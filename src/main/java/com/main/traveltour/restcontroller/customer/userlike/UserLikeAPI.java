@@ -1,26 +1,22 @@
 package com.main.traveltour.restcontroller.customer.userlike;
 
+import com.main.traveltour.dto.customer.infomation.HotelCusDto;
+import com.main.traveltour.dto.customer.infomation.VisitLocationsCusDto;
 import com.main.traveltour.dto.customer.userlike.UserLikeDto;
 import com.main.traveltour.entity.*;
-import com.main.traveltour.repository.VisitLocationsRepository;
 import com.main.traveltour.service.UsersService;
 import com.main.traveltour.service.agent.HotelsService;
 import com.main.traveltour.service.agent.TransportationBrandsService;
-import com.main.traveltour.service.agent.TransportationService;
 import com.main.traveltour.service.agent.VisitLocationsService;
 import com.main.traveltour.service.customer.UserLikeService;
 import com.main.traveltour.service.staff.ToursService;
 import com.main.traveltour.utils.EntityDtoUtils;
-import jakarta.mail.Transport;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.web.bind.annotation.*;
 
-import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @RestController
@@ -137,12 +133,14 @@ public class UserLikeAPI {
                     .filter(Objects::nonNull)
                     .collect(Collectors.toList());
 
+            List<HotelCusDto> hotelCusDto = EntityDtoUtils.convertToDtoList(hotels, HotelCusDto.class);
+            List<VisitLocationsCusDto> visitLocationsCusDtos = EntityDtoUtils.convertToDtoList(visitLocations, VisitLocationsCusDto.class);
             UserLikeDto userLikeDtos = UserLikeDto.builder()
                     .userLikes(userLikes)
                     .tours(tours)
-                    .hotels(hotels)
+                    .hotels(hotelCusDto)
                     .transportationBrands(transportationBrands)
-                    .visitLocations(visitLocations)
+                    .visitLocations(visitLocationsCusDtos)
                     .build();
 
             return new ResponseObject("200", "OK", userLikeDtos);
