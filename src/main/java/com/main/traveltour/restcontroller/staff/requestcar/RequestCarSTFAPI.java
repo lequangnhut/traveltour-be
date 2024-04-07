@@ -1,13 +1,12 @@
 package com.main.traveltour.restcontroller.staff.requestcar;
 
+import com.main.traveltour.dto.staff.OrderTransportationsDto;
 import com.main.traveltour.dto.staff.requestcar.RequestCarDetailGetDataDto;
 import com.main.traveltour.dto.staff.requestcar.RequestCarDto;
 import com.main.traveltour.dto.staff.requestcar.RequestCarGetDataDto;
 import com.main.traveltour.dto.staff.tour.TourDetailsGetDataDto;
-import com.main.traveltour.entity.RequestCar;
-import com.main.traveltour.entity.RequestCarDetail;
-import com.main.traveltour.entity.ResponseObject;
-import com.main.traveltour.entity.TourDetails;
+import com.main.traveltour.entity.*;
+import com.main.traveltour.service.staff.OrderTransportationService;
 import com.main.traveltour.service.staff.RequestCarDetailService;
 import com.main.traveltour.service.staff.RequestCarService;
 import com.main.traveltour.service.staff.TourDetailsService;
@@ -19,6 +18,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.web.bind.annotation.*;
 
 import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -35,15 +35,16 @@ public class RequestCarSTFAPI {
     @Autowired
     private RequestCarService requestCarService;
 
+    @Autowired
+    private OrderTransportationService orderTransportationService;
+
     @GetMapping("find-all-request-car")
     private ResponseObject findAllRequestCar(@RequestParam(defaultValue = "0") int page,
                                              @RequestParam(defaultValue = "10") int size,
                                              @RequestParam(defaultValue = "id") String sortBy,
                                              @RequestParam(defaultValue = "asc") String sortDir) {
         try {
-            Sort sort = sortDir.equalsIgnoreCase(Sort.Direction.ASC.name())
-                    ? Sort.by(sortBy).ascending()
-                    : Sort.by(sortBy).descending();
+            Sort sort = sortDir.equalsIgnoreCase(Sort.Direction.ASC.name()) ? Sort.by(sortBy).ascending() : Sort.by(sortBy).descending();
             Page<RequestCar> requestCars = requestCarService.findAllRequestCarPage(PageRequest.of(page, size, sort));
             Page<RequestCarGetDataDto> requestCarGetDataDto = requestCars.map(requestCar -> EntityDtoUtils.convertToDto(requestCar, RequestCarGetDataDto.class));
 
@@ -60,9 +61,7 @@ public class RequestCarSTFAPI {
                                                    @RequestParam(defaultValue = "id") String sortBy,
                                                    @RequestParam(defaultValue = "asc") String sortDir) {
         try {
-            Sort sort = sortDir.equalsIgnoreCase(Sort.Direction.ASC.name())
-                    ? Sort.by(sortBy).ascending()
-                    : Sort.by(sortBy).descending();
+            Sort sort = sortDir.equalsIgnoreCase(Sort.Direction.ASC.name()) ? Sort.by(sortBy).ascending() : Sort.by(sortBy).descending();
             Page<RequestCarDetail> requestCarDetails = requestCarDetailService.findAllRequestCarDetailPage(requestCarId, PageRequest.of(page, size, sort));
             Page<RequestCarDetailGetDataDto> requestCarGetDataDto = requestCarDetails.map(requestCarDetail -> EntityDtoUtils.convertToDto(requestCarDetail, RequestCarDetailGetDataDto.class));
 
@@ -103,7 +102,6 @@ public class RequestCarSTFAPI {
             requestCar.setDateCreated(new Timestamp(System.currentTimeMillis()));
             requestCar.setIsAccepted(Boolean.FALSE);
             requestCarService.save(requestCar);
-
             return new ResponseObject("200", "Thành công", null);
         } catch (Exception e) {
             return new ResponseObject("400", "Thất bại", null);
@@ -117,6 +115,46 @@ public class RequestCarSTFAPI {
             requestCar.setId(requestCarDto.getId());
             requestCarService.save(requestCar);
 
+            return new ResponseObject("200", "Thành công", null);
+        } catch (Exception e) {
+            return new ResponseObject("400", "Thất bại", null);
+        }
+    }
+
+    @PostMapping("accept-request-car")
+    private ResponseObject acceptRequestCar(@RequestPart String requestCarDetailId,
+                                            @RequestPart OrderTransportationsDto orderTransportationsDto) {
+        try {
+            Optional<RequestCarDetail> requestCarDetailOptional = requestCarDetailService.findRequestCarDetailById(Integer.parseInt(requestCarDetailId));
+
+            requestCarDetailOptional.ifPresent(requestCarDetail -> {
+                // cập nhật lại trạng thái request car detail
+                requestCarDetail.setIsAccepted(Boolean.TRUE);
+                requestCarDetail.getRequestCarRequireCarById().setIsAccepted(Boolean.TRUE);
+//                requestCarDetailService.save(requestCarDetail);
+
+                // Thêm vào order transport để thêm xe đã duyệt vào tour
+                String tourDetailId = requestCarDetail.getRequestCarRequireCarById().getTourDetailId();
+                TransportationSchedules schedules = requestCarDetail.getTransportationSchedulesByTransportationScheduleId();
+
+                OrderTransportations orderTransportations = EntityDtoUtils.convertToEntity(orderTransportationsDto, OrderTransportations.class);
+                TourDetails tourDetails = tourDetailsService.findById(tourDetailId);
+                Users users = tourDetails.getUsersByGuideId();
+
+                List<TourDetails> tourDetailsList = new ArrayList<>();
+                tourDetailsList.add(tourDetails);
+
+                orderTransportations.setTourDetails(tourDetailsList);
+                orderTransportations.setTransportationScheduleId(schedules.getId());
+                orderTransportations.setCustomerEmail(users.getEmail());
+                orderTransportations.setCustomerName(users.getFullName());
+                orderTransportations.setCustomerCitizenCard(users.getCitizenCard());
+                orderTransportations.setCustomerPhone(users.getPhone());
+                orderTransportations.setAmountTicket(requestCarDetail.getRequestCarRequireCarById().getAmountCustomer());
+                orderTransportations.setOrderTotal(schedules.getUnitPrice());
+
+                orderTransportationService.save(orderTransportations);
+            });
             return new ResponseObject("200", "Thành công", null);
         } catch (Exception e) {
             return new ResponseObject("400", "Thất bại", null);

@@ -9,6 +9,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class RequestCarDetailServiceImpl implements RequestCarDetailService {
@@ -19,6 +20,11 @@ public class RequestCarDetailServiceImpl implements RequestCarDetailService {
     @Override
     public Page<RequestCarDetail> findAllRequestCarDetailPage(Integer requestCarId, Pageable pageable) {
         return repo.findAllByRequestCarId(requestCarId, pageable);
+    }
+
+    @Override
+    public Optional<RequestCarDetail> findRequestCarDetailById(Integer requestCarDetailId) {
+        return repo.findById(requestCarDetailId);
     }
 
     @Override

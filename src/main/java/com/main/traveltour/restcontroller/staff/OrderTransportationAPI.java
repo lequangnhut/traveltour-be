@@ -7,7 +7,6 @@ import com.main.traveltour.entity.TourDetails;
 import com.main.traveltour.service.staff.OrderTransportationService;
 import com.main.traveltour.service.staff.TourDetailsService;
 import com.main.traveltour.utils.EntityDtoUtils;
-import com.main.traveltour.utils.GenerateNextID;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -28,10 +27,7 @@ public class OrderTransportationAPI {
     @PostMapping(value = "create-order-transportation")
     public ResponseObject createOrderTransportation(@RequestPart("orderTransportationsDto") OrderTransportationsDto orderTransportationsDto, @RequestPart("tourDetailId") String tourDetailId) {
         try {
-            String orderTransportationId = GenerateNextID.generateNextCode("OTR", orderTransportationService.maxCode());
-
             OrderTransportations orderTransportations = EntityDtoUtils.convertToEntity(orderTransportationsDto, OrderTransportations.class);
-            orderTransportations.setId(orderTransportationId);
 
             List<TourDetails> tourDetailsList = new ArrayList<>();
             TourDetails tourDetails = tourDetailsService.findById(tourDetailId);

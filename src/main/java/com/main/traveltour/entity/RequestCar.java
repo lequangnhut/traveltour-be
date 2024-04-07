@@ -58,7 +58,7 @@ public class RequestCar {
 
     @Basic
     @Column(name = "is_accepted")
-    private Boolean isAccepted; // true là chờ ứng tuyển | false là chưa duyệt nhà xe
+    private Boolean isAccepted; // false là yêu cầu đang đăng | true là ẩn yêu cầu
 
     @Basic
     @Column(name = "request_car_noted", columnDefinition = "LONGTEXT")

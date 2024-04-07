@@ -36,7 +36,7 @@ public class RequestCarDetail {
 
     @Basic
     @Column(name = "is_accepted")
-    private Boolean isAccepted;
+    private Boolean isAccepted; // false là chưa duyệt | true là đã duyệt
 
     @ManyToOne
     @JoinColumn(name = "transportation_schedule_id", referencedColumnName = "id", nullable = false, insertable = false, updatable = false)

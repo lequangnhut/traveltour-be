@@ -2,19 +2,20 @@ package com.main.traveltour.restcontroller.chat;
 
 import com.main.traveltour.dto.chat.UserChatResponseDto;
 import com.main.traveltour.dto.chat.UserDataDto;
-import com.main.traveltour.entity.*;
+import com.main.traveltour.entity.ChatMessage;
+import com.main.traveltour.entity.ChatNotification;
+import com.main.traveltour.entity.ChatRooms;
+import com.main.traveltour.entity.UserChat;
 import com.main.traveltour.repository.ChatMessageRepository;
 import com.main.traveltour.service.chat.ChatMessageService;
 import com.main.traveltour.service.chat.ChatRoomService;
 import com.main.traveltour.service.chat.UserChatService;
-import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.CrossOrigin;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -70,7 +71,7 @@ public class ChatController {
                 List<UserChat> userChats = userChatService.findAllByUserIds(senderIds);
 
                 for (UserChat userChat : userChats) {
-                    if(!chatRooms.isEmpty()){
+                    if (!chatRooms.isEmpty()) {
                         Integer countUnreadMessages = chatMessageRepository.countByChatIdAndRecipientIdAndStatusIs(chatRooms.get(0).getChatId(), chatRooms.get(0).getRecipientId(), false);
                         List<ChatMessage> newChatMessage = chatMessageRepository.findByChatIdOrderByTimestampDesc(chatRooms.get(0).getChatId());
                         boolean statusMessage = countUnreadMessages > 0;
@@ -90,7 +91,7 @@ public class ChatController {
                                 .build();
 
                         userChatResponseDtos.add(userChatResponseDto);
-                    }else{
+                    } else {
                         UserChatResponseDto userChatResponseDto = UserChatResponseDto.builder()
                                 .id(userChat.getId())
                                 .userId(userChat.getUserId())
