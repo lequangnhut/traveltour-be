@@ -2,10 +2,7 @@ package com.main.traveltour.entity;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import java.sql.Timestamp;
 
@@ -14,6 +11,7 @@ import java.sql.Timestamp;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
+@Builder
 @Table(name = "user_comments", schema = "travel_tour")
 public class UserComments {
 
@@ -27,8 +25,8 @@ public class UserComments {
     private String serviceId;
 
     @Basic
-    @Column(name = "categogy") // 0: tour, 1: hotel, 2: vehicle, 3: visit
-    private Integer cateGoGy;
+    @Column(name = "category") // 0: tour, 1: hotel, 2: vehicle, 3: visit
+    private Integer category;
 
     @Basic
     @Column(name = "star")
