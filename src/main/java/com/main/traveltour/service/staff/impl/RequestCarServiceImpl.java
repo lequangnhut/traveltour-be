@@ -19,7 +19,7 @@ public class RequestCarServiceImpl implements RequestCarService {
 
     @Override
     public Page<RequestCar> findAllRequestCarPage(Pageable pageable) {
-        return repo.findAll(pageable);
+        return repo.findAllByOrderByIsAcceptedAsc(pageable);
     }
 
     @Override

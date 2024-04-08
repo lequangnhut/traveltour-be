@@ -42,7 +42,7 @@ public class RequestCarSTFAPI {
     private ResponseObject findAllRequestCar(@RequestParam(defaultValue = "0") int page,
                                              @RequestParam(defaultValue = "10") int size,
                                              @RequestParam(defaultValue = "id") String sortBy,
-                                             @RequestParam(defaultValue = "asc") String sortDir) {
+                                             @RequestParam(defaultValue = "desc") String sortDir) {
         try {
             Sort sort = sortDir.equalsIgnoreCase(Sort.Direction.ASC.name()) ? Sort.by(sortBy).ascending() : Sort.by(sortBy).descending();
             Page<RequestCar> requestCars = requestCarService.findAllRequestCarPage(PageRequest.of(page, size, sort));
@@ -59,7 +59,7 @@ public class RequestCarSTFAPI {
                                                    @RequestParam(defaultValue = "0") int page,
                                                    @RequestParam(defaultValue = "10") int size,
                                                    @RequestParam(defaultValue = "id") String sortBy,
-                                                   @RequestParam(defaultValue = "asc") String sortDir) {
+                                                   @RequestParam(defaultValue = "desc") String sortDir) {
         try {
             Sort sort = sortDir.equalsIgnoreCase(Sort.Direction.ASC.name()) ? Sort.by(sortBy).ascending() : Sort.by(sortBy).descending();
             Page<RequestCarDetail> requestCarDetails = requestCarDetailService.findAllRequestCarDetailPage(requestCarId, PageRequest.of(page, size, sort));

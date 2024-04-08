@@ -1,6 +1,5 @@
 package com.main.traveltour.restcontroller.staff.tour;
 
-import com.main.traveltour.dto.staff.OrderHotelDetailsGetDataDto;
 import com.main.traveltour.dto.staff.tour.TourDetailImagesDto;
 import com.main.traveltour.dto.staff.tour.TourDetailsDto;
 import com.main.traveltour.dto.staff.tour.TourDetailsGetDataDto;
