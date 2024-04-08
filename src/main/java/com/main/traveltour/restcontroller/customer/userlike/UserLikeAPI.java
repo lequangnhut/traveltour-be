@@ -1,6 +1,8 @@
 package com.main.traveltour.restcontroller.customer.userlike;
 
 import com.main.traveltour.dto.customer.infomation.HotelCusDto;
+import com.main.traveltour.dto.customer.infomation.TourCusDto;
+import com.main.traveltour.dto.customer.infomation.TransportationBrandsCusDto;
 import com.main.traveltour.dto.customer.infomation.VisitLocationsCusDto;
 import com.main.traveltour.dto.customer.userlike.UserLikeDto;
 import com.main.traveltour.entity.*;
@@ -135,11 +137,13 @@ public class UserLikeAPI {
 
             List<HotelCusDto> hotelCusDto = EntityDtoUtils.convertToDtoList(hotels, HotelCusDto.class);
             List<VisitLocationsCusDto> visitLocationsCusDtos = EntityDtoUtils.convertToDtoList(visitLocations, VisitLocationsCusDto.class);
+            List<TransportationBrandsCusDto> transportationBrandsCusDtos = EntityDtoUtils.convertToDtoList(transportationBrands, TransportationBrandsCusDto.class);
+            List<TourCusDto> tourCusDtos = EntityDtoUtils.convertToDtoList(tours, TourCusDto.class);
             UserLikeDto userLikeDtos = UserLikeDto.builder()
                     .userLikes(userLikes)
-                    .tours(tours)
+                    .tours(tourCusDtos)
                     .hotels(hotelCusDto)
-                    .transportationBrands(transportationBrands)
+                    .transportationBrands(transportationBrandsCusDtos)
                     .visitLocations(visitLocationsCusDtos)
                     .build();
 
