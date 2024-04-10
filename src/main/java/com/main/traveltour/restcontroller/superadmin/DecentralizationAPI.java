@@ -47,7 +47,7 @@ public class DecentralizationAPI {
     private ResponseEntity<Page<Users>> getListUserRoleStaff(@RequestParam(defaultValue = "0") int page,
                                                              @RequestParam(defaultValue = "10") int size,
                                                              @RequestParam(defaultValue = "id") String sortBy,
-                                                             @RequestParam(defaultValue = "asc") String sortDir,
+                                                             @RequestParam(defaultValue = "desc") String sortDir,
                                                              @RequestParam(required = false) String searchTerm) {
         Sort sort = sortDir.equalsIgnoreCase(Sort.Direction.ASC.name()) ? Sort.by(sortBy).ascending() : Sort.by(sortBy).descending();
 
@@ -59,7 +59,7 @@ public class DecentralizationAPI {
     private ResponseEntity<Page<Users>> getListUserRoleAgent(@RequestParam(defaultValue = "0") int page,
                                                              @RequestParam(defaultValue = "10") int size,
                                                              @RequestParam(defaultValue = "id") String sortBy,
-                                                             @RequestParam(defaultValue = "asc") String sortDir,
+                                                             @RequestParam(defaultValue = "desc") String sortDir,
                                                              @RequestParam(required = false) String searchTerm) {
         Sort sort = sortDir.equalsIgnoreCase(Sort.Direction.ASC.name()) ? Sort.by(sortBy).ascending() : Sort.by(sortBy).descending();
 

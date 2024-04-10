@@ -394,7 +394,7 @@
                               vui lòng nhấp vào liên kết dưới đây:
                             </p>
                             <p style="text-align: center;margin: 0;padding: 0;">
-                              <a th:href="@{'http://localhost:8080/api/v1/customer/forgot-pass/captcha/check-code-on-time/' + ${verifyCode} + '&' + ${email}}"
+                              <a th:href="@{${domain} + '/api/v1/customer/forgot-pass/captcha/check-code-on-time/' + ${verifyCode} + '&' + ${email}}"
                                  class="btn" style="background-color: #63ab45; color: white">ĐỔI MẬT KHẨU</a>
                             </p>
                             <p style="text-align: justify; margin-bottom: 5px">

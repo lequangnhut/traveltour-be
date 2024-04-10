@@ -55,7 +55,7 @@ public class TransportAPI {
     private ResponseEntity<Page<TransportGetDataDto>> findAllTransportBrand(@RequestParam(defaultValue = "0") int page,
                                                                             @RequestParam(defaultValue = "10") int size,
                                                                             @RequestParam(defaultValue = "id") String sortBy,
-                                                                            @RequestParam(defaultValue = "asc") String sortDir,
+                                                                            @RequestParam(defaultValue = "desc") String sortDir,
                                                                             @RequestParam(required = false) String searchTerm,
                                                                             @PathVariable String brandId) {
         Sort sort = sortDir.equalsIgnoreCase(Sort.Direction.ASC.name())

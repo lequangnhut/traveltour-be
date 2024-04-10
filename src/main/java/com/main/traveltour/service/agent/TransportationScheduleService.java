@@ -22,9 +22,9 @@ public interface TransportationScheduleService {
 
     List<TransportationSchedules> getAllFromLocationAndToLocation();
 
-    Page<TransportationSchedules> findAllScheduleAgent(String transportBrandId, Pageable pageable);
+    Page<TransportationSchedules> findAllScheduleAgent(String transportBrandId, Boolean tripType, Pageable pageable);
 
-    Page<TransportationSchedules> findAllScheduleAgentWitchSearch(String transportBrandId, String searchTerm, Pageable pageable);
+    Page<TransportationSchedules> findAllScheduleAgentWitchSearch(String transportBrandId, Boolean tripType, String searchTerm, Pageable pageable);
 
     Page<TransportationSchedules> findAllTransportScheduleCus(Pageable pageable, String brandId);
 

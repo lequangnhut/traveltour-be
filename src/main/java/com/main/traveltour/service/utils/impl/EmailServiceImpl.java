@@ -1,5 +1,6 @@
 package com.main.traveltour.service.utils.impl;
 
+import com.main.traveltour.config.DomainURL;
 import com.main.traveltour.dto.agent.hotel.AgenciesDto;
 import com.main.traveltour.dto.agent.transport.OrderTransportationsDto;
 import com.main.traveltour.dto.auth.RegisterDto;
@@ -13,10 +14,8 @@ import com.main.traveltour.dto.superadmin.AccountDto;
 import com.main.traveltour.dto.superadmin.DataAccountDto;
 import com.main.traveltour.entity.*;
 import com.main.traveltour.repository.RoomTypesRepository;
-import com.main.traveltour.repository.VisitLocationsRepository;
 import com.main.traveltour.service.UsersService;
 import com.main.traveltour.service.admin.HotelsServiceAD;
-import com.main.traveltour.service.agent.OrderVisitDetailService;
 import com.main.traveltour.service.agent.PaymentMethodService;
 import com.main.traveltour.service.agent.TransportationService;
 import com.main.traveltour.service.customer.OrderVehicleDetailsService;
@@ -29,7 +28,6 @@ import com.main.traveltour.utils.ReplaceUtils;
 import com.main.traveltour.utils.TimeUtils;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
-import org.apache.commons.lang3.text.WordUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.javamail.JavaMailSender;
@@ -63,7 +61,6 @@ public class EmailServiceImpl implements EmailService {
     private final Queue<CancelOrderTransportationsDto> emailQueueCustomerCancelTrans = new LinkedList<>();
     private final Queue<OrderTransportationsDto> emailQueueCustomerBookingTrans = new LinkedList<>();
     private final Queue<BookingLocationCusDto> emailQueueCustomerBookingLocation = new LinkedList<>();
-    private final Queue<OrderDetailsHotelCustomerDto> orderDetailsHotelCustomerDto = new LinkedList<>();
 
     @Autowired
     private JavaMailSender sender;
@@ -108,12 +105,6 @@ public class EmailServiceImpl implements EmailService {
     private HotelsServiceAD hotelsServiceAD;
 
     @Autowired
-    private OrderVisitDetailService orderVisitDetailService;
-
-    @Autowired
-    private VisitLocationsRepository visitLocationsRepository;
-
-    @Autowired
     private OrderHotelsService orderHotelsService;
 
     @Autowired
@@ -140,6 +131,7 @@ public class EmailServiceImpl implements EmailService {
                 variables.put("email", registerDto.getEmail());
                 variables.put("full_name", registerDto.getFullName());
                 variables.put("token", users.getToken());
+                variables.put("domain", DomainURL.BACKEND_URL);
 
                 helper.setFrom(email);
                 helper.setText(thymeleafService.createContent("verify-email", variables), true);
@@ -207,6 +199,7 @@ public class EmailServiceImpl implements EmailService {
 
                 Map<String, Object> variables = new HashMap<>();
                 variables.put("name_agency", agenciesDto.getNameAgency());
+                variables.put("domain", DomainURL.BACKEND_URL);
 
                 helper.setFrom(email);
                 helper.setText(thymeleafService.createContent("agency-success", variables), true);
@@ -237,6 +230,7 @@ public class EmailServiceImpl implements EmailService {
 
                 Map<String, Object> variables = new HashMap<>();
                 variables.put("name_agency", agenciesDto.getNameAgency());
+                variables.put("domain", DomainURL.BACKEND_URL);
 
                 helper.setFrom(email);
                 helper.setText(thymeleafService.createContent("agency-accepted", variables), true);
@@ -267,6 +261,7 @@ public class EmailServiceImpl implements EmailService {
 
                 Map<String, Object> variables = new HashMap<>();
                 variables.put("name_agency", agenciesDto.getNameAgency());
+                variables.put("domain", DomainURL.BACKEND_URL);
 
                 helper.setFrom(email);
                 helper.setText(thymeleafService.createContent("agency-failed", variables), true);
@@ -365,6 +360,7 @@ public class EmailServiceImpl implements EmailService {
                 variables.put("full_name", passwordsDto.getFull_name());
                 variables.put("email", passwordsDto.getEmail());
                 variables.put("verifyCode", passwordsDto.getVerifyCode());
+                variables.put("domain", DomainURL.BACKEND_URL);
 
                 helper.setFrom(email);
                 helper.setText(thymeleafService.createContent("send-otp", variables), true);
@@ -648,11 +644,11 @@ public class EmailServiceImpl implements EmailService {
                 .collect(Collectors.toList());
 
         for (var order : orderHotels.getOrderHotelDetailsById()) {
-            for(var roomType : roomTypes){
-                if(roomType.getId() == order.getRoomTypeId()) {
+            for (var roomType : roomTypes) {
+                if (roomType.getId() == order.getRoomTypeId()) {
                     order.setRoomTypesByRoomTypeId(roomType);
                 }
-                if(orderHotels.getId() == order.getOrderHotelId()){
+                if (orderHotels.getId() == order.getOrderHotelId()) {
                     order.setOrderHotelsByOrderHotelId(orderHotels);
                 }
             }
@@ -694,7 +690,7 @@ public class EmailServiceImpl implements EmailService {
             sender.send(message);
 
             for (var emailCustomer : orderDetailsHotelCustomerDtos) {
-                if(emailCustomer.getCustomerEmail() != null) {
+                if (emailCustomer.getCustomerEmail() != null) {
 
                     helper.setTo(emailCustomer.getCustomerEmail());
 

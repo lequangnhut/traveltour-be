@@ -16,8 +16,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.format.annotation.DateTimeFormat;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.sql.Timestamp;
@@ -40,19 +38,26 @@ public class TransportSchedulesAPI {
     @Autowired
     private TransportScheduleSeatService transportScheduleSeatService;
 
-    @GetMapping("/agent/transportation-schedules/find-all-schedules/{transportBrandId}")
-    private ResponseEntity<Page<TransportationSchedules>> findAllSchedule(@RequestParam(defaultValue = "0") int page,
-                                                                          @RequestParam(defaultValue = "10") int size,
-                                                                          @RequestParam(defaultValue = "id") String sortBy,
-                                                                          @RequestParam(defaultValue = "desc") String sortDir,
-                                                                          @RequestParam(required = false) String searchTerm,
-                                                                          @PathVariable String transportBrandId) {
-        Sort sort = sortDir.equalsIgnoreCase(Sort.Direction.ASC.name()) ? Sort.by(sortBy).ascending() : Sort.by(sortBy).descending();
+    @GetMapping("/agent/transportation-schedules/find-all-schedule-by-trip-type/{tripType}")
+    private ResponseObject findScheduleByTripType(@PathVariable Boolean tripType,
+                                                  @RequestParam String transportBrandId,
+                                                  @RequestParam(defaultValue = "0") int page,
+                                                  @RequestParam(defaultValue = "10") int size,
+                                                  @RequestParam(defaultValue = "id") String sortBy,
+                                                  @RequestParam(defaultValue = "desc") String sortDir,
+                                                  @RequestParam(required = false) String searchTerm) {
+        try {
+            Sort sort = sortDir.equalsIgnoreCase(Sort.Direction.ASC.name())
+                    ? Sort.by(sortBy).ascending()
+                    : Sort.by(sortBy).descending();
 
-        Page<TransportationSchedules> transportationBrands = searchTerm == null || searchTerm.isEmpty()
-                ? transportationScheduleService.findAllScheduleAgent(transportBrandId, PageRequest.of(page, size, sort))
-                : transportationScheduleService.findAllScheduleAgentWitchSearch(transportBrandId, searchTerm, PageRequest.of(page, size, sort));
-        return new ResponseEntity<>(transportationBrands, HttpStatus.OK);
+            Page<TransportationSchedules> transportationSchedules = searchTerm == null || searchTerm.isEmpty()
+                    ? transportationScheduleService.findAllScheduleAgent(transportBrandId, tripType, PageRequest.of(page, size, sort))
+                    : transportationScheduleService.findAllScheduleAgentWitchSearch(transportBrandId, tripType, searchTerm, PageRequest.of(page, size, sort));
+            return new ResponseObject("200", "Đã tìm thấy dữ liệu", transportationSchedules);
+        } catch (Exception e) {
+            return new ResponseObject("400", "Thất bại", null);
+        }
     }
 
     @GetMapping("/agent/transportation-schedules/find-schedule-by-scheduleId/{scheduleId}")
