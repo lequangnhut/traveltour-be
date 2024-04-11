@@ -61,6 +61,7 @@ public class EmailServiceImpl implements EmailService {
     private final Queue<CancelOrderTransportationsDto> emailQueueCustomerCancelTrans = new LinkedList<>();
     private final Queue<OrderTransportationsDto> emailQueueCustomerBookingTrans = new LinkedList<>();
     private final Queue<BookingLocationCusDto> emailQueueCustomerBookingLocation = new LinkedList<>();
+    private final Queue<ForgotPasswordDto> emailQueueForgotAdmin = new LinkedList<>();
 
     @Autowired
     private JavaMailSender sender;
@@ -722,6 +723,38 @@ public class EmailServiceImpl implements EmailService {
     }
 
     @Override
+    public void sendMailForgotAdmin() {
+        while (!emailQueueForgotAdmin.isEmpty()) {
+            ForgotPasswordDto passwordsDto = emailQueueForgotAdmin.poll();
+            try {
+                MimeMessage message = sender.createMimeMessage();
+                MimeMessageHelper helper = new MimeMessageHelper(message, MimeMessageHelper.MULTIPART_MODE_MIXED_RELATED, StandardCharsets.UTF_8.name());
+
+                helper.setTo(passwordsDto.getEmail());
+
+                Map<String, Object> variables = new HashMap<>();
+                variables.put("full_name", passwordsDto.getFull_name());
+                variables.put("email", passwordsDto.getEmail());
+                variables.put("verifyCode", passwordsDto.getVerifyCode());
+                variables.put("domain", DomainURL.BACKEND_URL);
+
+                helper.setFrom(email);
+                helper.setText(thymeleafService.createContent("send-otp-admin", variables), true);
+                helper.setSubject("THAY ĐỔI MẬT KHẨU");
+
+                sender.send(message);
+            } catch (MessagingException e) {
+                throw new RuntimeException(e);
+            }
+        }
+    }
+
+    @Override
+    public void queueEmailForgotAdmin(ForgotPasswordDto passwordsDto) {
+        emailQueueForgotAdmin.add(passwordsDto);
+    }
+
+    @Override
     public void sendMailOTPCus() {
         while (!emailQueueSendOTPRegisterAgencies.isEmpty()) {
             ForgotPasswordDto passwordDto = emailQueueSendOTPRegisterAgencies.poll();
@@ -1008,6 +1041,11 @@ public class EmailServiceImpl implements EmailService {
     @Scheduled(fixedDelay = 5000)
     public void processCustomerCancelTrans() {
         sendMailCustomerCancelTrans();
+    }
+
+    @Scheduled(fixedDelay = 5000)
+    public void processForgotMailAdmin() {
+        sendMailForgotAdmin();
     }
 
     @Scheduled(fixedDelay = 5000)

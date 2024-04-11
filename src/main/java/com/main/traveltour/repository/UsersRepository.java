@@ -81,6 +81,9 @@ public interface UsersRepository extends JpaRepository<Users, Integer> {
     @Query("SELECT u FROM Users u JOIN u.roles r WHERE u.email = :email AND u.isActive = true AND (r.nameRole LIKE 'ROLE_CUSTOMER')")
     Users findByEmailAndActive(@Param("email") String email);
 
+    @Query("SELECT u FROM Users u JOIN u.roles r WHERE u.email = :email AND u.isActive = true AND (r.nameRole IN ('ROLE_SUPERADMIN', 'ROLE_ADMIN', 'ROLE_STAFF', 'ROLE_AGENT_TRANSPORT', 'ROLE_AGENT_HOTEL', 'ROLE_AGENT_PLACE', 'ROLE_GUIDE'))")
+    Users findByEmailAndActiveAdmin(@Param("email") String email);
+
     @Query("SELECT COUNT(u) FROM Users u " +
             "JOIN u.roles r " +
             "WHERE r.nameRole IN ('ROLE_CUSTOMER')")

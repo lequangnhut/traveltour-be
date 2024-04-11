@@ -78,4 +78,8 @@ public interface EmailService {
     void queueEmailCustomerBookingTransport(OrderTransportationsDto orderTransportationsDto);
 
     void sendEmailBookingHotel(OrderHotelCustomerDto orderHotelCustomerDto, List<OrderDetailsHotelCustomerDto> orderDetailsHotelCustomerDtos);
+
+    void sendMailForgotAdmin();
+
+    void queueEmailForgotAdmin(ForgotPasswordDto passwordsDto);
 }
