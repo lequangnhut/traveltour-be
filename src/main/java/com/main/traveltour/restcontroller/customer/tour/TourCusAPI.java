@@ -15,7 +15,6 @@ import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
-import java.util.Date;
 import java.util.*;
 
 @RestController
@@ -50,14 +49,17 @@ public class TourCusAPI {
                                                       @RequestParam(defaultValue = "asc") String sortDir,
                                                       @RequestParam(required = false) BigDecimal price,
                                                       @RequestParam(required = false) List<Integer> tourTypeList,
-                                                      @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) Date checkInDateFiller,
-                                                      @RequestParam(required = false) String searchTerm) {
+                                                      @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) Date departure,
+                                                      @RequestParam(required = false) String departureArrives,
+                                                      @RequestParam(required = false) String departureFrom,
+                                                      @RequestParam(required = false) Integer numberOfPeople
+    ) {
 
         Sort sort = sortDir.equalsIgnoreCase(Sort.Direction.ASC.name())
                 ? Sort.by(sortBy).ascending()
                 : Sort.by(sortBy).descending();
 
-        Page<TourDetails> tourDetailsPage = tourDetailsService.findTourDetailWithFilter(searchTerm, checkInDateFiller, price, tourTypeList, PageRequest.of(page, size, sort));
+        Page<TourDetails> tourDetailsPage = tourDetailsService.findTourDetailWithFilter(departureArrives, departureFrom, numberOfPeople, departure, price, tourTypeList, PageRequest.of(page, size, sort));
         Page<TourDetailsGetDataDto> tourDetailsDtoPage = tourDetailsPage.map(tourDetails -> EntityDtoUtils.convertToDto(tourDetails, TourDetailsGetDataDto.class));
 
         if (tourDetailsDtoPage.isEmpty()) {
@@ -86,6 +88,35 @@ public class TourCusAPI {
             return new ResponseObject("200", "Đã tìm thấy dữ liệu", uniqueDataList);
         }
     }
+
+    @GetMapping("customer/tour/get-tour-detail-home-data-list")
+    private ResponseObject getAllHomeDataList() {
+        Map<String, Object> response = new HashMap<>();
+        List<TourDetails> tourDetailsList = tourDetailsService.findAll();
+
+        Set<String> departureArrivesSet = new LinkedHashSet<>();
+        Set<String> departureFromSet = new LinkedHashSet<>();
+
+        for (TourDetails tourDetails : tourDetailsList) {
+            departureArrivesSet.add(tourDetails.getToursByTourId().getTourName());
+            departureArrivesSet.add(tourDetails.getFromLocation());
+
+            departureFromSet.add(tourDetails.getToLocation());
+        }
+
+        List<String> departureArrives = new ArrayList<>(departureArrivesSet);
+        response.put("departureArrives", departureArrives);
+
+        List<String> departureFrom = new ArrayList<>(departureFromSet);
+        response.put("departureFrom", departureFrom);
+
+        if (tourDetailsList.isEmpty()) {
+            return new ResponseObject("404", "Không tìm thấy dữ liệu", null);
+        } else {
+            return new ResponseObject("200", "Đã tìm thấy dữ liệu", response);
+        }
+    }
+
 
     @GetMapping("customer/tour/find-all-tour-trend")
     private ResponseObject findAllTourTrend() {

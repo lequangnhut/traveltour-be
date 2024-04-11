@@ -64,17 +64,19 @@ public interface TourDetailsRepository extends JpaRepository<TourDetails, Intege
             "FROM TourDetails td " +
             "JOIN td.toursByTourId t " +
             "JOIN t.tourTypesByTourTypeId ty " +
-            "WHERE (:searchTerm IS NULL OR " +
-            "(UPPER(t.tourName) LIKE %:searchTerm% OR " +
-            "UPPER(ty.tourTypeName) LIKE %:searchTerm% OR " +
-            "UPPER(td.tourDetailNotes) LIKE %:searchTerm% OR " +
-            "UPPER(td.fromLocation) LIKE %:searchTerm% OR " +
-            "UPPER(td.toLocation) LIKE %:searchTerm%)) " +
-            "AND (:departureDate IS NULL OR DATE(td.departureDate) >= :departureDate) " +
+            "WHERE (:departureArrives IS NULL OR " +
+            "(UPPER(t.tourName) LIKE %:departureArrives% OR " +
+            "UPPER(ty.tourTypeName) LIKE %:departureArrives% OR " +
+            "UPPER(td.fromLocation) LIKE %:departureArrives%)) " +
+            "AND (:departureFrom IS NULL OR td.toLocation LIKE :departureFrom) " +
+            "AND (:numberOfPeople IS NULL OR :numberOfPeople <= (td.numberOfGuests - td.bookedSeat)) " +
+            "AND (:departureDate IS NULL OR td.departureDate >= :departureDate) " +
             "AND (:price IS NULL OR td.unitPrice <= :price) " +
             "AND (:tourTypesByTourTypeId IS NULL OR ty.id IN (:tourTypesByTourTypeId))")
     Page<TourDetails> findTourDetailWithFilter(
-            @Param("searchTerm") String searchTerm,
+            @Param("departureArrives") String departureArrives,
+            @Param("departureFrom") String departureFrom,
+            @Param("numberOfPeople") Integer numberOfPeople,
             @Param("departureDate") Date departureDate,
             @Param("price") BigDecimal price,
             @Param("tourTypesByTourTypeId") List<Integer> tourTypesByTourTypeId,

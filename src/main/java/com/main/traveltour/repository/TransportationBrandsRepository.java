@@ -37,7 +37,6 @@ public interface TransportationBrandsRepository extends JpaRepository<Transporta
             "JOIN br.transportationsById tp " +
             "JOIN tp.transportationTypesByTransportationTypeId ty " +
             "JOIN tp.transportationSchedulesById sc " +
-            "JOIN sc.orderTransportationsById ord " +
             "WHERE (br.isAccepted = true AND br.isActive = true AND sc.tripType = false) AND " +
             "(:searchTerm IS NULL OR (UPPER(br.agenciesByAgenciesId.nameAgency) LIKE %:searchTerm% OR " +
             "UPPER(br.transportationBrandName) LIKE %:searchTerm% OR " +
@@ -51,7 +50,7 @@ public interface TransportationBrandsRepository extends JpaRepository<Transporta
             "AND (:price IS NULL OR sc.unitPrice <= (:price)) " +
             "AND (:fromLocation IS NULL OR sc.fromLocation LIKE %:fromLocation%) " +
             "AND (:toLocation IS NULL OR sc.toLocation LIKE %:toLocation%) " +
-            "AND (DATE(sc.departureTime) >= DATE(:checkInDateFiller)) " +
+            "AND ((sc.departureTime) >= (:checkInDateFiller)) " +
             "AND (:listOfVehicleManufacturers IS NULL OR br.id IN (:listOfVehicleManufacturers)) " +
             "AND (:mediaTypeList IS NULL OR ty.id IN (:mediaTypeList))" +
             "GROUP BY br")

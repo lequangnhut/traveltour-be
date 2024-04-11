@@ -131,8 +131,15 @@ public class TransportCusAPI {
     @GetMapping("customer/transport/find-all-transport-schedule/{brandId}")
     public ResponseObject findAllTransportSchedule(@RequestParam(defaultValue = "0") int page,
                                                    @RequestParam(defaultValue = "9") int size,
-                                                   @PathVariable String brandId) {
-        Page<TransportationSchedules> transportationSchedules = transportationScheduleService.findAllTransportScheduleCus(PageRequest.of(page, size), brandId);
+                                                   @PathVariable String brandId,
+                                                   @RequestParam(required = false) BigDecimal price,
+                                                   @RequestParam(required = false) String fromLocation,
+                                                   @RequestParam(required = false) String toLocation,
+                                                   @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) Date checkInDateFiller,
+                                                   @RequestParam(required = false) List<Integer> mediaTypeList,
+                                                   @RequestParam(required = false) List<String> listOfVehicleManufacturers
+    ) {
+        Page<TransportationSchedules> transportationSchedules = transportationScheduleService.findAllTransportScheduleCusFilters(brandId, price, fromLocation, toLocation, checkInDateFiller, mediaTypeList, listOfVehicleManufacturers, PageRequest.of(page, size));
         Page<TransportationSchedulesDto> transportationSchedulesDto = transportationSchedules.map(schedules -> EntityDtoUtils.convertToDto(schedules, TransportationSchedulesDto.class));
 
         if (transportationSchedulesDto.isEmpty()) {
@@ -210,7 +217,7 @@ public class TransportCusAPI {
         response.put("fromLocationList", fromLocationList);
         response.put("toLocationList", toLocationList);
 
-        if (uniqueDataList.isEmpty()) {
+        if (uniqueDataList.isEmpty() && fromLocationList.isEmpty() && toLocationList.isEmpty()) {
             return new ResponseObject("404", "Không tìm thấy dữ liệu", null);
         } else {
             return new ResponseObject("200", "Đã tìm thấy dữ liệu", response);

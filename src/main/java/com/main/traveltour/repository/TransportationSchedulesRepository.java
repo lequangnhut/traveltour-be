@@ -1,5 +1,6 @@
 package com.main.traveltour.repository;
 
+import com.main.traveltour.entity.TransportationBrands;
 import com.main.traveltour.entity.TransportationSchedules;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -8,7 +9,9 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.math.BigDecimal;
 import java.sql.Timestamp;
+import java.util.Date;
 import java.util.List;
 
 @Repository
@@ -44,6 +47,59 @@ public interface TransportationSchedulesRepository extends JpaRepository<Transpo
             "JOIN tp.transportationBrandsByTransportationBrandId br " +
             "WHERE br.id = :brandId AND sc.isStatus = 0 AND sc.isActive = true AND sc.tripType = false")
     Page<TransportationSchedules> findAllTransportScheduleCus(Pageable pageable, @Param("brandId") String brandId);
+
+    @Query("SELECT sc FROM TransportationSchedules sc " +
+            "JOIN sc.transportationsByTransportationId tp " +
+            "JOIN tp.transportationBrandsByTransportationBrandId br " +
+            "JOIN tp.transportationTypesByTransportationTypeId ty " +
+            "WHERE (br.id = :brandId AND sc.isStatus = 0 AND sc.isActive = true AND sc.tripType = false) " +
+            "AND (:price IS NULL OR sc.unitPrice <= (:price)) " +
+            "AND (:fromLocation IS NULL OR sc.fromLocation LIKE %:fromLocation%) " +
+            "AND (:toLocation IS NULL OR sc.toLocation LIKE %:toLocation%) " +
+            "AND (:checkInDateFiller IS NULL OR sc.departureTime >= :checkInDateFiller) " +
+            "AND (:listOfVehicleManufacturers IS NULL OR br.id IN (:listOfVehicleManufacturers)) " +
+            "AND (:mediaTypeList IS NULL OR ty.id IN (:mediaTypeList))" +
+            "GROUP BY sc")
+    Page<TransportationSchedules> findAllTransportScheduleCusFilters(
+            @Param("brandId") String brandId,
+            @Param("price") BigDecimal price,
+            @Param("fromLocation") String fromLocation,
+            @Param("toLocation") String toLocation,
+            @Param("checkInDateFiller") Date checkInDateFiller,
+            @Param("mediaTypeList") List<Integer> mediaTypeList,
+            @Param("listOfVehicleManufacturers") List<String> listOfVehicleManufacturers,
+            Pageable pageable);
+
+    @Query("SELECT br FROM TransportationBrands br " +
+            "JOIN br.transportationsById tp " +
+            "JOIN tp.transportationTypesByTransportationTypeId ty " +
+            "JOIN tp.transportationSchedulesById sc " +
+            "WHERE (br.isAccepted = true AND br.isActive = true AND sc.tripType = false) AND " +
+            "(:searchTerm IS NULL OR (UPPER(br.agenciesByAgenciesId.nameAgency) LIKE %:searchTerm% OR " +
+            "UPPER(br.transportationBrandName) LIKE %:searchTerm% OR " +
+            "UPPER(br.agenciesByAgenciesId.phone) LIKE %:searchTerm% OR " +
+            "UPPER(br.agenciesByAgenciesId.province) LIKE %:searchTerm% OR " +
+            "UPPER(br.agenciesByAgenciesId.ward) LIKE %:searchTerm% OR " +
+            "UPPER(br.agenciesByAgenciesId.district) LIKE %:searchTerm% OR " +
+            "UPPER(br.agenciesByAgenciesId.representativeName) LIKE %:searchTerm% OR " +
+            "UPPER(CONCAT(br.agenciesByAgenciesId.ward, ' - ' ,br.agenciesByAgenciesId.district, ' - ' , br.agenciesByAgenciesId.province)) LIKE %:searchTerm% OR " +
+            "UPPER(br.agenciesByAgenciesId.address) LIKE %:searchTerm%)) " +
+                "AND (:price IS NULL OR sc.unitPrice <= (:price)) " +
+                "AND (:fromLocation IS NULL OR sc.fromLocation LIKE %:fromLocation%) " +
+                "AND (:toLocation IS NULL OR sc.toLocation LIKE %:toLocation%) " +
+                "AND (:checkInDateFiller IS NULL OR sc.departureTime >= :checkInDateFiller) " +
+                "AND (:listOfVehicleManufacturers IS NULL OR br.id IN (:listOfVehicleManufacturers)) " +
+                "AND (:mediaTypeList IS NULL OR ty.id IN (:mediaTypeList))" +
+            "GROUP BY br")
+    Page<TransportationBrands> findAllCustomerWithFilter(
+            @Param("searchTerm") String searchTerm,
+            @Param("price") BigDecimal price,
+            @Param("fromLocation") String fromLocation,
+            @Param("toLocation") String toLocation,
+            @Param("checkInDateFiller") Date checkInDateFiller,
+            @Param("mediaTypeList") List<Integer> mediaTypeList,
+            @Param("listOfVehicleManufacturers") List<String> listOfVehicleManufacturers,
+            Pageable pageable);
 
     @Query("SELECT sc FROM TransportationSchedules sc " +
             "JOIN sc.transportationsByTransportationId tp " +

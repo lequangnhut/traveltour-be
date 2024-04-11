@@ -51,6 +51,7 @@ public class BookingTourCustomerAPI {
                 return new ResponseObject("200", "Đã tìm thấy dữ liệu", bookingTourCustomersDtos);
             }
         } catch (Exception e) {
+            e.printStackTrace();
             return new ResponseObject("500", "Không tìm thấy dữ liệu", e.getMessage());
         }
     }

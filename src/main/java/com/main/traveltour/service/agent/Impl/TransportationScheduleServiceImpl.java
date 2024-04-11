@@ -9,6 +9,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
+import java.util.Date;
 import java.util.List;
 
 @Service
@@ -68,6 +70,11 @@ public class TransportationScheduleServiceImpl implements TransportationSchedule
     @Override
     public Page<TransportationSchedules> findAllTransportScheduleCus(Pageable pageable, String brandId) {
         return repo.findAllTransportScheduleCus(pageable, brandId);
+    }
+
+    @Override
+    public Page<TransportationSchedules> findAllTransportScheduleCusFilters(String brandId, BigDecimal price, String fromLocation, String toLocation, Date checkInDateFiller, List<Integer> mediaTypeList, List<String> listOfVehicleManufacturers, Pageable pageable) {
+        return repo.findAllTransportScheduleCusFilters(brandId, price, fromLocation, toLocation, checkInDateFiller, mediaTypeList, listOfVehicleManufacturers, pageable);
     }
 
     @Override

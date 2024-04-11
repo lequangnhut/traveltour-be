@@ -3,7 +3,10 @@ package com.main.traveltour.service.agent;
 import com.main.traveltour.entity.TransportationSchedules;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.repository.query.Param;
 
+import java.math.BigDecimal;
+import java.util.Date;
 import java.util.List;
 
 public interface TransportationScheduleService {
@@ -27,6 +30,16 @@ public interface TransportationScheduleService {
     Page<TransportationSchedules> findAllScheduleAgentWitchSearch(String transportBrandId, Boolean tripType, String searchTerm, Pageable pageable);
 
     Page<TransportationSchedules> findAllTransportScheduleCus(Pageable pageable, String brandId);
+
+    Page<TransportationSchedules> findAllTransportScheduleCusFilters(
+            String brandId,
+            BigDecimal price,
+            String fromLocation,
+            String toLocation,
+            Date checkInDateFiller,
+            List<Integer> mediaTypeList,
+            List<String> listOfVehicleManufacturers,
+            Pageable pageable);
 
     void updateStatusAndActive();
 }

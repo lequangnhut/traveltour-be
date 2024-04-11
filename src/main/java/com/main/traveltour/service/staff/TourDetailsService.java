@@ -24,7 +24,9 @@ public interface TourDetailsService {
 
     Page<TourDetails> findAll(Pageable pageable);
 
-    Page<TourDetails> findTourDetailWithFilter(String searchTerm,
+    Page<TourDetails> findTourDetailWithFilter(String departureArrives,
+                                               String departureFrom,
+                                               Integer numberOfPeople,
                                                Date departureDate,
                                                BigDecimal price,
                                                List<Integer> tourTypesByTourTypeId,
