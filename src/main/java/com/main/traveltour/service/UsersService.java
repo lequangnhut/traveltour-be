@@ -41,5 +41,7 @@ public interface UsersService {
 
     Users checkMailForgot(String email);
 
+    Users checkMailAdminForgot(String email);
+
     Long countUsers();
 }

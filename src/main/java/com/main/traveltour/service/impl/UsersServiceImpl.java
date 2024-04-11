@@ -143,6 +143,11 @@ public class UsersServiceImpl implements UsersService {
     }
 
     @Override
+    public Users checkMailAdminForgot(String email) {
+        return usersRepository.findByEmailAndActiveAdmin(email);
+    }
+
+    @Override
     public Long countUsers() {
         return usersRepository.countUsers();
     }

@@ -121,4 +121,28 @@ public class AuthController {
             return new ResponseObject("404", "Không tìm thấy dữ liệu", null);
         }
     }
+
+    @GetMapping("admin-account/forgot-pass/captcha/check-code-on-time/{verifyCode}&{email}")
+    private String checkAdminLinks(@PathVariable String verifyCode, @PathVariable String email) {
+        Users users = usersService.findByEmail(email);
+
+        PassOTP passOTP = passOTPService.findByUserIdAndToken(users.getId(), verifyCode);
+
+        if (passOTP != null) {
+            Date dateCreated = passOTP.getDateCreated();
+            Date now = new Date();
+
+            long diffInMillis = now.getTime() - dateCreated.getTime();
+            long diffInMinutes = diffInMillis / (60 * 1000);
+
+            if (diffInMinutes > 10) {
+                passOTP.setIsActive(false);
+                passOTPService.save(passOTP);
+                return "redirect:" + DomainURL.FRONTEND_URL + "/admin-account/forgot-pass";
+            } else {
+                return "redirect:" + DomainURL.FRONTEND_URL + "/admin-account/forgot-pass/" + verifyCode;
+            }
+        }
+        return "redirect:" + DomainURL.FRONTEND_URL + "/admin-account/forgot-pass";
+    }
 }
