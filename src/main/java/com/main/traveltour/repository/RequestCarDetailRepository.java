@@ -11,11 +11,28 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface RequestCarDetailRepository extends JpaRepository<RequestCarDetail, Integer> {
 
-    Page<RequestCarDetail> findAllByRequestCarId(Integer requestCarId, Pageable pageable);
+    @Query("SELECT rqcd FROM RequestCarDetail rqcd " +
+            "WHERE rqcd.transportationScheduleId = :transportationScheduleId AND rqcd.isAccepted = 1")
+    RequestCarDetail findRequestCarDetailSubmitted(@Param("transportationScheduleId") String transportationScheduleId);
+
+    @Query("SELECT rqcd FROM RequestCarDetail rqcd " +
+            "WHERE rqcd.transportationScheduleId = :transportationScheduleId " +
+            "AND rqcd.requestCarId = :requestCarId " +
+            "AND rqcd.isAccepted = 1")
+    RequestCarDetail findCarSubmitted(@Param("requestCarId") Integer requestCarId,
+                                      @Param("transportationScheduleId") String transportationScheduleId);
+
+    @Query("SELECT rqcd FROM RequestCarDetail rqcd " +
+            "WHERE rqcd.requestCarId = :requestCarId AND (rqcd.isAccepted = 0 OR rqcd.isAccepted = 1)")
+    Page<RequestCarDetail> findAllByRequestCarId(@Param("requestCarId") Integer requestCarId,
+                                                 Pageable pageable);
 
     @Query("SELECT rqcd FROM RequestCarDetail rqcd " +
             "JOIN rqcd.transportationSchedulesByTransportationScheduleId tsc " +
             "JOIN tsc.transportationsByTransportationId t " +
-            "WHERE rqcd.id = :requestCarDetail AND t.id = :transportationId")
-    RequestCarDetail findByRequestCarIdAndTransportationId(@Param("requestCarDetail") Integer requestCarDetail, @Param("transportationId") String transportationId);
+            "JOIN t.transportationBrandsByTransportationBrandId tpb " +
+            "WHERE tpb.id = :transportBrandId AND rqcd.isAccepted = :acceptedRequest")
+    Page<RequestCarDetail> findAllHistoryRequestCar(@Param("acceptedRequest") Integer acceptedRequest,
+                                                    @Param("transportBrandId") String transportBrandId,
+                                                    Pageable pageable);
 }

@@ -2,6 +2,7 @@ package com.main.traveltour.dto.staff.requestcar;
 
 import com.main.traveltour.entity.*;
 import lombok.Data;
+import org.springframework.data.relational.core.sql.In;
 
 import java.io.Serializable;
 import java.sql.Timestamp;
@@ -20,11 +21,15 @@ public class RequestCarDetailGetDataDto implements Serializable {
 
     Timestamp dateCreated;
 
-    Boolean isAccepted;
+    Integer isAccepted;
+
+    Tours toursByTourId;
 
     Transportations transportations;
 
     TransportationBrands transportationBrands;
+
+    TransportationSchedules transportationSchedules;
 
     RequestCar requestCar;
 

@@ -2,6 +2,7 @@ package com.main.traveltour.restcontroller.agent.transport;
 
 import com.main.traveltour.dto.customer.transport.TransportationSchedulesDto;
 import com.main.traveltour.dto.staff.requestcar.RequestCarDetailDto;
+import com.main.traveltour.dto.staff.requestcar.RequestCarDetailGetDataDto;
 import com.main.traveltour.dto.staff.requestcar.RequestCarGetDataDto;
 import com.main.traveltour.entity.RequestCar;
 import com.main.traveltour.entity.RequestCarDetail;
@@ -52,6 +53,29 @@ public class RequestCarAGAPI {
         }
     }
 
+    @GetMapping("find-all-history-request-car")
+    private ResponseObject findAllHistoryRequestCar(@RequestParam String transportBrandId,
+                                                    @RequestParam Integer acceptedRequest,
+                                                    @RequestParam(defaultValue = "0") int page,
+                                                    @RequestParam(defaultValue = "10") int size,
+                                                    @RequestParam(defaultValue = "id") String sortBy,
+                                                    @RequestParam(defaultValue = "desc") String sortDir) {
+        try {
+            Sort sort = sortDir.equalsIgnoreCase(Sort.Direction.ASC.name())
+                    ? Sort.by(sortBy).ascending()
+                    : Sort.by(sortBy).descending();
+
+            Page<RequestCarDetail> requestCarsCarDetails = requestCarDetailService.findAllHistotyRequestCarPage(
+                    acceptedRequest, transportBrandId, PageRequest.of(page, size, sort));
+            Page<RequestCarDetailGetDataDto> requestCarDetailGetDataDto = requestCarsCarDetails.map(
+                    requestCarDetail -> EntityDtoUtils.convertToDto(requestCarDetail, RequestCarDetailGetDataDto.class));
+
+            return new ResponseObject("200", "Thành công", requestCarDetailGetDataDto);
+        } catch (Exception e) {
+            return new ResponseObject("400", "Thất bại", null);
+        }
+    }
+
     @GetMapping("find-request-car-by-id/{requestCarId}")
     private ResponseObject findRequestCarById(@PathVariable Integer requestCarId) {
         try {
@@ -97,9 +121,25 @@ public class RequestCarAGAPI {
         try {
             RequestCarDetail requestCarDetail = EntityDtoUtils.convertToEntity(requestCarDetailDto, RequestCarDetail.class);
             requestCarDetail.setDateCreated(new Timestamp(System.currentTimeMillis()));
-            requestCarDetail.setIsAccepted(Boolean.FALSE);
+            requestCarDetail.setIsAccepted(0); // đã nộp
             requestCarDetailService.save(requestCarDetail);
 
+            return new ResponseObject("200", "Thành công", null);
+        } catch (Exception e) {
+            return new ResponseObject("400", "Thất bại", null);
+        }
+    }
+
+    @PostMapping("cancel-request-car-to-staff")
+    private ResponseObject cancelRequestCarDetail(@RequestParam Integer requestCarDetailId) {
+        try {
+            Optional<RequestCarDetail> requestCarDetailOptional = requestCarDetailService.findRequestCarDetailById(requestCarDetailId);
+
+            if (requestCarDetailOptional.isPresent()) {
+                RequestCarDetail requestCarDetail = requestCarDetailOptional.get();
+                requestCarDetail.setIsAccepted(2); // Yêu cầu đã bị hủy
+                requestCarDetailService.save(requestCarDetail);
+            }
             return new ResponseObject("200", "Thành công", null);
         } catch (Exception e) {
             return new ResponseObject("400", "Thất bại", null);

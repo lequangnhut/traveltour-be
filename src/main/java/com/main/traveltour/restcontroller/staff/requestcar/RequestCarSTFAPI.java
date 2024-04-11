@@ -15,12 +15,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.relational.core.sql.In;
 import org.springframework.web.bind.annotation.*;
 
 import java.sql.Timestamp;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @RestController
 @RequestMapping("api/v1/staff/request-car/")
@@ -44,9 +43,13 @@ public class RequestCarSTFAPI {
                                              @RequestParam(defaultValue = "id") String sortBy,
                                              @RequestParam(defaultValue = "desc") String sortDir) {
         try {
-            Sort sort = sortDir.equalsIgnoreCase(Sort.Direction.ASC.name()) ? Sort.by(sortBy).ascending() : Sort.by(sortBy).descending();
+            Sort sort = sortDir.equalsIgnoreCase(Sort.Direction.ASC.name())
+                    ? Sort.by(sortBy).ascending()
+                    : Sort.by(sortBy).descending();
+
             Page<RequestCar> requestCars = requestCarService.findAllRequestCarPage(PageRequest.of(page, size, sort));
-            Page<RequestCarGetDataDto> requestCarGetDataDto = requestCars.map(requestCar -> EntityDtoUtils.convertToDto(requestCar, RequestCarGetDataDto.class));
+            Page<RequestCarGetDataDto> requestCarGetDataDto = requestCars.map(
+                    requestCar -> EntityDtoUtils.convertToDto(requestCar, RequestCarGetDataDto.class));
 
             return new ResponseObject("200", "Thành công", requestCarGetDataDto);
         } catch (Exception e) {
@@ -61,9 +64,13 @@ public class RequestCarSTFAPI {
                                                    @RequestParam(defaultValue = "id") String sortBy,
                                                    @RequestParam(defaultValue = "desc") String sortDir) {
         try {
-            Sort sort = sortDir.equalsIgnoreCase(Sort.Direction.ASC.name()) ? Sort.by(sortBy).ascending() : Sort.by(sortBy).descending();
+            Sort sort = sortDir.equalsIgnoreCase(Sort.Direction.ASC.name())
+                    ? Sort.by(sortBy).ascending()
+                    : Sort.by(sortBy).descending();
+
             Page<RequestCarDetail> requestCarDetails = requestCarDetailService.findAllRequestCarDetailPage(requestCarId, PageRequest.of(page, size, sort));
-            Page<RequestCarDetailGetDataDto> requestCarGetDataDto = requestCarDetails.map(requestCarDetail -> EntityDtoUtils.convertToDto(requestCarDetail, RequestCarDetailGetDataDto.class));
+            Page<RequestCarDetailGetDataDto> requestCarGetDataDto = requestCarDetails.map(
+                    requestCarDetail -> EntityDtoUtils.convertToDto(requestCarDetail, RequestCarDetailGetDataDto.class));
 
             return new ResponseObject("200", "Thành công", requestCarGetDataDto);
         } catch (Exception e) {
@@ -78,6 +85,36 @@ public class RequestCarSTFAPI {
             List<TourDetailsGetDataDto> tourDetailsGetDataDto = EntityDtoUtils.convertToDtoList(tourDetails, TourDetailsGetDataDto.class);
 
             return new ResponseObject("200", "Thành công", tourDetailsGetDataDto);
+        } catch (Exception e) {
+            return new ResponseObject("400", "Thất bại", null);
+        }
+    }
+
+    @GetMapping("find-car-submitted")
+    private ResponseObject findCarSubmitted(@RequestParam Integer requestCarId, @RequestParam String transportationScheduleId) {
+        try {
+            RequestCarDetail requestCarDetail = requestCarDetailService.findCarSubmitted(requestCarId, transportationScheduleId);
+
+            if (requestCarDetail != null) {
+                return new ResponseObject("200", "Thành công", true);
+            } else {
+                return new ResponseObject("200", "Không tìm thấy dữ liệu", false);
+            }
+        } catch (Exception e) {
+            return new ResponseObject("400", "Thất bại", null);
+        }
+    }
+
+    @GetMapping("find-request-car-detail-submitted")
+    private ResponseObject findRequestCarDetailSubmitted(@RequestParam String transportationScheduleId) {
+        try {
+            RequestCarDetail requestCarDetail = requestCarDetailService.findRequestCarDetailSubmitted(transportationScheduleId);
+
+            if (requestCarDetail != null) {
+                return new ResponseObject("200", "Thành công", true);
+            } else {
+                return new ResponseObject("200", "Không tìm thấy dữ liệu", false);
+            }
         } catch (Exception e) {
             return new ResponseObject("400", "Thất bại", null);
         }
@@ -129,9 +166,9 @@ public class RequestCarSTFAPI {
 
             requestCarDetailOptional.ifPresent(requestCarDetail -> {
                 // cập nhật lại trạng thái request car detail
-                requestCarDetail.setIsAccepted(Boolean.TRUE);
+                requestCarDetail.setIsAccepted(1); // duyệt xe
                 requestCarDetail.getRequestCarRequireCarById().setIsAccepted(Boolean.TRUE);
-//                requestCarDetailService.save(requestCarDetail);
+                requestCarDetailService.save(requestCarDetail);
 
                 // Thêm vào order transport để thêm xe đã duyệt vào tour
                 String tourDetailId = requestCarDetail.getRequestCarRequireCarById().getTourDetailId();

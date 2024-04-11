@@ -20,5 +20,5 @@ public class RequestCarDetailDto implements Serializable {
 
     Timestamp dateCreated;
 
-    Boolean isAccepted;
+    Integer isAccepted;
 }

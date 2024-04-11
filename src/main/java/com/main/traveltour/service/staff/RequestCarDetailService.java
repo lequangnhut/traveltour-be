@@ -9,13 +9,15 @@ import java.util.Optional;
 
 public interface RequestCarDetailService {
 
-    Page<RequestCarDetail> findAllRequestCarDetailPage(Integer requestCarId, Pageable pageable);
+    RequestCarDetail findRequestCarDetailSubmitted(String transportationScheduleId);
+
+    RequestCarDetail findCarSubmitted(Integer requestCarId, String transportationScheduleId);
+
+    RequestCarDetail save(RequestCarDetail requestCarDetail);
 
     Optional<RequestCarDetail> findRequestCarDetailById(Integer requestCarDetailId);
 
-    List<RequestCarDetail> findAllRequestCarDetailList();
+    Page<RequestCarDetail> findAllRequestCarDetailPage(Integer requestCarId, Pageable pageable);
 
-    RequestCarDetail findTimeRequestCarSubmitted(Integer requestCarId, String transportationId);
-
-    RequestCarDetail save(RequestCarDetail requestCarDetail);
+    Page<RequestCarDetail> findAllHistotyRequestCarPage(Integer acceptedRequest, String transportBrandId, Pageable pageable);
 }

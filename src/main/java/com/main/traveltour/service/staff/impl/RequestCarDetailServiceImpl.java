@@ -8,7 +8,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -23,18 +22,23 @@ public class RequestCarDetailServiceImpl implements RequestCarDetailService {
     }
 
     @Override
+    public Page<RequestCarDetail> findAllHistotyRequestCarPage(Integer acceptedRequest, String transportBrandId, Pageable pageable) {
+        return repo.findAllHistoryRequestCar(acceptedRequest, transportBrandId, pageable);
+    }
+
+    @Override
     public Optional<RequestCarDetail> findRequestCarDetailById(Integer requestCarDetailId) {
         return repo.findById(requestCarDetailId);
     }
 
     @Override
-    public List<RequestCarDetail> findAllRequestCarDetailList() {
-        return repo.findAll();
+    public RequestCarDetail findRequestCarDetailSubmitted(String transportationScheduleId) {
+        return repo.findRequestCarDetailSubmitted(transportationScheduleId);
     }
 
     @Override
-    public RequestCarDetail findTimeRequestCarSubmitted(Integer requestCarId, String transportationId) {
-        return repo.findByRequestCarIdAndTransportationId(requestCarId, transportationId);
+    public RequestCarDetail findCarSubmitted(Integer requestCarId, String transportationScheduleId) {
+        return repo.findCarSubmitted(requestCarId, transportationScheduleId);
     }
 
     @Override
