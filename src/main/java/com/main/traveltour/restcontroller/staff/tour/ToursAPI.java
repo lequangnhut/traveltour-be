@@ -8,6 +8,7 @@ import com.main.traveltour.service.utils.FileUpload;
 import com.main.traveltour.utils.EntityDtoUtils;
 import com.main.traveltour.utils.GenerateNextID;
 import com.main.traveltour.utils.ResourceNotFoundException;
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -20,6 +21,7 @@ import java.sql.Timestamp;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -76,7 +78,6 @@ public class ToursAPI {
 
     @PostMapping("staff/tour/create-tour")
     public ResponseEntity<ToursDto> uploadFileAndCreateTour(@RequestPart("toursDto") ToursDto toursDto, @RequestPart("tourImg") MultipartFile tourImg) {
-
         try {
             String tourId = GenerateNextID.generateNextCode("TR", toursService.maxCodeTourId());
             //Xử lý tải lên file và nhận đường dẫn
@@ -105,12 +106,21 @@ public class ToursAPI {
 
     //updateStatusAndActive Tours rest api
     @PutMapping("staff/tour/update-tour/{id}")
-    public ResponseEntity<Tours> updateTourById(@PathVariable String id, @RequestPart("toursDto") ToursDto toursDto, @RequestPart("tourImg") MultipartFile tourImg) {
+    public ResponseEntity<Tours> updateTourById(@PathVariable String id, @RequestPart("toursDto") ToursDto toursDto, @RequestPart(required = false) MultipartFile tourImg) {
         try {
             toursDto.setId(id);
-            String imagesPath = fileUpload.uploadFile(tourImg);
             Tours tours = EntityDtoUtils.convertToEntity(toursDto, Tours.class);
-            tours.setTourImg(imagesPath);
+            Tours existingTour = toursService.findById(id).orElseThrow(() -> new EntityNotFoundException("Tour not found with id: " + id));
+
+            String currentImagePath = existingTour.getTourImg();
+
+            if (tourImg != null) {
+                String imagesPath = fileUpload.uploadFile(tourImg);
+                tours.setTourImg(imagesPath);
+            } else {
+                tours.setTourImg(currentImagePath);
+            }
+
             Tours updatedTour = toursService.save(tours);
             return ResponseEntity.ok(updatedTour);
         } catch (Exception e) {
@@ -119,22 +129,16 @@ public class ToursAPI {
         }
     }
 
-
     @DeleteMapping("staff/tour/deactivate-tour/{id}")
     public ResponseEntity<Map<String, Boolean>> deleteTourById(@PathVariable String id) {
         try {
-            // Tìm tour bằng ID. Nếu không tìm thấy, ném ResourceNotFoundException.
             Tours tours = toursService.findById(id).orElseThrow(() -> new ResourceNotFoundException("Tours not exist with id: " + id));
-            // Đặt trạng thái của tour thành FALSE (hủy kích hoạt).
             tours.setIsActive(Boolean.FALSE);
-            // Lưu thay đổi vào database.
             toursService.save(tours);
-            // Tạo và trả về response với thông báo hủy kích hoạt thành công.
             Map<String, Boolean> response = new HashMap<>();
             response.put("delete", true);
             return ResponseEntity.ok(response);
         } catch (Exception e) {
-            // Ghi nhận lỗi vào log và trả về lỗi server.
             logger.error("Error when deactivate tour", e);
             return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
         }

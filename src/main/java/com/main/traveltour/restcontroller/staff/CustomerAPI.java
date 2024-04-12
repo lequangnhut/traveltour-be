@@ -3,17 +3,22 @@ package com.main.traveltour.restcontroller.staff;
 import com.main.traveltour.dto.UsersDto;
 import com.main.traveltour.dto.customer.infomation.ChangePassDto;
 import com.main.traveltour.dto.staff.CustomerDto;
+import com.main.traveltour.dto.staff.tour.ToursDto;
 import com.main.traveltour.entity.ResponseObject;
 import com.main.traveltour.entity.Roles;
+import com.main.traveltour.entity.Tours;
 import com.main.traveltour.entity.Users;
 import com.main.traveltour.service.RolesService;
 import com.main.traveltour.service.UsersService;
 import com.main.traveltour.service.utils.FileUpload;
 import com.main.traveltour.utils.EntityDtoUtils;
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -101,9 +106,11 @@ public class CustomerAPI {
     public ResponseObject updateAccountCustomerById
             (@PathVariable int id,
              @RequestPart CustomerDto customerDto,
-             @RequestPart("customerAvatar") MultipartFile customerAvatar) {
+             @RequestPart(required = false) MultipartFile customerAvatar) {
         try {
-            String imagesPath = fileUpload.uploadFile(customerAvatar);
+            Users existingUser = usersService.findById(id);
+            String currentImagePath = existingUser.getAvatar();
+
             Users user = usersService.findById(id);
             user.setGender(customerDto.getGender());
             user.setFullName(customerDto.getFullName());
@@ -112,8 +119,12 @@ public class CustomerAPI {
             user.setCitizenCard(customerDto.getCitizenCard());
             user.setAddress(customerDto.getAddress());
             user.setIsActive(customerDto.getIsActive());
-            user.setAvatar(imagesPath);
-
+            if (customerAvatar != null) {
+                String imagesPath = fileUpload.uploadFile(customerAvatar);
+                user.setAvatar(imagesPath);
+            } else {
+                user.setAvatar(currentImagePath);
+            }
             usersService.save(user);
             return new ResponseObject("200", "Cập nhật thành công", user);
         } catch (Exception e) {
@@ -136,20 +147,20 @@ public class CustomerAPI {
 
     @PutMapping("update-customer-phone/{id}&{phone}")
     public ResponseObject updatePhone(@PathVariable int id, @PathVariable String phone) {
-        try{
+        try {
             Users users = usersService.findById(id);
             users.setPhone(phone);
             Users updatePassUser = usersService.save(users);
             //Thành công thì loại luôn token đó
             return new ResponseObject("200", "Cập nhật thành công", updatePassUser);
-        }catch (Exception e) {
+        } catch (Exception e) {
             return new ResponseObject("404", "Cập nhật thất bại", null);
         }
     }
 
     @PutMapping("update-pass/{id}")
     public ResponseObject updatePasswordAPI(@PathVariable int id, @RequestBody ChangePassDto changePassDto) {
-        try{
+        try {
             Users users = usersService.findById(id);
             //get link hình
             //String imagePath = users.getAvatar();
@@ -160,7 +171,7 @@ public class CustomerAPI {
             Users updatePassUser = usersService.save(users);
 
             return new ResponseObject("200", "Cập nhật thành công", updatePassUser);
-        }catch (Exception e) {
+        } catch (Exception e) {
             return new ResponseObject("404", "Cập nhật thất bại", null);
         }
     }

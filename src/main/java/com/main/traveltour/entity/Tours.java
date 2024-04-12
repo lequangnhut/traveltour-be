@@ -33,7 +33,7 @@ public class Tours {
 
     @Basic
     @Column(name = "tour_img")
-    private String tourImg;
+        private String tourImg;
 
     @Basic
     @Column(name = "date_created")
