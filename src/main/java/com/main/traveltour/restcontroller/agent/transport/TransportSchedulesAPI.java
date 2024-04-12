@@ -137,10 +137,11 @@ public class TransportSchedulesAPI {
             schedules.setId(scheduleId);
             schedules.setDateCreated(new Timestamp(System.currentTimeMillis()));
             schedules.setIsActive(Boolean.TRUE);
-            schedules.setIsStatus(0);
             if (scheduleDto.getTripType()) {
+                schedules.setIsStatus(4); // chuyến đi đang trống
                 schedules.setBookedSeat(transportations.getAmountSeat());
             } else {
+                schedules.setIsStatus(0); // chờ vận hành
                 schedules.setBookedSeat(0);
             }
             transportationScheduleService.save(schedules);
@@ -173,7 +174,7 @@ public class TransportSchedulesAPI {
         TransportationSchedules schedules = transportationScheduleService.findBySchedulesId(scheduleId);
         schedules.setDateDeleted(new Timestamp(System.currentTimeMillis()));
         schedules.setIsActive(Boolean.FALSE);
-        schedules.setIsStatus(4);
+        schedules.setIsStatus(3); // hủy chuyến đi
         transportationScheduleService.save(schedules);
     }
 

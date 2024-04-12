@@ -3,7 +3,6 @@ package com.main.traveltour.service.agent;
 import com.main.traveltour.entity.TransportationSchedules;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.repository.query.Param;
 
 import java.math.BigDecimal;
 import java.util.Date;
@@ -14,6 +13,8 @@ public interface TransportationScheduleService {
     String findMaxCode();
 
     TransportationSchedules findBySchedulesId(String transportSchedulesId);
+
+    TransportationSchedules findCarIsSubmittedAgent(String transportSchedulesId);
 
     TransportationSchedules save(TransportationSchedules schedules);
 
@@ -28,8 +29,6 @@ public interface TransportationScheduleService {
     Page<TransportationSchedules> findAllScheduleAgent(String transportBrandId, Boolean tripType, Pageable pageable);
 
     Page<TransportationSchedules> findAllScheduleAgentWitchSearch(String transportBrandId, Boolean tripType, String searchTerm, Pageable pageable);
-
-    Page<TransportationSchedules> findAllTransportScheduleCus(Pageable pageable, String brandId);
 
     Page<TransportationSchedules> findAllTransportScheduleCusFilters(
             String brandId,

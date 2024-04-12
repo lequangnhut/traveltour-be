@@ -24,11 +24,19 @@ public interface TransportationSchedulesRepository extends JpaRepository<Transpo
 
     List<TransportationSchedules> findByTransportationId(String transportId);
 
-    @Query("SELECT t FROM TransportationSchedules t " +
-            "JOIN t.transportationsByTransportationId tp " +
+    @Query("SELECT tsc FROM TransportationSchedules tsc " +
+            "JOIN tsc.requestCarDetailsById rqcd " +
+            "WHERE rqcd.transportationScheduleId = :transportationScheduleId AND (rqcd.isAccepted = 0 OR rqcd.isAccepted = 1)")
+    TransportationSchedules findCarIsSubmittedAgent(@Param("transportationScheduleId") String transportationScheduleId);
+
+    @Query("SELECT tsc FROM TransportationSchedules tsc " +
+            "JOIN tsc.transportationsByTransportationId tp " +
             "JOIN tp.transportationBrandsByTransportationBrandId tpb " +
-            "WHERE tpb.id = :transportBrandId AND t.tripType = true AND t.isStatus = 0 AND t.isActive = true")
-    List<TransportationSchedules> findAllScheduleByBrandIdRequestCar(@Param("transportBrandId") String transportBrandId);
+            "WHERE tpb.id = :transportBrandId " +
+            "AND tsc.tripType = true " +
+            "AND tsc.isStatus = 4 " + // 4 chuyến đi đang trống
+            "AND tsc.isActive = true")
+    List<TransportationSchedules> findAllScheduleByBrandIdRequestCarAgent(@Param("transportBrandId") String transportBrandId);
 
     @Query("SELECT t FROM TransportationSchedules t " +
             "JOIN t.transportationsByTransportationId tp " +
@@ -41,12 +49,6 @@ public interface TransportationSchedulesRepository extends JpaRepository<Transpo
             "JOIN tp.transportationBrandsByTransportationBrandId tpb " +
             "WHERE t.tripType = false")
     List<TransportationSchedules> getAllFromLocationAndToLocation();
-
-    @Query("SELECT sc FROM TransportationSchedules sc " +
-            "JOIN sc.transportationsByTransportationId tp " +
-            "JOIN tp.transportationBrandsByTransportationBrandId br " +
-            "WHERE br.id = :brandId AND sc.isStatus = 0 AND sc.isActive = true AND sc.tripType = false")
-    Page<TransportationSchedules> findAllTransportScheduleCus(Pageable pageable, @Param("brandId") String brandId);
 
     @Query("SELECT sc FROM TransportationSchedules sc " +
             "JOIN sc.transportationsByTransportationId tp " +
@@ -84,12 +86,12 @@ public interface TransportationSchedulesRepository extends JpaRepository<Transpo
             "UPPER(br.agenciesByAgenciesId.representativeName) LIKE %:searchTerm% OR " +
             "UPPER(CONCAT(br.agenciesByAgenciesId.ward, ' - ' ,br.agenciesByAgenciesId.district, ' - ' , br.agenciesByAgenciesId.province)) LIKE %:searchTerm% OR " +
             "UPPER(br.agenciesByAgenciesId.address) LIKE %:searchTerm%)) " +
-                "AND (:price IS NULL OR sc.unitPrice <= (:price)) " +
-                "AND (:fromLocation IS NULL OR sc.fromLocation LIKE %:fromLocation%) " +
-                "AND (:toLocation IS NULL OR sc.toLocation LIKE %:toLocation%) " +
-                "AND (:checkInDateFiller IS NULL OR sc.departureTime >= :checkInDateFiller) " +
-                "AND (:listOfVehicleManufacturers IS NULL OR br.id IN (:listOfVehicleManufacturers)) " +
-                "AND (:mediaTypeList IS NULL OR ty.id IN (:mediaTypeList))" +
+            "AND (:price IS NULL OR sc.unitPrice <= (:price)) " +
+            "AND (:fromLocation IS NULL OR sc.fromLocation LIKE %:fromLocation%) " +
+            "AND (:toLocation IS NULL OR sc.toLocation LIKE %:toLocation%) " +
+            "AND (:checkInDateFiller IS NULL OR sc.departureTime >= :checkInDateFiller) " +
+            "AND (:listOfVehicleManufacturers IS NULL OR br.id IN (:listOfVehicleManufacturers)) " +
+            "AND (:mediaTypeList IS NULL OR ty.id IN (:mediaTypeList))" +
             "GROUP BY br")
     Page<TransportationBrands> findAllCustomerWithFilter(
             @Param("searchTerm") String searchTerm,
@@ -101,12 +103,13 @@ public interface TransportationSchedulesRepository extends JpaRepository<Transpo
             @Param("listOfVehicleManufacturers") List<String> listOfVehicleManufacturers,
             Pageable pageable);
 
-    @Query("SELECT sc FROM TransportationSchedules sc " +
-            "JOIN sc.transportationsByTransportationId tp " +
+    @Query("SELECT tsc FROM TransportationSchedules tsc " +
+            "JOIN tsc.transportationsByTransportationId tp " +
             "JOIN tp.transportationBrandsByTransportationBrandId tpb " +
             "WHERE tpb.id = :transportBrandId " +
-            "AND sc.tripType = :tripType " +
-            "AND sc.isActive = true")
+            "AND tsc.tripType = :tripType " +
+            "AND tsc.isStatus != 3 " +
+            "AND tsc.isActive = true")
     Page<TransportationSchedules> findAllSchedulesAgent(@Param("transportBrandId") String transportBrandId,
                                                         @Param("tripType") Boolean tripType,
                                                         Pageable pageable);

@@ -74,11 +74,11 @@ public class TransportationSchedules {
 
     @Basic
     @Column(name = "trip_type")
-    private Boolean tripType; // false là chuyến lẽ, true là chuyến của tour
+    private Boolean tripType; // true là hợp đồng, false là tuyến cố định
 
     @Basic
     @Column(name = "is_status")
-    private Integer isStatus; // 0 chờ vận hành | 1 đang vận hành | 2 đã hoàn tất | 3 hủy chuyến đi
+    private Integer isStatus; // 0 chờ vận hành | 1 đang vận hành | 2 đã hoàn tất | 3 hủy chuyến đi | 4 chuyến đi đang trống | 5 đang chờ duyệt
 
     @Basic
     @Column(name = "schedule_note")

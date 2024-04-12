@@ -104,6 +104,21 @@ public class RequestCarAGAPI {
         }
     }
 
+    @GetMapping("find-car-is-submitted")
+    private ResponseObject findCarIsSubmitted(@RequestParam String transportationScheduleId) {
+        try {
+            TransportationSchedules schedules = transportationScheduleService.findCarIsSubmittedAgent(transportationScheduleId);
+
+            if (schedules != null) {
+                return new ResponseObject("200", "Thành công", true);
+            } else {
+                return new ResponseObject("200", "Không tìm thấy dữ liệu", false);
+            }
+        } catch (Exception e) {
+            return new ResponseObject("400", "Thất bại", null);
+        }
+    }
+
     @GetMapping("find-all-transport-schedule-by-transport-brand-id/{transportBrandId}")
     private ResponseObject findAllTransportByBrandId(@PathVariable String transportBrandId) {
         try {
@@ -119,6 +134,12 @@ public class RequestCarAGAPI {
     @PostMapping("submit-request-car-to-staff")
     private ResponseObject submitRequestDetail(@RequestBody RequestCarDetailDto requestCarDetailDto) {
         try {
+            String transportScheduleId = requestCarDetailDto.getTransportationScheduleId();
+
+            TransportationSchedules transportationSchedules = transportationScheduleService.findBySchedulesId(transportScheduleId);
+            transportationSchedules.setIsStatus(5); // đang chờ duyệt
+            transportationScheduleService.save(transportationSchedules);
+
             RequestCarDetail requestCarDetail = EntityDtoUtils.convertToEntity(requestCarDetailDto, RequestCarDetail.class);
             requestCarDetail.setDateCreated(new Timestamp(System.currentTimeMillis()));
             requestCarDetail.setIsAccepted(0); // đã nộp
@@ -131,9 +152,14 @@ public class RequestCarAGAPI {
     }
 
     @PostMapping("cancel-request-car-to-staff")
-    private ResponseObject cancelRequestCarDetail(@RequestParam Integer requestCarDetailId) {
+    private ResponseObject cancelRequestCarDetail(@RequestParam Integer requestCarDetailId,
+                                                  @RequestParam String transportationScheduleId) {
         try {
             Optional<RequestCarDetail> requestCarDetailOptional = requestCarDetailService.findRequestCarDetailById(requestCarDetailId);
+
+            TransportationSchedules transportationSchedules = transportationScheduleService.findBySchedulesId(transportationScheduleId);
+            transportationSchedules.setIsStatus(4); // chuyến đi đang trống
+            transportationScheduleService.save(transportationSchedules);
 
             if (requestCarDetailOptional.isPresent()) {
                 RequestCarDetail requestCarDetail = requestCarDetailOptional.get();

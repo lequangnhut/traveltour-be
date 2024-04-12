@@ -6,6 +6,7 @@ import com.main.traveltour.dto.staff.requestcar.RequestCarDto;
 import com.main.traveltour.dto.staff.requestcar.RequestCarGetDataDto;
 import com.main.traveltour.dto.staff.tour.TourDetailsGetDataDto;
 import com.main.traveltour.entity.*;
+import com.main.traveltour.service.agent.TransportationScheduleService;
 import com.main.traveltour.service.staff.OrderTransportationService;
 import com.main.traveltour.service.staff.RequestCarDetailService;
 import com.main.traveltour.service.staff.RequestCarService;
@@ -15,11 +16,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
-import org.springframework.data.relational.core.sql.In;
 import org.springframework.web.bind.annotation.*;
 
 import java.sql.Timestamp;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("api/v1/staff/request-car/")
@@ -36,6 +38,9 @@ public class RequestCarSTFAPI {
 
     @Autowired
     private OrderTransportationService orderTransportationService;
+
+    @Autowired
+    private TransportationScheduleService transportationScheduleService;
 
     @GetMapping("find-all-request-car")
     private ResponseObject findAllRequestCar(@RequestParam(defaultValue = "0") int page,
@@ -137,6 +142,7 @@ public class RequestCarSTFAPI {
         try {
             RequestCar requestCar = EntityDtoUtils.convertToEntity(requestCarDto, RequestCar.class);
             requestCar.setDateCreated(new Timestamp(System.currentTimeMillis()));
+            requestCar.setIsActive(Boolean.TRUE);
             requestCar.setIsAccepted(Boolean.FALSE);
             requestCarService.save(requestCar);
             return new ResponseObject("200", "Thành công", null);
@@ -172,7 +178,10 @@ public class RequestCarSTFAPI {
 
                 // Thêm vào order transport để thêm xe đã duyệt vào tour
                 String tourDetailId = requestCarDetail.getRequestCarRequireCarById().getTourDetailId();
+
                 TransportationSchedules schedules = requestCarDetail.getTransportationSchedulesByTransportationScheduleId();
+                schedules.setIsStatus(0); // Chờ vận hành
+                transportationScheduleService.save(schedules);
 
                 OrderTransportations orderTransportations = EntityDtoUtils.convertToEntity(orderTransportationsDto, OrderTransportations.class);
                 TourDetails tourDetails = tourDetailsService.findById(tourDetailId);

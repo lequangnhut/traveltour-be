@@ -32,5 +32,7 @@ public class RequestCarDto implements Serializable {
 
     Boolean isAccepted;
 
+    Boolean isActive;
+
     String requestCarNoted;
 }

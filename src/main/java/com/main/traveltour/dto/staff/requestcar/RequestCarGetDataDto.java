@@ -33,6 +33,8 @@ public class RequestCarGetDataDto implements Serializable {
 
     Boolean isAccepted;
 
+    Boolean isActive;
+
     String requestCarNoted;
 
     Tours toursByTourId;

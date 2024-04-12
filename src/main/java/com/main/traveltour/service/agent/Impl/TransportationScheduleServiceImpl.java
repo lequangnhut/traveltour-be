@@ -33,13 +33,18 @@ public class TransportationScheduleServiceImpl implements TransportationSchedule
     }
 
     @Override
+    public TransportationSchedules findCarIsSubmittedAgent(String transportSchedulesId) {
+        return repo.findCarIsSubmittedAgent(transportSchedulesId);
+    }
+
+    @Override
     public List<TransportationSchedules> findByTransportId(String transportId) {
         return repo.findByTransportationId(transportId);
     }
 
     @Override
     public List<TransportationSchedules> findAllScheduleByBrandIdRequestCar(String transportBrandId) {
-        return repo.findAllScheduleByBrandIdRequestCar(transportBrandId);
+        return repo.findAllScheduleByBrandIdRequestCarAgent(transportBrandId);
     }
 
     @Override
@@ -65,11 +70,6 @@ public class TransportationScheduleServiceImpl implements TransportationSchedule
     @Override
     public Page<TransportationSchedules> findAllScheduleAgentWitchSearch(String transportBrandId, Boolean tripType, String searchTerm, Pageable pageable) {
         return repo.findAllSchedulesAgentWithSearch(transportBrandId, tripType, searchTerm, pageable);
-    }
-
-    @Override
-    public Page<TransportationSchedules> findAllTransportScheduleCus(Pageable pageable, String brandId) {
-        return repo.findAllTransportScheduleCus(pageable, brandId);
     }
 
     @Override
