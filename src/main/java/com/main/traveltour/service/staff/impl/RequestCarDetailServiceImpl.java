@@ -8,6 +8,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.sql.Timestamp;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -24,6 +26,18 @@ public class RequestCarDetailServiceImpl implements RequestCarDetailService {
     @Override
     public Page<RequestCarDetail> findAllHistotyRequestCarPage(Integer acceptedRequest, String transportBrandId, Pageable pageable) {
         return repo.findAllHistoryRequestCar(acceptedRequest, transportBrandId, pageable);
+    }
+
+    @Override
+    public void updateAll(String requestCarId) {
+        List<RequestCarDetail> requestCarDetailList = repo.findAllByRequestCarId(Integer.parseInt(requestCarId));
+
+        for (RequestCarDetail requestCarDetail : requestCarDetailList) {
+            requestCarDetail.getTransportationSchedulesByTransportationScheduleId().setIsStatus(7); // 7 Từ chối duyệt
+            requestCarDetail.setIsAccepted(3); // 3 xe không được duyệt
+            requestCarDetail.setDateCreated(new Timestamp(System.currentTimeMillis()));
+            repo.save(requestCarDetail);
+        }
     }
 
     @Override

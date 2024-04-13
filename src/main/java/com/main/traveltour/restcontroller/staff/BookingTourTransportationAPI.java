@@ -1,7 +1,9 @@
 package com.main.traveltour.restcontroller.staff;
 
 import com.main.traveltour.dto.staff.TransportationSchedulesDto;
-import com.main.traveltour.entity.*;
+import com.main.traveltour.entity.OrderTransportations;
+import com.main.traveltour.entity.ResponseObject;
+import com.main.traveltour.entity.TransportationSchedules;
 import com.main.traveltour.service.staff.BookingTourTransportationService;
 import com.main.traveltour.service.staff.OrderTransportationService;
 import com.main.traveltour.service.staff.TransportationScheduleService;
@@ -63,7 +65,7 @@ public class BookingTourTransportationAPI {
             }
 
             TransportationSchedules transportationSchedule = transportationScheduleService.findById(transportationScheduleId);
-            transportationSchedule.setIsStatus(1); // ngưng hoạt động
+            transportationSchedule.setIsStatus(3); // hủy chuyến đi
             transportationScheduleService.update(transportationSchedule);
 
             return new ResponseObject("204", "Xóa thành công", null);
@@ -76,7 +78,7 @@ public class BookingTourTransportationAPI {
     public ResponseObject pay(@RequestParam(required = false) String transportationScheduleId, @RequestParam(required = false) Integer payment) {
         try {
             TransportationSchedules transportationSchedule = transportationScheduleService.findById(transportationScheduleId);
-            if (transportationSchedule.getIsStatus() != 3) {
+            if (transportationSchedule.getIsStatus() != 3 && transportationSchedule.getIsStatus() != 7) {
                 List<OrderTransportations> orderTransportations = orderTransportationService.findAllByTransportationScheduleId(transportationScheduleId);
                 for (OrderTransportations orderTransport : orderTransportations) {
                     orderTransport.setOrderStatus(1);
@@ -88,10 +90,7 @@ public class BookingTourTransportationAPI {
             }
             return new ResponseObject("204", "Thanh toán thành công", null);
         } catch (Exception e) {
-            e.printStackTrace();
             return new ResponseObject("500", "Thanh toán thất bại", null);
         }
     }
-
-
 }

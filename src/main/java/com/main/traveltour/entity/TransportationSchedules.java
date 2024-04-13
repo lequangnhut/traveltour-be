@@ -78,8 +78,8 @@ public class TransportationSchedules {
 
     @Basic
     @Column(name = "is_status")
-    private Integer isStatus; // 0 chờ vận hành | 1 đang vận hành | 2 đã hoàn tất | 3 hủy chuyến đi | 4 chuyến đi đang trống | 5 đang chờ duyệt
-
+    private Integer isStatus; // 0 chờ vận hành | 1 đang vận hành | 2 đã hoàn tất | 3 hủy chuyến đi | Tuyến cố định
+                              // 4 chuyến đi đang trống | 5 đang chờ duyệt | 6 Đã được duyệt | 7 Từ chối duyệt
     @Basic
     @Column(name = "schedule_note")
     private String scheduleNote;

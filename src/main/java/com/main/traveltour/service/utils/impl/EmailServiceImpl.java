@@ -200,7 +200,7 @@ public class EmailServiceImpl implements EmailService {
 
                 Map<String, Object> variables = new HashMap<>();
                 variables.put("name_agency", agenciesDto.getNameAgency());
-                variables.put("domain", DomainURL.BACKEND_URL);
+                variables.put("domain", DomainURL.FRONTEND_URL);
 
                 helper.setFrom(email);
                 helper.setText(thymeleafService.createContent("agency-success", variables), true);
@@ -231,7 +231,7 @@ public class EmailServiceImpl implements EmailService {
 
                 Map<String, Object> variables = new HashMap<>();
                 variables.put("name_agency", agenciesDto.getNameAgency());
-                variables.put("domain", DomainURL.BACKEND_URL);
+                variables.put("domain", DomainURL.FRONTEND_URL);
 
                 helper.setFrom(email);
                 helper.setText(thymeleafService.createContent("agency-accepted", variables), true);
@@ -262,7 +262,7 @@ public class EmailServiceImpl implements EmailService {
 
                 Map<String, Object> variables = new HashMap<>();
                 variables.put("name_agency", agenciesDto.getNameAgency());
-                variables.put("domain", DomainURL.BACKEND_URL);
+                variables.put("domain", DomainURL.FRONTEND_URL);
 
                 helper.setFrom(email);
                 helper.setText(thymeleafService.createContent("agency-failed", variables), true);

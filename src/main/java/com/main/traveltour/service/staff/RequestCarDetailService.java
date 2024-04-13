@@ -20,4 +20,6 @@ public interface RequestCarDetailService {
     Page<RequestCarDetail> findAllRequestCarDetailPage(Integer requestCarId, Pageable pageable);
 
     Page<RequestCarDetail> findAllHistotyRequestCarPage(Integer acceptedRequest, String transportBrandId, Pageable pageable);
+
+    void updateAll(String requestCarId);
 }

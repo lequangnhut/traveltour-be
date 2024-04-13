@@ -166,9 +166,13 @@ public class RequestCarSTFAPI {
 
     @PostMapping("accept-request-car")
     private ResponseObject acceptRequestCar(@RequestPart String requestCarDetailId,
+                                            @RequestPart String requestCarId,
                                             @RequestPart OrderTransportationsDto orderTransportationsDto) {
         try {
             Optional<RequestCarDetail> requestCarDetailOptional = requestCarDetailService.findRequestCarDetailById(Integer.parseInt(requestCarDetailId));
+
+            // update tất cả dữ liệu của nhà xe nộp yêu cầu thành 3: xe không được duyệt
+            requestCarDetailService.updateAll(requestCarId);
 
             requestCarDetailOptional.ifPresent(requestCarDetail -> {
                 // cập nhật lại trạng thái request car detail
@@ -180,7 +184,7 @@ public class RequestCarSTFAPI {
                 String tourDetailId = requestCarDetail.getRequestCarRequireCarById().getTourDetailId();
 
                 TransportationSchedules schedules = requestCarDetail.getTransportationSchedulesByTransportationScheduleId();
-                schedules.setIsStatus(0); // Chờ vận hành
+                schedules.setIsStatus(6); // 6 Đã được duyệt
                 transportationScheduleService.save(schedules);
 
                 OrderTransportations orderTransportations = EntityDtoUtils.convertToEntity(orderTransportationsDto, OrderTransportations.class);

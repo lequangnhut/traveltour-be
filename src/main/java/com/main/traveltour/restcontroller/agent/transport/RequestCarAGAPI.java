@@ -18,6 +18,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.web.bind.annotation.*;
 
+import javax.swing.*;
 import java.sql.Timestamp;
 import java.util.List;
 import java.util.Optional;
@@ -163,6 +164,7 @@ public class RequestCarAGAPI {
 
             if (requestCarDetailOptional.isPresent()) {
                 RequestCarDetail requestCarDetail = requestCarDetailOptional.get();
+                requestCarDetail.setDateCreated(new Timestamp(System.currentTimeMillis()));
                 requestCarDetail.setIsAccepted(2); // Yêu cầu đã bị hủy
                 requestCarDetailService.save(requestCarDetail);
             }

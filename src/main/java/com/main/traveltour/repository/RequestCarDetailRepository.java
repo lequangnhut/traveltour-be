@@ -8,6 +8,8 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
+
 @Repository
 public interface RequestCarDetailRepository extends JpaRepository<RequestCarDetail, Integer> {
 
@@ -23,7 +25,12 @@ public interface RequestCarDetailRepository extends JpaRepository<RequestCarDeta
                                       @Param("transportationScheduleId") String transportationScheduleId);
 
     @Query("SELECT rqcd FROM RequestCarDetail rqcd " +
-            "WHERE rqcd.requestCarId = :requestCarId AND (rqcd.isAccepted = 0 OR rqcd.isAccepted = 1)")
+            "WHERE rqcd.requestCarId = :requestCarId " +
+            "AND rqcd.isAccepted = 0")
+    List<RequestCarDetail> findAllByRequestCarId(@Param("requestCarId") Integer requestCarId);
+
+    @Query("SELECT rqcd FROM RequestCarDetail rqcd " +
+            "WHERE rqcd.requestCarId = :requestCarId AND (rqcd.isAccepted = 0 OR rqcd.isAccepted = 1 OR rqcd.isAccepted = 3)")
     Page<RequestCarDetail> findAllByRequestCarId(@Param("requestCarId") Integer requestCarId,
                                                  Pageable pageable);
 
