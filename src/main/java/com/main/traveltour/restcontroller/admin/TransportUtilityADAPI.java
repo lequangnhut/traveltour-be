@@ -3,7 +3,6 @@ package com.main.traveltour.restcontroller.admin;
 import com.main.traveltour.dto.admin.TransportUtilitiesDto;
 import com.main.traveltour.dto.admin.TransportUtilitiesGetDataDTO;
 import com.main.traveltour.entity.ResponseObject;
-import com.main.traveltour.entity.RoomBeds;
 import com.main.traveltour.entity.TransportUtilities;
 import com.main.traveltour.service.admin.TransportUtilityServiceAD;
 import com.main.traveltour.service.utils.FileUpload;
@@ -92,7 +91,7 @@ public class TransportUtilityADAPI {
                 transportUtilityServiceAD.save(transportUtilities);
             } else {
                 transportUtilities.setTitle(transportUtilitiesDto.getTitle());
-                transportUtilities.setDescription(transportUtilities.getDescription());
+                transportUtilities.setDescription(transportUtilitiesDto.getDescription());
                 transportUtilityServiceAD.save(transportUtilities);
             }
             return new ResponseObject("200", "Thành công", "ok");
@@ -111,6 +110,7 @@ public class TransportUtilityADAPI {
         boolean exists = transportUtilityServiceAD.findByDescription(name) != null;
         Map<String, Boolean> response = new HashMap<>();
         response.put("exists", exists);
+
         if (exists) {
             return new ResponseObject("404", "Tên loại bị trùng lặp", response);
         } else {
