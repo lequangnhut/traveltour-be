@@ -43,4 +43,9 @@ public class HotelsServiceImplAD implements HotelsServiceAD {
         return hotelsRepository.save(hotels);
     }
 
+    @Override
+    public Long countHotelsChart(Integer year) {
+        return hotelsRepository.countHotelsChart(year);
+    }
+
 }

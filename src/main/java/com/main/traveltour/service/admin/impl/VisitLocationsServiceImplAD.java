@@ -40,4 +40,9 @@ public class VisitLocationsServiceImplAD implements VisitLocationsServiceAD {
     public VisitLocations save(VisitLocations visitLocations) {
         return visitLocationsRepository.save(visitLocations);
     }
+
+    @Override
+    public Long countVisitLocationsChart(Integer year) {
+        return visitLocationsRepository.countVisitLocationsChart(year);
+    }
 }

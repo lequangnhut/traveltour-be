@@ -86,4 +86,11 @@ public interface TransportationBrandsRepository extends JpaRepository<Transporta
             " and LOWER(br.transportationBrandName) LIKE LOWER(CONCAT('%', :searchTerm, '%'))")
     Page<TransportationBrands> findAllBrandPostByName(@Param("isAccepted") Boolean isAccepted,Pageable pageable, String searchTerm);
 
+    @Query("SELECT COALESCE(COUNT(tb), 0) FROM TransportationBrands tb " +
+            "JOIN tb.agenciesByAgenciesId a " +
+            "WHERE a.isActive = TRUE AND a.isAccepted = 2 " +
+            "AND tb.isActive = TRUE AND tb.isAccepted = TRUE " +
+            "AND YEAR(tb.dateCreated) = :year ")
+    Long countTransportationBrandsChart(@Param("year") Integer year);
+
 }

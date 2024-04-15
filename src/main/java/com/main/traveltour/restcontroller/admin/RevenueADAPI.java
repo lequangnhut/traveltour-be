@@ -4,8 +4,7 @@ import com.main.traveltour.dto.admin.revenue.RevenueDtoAD;
 import com.main.traveltour.entity.ResponseObject;
 import com.main.traveltour.entity.TourDetails;
 import com.main.traveltour.service.UsersService;
-import com.main.traveltour.service.admin.AgencyServiceAD;
-import com.main.traveltour.service.admin.RevenueServiceAD;
+import com.main.traveltour.service.admin.*;
 import com.main.traveltour.service.staff.*;
 import org.hibernate.annotations.Parameter;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,6 +35,15 @@ public class RevenueADAPI {
 
     @Autowired
     RevenueServiceAD revenueServiceAD;
+
+    @Autowired
+    HotelsServiceAD hotelsServiceAD;
+
+    @Autowired
+    VisitLocationsServiceAD visitLocationsServiceAD;
+
+    @Autowired
+    TransportationBrandServiceAD transportationBrandServiceAD;
 
 
     @GetMapping("/admin/revenue/count-all")
@@ -85,14 +93,49 @@ public class RevenueADAPI {
         }
     }
 
-    @GetMapping("/admin/revenue/get-all-year")
-    public ResponseObject getAllYear() {
+    @GetMapping("/admin/revenue/get-all-year-columns")
+    public ResponseObject getAllYearColumn() {
         List<Integer> getAllYear = revenueServiceAD.getAllYear();
         if (getAllYear.isEmpty()) {
             return new ResponseObject("404", "Không tìm thấy dữ liệu", null);
         } else {
             return new ResponseObject("200", "Đã tìm thấy dữ liệu", getAllYear);
         }
+    }
+    @GetMapping("/admin/revenue/get-all-year-pie")
+    public ResponseObject getAllYearPie() {
+        List<Integer> getAllYear = revenueServiceAD.getAllYear();
+        if (getAllYear.isEmpty()) {
+            return new ResponseObject("404", "Không tìm thấy dữ liệu", null);
+        } else {
+            return new ResponseObject("200", "Đã tìm thấy dữ liệu", getAllYear);
+        }
+    }
+
+    @GetMapping("/admin/revenue/percentage-of-each-type-of-service")
+    public ResponseObject percentageOfEachTypeOfService(@RequestParam(required = false) Integer year) {
+        Map<String, Double> percentages = new HashMap<>();
+
+        long totalHotels = hotelsServiceAD.countHotelsChart(year);
+        long totalVisitLocations = visitLocationsServiceAD.countVisitLocationsChart(year);
+        long totalTransportBrands = transportationBrandServiceAD.countTransportationBrandsChart(year);
+
+        long totalServices = totalHotels + totalVisitLocations + totalTransportBrands;
+
+        addPercentageIfNotZero(percentages, "hotelPercentage", totalHotels, totalServices);
+        addPercentageIfNotZero(percentages, "visitLocationPercentage", totalVisitLocations, totalServices);
+        addPercentageIfNotZero(percentages, "transportBrandPercentage", totalTransportBrands, totalServices);
+
+        if (percentages.isEmpty()) {
+            return new ResponseObject("404", "Không tìm thấy dữ liệu", null);
+        } else {
+            return new ResponseObject("200", "Đã tìm thấy dữ liệu", percentages);
+        }
+    }
+
+    private void addPercentageIfNotZero(Map<String, Double> percentages, String key, long value, long totalServices) {
+        double percentage = totalServices != 0 ? ((double) value / totalServices) * 100 : 0;
+        percentages.put(key, percentage);
     }
 
 }

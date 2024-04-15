@@ -118,4 +118,11 @@ public interface HotelsRepository extends JpaRepository<Hotels, String> {
 
     @Query("SELECT COUNT(ht) FROM Hotels ht")
     Long countHotels ();
+
+    @Query("SELECT COALESCE(COUNT(ht), 0) FROM Hotels ht " +
+            "JOIN ht.agenciesByAgenciesId a " +
+            "WHERE a.isActive = TRUE AND a.isAccepted = 2 " +
+            "AND  ht.isActive = TRUE AND ht.isAccepted = TRUE " +
+            "AND YEAR(ht.dateCreated) = :year ")
+    Long countHotelsChart(@Param("year") Integer year);
 }

@@ -129,4 +129,11 @@ public interface VisitLocationsRepository extends JpaRepository<VisitLocations, 
 
     @Query("SELECT COUNT(vs) FROM VisitLocations vs")
     Long countVisitLocations();
+
+    @Query("SELECT COALESCE(COUNT(vs), 0) FROM VisitLocations vs " +
+            "JOIN vs.agenciesByAgenciesId a " +
+            "WHERE a.isActive = TRUE AND a.isAccepted = 2 " +
+            "AND  vs.isActive = TRUE AND vs.isAccepted = TRUE " +
+            "AND YEAR(vs.dateCreated) = :year ")
+    Long countVisitLocationsChart(@Param("year") Integer year);
 }
