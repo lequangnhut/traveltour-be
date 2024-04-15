@@ -1,12 +1,12 @@
 package com.main.traveltour.restcontroller.admin;
 
-import com.main.traveltour.dto.admin.TransportUtilitiesDto;
+import com.main.traveltour.dto.admin.type.TransportUtilitiesDto;
 import com.main.traveltour.dto.admin.post.*;
-import com.main.traveltour.dto.customer.infomation.OrderVisitDetailsDto;
-import com.main.traveltour.dto.customer.infomation.OrderVisitsDto;
 import com.main.traveltour.entity.*;
 import com.main.traveltour.service.admin.*;
-import com.main.traveltour.service.agent.*;
+import com.main.traveltour.service.agent.TransportationBrandsService;
+import com.main.traveltour.service.agent.TransportationScheduleService;
+import com.main.traveltour.service.agent.TransportationService;
 import com.main.traveltour.utils.EntityDtoUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -15,7 +15,6 @@ import org.springframework.data.domain.Sort;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Optional;
 
 @RestController
 @CrossOrigin(origins = "http://localhost:3000")
@@ -48,10 +47,12 @@ public class PostADAPI {
 
 
     @GetMapping("all-hotel-post")
-    private ResponseObject findAllHotelPost(@RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int size,
-                                            @RequestParam(defaultValue = "id") String sortBy, @RequestParam(defaultValue = "asc") String sortDir,
-                                            @RequestParam(required = false) String searchTerm, @RequestParam(required = false) Boolean isAccepted) {
-
+    private ResponseObject findAllHotelPost(@RequestParam(defaultValue = "0") int page,
+                                            @RequestParam(defaultValue = "10") int size,
+                                            @RequestParam(defaultValue = "id") String sortBy,
+                                            @RequestParam(defaultValue = "asc") String sortDir,
+                                            @RequestParam(required = false) String searchTerm,
+                                            @RequestParam(required = false) Boolean isAccepted) {
         Sort sort = sortDir.equalsIgnoreCase(Sort.Direction.ASC.name())
                 ? Sort.by(sortBy).ascending()
                 : Sort.by(sortBy).descending();
@@ -71,10 +72,13 @@ public class PostADAPI {
     }
 
     @GetMapping("find-room-by-hotelId/{hotelId}")
-    public ResponseObject findRoomByHotel (@RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int size,
-                                                 @RequestParam(defaultValue = "id") String sortBy, @RequestParam(defaultValue = "asc") String sortDir,
-                                                 @RequestParam(required = false) String searchTerm, @RequestParam(required = false) Integer isActive,
-                                                 @PathVariable String hotelId) {
+    public ResponseObject findRoomByHotel(@RequestParam(defaultValue = "0") int page,
+                                          @RequestParam(defaultValue = "10") int size,
+                                          @RequestParam(defaultValue = "id") String sortBy,
+                                          @RequestParam(defaultValue = "asc") String sortDir,
+                                          @RequestParam(required = false) String searchTerm,
+                                          @RequestParam(required = false) Integer isActive,
+                                          @PathVariable String hotelId) {
         Sort sort = sortDir.equalsIgnoreCase(Sort.Direction.ASC.name())
                 ? Sort.by(sortBy).ascending()
                 : Sort.by(sortBy).descending();
@@ -94,10 +98,12 @@ public class PostADAPI {
     }
 
     @GetMapping("all-brand-post")
-    private ResponseObject findAllBrandPost(@RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int size,
-                                            @RequestParam(defaultValue = "id") String sortBy, @RequestParam(defaultValue = "asc") String sortDir,
-                                            @RequestParam(required = false) String searchTerm, @RequestParam(required = false) Boolean isAccepted) {
-
+    private ResponseObject findAllBrandPost(@RequestParam(defaultValue = "0") int page,
+                                            @RequestParam(defaultValue = "10") int size,
+                                            @RequestParam(defaultValue = "id") String sortBy,
+                                            @RequestParam(defaultValue = "asc") String sortDir,
+                                            @RequestParam(required = false) String searchTerm,
+                                            @RequestParam(required = false) Boolean isAccepted) {
         Sort sort = sortDir.equalsIgnoreCase(Sort.Direction.ASC.name())
                 ? Sort.by(sortBy).ascending()
                 : Sort.by(sortBy).descending();
@@ -117,10 +123,13 @@ public class PostADAPI {
     }
 
     @GetMapping("find-trans-by-brandId/{brandId}")
-    public ResponseObject findTransByBrandId (@RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int size,
-                                           @RequestParam(defaultValue = "id") String sortBy, @RequestParam(defaultValue = "asc") String sortDir,
-                                           @RequestParam(required = false) String searchTerm, @RequestParam(required = false) Boolean isActive,
-                                           @PathVariable String brandId) {
+    public ResponseObject findTransByBrandId(@RequestParam(defaultValue = "0") int page,
+                                             @RequestParam(defaultValue = "10") int size,
+                                             @RequestParam(defaultValue = "id") String sortBy,
+                                             @RequestParam(defaultValue = "asc") String sortDir,
+                                             @RequestParam(required = false) String searchTerm,
+                                             @RequestParam(required = false) Boolean isActive,
+                                             @PathVariable String brandId) {
         Sort sort = sortDir.equalsIgnoreCase(Sort.Direction.ASC.name())
                 ? Sort.by(sortBy).ascending()
                 : Sort.by(sortBy).descending();
@@ -140,21 +149,19 @@ public class PostADAPI {
     }
 
     @GetMapping("find-trip-by-transId/{transId}")
-    public ResponseObject findTripByTransId (@RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int size,
-                                              @RequestParam(defaultValue = "id") String sortBy, @RequestParam(defaultValue = "asc") String sortDir,
-                                              @RequestParam(required = false) String searchTerm, @RequestParam(required = false) Boolean isActive,
-                                              @PathVariable String transId) {
+    public ResponseObject findTripByTransId(@RequestParam(defaultValue = "0") int page,
+                                            @RequestParam(defaultValue = "10") int size,
+                                            @RequestParam(defaultValue = "id") String sortBy,
+                                            @RequestParam(defaultValue = "asc") String sortDir,
+                                            @RequestParam(required = false) String searchTerm,
+                                            @RequestParam(required = false) Boolean isActive,
+                                            @PathVariable String transId) {
         Sort sort = sortDir.equalsIgnoreCase(Sort.Direction.ASC.name())
                 ? Sort.by(sortBy).ascending()
                 : Sort.by(sortBy).descending();
 
         // Sử dụng phương thức tìm kiếm mới trong service
         Page<TransportationSchedules> items = transServiceAD.findAllSchedulesPostByName(isActive, transId, PageRequest.of(page, size, sort), searchTerm);
-
-//        Page<TransportationSchedules> items = searchTerm == null || searchTerm.isEmpty()
-//                ? transServiceAD.findAllSchedulesPost(isActive, transId, PageRequest.of(page, size, sort))
-//                : transServiceAD.findAllSchedulesPostByName(isActive, transId, PageRequest.of(page, size, sort), searchTerm);
-//
         Page<TransportationSchedulesDto> transportationSchedulesDtos = items.map(transportationSchedules -> EntityDtoUtils.convertToDto(transportationSchedules, TransportationSchedulesDto.class));
 
         if (transportationSchedulesDtos.isEmpty()) {
@@ -165,10 +172,12 @@ public class PostADAPI {
     }
 
     @GetMapping("all-visit-post")
-    private ResponseObject findAllVisitPost(@RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int size,
-                                            @RequestParam(defaultValue = "id") String sortBy, @RequestParam(defaultValue = "asc") String sortDir,
-                                            @RequestParam(required = false) String searchTerm, @RequestParam(required = false) Boolean isAccepted) {
-
+    private ResponseObject findAllVisitPost(@RequestParam(defaultValue = "0") int page,
+                                            @RequestParam(defaultValue = "10") int size,
+                                            @RequestParam(defaultValue = "id") String sortBy,
+                                            @RequestParam(defaultValue = "asc") String sortDir,
+                                            @RequestParam(required = false) String searchTerm,
+                                            @RequestParam(required = false) Boolean isAccepted) {
         Sort sort = sortDir.equalsIgnoreCase(Sort.Direction.ASC.name())
                 ? Sort.by(sortBy).ascending()
                 : Sort.by(sortBy).descending();
@@ -177,7 +186,6 @@ public class PostADAPI {
         Page<VisitLocations> items = searchTerm == null || searchTerm.isEmpty()
                 ? visitLocationsServiceAD.findAllVisitPost(isAccepted, PageRequest.of(page, size, sort))
                 : visitLocationsServiceAD.findAllVisitPostByName(isAccepted, PageRequest.of(page, size, sort), searchTerm);
-
         Page<VisitLocationsDto> visitLocationsDtos = items.map(visitLocations -> EntityDtoUtils.convertToDto(visitLocations, VisitLocationsDto.class));
 
         if (visitLocationsDtos.isEmpty()) {
@@ -191,11 +199,11 @@ public class PostADAPI {
     public ResponseObject deniedForHotel(@PathVariable String id) {
         try {
             Hotels hotels = hotelsServiceAD.findById(id);
-            if(hotels != null){
+            if (hotels != null) {
                 hotels.setIsAccepted(false);
                 hotelsServiceAD.save(hotels);
                 return new ResponseObject("200", "Có nè", hotels);
-            }else{
+            } else {
                 return new ResponseObject("500", "Hông nè", null);
             }
         } catch (Exception e) {
@@ -207,11 +215,11 @@ public class PostADAPI {
     public ResponseObject acceptedForHotel(@PathVariable String id) {
         try {
             Hotels hotels = hotelsServiceAD.findById(id);
-            if(hotels != null){
+            if (hotels != null) {
                 hotels.setIsAccepted(true);
                 hotelsServiceAD.save(hotels);
                 return new ResponseObject("200", "Có nè", hotels);
-            }else{
+            } else {
                 return new ResponseObject("500", "Hông nè", null);
             }
         } catch (Exception e) {
@@ -223,11 +231,11 @@ public class PostADAPI {
     public ResponseObject deniedForRoom(@PathVariable String id) {
         try {
             RoomTypes roomTypes = roomTypesServiceAD.findById(id);
-            if(roomTypes != null){
+            if (roomTypes != null) {
                 roomTypes.setIsActive(0);
                 roomTypesServiceAD.save(roomTypes);
                 return new ResponseObject("200", "Có nè", roomTypes);
-            }else{
+            } else {
                 return new ResponseObject("500", "Hông nè", null);
             }
         } catch (Exception e) {
@@ -239,11 +247,11 @@ public class PostADAPI {
     public ResponseObject acceptedForRoom(@PathVariable String id) {
         try {
             RoomTypes roomTypes = roomTypesServiceAD.findById(id);
-            if(roomTypes != null){
+            if (roomTypes != null) {
                 roomTypes.setIsActive(1);
                 roomTypesServiceAD.save(roomTypes);
                 return new ResponseObject("200", "Có nè", roomTypes);
-            }else{
+            } else {
                 return new ResponseObject("500", "Hông nè", null);
             }
         } catch (Exception e) {
@@ -255,11 +263,11 @@ public class PostADAPI {
     public ResponseObject deniedForBrand(@PathVariable String id) {
         try {
             TransportationBrands transportationBrands = transServiceAD.findByBrandId(id);
-            if(transportationBrands != null){
+            if (transportationBrands != null) {
                 transportationBrands.setIsAccepted(false);
                 transportationBrandsService.save(transportationBrands);
                 return new ResponseObject("200", "Có nè", transportationBrands);
-            }else{
+            } else {
                 return new ResponseObject("500", "Hông nè", null);
             }
         } catch (Exception e) {
@@ -271,11 +279,11 @@ public class PostADAPI {
     public ResponseObject acceptedForBrand(@PathVariable String id) {
         try {
             TransportationBrands transportationBrands = transServiceAD.findByBrandId(id);
-            if(transportationBrands != null){
+            if (transportationBrands != null) {
                 transportationBrands.setIsAccepted(true);
                 transportationBrandsService.save(transportationBrands);
                 return new ResponseObject("200", "Có nè", transportationBrands);
-            }else{
+            } else {
                 return new ResponseObject("500", "Hông nè", null);
             }
         } catch (Exception e) {
@@ -287,11 +295,11 @@ public class PostADAPI {
     public ResponseObject deniedForTrans(@PathVariable String id) {
         try {
             Transportations transportations = transServiceAD.findByTransId(id);
-            if(transportations != null){
+            if (transportations != null) {
                 transportations.setIsActive(false);
                 transportationService.save(transportations);
                 return new ResponseObject("200", "Có nè", transportations);
-            }else{
+            } else {
                 return new ResponseObject("500", "Hông nè", null);
             }
         } catch (Exception e) {
@@ -303,11 +311,11 @@ public class PostADAPI {
     public ResponseObject acceptedForTrans(@PathVariable String id) {
         try {
             Transportations transportations = transServiceAD.findByTransId(id);
-            if(transportations != null){
+            if (transportations != null) {
                 transportations.setIsActive(true);
                 transportationService.save(transportations);
                 return new ResponseObject("200", "Có nè", transportations);
-            }else{
+            } else {
                 return new ResponseObject("500", "Hông nè", null);
             }
         } catch (Exception e) {
@@ -319,11 +327,11 @@ public class PostADAPI {
     public ResponseObject deniedForSchedules(@PathVariable String id) {
         try {
             TransportationSchedules transportationSchedules = transServiceAD.findByScheduleId(id);
-            if(transportationSchedules != null){
+            if (transportationSchedules != null) {
                 transportationSchedules.setIsActive(false);
                 transportationScheduleService.save(transportationSchedules);
                 return new ResponseObject("200", "Có nè", transportationSchedules);
-            }else{
+            } else {
                 return new ResponseObject("500", "Hông nè", null);
             }
         } catch (Exception e) {
@@ -335,11 +343,11 @@ public class PostADAPI {
     public ResponseObject acceptedForSchedules(@PathVariable String id) {
         try {
             TransportationSchedules transportationSchedules = transServiceAD.findByScheduleId(id);
-            if(transportationSchedules != null){
+            if (transportationSchedules != null) {
                 transportationSchedules.setIsActive(true);
                 transportationScheduleService.save(transportationSchedules);
                 return new ResponseObject("200", "Có nè", transportationSchedules);
-            }else{
+            } else {
                 return new ResponseObject("500", "Hông nè", null);
             }
         } catch (Exception e) {
@@ -351,11 +359,11 @@ public class PostADAPI {
     public ResponseObject deniedForVisit(@PathVariable String id) {
         try {
             VisitLocations visitLocations = visitLocationsServiceAD.findById(id);
-            if(visitLocations != null){
+            if (visitLocations != null) {
                 visitLocations.setIsAccepted(false);
                 visitLocationsServiceAD.save(visitLocations);
                 return new ResponseObject("200", "Có nè", visitLocations);
-            }else{
+            } else {
                 return new ResponseObject("500", "Hông nè", null);
             }
         } catch (Exception e) {
@@ -367,11 +375,11 @@ public class PostADAPI {
     public ResponseObject acceptedForVisit(@PathVariable String id) {
         try {
             VisitLocations visitLocations = visitLocationsServiceAD.findById(id);
-            if(visitLocations != null){
+            if (visitLocations != null) {
                 visitLocations.setIsAccepted(true);
                 visitLocationsServiceAD.save(visitLocations);
                 return new ResponseObject("200", "Có nè", visitLocations);
-            }else{
+            } else {
                 return new ResponseObject("500", "Hông nè", null);
             }
         } catch (Exception e) {

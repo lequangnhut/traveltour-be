@@ -1,16 +1,16 @@
-package com.main.traveltour.dto.admin;
+package com.main.traveltour.dto.admin.type;
 
 import lombok.Data;
-
-import java.io.Serializable;
 
 /**
  * DTO for {@link com.main.traveltour.entity.TransportUtilities}
  */
 @Data
-public class TransportUtilitiesDto implements Serializable {
+public class TransportUtilitiesGetDataDTO {
 
     Integer id;
+
+    String icon;
 
     String title;
 

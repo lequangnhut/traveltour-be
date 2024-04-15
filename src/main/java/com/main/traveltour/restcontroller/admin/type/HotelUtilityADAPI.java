@@ -1,12 +1,9 @@
-package com.main.traveltour.restcontroller.admin;
+package com.main.traveltour.restcontroller.admin.type;
 
-import com.main.traveltour.dto.admin.HotelUtilityDtoAD;
-import com.main.traveltour.dto.admin.RoomUtilityDtoAD;
+import com.main.traveltour.dto.admin.type.HotelUtilityDtoAD;
 import com.main.traveltour.entity.*;
 import com.main.traveltour.service.admin.HotelsServiceAD;
 import com.main.traveltour.service.admin.PlaceUtilitiesServiceAD;
-import com.main.traveltour.service.admin.RoomTypesServiceAD;
-import com.main.traveltour.service.admin.RoomUilityServiceAD;
 import com.main.traveltour.utils.EntityDtoUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -30,9 +27,11 @@ public class HotelUtilityADAPI {
     private HotelsServiceAD hotelsServiceAD;
 
     @GetMapping("admin/type/find-all-hotel-utility-type")
-    private ResponseObject findAllBedType(@RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int size, @RequestParam(defaultValue = "id") String sortBy,
-                                          @RequestParam(defaultValue = "asc") String sortDir, @RequestParam(required = false) String searchTerm) {
-
+    private ResponseObject findAllBedType(@RequestParam(defaultValue = "0") int page,
+                                          @RequestParam(defaultValue = "10") int size,
+                                          @RequestParam(defaultValue = "id") String sortBy,
+                                          @RequestParam(defaultValue = "asc") String sortDir,
+                                          @RequestParam(required = false) String searchTerm) {
         Sort sort = sortDir.equalsIgnoreCase(Sort.Direction.ASC.name())
                 ? Sort.by(sortBy).ascending()
                 : Sort.by(sortBy).descending();
@@ -102,5 +101,4 @@ public class HotelUtilityADAPI {
     private void deleteAccount(@PathVariable int id) {
         placeUtilitiesServiceAD.delete(id);
     }
-
 }

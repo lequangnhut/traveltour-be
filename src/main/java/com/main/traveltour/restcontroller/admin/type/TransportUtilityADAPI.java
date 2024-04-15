@@ -1,7 +1,7 @@
-package com.main.traveltour.restcontroller.admin;
+package com.main.traveltour.restcontroller.admin.type;
 
-import com.main.traveltour.dto.admin.TransportUtilitiesDto;
-import com.main.traveltour.dto.admin.TransportUtilitiesGetDataDTO;
+import com.main.traveltour.dto.admin.type.TransportUtilitiesDto;
+import com.main.traveltour.dto.admin.type.TransportUtilitiesGetDataDTO;
 import com.main.traveltour.entity.ResponseObject;
 import com.main.traveltour.entity.TransportUtilities;
 import com.main.traveltour.service.admin.TransportUtilityServiceAD;

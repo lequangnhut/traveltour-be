@@ -1,6 +1,6 @@
-package com.main.traveltour.restcontroller.admin;
+package com.main.traveltour.restcontroller.admin.type;
 
-import com.main.traveltour.dto.admin.RoomUtilityDtoAD;
+import com.main.traveltour.dto.admin.type.RoomUtilityDtoAD;
 import com.main.traveltour.entity.*;
 import com.main.traveltour.service.admin.RoomTypesServiceAD;
 import com.main.traveltour.service.admin.RoomUilityServiceAD;
@@ -27,9 +27,11 @@ public class RoomUtilityADAPI {
     private RoomTypesServiceAD roomTypesServiceAD;
 
     @GetMapping("admin/type/find-all-room-utility-type")
-    private ResponseObject findAllBedType(@RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int size, @RequestParam(defaultValue = "id") String sortBy,
-                                          @RequestParam(defaultValue = "asc") String sortDir, @RequestParam(required = false) String searchTerm) {
-
+    private ResponseObject findAllBedType(@RequestParam(defaultValue = "0") int page,
+                                          @RequestParam(defaultValue = "10") int size,
+                                          @RequestParam(defaultValue = "id") String sortBy,
+                                          @RequestParam(defaultValue = "asc") String sortDir,
+                                          @RequestParam(required = false) String searchTerm) {
         Sort sort = sortDir.equalsIgnoreCase(Sort.Direction.ASC.name())
                 ? Sort.by(sortBy).ascending()
                 : Sort.by(sortBy).descending();
@@ -99,5 +101,4 @@ public class RoomUtilityADAPI {
     private void deleteAccount(@PathVariable int id) {
         roomUilityServiceAD.delete(id);
     }
-
 }

@@ -17,53 +17,13 @@ public class AgencyServiceImplAD implements AgencyServiceAD {
     private AgenciesRepository agenciesRepository;
 
     @Override
+    public Long countAgency() {
+        return agenciesRepository.countAgencies();
+    }
+
+    @Override
     public Long countAllWaiting() {
         return agenciesRepository.countByIsAcceptedIsOne();
-    }
-
-    @Override
-    public Page<Agencies> findAllAccepted(Pageable pageable) {
-        return agenciesRepository.findByIsAcceptedIsTwoTrue(pageable);
-    }
-
-    @Override
-    public Page<Agencies> findAllAcceptedButFalse(Pageable pageable) {
-        return agenciesRepository.findByIsAcceptedIsTwoFalse(pageable);
-    }
-
-    @Override
-    public Page<Agencies> findAllWaiting(Pageable pageable) {
-        return agenciesRepository.findByIsAcceptedIsOne(pageable);
-    }
-
-    @Override
-    public Page<Agencies> findAllDenied(Pageable pageable) {
-        return agenciesRepository.findByIsAcceptedIsThreeTrue(pageable);
-    }
-
-    @Override
-    public Page<Agencies> findAllWithSearch(int isAccepted, String searchTerm, Pageable pageable) {
-        return agenciesRepository.findByIsAcceptedEqualsAndNameAgencyContainingIgnoreCase(isAccepted, searchTerm, pageable);
-    }
-
-    @Override
-    public Page<Agencies> findOneTrueWithSearch(String searchTerm, Pageable pageable) {
-        return agenciesRepository.findByNameAcceptOneTrue(searchTerm, pageable);
-    }
-
-    @Override
-    public Page<Agencies> findTwoTrueWithSearch(String searchTerm, Pageable pageable) {
-        return agenciesRepository.findByNameAcceptTwoTrue(searchTerm, pageable);
-    }
-
-    @Override
-    public Page<Agencies> findTwoFalseWithSearch(String searchTerm, Pageable pageable) {
-        return agenciesRepository.findByNameAcceptTwoFalse(searchTerm, pageable);
-    }
-
-    @Override
-    public Page<Agencies> findThreeTrueWithSearch(String searchTerm, Pageable pageable) {
-        return agenciesRepository.findByNameAcceptThreeTrue(searchTerm, pageable);
     }
 
     @Override
@@ -92,8 +52,22 @@ public class AgencyServiceImplAD implements AgencyServiceAD {
     }
 
     @Override
-    public Long countAgency() {
-        return agenciesRepository.countAgencies();
+    public Page<Agencies> findAllAgenciesByAccepted(Pageable pageable, Boolean isActive) {
+        return agenciesRepository.findAllAgenciesByIsActiveAD(pageable, isActive);
     }
 
+    @Override
+    public Page<Agencies> findAllAgenciesByAcceptedWithSearch(String searchTerm, Pageable pageable, Boolean isActive) {
+        return agenciesRepository.findAllAgenciesByIsActiveWithSearchAD(searchTerm, pageable, isActive);
+    }
+
+    @Override
+    public Page<Agencies> findAllAgenciesWaitingByIsAccepted(Pageable pageable, Integer isAccepted) {
+        return agenciesRepository.findAllAgenciesByIsAccepted(pageable, isAccepted);
+    }
+
+    @Override
+    public Page<Agencies> findAllAgenciesWaitingByIsAcceptedWithSearch(String searchTerm, Pageable pageable, Integer isAccepted) {
+        return agenciesRepository.findAllAgenciesByIsAcceptedWithSearchAD(searchTerm, pageable, isAccepted);
+    }
 }

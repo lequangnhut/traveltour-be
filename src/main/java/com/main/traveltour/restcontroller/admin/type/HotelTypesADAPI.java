@@ -1,6 +1,6 @@
-package com.main.traveltour.restcontroller.admin;
+package com.main.traveltour.restcontroller.admin.type;
 
-import com.main.traveltour.dto.admin.HotelTypesDtoAD;
+import com.main.traveltour.dto.admin.type.HotelTypesDtoAD;
 import com.main.traveltour.entity.*;
 import com.main.traveltour.service.admin.HotelTypesServiceAD;
 import com.main.traveltour.service.admin.HotelsServiceAD;
@@ -27,9 +27,11 @@ public class HotelTypesADAPI {
     private HotelsServiceAD hotelsServiceAD;
 
     @GetMapping("admin/type/find-all-hotel-type")
-    private ResponseObject findAllHotelType(@RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int size, @RequestParam(defaultValue = "id") String sortBy,
-                                          @RequestParam(defaultValue = "asc") String sortDir, @RequestParam(required = false) String searchTerm) {
-
+    private ResponseObject findAllHotelType(@RequestParam(defaultValue = "0") int page,
+                                            @RequestParam(defaultValue = "10") int size,
+                                            @RequestParam(defaultValue = "id") String sortBy,
+                                            @RequestParam(defaultValue = "asc") String sortDir,
+                                            @RequestParam(required = false) String searchTerm) {
         Sort sort = sortDir.equalsIgnoreCase(Sort.Direction.ASC.name())
                 ? Sort.by(sortBy).ascending()
                 : Sort.by(sortBy).descending();
@@ -99,5 +101,4 @@ public class HotelTypesADAPI {
     private void deleteHotel(@PathVariable int id) {
         hotelTypesServiceAD.delete(id);
     }
-
 }

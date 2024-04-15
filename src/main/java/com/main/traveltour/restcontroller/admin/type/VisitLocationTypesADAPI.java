@@ -1,6 +1,6 @@
-package com.main.traveltour.restcontroller.admin;
+package com.main.traveltour.restcontroller.admin.type;
 
-import com.main.traveltour.dto.admin.VisitLocationTypesDtoAD;
+import com.main.traveltour.dto.admin.type.VisitLocationTypesDtoAD;
 import com.main.traveltour.entity.ResponseObject;
 import com.main.traveltour.entity.VisitLocationTypes;
 import com.main.traveltour.entity.VisitLocations;
@@ -29,9 +29,11 @@ public class VisitLocationTypesADAPI {
     private VisitLocationsServiceAD visitLocationsServiceAD;
 
     @GetMapping("admin/type/find-all-visit-location-type")
-    private ResponseObject findAllVisitLocationType(@RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int size, @RequestParam(defaultValue = "id") String sortBy,
-            @RequestParam(defaultValue = "asc") String sortDir, @RequestParam(required = false) String searchTerm) {
-
+    private ResponseObject findAllVisitLocationType(@RequestParam(defaultValue = "0") int page,
+                                                    @RequestParam(defaultValue = "10") int size,
+                                                    @RequestParam(defaultValue = "id") String sortBy,
+                                                    @RequestParam(defaultValue = "asc") String sortDir,
+                                                    @RequestParam(required = false) String searchTerm) {
         Sort sort = sortDir.equalsIgnoreCase(Sort.Direction.ASC.name())
                 ? Sort.by(sortBy).ascending()
                 : Sort.by(sortBy).descending();
@@ -101,6 +103,4 @@ public class VisitLocationTypesADAPI {
     private void deleteAccount(@PathVariable int id) {
         visitLocationTypesServiceAD.delete(id);
     }
-
-
 }

@@ -67,20 +67,32 @@ public class Agencies {
     private Timestamp dateCreated;
 
     @Basic
-    @Column(name = "is_active")
-    private Boolean isActive;
+    @Column(name = "date_accepted")
+    private Timestamp dateAccepted;
 
     @Basic
-    @Column(name = "user_id")
-    private int userId;
+    @Column(name = "date_blocked")
+    private Timestamp dateBlocked;
 
     @Basic
     @Column(name = "is_accepted")
-    private Integer isAccepted;
+    private Integer isAccepted; // 0 đã nộp | 1 chờ duyệt | 2 đã duyệt | 3 từ chối duyệt
+
+    @Basic
+    @Column(name = "is_active")
+    private Boolean isActive; // true: hoạt động | false: ngưng hoạt động
 
     @Basic
     @Column(name = "img_document")
     private String imgDocument;
+
+    @Basic
+    @Column(name = "noted", columnDefinition = "LONGTEXT")
+    private String noted; // ghi chú vì sao doanh nghiệp bị khóa
+
+    @Basic
+    @Column(name = "user_id")
+    private int userId;
 
     @OneToMany(mappedBy = "agenciesByAgenciesId")
     @JsonManagedReference

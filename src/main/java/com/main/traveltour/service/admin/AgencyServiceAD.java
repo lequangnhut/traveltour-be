@@ -8,25 +8,9 @@ import java.util.List;
 
 public interface AgencyServiceAD {
 
-    Page<Agencies> findAllAccepted(Pageable pageable);
-
-    Page<Agencies> findAllAcceptedButFalse(Pageable pageable);
-
-    Page<Agencies> findAllWaiting(Pageable pageable);
-
-    Page<Agencies> findAllDenied(Pageable pageable);
+    Long countAgency();
 
     Long countAllWaiting();
-
-    Page<Agencies> findAllWithSearch(int isAccepted, String searchTerm, Pageable pageable);
-
-    Page<Agencies> findOneTrueWithSearch(String searchTerm, Pageable pageable);
-
-    Page<Agencies> findTwoTrueWithSearch(String searchTerm, Pageable pageable);
-
-    Page<Agencies> findTwoFalseWithSearch(String searchTerm, Pageable pageable);
-
-    Page<Agencies> findThreeTrueWithSearch(String searchTerm, Pageable pageable);
 
     Agencies findById(int id);
 
@@ -38,5 +22,11 @@ public interface AgencyServiceAD {
 
     List<Agencies> findByIdAgencyId(int id);
 
-    Long countAgency();
+    Page<Agencies> findAllAgenciesByAccepted(Pageable pageable, Boolean isActive);
+
+    Page<Agencies> findAllAgenciesByAcceptedWithSearch(String searchTerm, Pageable pageable, Boolean isActive);
+
+    Page<Agencies> findAllAgenciesWaitingByIsAccepted(Pageable pageable, Integer isActive);
+
+    Page<Agencies> findAllAgenciesWaitingByIsAcceptedWithSearch(String searchTerm, Pageable pageable, Integer isActive);
 }

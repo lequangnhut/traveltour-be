@@ -2,16 +2,16 @@ package com.main.traveltour.restcontroller.admin;
 
 import com.main.traveltour.dto.admin.revenue.RevenueDtoAD;
 import com.main.traveltour.entity.ResponseObject;
-import com.main.traveltour.entity.TourDetails;
 import com.main.traveltour.service.UsersService;
 import com.main.traveltour.service.admin.*;
 import com.main.traveltour.service.staff.*;
-import org.hibernate.annotations.Parameter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
-import java.util.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 @RestController
 @CrossOrigin(origins = "http://localhost:3000")

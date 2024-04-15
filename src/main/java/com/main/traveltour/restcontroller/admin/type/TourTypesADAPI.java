@@ -1,6 +1,6 @@
-package com.main.traveltour.restcontroller.admin;
+package com.main.traveltour.restcontroller.admin.type;
 
-import com.main.traveltour.dto.admin.TourTypesDtoAD;
+import com.main.traveltour.dto.admin.type.TourTypesDtoAD;
 import com.main.traveltour.entity.*;
 import com.main.traveltour.service.admin.TourTypesServiceAD;
 import com.main.traveltour.service.admin.ToursServiceAD;
@@ -27,9 +27,11 @@ public class TourTypesADAPI {
     private ToursServiceAD toursServiceAD;
 
     @GetMapping("admin/type/find-all-tour-type")
-    private ResponseObject findAllTourType(@RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int size, @RequestParam(defaultValue = "id") String sortBy,
-                                            @RequestParam(defaultValue = "asc") String sortDir, @RequestParam(required = false) String searchTerm) {
-
+    private ResponseObject findAllTourType(@RequestParam(defaultValue = "0") int page,
+                                           @RequestParam(defaultValue = "10") int size,
+                                           @RequestParam(defaultValue = "id") String sortBy,
+                                           @RequestParam(defaultValue = "asc") String sortDir,
+                                           @RequestParam(required = false) String searchTerm) {
         Sort sort = sortDir.equalsIgnoreCase(Sort.Direction.ASC.name())
                 ? Sort.by(sortBy).ascending()
                 : Sort.by(sortBy).descending();
@@ -99,5 +101,4 @@ public class TourTypesADAPI {
     private void deleteTour(@PathVariable int id) {
         tourTypesServiceAD.delete(id);
     }
-
 }

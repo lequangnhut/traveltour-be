@@ -1,6 +1,6 @@
-package com.main.traveltour.restcontroller.admin;
+package com.main.traveltour.restcontroller.admin.type;
 
-import com.main.traveltour.dto.admin.TransTypesDtoAD;
+import com.main.traveltour.dto.admin.type.TransTypesDtoAD;
 import com.main.traveltour.entity.ResponseObject;
 import com.main.traveltour.entity.TransportationTypes;
 import com.main.traveltour.entity.Transportations;
@@ -29,9 +29,11 @@ public class TransTypesADAPI {
     private TransServiceAD transServiceAD;
 
     @GetMapping("admin/type/find-all-trans-type")
-    private ResponseObject findAllTransType(@RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int size, @RequestParam(defaultValue = "id") String sortBy,
-                                                    @RequestParam(defaultValue = "asc") String sortDir, @RequestParam(required = false) String searchTerm) {
-
+    private ResponseObject findAllTransType(@RequestParam(defaultValue = "0") int page,
+                                            @RequestParam(defaultValue = "10") int size,
+                                            @RequestParam(defaultValue = "id") String sortBy,
+                                            @RequestParam(defaultValue = "asc") String sortDir,
+                                            @RequestParam(required = false) String searchTerm) {
         Sort sort = sortDir.equalsIgnoreCase(Sort.Direction.ASC.name())
                 ? Sort.by(sortBy).ascending()
                 : Sort.by(sortBy).descending();
@@ -101,5 +103,4 @@ public class TransTypesADAPI {
     private void deleteTrans(@PathVariable int id) {
         transTypeServiceAD.delete(id);
     }
-
 }

@@ -1,6 +1,6 @@
-package com.main.traveltour.restcontroller.admin;
+package com.main.traveltour.restcontroller.admin.type;
 
-import com.main.traveltour.dto.admin.BedTypesDtoAD;
+import com.main.traveltour.dto.admin.type.BedTypesDtoAD;
 import com.main.traveltour.entity.*;
 import com.main.traveltour.service.admin.BedTypesServiceAD;
 import com.main.traveltour.service.admin.RoomBedsServiceAD;
@@ -27,9 +27,11 @@ public class BedTypesADAPI {
     private RoomBedsServiceAD roomBedsServiceAD;
 
     @GetMapping("admin/type/find-all-bed-type")
-    private ResponseObject findAllBedType(@RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int size, @RequestParam(defaultValue = "id") String sortBy,
-                                            @RequestParam(defaultValue = "asc") String sortDir, @RequestParam(required = false) String searchTerm) {
-
+    private ResponseObject findAllBedType(@RequestParam(defaultValue = "0") int page,
+                                          @RequestParam(defaultValue = "10") int size,
+                                          @RequestParam(defaultValue = "id") String sortBy,
+                                          @RequestParam(defaultValue = "asc") String sortDir,
+                                          @RequestParam(required = false) String searchTerm) {
         Sort sort = sortDir.equalsIgnoreCase(Sort.Direction.ASC.name())
                 ? Sort.by(sortBy).ascending()
                 : Sort.by(sortBy).descending();
@@ -38,6 +40,7 @@ public class BedTypesADAPI {
         Page<BedTypes> items = searchTerm == null || searchTerm.isEmpty()
                 ? bedTypesServiceAD.findAll(PageRequest.of(page, size, sort))
                 : bedTypesServiceAD.findAllWithSearch(searchTerm, PageRequest.of(page, size, sort));
+
         if (items.isEmpty()) {
             return new ResponseObject("404", "Không tìm thấy dữ liệu", null);
         } else {
@@ -48,6 +51,7 @@ public class BedTypesADAPI {
     @GetMapping("admin/type/find-bed-type-by-id/{id}")
     private ResponseObject findById(@PathVariable int id) {
         BedTypes bedTypes = bedTypesServiceAD.findById(id);
+
         if (bedTypes != null) {
             BedTypesDtoAD dto = EntityDtoUtils.convertToDto(bedTypes, BedTypesDtoAD.class);
             return new ResponseObject("200", "Đã tìm thấy dữ liệu", dto);
@@ -61,6 +65,7 @@ public class BedTypesADAPI {
         boolean exists = bedTypesServiceAD.findByBedTypeName(name) != null;
         Map<String, Boolean> response = new HashMap<>();
         response.put("exists", exists);
+
         if (exists) {
             return new ResponseObject("404", "Tên loại bị trùng lặp", response);
         } else {
@@ -74,6 +79,7 @@ public class BedTypesADAPI {
         Map<String, Boolean> response = new HashMap<>();
         boolean exists = !roomBeds.isEmpty();
         response.put("exists", exists);
+
         if (exists) {
             return new ResponseObject("200", "Đã tìm thấy dữ liệu", response);
         } else {
@@ -99,5 +105,4 @@ public class BedTypesADAPI {
     private void deleteAccount(@PathVariable int id) {
         bedTypesServiceAD.delete(id);
     }
-
 }

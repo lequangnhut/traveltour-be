@@ -42,11 +42,4 @@ public class NotificationADAPI {
         note.setIsSeen(true);
         notificationsServiceAD.save(note);
     }
-//
-//    // lấy ra thông tin người dùng đang đăng nhập
-//    @GetMapping("/notification/userIsLogin")
-//    private APIUsersDto getSession() {
-//        Users users = (Users) session.getAttribute(SessionAttr.CURRENT_ADMIN);
-//        return EntityDtoUtils.convertToDto(users, APIUsersDto.class);
-//    }
 }
