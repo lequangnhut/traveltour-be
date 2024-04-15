@@ -75,16 +75,16 @@ public class CustomerInformationAPI {
     CancelOrdersService cancelOrdersService;
 
 
-    @GetMapping("find-all-booking-tour/{userId}")
+    @GetMapping("find-all-booking-tour/{email}")
     public ResponseObject getAllBookingTourById(@RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int size,
             @RequestParam(defaultValue = "id") String sortBy, @RequestParam(defaultValue = "asc") String sortDir,
-            @RequestParam(required = false) Integer orderStatus, @PathVariable int userId) {
+            @RequestParam(required = false) Integer orderStatus, @PathVariable String email) {
 
         Sort sort = sortDir.equalsIgnoreCase(Sort.Direction.ASC.name())
                 ? Sort.by(sortBy).ascending()
                 : Sort.by(sortBy).descending();
 
-        Page<BookingTours> bookingTours = bookingTourService.getAllByUserId(orderStatus, userId, PageRequest.of(page, size, sort));
+        Page<BookingTours> bookingTours = bookingTourService.getAllByUserId(orderStatus, email, PageRequest.of(page, size, sort));
 
         Page<com.main.traveltour.dto.staff.BookingToursDto> bookingToursDtos = bookingTours.map(bookingTour -> EntityDtoUtils.convertToDto(bookingTour, com.main.traveltour.dto.staff.BookingToursDto.class));
 
@@ -123,16 +123,16 @@ public class CustomerInformationAPI {
         }
     }
 
-    @GetMapping("find-all-order-hotel/{userId}")
+    @GetMapping("find-all-order-hotel/{email}")
     public ResponseObject getAllBookingHotelByUserId(@RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int size,
                                                      @RequestParam(defaultValue = "id") String sortBy, @RequestParam(defaultValue = "asc") String sortDir,
-                                                     @RequestParam(required = false) Integer orderStatus, @PathVariable int userId) {
+                                                     @RequestParam(required = false) Integer orderStatus, @PathVariable String email) {
 
         Sort sort = sortDir.equalsIgnoreCase(Sort.Direction.ASC.name())
                 ? Sort.by(sortBy).ascending()
                 : Sort.by(sortBy).descending();
 
-        Page<OrderHotels> orderHotels = orderHotelsService.getAllByUserId(orderStatus, userId, PageRequest.of(page, size, sort));
+        Page<OrderHotels> orderHotels = orderHotelsService.getAllByUserId(orderStatus, email, PageRequest.of(page, size, sort));
         //Page<OrderHotelsDto> orderHotelsDtos = orderHotels.map(orderTransportations1 -> EntityDtoUtils.convertToDto(orderTransportations1, OrderHotelsDto.class));
 
         if (orderHotels.isEmpty()) {
@@ -174,16 +174,16 @@ public class CustomerInformationAPI {
         }
     }
 
-    @GetMapping("find-all-order-trans/{userId}")
+    @GetMapping("find-all-order-trans/{email}")
     public ResponseObject getAllBookingTransByUserId(@RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int size,
                                                      @RequestParam(defaultValue = "id") String sortBy, @RequestParam(defaultValue = "asc") String sortDir,
-                                                     @RequestParam(required = false) Integer orderStatus, @PathVariable int userId) {
+                                                     @RequestParam(required = false) Integer orderStatus, @PathVariable String email) {
 
         Sort sort = sortDir.equalsIgnoreCase(Sort.Direction.ASC.name())
                 ? Sort.by(sortBy).ascending()
                 : Sort.by(sortBy).descending();
 
-        Page<OrderTransportations> orderTransportations = orderTransportationService.findByUserIdAndStatus(orderStatus, userId, PageRequest.of(page, size, sort));
+        Page<OrderTransportations> orderTransportations = orderTransportationService.findByUserIdAndStatus(orderStatus, email, PageRequest.of(page, size, sort));
         Page<OrderTransportationsDto> orderTransportationsDtos = orderTransportations.map(orderTransportations1 -> EntityDtoUtils.convertToDto(orderTransportations1, OrderTransportationsDto.class));
 
         if (orderTransportationsDtos.isEmpty()) {
@@ -205,16 +205,16 @@ public class CustomerInformationAPI {
         }
     }
 
-    @GetMapping("find-all-order-visits/{userId}")
+    @GetMapping("find-all-order-visits/{email}")
     public ResponseObject getAllBookingVisitsByUserId(@RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int size,
                                                      @RequestParam(defaultValue = "id") String sortBy, @RequestParam(defaultValue = "asc") String sortDir,
-                                                     @RequestParam(required = false) Integer orderStatus, @PathVariable int userId) {
+                                                     @RequestParam(required = false) Integer orderStatus, @PathVariable String email) {
 
         Sort sort = sortDir.equalsIgnoreCase(Sort.Direction.ASC.name())
                 ? Sort.by(sortBy).ascending()
                 : Sort.by(sortBy).descending();
 
-        Page<OrderVisits> orderVisits = orderVisitLocationService.findByUserIdAndStatus(orderStatus, userId, PageRequest.of(page, size, sort));
+        Page<OrderVisits> orderVisits = orderVisitLocationService.findByUserIdAndStatus(orderStatus, email, PageRequest.of(page, size, sort));
         Page<OrderVisitsDto> orderVisitsDtos = orderVisits.map(orderVisits1 -> EntityDtoUtils.convertToDto(orderVisits1, OrderVisitsDto.class));
 
         if (orderVisitsDtos.isEmpty()) {

@@ -60,4 +60,9 @@ public class TransportUtilityServiceImplAD implements TransportUtilityServiceAD 
     public TransportUtilities delete(int id) {
         return repo.deleteById(id);
     }
+
+    @Override
+    public List<TransportUtilities> findAllByTransId(String id) {
+        return repo.findAllByTransportationId(id);
+    }
 }

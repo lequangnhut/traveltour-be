@@ -26,4 +26,6 @@ public interface TransportUtilityServiceAD {
     List<TransportUtilities> findAllByUtilityId(int id);
 
     TransportUtilities delete(int id);
+
+    List<TransportUtilities> findAllByTransId (String id);
 }

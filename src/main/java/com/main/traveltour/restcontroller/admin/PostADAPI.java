@@ -1,13 +1,11 @@
 package com.main.traveltour.restcontroller.admin;
 
+import com.main.traveltour.dto.admin.TransportUtilitiesDto;
 import com.main.traveltour.dto.admin.post.*;
 import com.main.traveltour.dto.customer.infomation.OrderVisitDetailsDto;
 import com.main.traveltour.dto.customer.infomation.OrderVisitsDto;
 import com.main.traveltour.entity.*;
-import com.main.traveltour.service.admin.HotelsServiceAD;
-import com.main.traveltour.service.admin.RoomTypesServiceAD;
-import com.main.traveltour.service.admin.TransServiceAD;
-import com.main.traveltour.service.admin.VisitLocationsServiceAD;
+import com.main.traveltour.service.admin.*;
 import com.main.traveltour.service.agent.*;
 import com.main.traveltour.utils.EntityDtoUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -44,6 +42,9 @@ public class PostADAPI {
 
     @Autowired
     private TransportationScheduleService transportationScheduleService;
+
+    @Autowired
+    private TransportUtilityServiceAD transportUtilityServiceAD;
 
 
     @GetMapping("all-hotel-post")
@@ -375,6 +376,19 @@ public class PostADAPI {
             }
         } catch (Exception e) {
             return new ResponseObject("500", "Hông nè", null);
+        }
+    }
+
+    @GetMapping("find-trans-utility/{id}")
+    private ResponseObject findAllUtilityByTransId(@PathVariable String id) {
+
+        List<TransportUtilities> utilities = transportUtilityServiceAD.findAllByTransId(id);
+        List<TransportUtilitiesDto> transportUtilitiesDto = EntityDtoUtils.convertToDtoList(utilities, TransportUtilitiesDto.class);
+
+        if (transportUtilitiesDto.isEmpty()) {
+            return new ResponseObject("404", "Không tìm thấy dữ liệu", null);
+        } else {
+            return new ResponseObject("200", "Đã tìm thấy dữ liệu", transportUtilitiesDto);
         }
     }
 }

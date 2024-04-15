@@ -34,7 +34,7 @@ public class BookingToursServiceImpl implements BookingTourService {
     }
 
     @Override
-    public Page<BookingTours> getAllByUserId(Integer orderStatus, Integer userId, Pageable pageable) {
-        return repo.findAllBookingToursByUserId(orderStatus, userId, pageable);
+    public Page<BookingTours> getAllByUserId(Integer orderStatus, String email, Pageable pageable) {
+        return repo.findAllBookingToursByUserId(orderStatus, email, pageable);
     }
 }

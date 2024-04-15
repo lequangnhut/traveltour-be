@@ -37,8 +37,8 @@ public class OrderTransportationServiceImpl implements OrderTransportationServic
     }
 
     @Override
-    public Page<OrderTransportations> findByUserIdAndStatus(Integer orderStatus, Integer userId, Pageable pageable) {
-        return repo.findAllBookingTransByUserId(orderStatus, userId, pageable);
+    public Page<OrderTransportations> findByUserIdAndStatus(Integer orderStatus, String email, Pageable pageable) {
+        return repo.findAllBookingTransByUserId(orderStatus, email, pageable);
     }
 
     @Override

@@ -16,7 +16,7 @@ public interface OrderTransportationService {
 
     void update(OrderTransportations orderTransportations);
 
-    Page<OrderTransportations> findByUserIdAndStatus(Integer orderStatus, Integer userId, Pageable pageable);
+    Page<OrderTransportations> findByUserIdAndStatus(Integer orderStatus, String email, Pageable pageable);
 
     OrderTransportations findById(String id);
 }
