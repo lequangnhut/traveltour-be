@@ -25,4 +25,9 @@ public interface TransportUtilitiesRepository extends JpaRepository<TransportUti
     List<TransportUtilities> findAllByUtilityId(int id);
 
     TransportUtilities deleteById(int id);
+
+    @Query(value="select tu.* from transport_utilities tu " +
+            "join transport_add_utilities tau on tu.id = tau.transportation_utilities_id " +
+            "where tau.transportation_id = :id", nativeQuery = true)
+    List<TransportUtilities> findAllByTransportationId (String id);
 }

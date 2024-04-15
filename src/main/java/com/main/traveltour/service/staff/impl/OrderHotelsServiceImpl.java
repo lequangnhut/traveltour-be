@@ -84,8 +84,8 @@ public class OrderHotelsServiceImpl implements OrderHotelsService {
 
 
     @Override
-    public Page<OrderHotels> getAllByUserId(Integer orderStatus, Integer userId, Pageable pageable) {
-        return repo.findAllBookingHotelsByUserId(orderStatus, userId, pageable);
+    public Page<OrderHotels> getAllByUserId(Integer orderStatus, String email, Pageable pageable) {
+        return repo.findAllBookingHotelsByUserId(orderStatus, email, pageable);
     }
 
     @Override

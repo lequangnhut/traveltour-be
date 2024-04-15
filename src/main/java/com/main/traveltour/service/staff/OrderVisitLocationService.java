@@ -10,7 +10,7 @@ public interface OrderVisitLocationService {
 
     OrderVisits save(OrderVisits orderVisits);
 
-    Page<OrderVisits> findByUserIdAndStatus(Integer orderStatus, Integer userId, Pageable pageable);
+    Page<OrderVisits> findByUserIdAndStatus(Integer orderStatus, String email, Pageable pageable);
 
     OrderVisits findById(String id);
 

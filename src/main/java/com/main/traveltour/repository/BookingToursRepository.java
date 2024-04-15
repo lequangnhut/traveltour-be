@@ -30,8 +30,8 @@ public interface BookingToursRepository extends JpaRepository<BookingTours, Inte
             "CAST(bt.orderTotal AS string) LIKE %:searchTerm%)")
     Page<BookingTours> findBySearchTerm(@Param("orderStatus") Integer orderStatus, @Param("searchTerm") String searchTerm, Pageable pageable);
 
-    @Query("SELECT bt FROM BookingTours bt WHERE bt.orderStatus = :orderStatus AND bt.userId = :userId")
-    Page<BookingTours> findAllBookingToursByUserId(@Param("orderStatus") Integer orderStatus, @Param("userId") Integer userId, Pageable pageable);
+    @Query("SELECT bt FROM BookingTours bt WHERE bt.orderStatus = :orderStatus AND bt.customerEmail = :email")
+    Page<BookingTours> findAllBookingToursByUserId(@Param("orderStatus") Integer orderStatus, @Param("email") String email, Pageable pageable);
 
     //doanh thu cùa dashboard
     @Query("SELECT new map(YEAR(bt.dateCreated) AS year, COALESCE(SUM(bt.orderTotal), 0) AS totalRevenue) " +

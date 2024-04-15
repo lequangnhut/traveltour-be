@@ -14,5 +14,5 @@ public interface BookingTourService {
 
     void update(BookingTours bookingTour);
 
-    Page<BookingTours> getAllByUserId(Integer orderStatus, Integer userId, Pageable pageable);
+    Page<BookingTours> getAllByUserId(Integer orderStatus, String email, Pageable pageable);
 }

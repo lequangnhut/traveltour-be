@@ -24,8 +24,8 @@ public interface OrderHotelsRepository extends JpaRepository<OrderHotels, Intege
     List<OrderHotels> findOrderHotelByTourDetailIdAndHotelId(@Param("tourDetailId") String tourDetailId,
                                                              @Param("hotelId") String hotelId);
 
-    @Query("SELECT oh FROM OrderHotels oh WHERE oh.orderStatus = :orderStatus AND oh.userId = :userId")
-    Page<OrderHotels> findAllBookingHotelsByUserId(@Param("orderStatus") Integer orderStatus, @Param("userId") Integer userId, Pageable pageable);
+    @Query("SELECT oh FROM OrderHotels oh WHERE oh.orderStatus = :orderStatus AND oh.customerEmail = :email")
+    Page<OrderHotels> findAllBookingHotelsByUserId(@Param("orderStatus") Integer orderStatus, @Param("email") String email, Pageable pageable);
 
     OrderHotels findById(String id);
 
