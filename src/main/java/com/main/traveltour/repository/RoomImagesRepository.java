@@ -9,4 +9,5 @@ public interface RoomImagesRepository extends JpaRepository<RoomImages, Integer>
     List<RoomImages> findAllByRoomTypeId(String roomTypeId);
 
     void deleteAllByIdIn(List<Integer> ids);
+
 }

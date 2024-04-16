@@ -15,8 +15,6 @@ import java.util.List;
 @RequestMapping("api/v1")
 public class ChatMessageController {
 
-    @Autowired
-    private SimpMessagingTemplate messagingTemplate;
 
     @Autowired
     private ChatMessageService chatMessageService;

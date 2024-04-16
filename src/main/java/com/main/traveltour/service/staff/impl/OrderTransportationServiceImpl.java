@@ -9,6 +9,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class OrderTransportationServiceImpl implements OrderTransportationService {
@@ -44,6 +45,11 @@ public class OrderTransportationServiceImpl implements OrderTransportationServic
     @Override
     public OrderTransportations findById(String id) {
         return repo.findById(id);
+    }
+
+    @Override
+    public Optional<OrderTransportations> findByIdOptional(String id) {
+        return Optional.ofNullable(repo.findById(id));
     }
 
 }

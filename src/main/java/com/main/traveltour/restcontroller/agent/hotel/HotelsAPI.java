@@ -1,5 +1,7 @@
 package com.main.traveltour.restcontroller.agent.hotel;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.main.traveltour.dto.agent.hotel.*;
 import com.main.traveltour.entity.*;
 import com.main.traveltour.service.admin.RoomBedsServiceAD;
@@ -9,7 +11,9 @@ import com.main.traveltour.utils.EntityDtoUtils;
 import com.main.traveltour.utils.GenerateNextID;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -55,6 +59,7 @@ public class HotelsAPI {
 
     /**
      * Phương thức tìm kiếm khách sạn dựa vào id của đại lý
+     *
      * @param agencyId mã đại lý
      * @return danh sách khách sạn
      */
@@ -89,7 +94,19 @@ public class HotelsAPI {
     }
 
     /**
+     * Phương thức tìm kiếm khách sạn theo mã đối tác và trạng thái xóa
+     * @param agencyId mã đối tác
+     * @return danh sách khách sạn
+     */
+    @GetMapping("/agent/hotels/findAllByAgencyIdAndStatusDelete/{agencyId}")
+    private ResponseEntity<List<Hotels>> findAllByAgencyIdAndStatusDelete(@PathVariable int agencyId) throws JsonProcessingException {
+        List<Hotels> hotels = hotelsService.findHotelsByAgenciesIdAndIsDeleted(agencyId);
+        return ResponseEntity.ok(hotels);
+    }
+
+    /**
      * Phương thức tìm kiếm loại khách sạn
+     *
      * @return danh sách loại khách sạn
      */
     @GetMapping("/agent/hotels/list-hotels-type")
@@ -105,6 +122,7 @@ public class HotelsAPI {
 
     /**
      * Phương thức tìm kiếm dịch vụ khách sạn
+     *
      * @return danh sách dịch vụ khách sạn
      */
     @GetMapping("agent/hotels/list-place-utilities")
@@ -120,6 +138,7 @@ public class HotelsAPI {
 
     /**
      * Phương thức tìm kiếm loại phòng dựa vào các tiêu chí
+     *
      * @return danh sách loại phòng
      */
     @GetMapping("agent/hotels/list-bed-type")
@@ -146,32 +165,39 @@ public class HotelsAPI {
 
 
     @PostMapping(value = "/agent/hotels/register-hotels", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public void registerHotels(@RequestPart("hotels") RegisterHotelDto hotelsDto,
-                               @RequestPart("roomType") RegisterRoomTypeDto roomTypeDto,
-                               @RequestPart("placeUtilities") List<Integer> placeUtilities,
-                               @RequestPart("roomTypeUtilities") List<Integer> roomTypeUtilities,
-                               @RequestPart("listRoomTypeImg") List<MultipartFile> listRoomTypeImg,
-                               @RequestParam("bedTypeId") Integer bedTypeId,
-                               @RequestParam("checkinTime") @DateTimeFormat(iso = DateTimeFormat.ISO.TIME) LocalTime checkinTime,
-                               @RequestParam("checkoutTime") @DateTimeFormat(iso = DateTimeFormat.ISO.TIME) LocalTime checkoutTime,
-                               @RequestParam("avatarHotel") MultipartFile avatarHotel,
-                               @RequestParam("roomTypeAvatar") MultipartFile roomTypeAvatar) throws IOException
-    {
-        String hotelId = GenerateNextID.generateNextCode("HTL", hotelsService.findMaxCode());
-        Hotels hotels = EntityDtoUtils.convertToEntity(hotelsDto, Hotels.class);
+    public ResponseEntity<String> registerHotels(@RequestPart("hotels") RegisterHotelDto hotelsDto,
+                                                 @RequestPart("roomType") RegisterRoomTypeDto roomTypeDto,
+                                                 @RequestPart("placeUtilities") List<Integer> placeUtilities,
+                                                 @RequestPart("roomTypeUtilities") List<Integer> roomTypeUtilities,
+                                                 @RequestPart("listRoomTypeImg") List<MultipartFile> listRoomTypeImg,
+                                                 @RequestParam("bedTypeId") Integer bedTypeId,
+                                                 @RequestParam("checkinTime") @DateTimeFormat(iso = DateTimeFormat.ISO.TIME) LocalTime checkinTime,
+                                                 @RequestParam("checkoutTime") @DateTimeFormat(iso = DateTimeFormat.ISO.TIME) LocalTime checkoutTime,
+                                                 @RequestParam("avatarHotel") MultipartFile avatarHotel,
+                                                 @RequestParam("roomTypeAvatar") MultipartFile avatarRoomType) {
 
-        hotelsService.registerInfoHotel(hotels, hotelId, placeUtilities, avatarHotel);
-
-        RoomTypes roomTypes = EntityDtoUtils.convertToEntity(roomTypeDto, RoomTypes.class);
-        roomTypeService.registerRoomType(roomTypes, hotelId, roomTypeUtilities, roomTypeAvatar, listRoomTypeImg, checkinTime, checkoutTime, bedTypeId);
+        try {
+            hotelsService.registerInfoHotel(hotelsDto, avatarHotel, placeUtilities, roomTypeDto, avatarRoomType, listRoomTypeImg, roomTypeUtilities, bedTypeId, checkinTime, checkoutTime);
+            return ResponseEntity.ok("{\"message\": \"Thêm thông tin khách sạn thành công\"}");
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        } catch (RuntimeException ex) {
+            ex.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Đã xảy ra lỗi không mong muốn.");
+        } catch (IOException io) {
+            io.printStackTrace();
+            return ResponseEntity.badRequest().body("Lỗi khi thêm hình ảnh. Vui lòng giảm chất lượng ảnh hoặc thay bằng ảnh khác.");
+        }
     }
+
 
     /**
      * Phương thức tạo mới thông tin loại phòng
-     * @param dataHotelRoom thông tin khách sạn
+     *
+     * @param dataHotelRoom  thông tin khách sạn
      * @param roomTypeAvatar ảnh loại phòng
-     * @param hotelId mã khách sạn
-     * @param roomTypeImage danh sách ảnh loại phòng
+     * @param hotelId        mã khách sạn
+     * @param roomTypeImage  danh sách ảnh loại phòng
      * @throws IOException Throws IOException
      */
     private void createRoomType(
@@ -206,7 +232,8 @@ public class HotelsAPI {
 
     /**
      * Phương thức tạo mới thông tin loại phòng
-     * @param roomTypeId mã loại phòng
+     *
+     * @param roomTypeId    mã loại phòng
      * @param roomTypeImage ảnh loại phòng
      * @throws IOException lôi nêu không thêm được ảnh
      */
@@ -222,8 +249,9 @@ public class HotelsAPI {
 
     /**
      * Phương thức tạo mới thông tin loại giường
+     *
      * @param roomTypeId mã loại phòng
-     * @param roomBedId mã loại giường
+     * @param roomBedId  mã loại giường
      */
     private void createRoomBed(String roomTypeId, Integer roomBedId) {
         RoomBeds roomBeds = new RoomBeds();
@@ -235,11 +263,12 @@ public class HotelsAPI {
 
     /**
      * Phương thức tạo mới thông tin khách sạn
-     * @param companyDataDto thông tin khách sạn
+     *
+     * @param companyDataDto       thông tin khách sạn
      * @param selectHotelUtilities danh sách dịch vụ khách sạn
-     * @param avatarHotel ảnh đại diện khách sạn
-     * @param longitude kinh độ
-     * @param latitude vĩ độ
+     * @param avatarHotel          ảnh đại diện khách sạn
+     * @param longitude            kinh độ
+     * @param latitude             vĩ độ
      * @return danh sách khách sạn
      * @throws IOException lôi nêu không thêm được ảnh
      */
@@ -291,8 +320,9 @@ public class HotelsAPI {
 
     /**
      * Phương thức chỉnh sửa thông tin khách sạn
-     * @param dataHotel thông tin khách sạn
-     * @param selectedUtilities danh sách dịch vụ khách sạn
+     *
+     * @param dataHotel          thông tin khách sạn
+     * @param selectedUtilities  danh sách dịch vụ khách sạn
      * @param hotelAvatarUpdated ảnh đai diện khách sạn
      * @return danh sach khách san
      * @throws IOException lôi nêu không thêm được ảnh
@@ -318,7 +348,7 @@ public class HotelsAPI {
         hotels = Optional.ofNullable(EntityDtoUtils.convertToEntity(dataHotel, Hotels.class));
         if (avataHotelUpload != null) {
             hotels.get().setHotelAvatar(avataHotelUpload);
-        } else if (oldAvataHotelUpload != null){
+        } else if (oldAvataHotelUpload != null) {
             hotels.get().setHotelAvatar(oldAvataHotelUpload);
         }
 
@@ -331,10 +361,10 @@ public class HotelsAPI {
         hotels.get().setIsDeleted(false);
         hotels.get().setPlaceUtilities(placeUtilitiesList);
 
-        if(longitude != null && !longitude.isEmpty()) {
+        if (longitude != null && !longitude.isEmpty()) {
             hotels.get().setLongitude(longitude);
         }
-        if(latitude != null && !latitude.isEmpty()) {
+        if (latitude != null && !latitude.isEmpty()) {
             hotels.get().setLatitude(latitude);
         }
 
@@ -345,6 +375,7 @@ public class HotelsAPI {
 
     /**
      * Phương thức tìm khách sạn dựa vào id của khách sạn
+     *
      * @param id mã khách sạn
      * @return danh sách khách sạn
      */
@@ -353,9 +384,9 @@ public class HotelsAPI {
             @PathVariable("id") String id
     ) {
         Optional<Hotels> hotels = hotelsService.findById(id);
-        if(hotels.isPresent()) {
+        if (hotels.isPresent()) {
             return new ResponseObject("200", "OK", hotels);
-        }else{
+        } else {
             return new ResponseObject("400", "Không tim thấy dữ liệu", null);
         }
 
@@ -363,6 +394,7 @@ public class HotelsAPI {
 
     /**
      * Phương thức xóa khách sạn dựa vào id của khách sạn
+     *
      * @param id mã khách sạn
      * @return danh sách khách sạn
      */
@@ -371,12 +403,12 @@ public class HotelsAPI {
             @PathVariable("id") String id
     ) {
         Optional<Hotels> hotels = hotelsService.findById(id);
-        if(hotels.isPresent()) {
+        if (hotels.isPresent()) {
             hotels.get().setIsDeleted(true);
             hotels.get().setDateDeleted(Timestamp.valueOf(LocalDateTime.now()));
             hotelsService.save(hotels.get());
             return new ResponseObject("200", "Xóa dữ liệu thành công", null);
-        }else{
+        } else {
             return new ResponseObject("400", "Không tim thấy dữ liệu", null);
         }
 

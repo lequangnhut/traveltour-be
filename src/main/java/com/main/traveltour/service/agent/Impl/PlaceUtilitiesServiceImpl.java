@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class PlaceUtilitiesServiceImpl implements PlaceUtilitiesService {
@@ -32,5 +33,10 @@ public class PlaceUtilitiesServiceImpl implements PlaceUtilitiesService {
     @Override
     public PlaceUtilities findById(int id) {
         return placeUtilitiesRepository.findById(id);
+    }
+
+    @Override
+    public Optional<PlaceUtilities> findByPlaceUtilsId(int id) {
+        return Optional.ofNullable(placeUtilitiesRepository.findById(id));
     }
 }

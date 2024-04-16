@@ -11,6 +11,8 @@ import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
@@ -32,6 +34,31 @@ public class FileUploadResizeImpl implements FileUploadResize {
                 .get("url")
                 .toString();
     }
+
+    @Override
+    public List<String> uploadFileResizeList(List<MultipartFile> multipartFiles) throws IOException {
+        List<String> uploadedUrls = new ArrayList<>();
+
+        for (MultipartFile file : multipartFiles) {
+            byte[] imageData = file.getBytes();
+            if (imageData == null) {
+                continue;
+            }
+
+            byte[] resizedImage = resizeImage(imageData, 400, 300, 1);
+
+            String uploadedUrl = cloudinary.uploader()
+                    .upload(resizedImage,
+                            Map.of("public_id", UUID.randomUUID().toString()))
+                    .get("url")
+                    .toString();
+
+            uploadedUrls.add(uploadedUrl);
+        }
+
+        return uploadedUrls;
+    }
+
 
     @Override
     public String uploadFileResizeAndReducedQuality(MultipartFile multipartFile) throws IOException {

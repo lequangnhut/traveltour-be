@@ -1,10 +1,13 @@
 package com.main.traveltour.utils;
 
 import org.modelmapper.ModelMapper;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 public class EntityDtoUtils {
 
@@ -25,6 +28,13 @@ public class EntityDtoUtils {
             destinationList.add(destination);
         }
         return destinationList;
+    }
+
+    public static <T, U> Page<U> convertPage(Page<T> sourcePage, Class<U> destinationClass) {
+        List<U> destinationList = sourcePage.getContent().stream()
+                .map(source -> convertToDto(source, destinationClass))
+                .collect(Collectors.toList());
+        return new PageImpl<>(destinationList, sourcePage.getPageable(), sourcePage.getTotalElements());
     }
 
     public static <T, U> U convertOptionalToDto(Optional<T> optional, Class<U> destinationClass) {

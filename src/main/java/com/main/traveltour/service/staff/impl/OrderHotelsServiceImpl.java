@@ -94,6 +94,11 @@ public class OrderHotelsServiceImpl implements OrderHotelsService {
     }
 
     @Override
+    public Optional<OrderHotels> findByIdOptional(String orderId) {
+        return Optional.ofNullable(repo.findById(orderId));
+    }
+
+    @Override
     public Page<OrderHotels> findOrderByIds(List<String> orderIds, Pageable pageable) {
         return repo.findByIdIn(orderIds, pageable);
     }

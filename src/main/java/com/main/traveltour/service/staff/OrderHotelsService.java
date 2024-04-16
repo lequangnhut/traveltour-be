@@ -8,6 +8,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface OrderHotelsService {
     String maxCodeTourId();
@@ -22,6 +23,7 @@ public interface OrderHotelsService {
 
     OrderHotels findById(String id);
 
+    Optional<OrderHotels> findByIdOptional(String orderId);
     Page<OrderHotels> findOrderByIds(List<String> orderIds, Pageable pageable);
 
 }

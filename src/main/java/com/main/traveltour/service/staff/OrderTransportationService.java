@@ -6,6 +6,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface OrderTransportationService {
     String maxCode();
@@ -19,4 +20,6 @@ public interface OrderTransportationService {
     Page<OrderTransportations> findByUserIdAndStatus(Integer orderStatus, String email, Pageable pageable);
 
     OrderTransportations findById(String id);
+
+    Optional<OrderTransportations> findByIdOptional(String id);
 }

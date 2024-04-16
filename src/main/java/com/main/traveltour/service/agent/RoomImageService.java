@@ -11,4 +11,6 @@ public interface RoomImageService {
     List<RoomImages> getAllRoomsImagesByRoomId(String roomId);
 
     void deleteAllByIds(List<Integer> ids);
+
+    void saveAllImages (List<RoomImages> roomImages);
 }
