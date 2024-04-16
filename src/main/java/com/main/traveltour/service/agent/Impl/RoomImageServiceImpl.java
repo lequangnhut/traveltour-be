@@ -28,4 +28,9 @@ public class RoomImageServiceImpl implements RoomImageService {
     public void deleteAllByIds(List<Integer> ids) {
         roomImagesRepository.deleteAllByIdIn(ids);
     }
+
+    @Override
+    public void saveAllImages(List<RoomImages> roomImages) {
+        roomImagesRepository.saveAll(roomImages);
+    }
 }

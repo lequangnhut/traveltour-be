@@ -16,7 +16,7 @@ public class SendNotificationController {
 
     @Autowired
     private SimpMessagingTemplate messagingTemplate;
-    @MessageMapping("/{userId}/notification-order")
+    @MessageMapping("/{userId}/send-notification-order")
     public void processMessage(@Payload UserChatNotificationDto user) {
         messagingTemplate.convertAndSendToUser(
                 String.valueOf(user.getRecipientId()), "/send/send-notification-order", user.getContent()

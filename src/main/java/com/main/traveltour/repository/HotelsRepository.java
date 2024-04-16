@@ -125,4 +125,6 @@ public interface HotelsRepository extends JpaRepository<Hotels, String> {
             "AND  ht.isActive = TRUE AND ht.isAccepted = TRUE " +
             "AND YEAR(ht.dateCreated) = :year ")
     Long countHotelsChart(@Param("year") Integer year);
+
+    List<Hotels> findAllByAgenciesIdAndIsDeleted(Integer agentsId, boolean isDeleted);
 }

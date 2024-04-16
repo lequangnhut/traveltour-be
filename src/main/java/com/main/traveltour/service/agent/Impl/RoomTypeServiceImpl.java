@@ -3,10 +3,13 @@ package com.main.traveltour.service.agent.Impl;
 import com.main.traveltour.dto.agent.hotel.RoomTypeCustomerDto;
 import com.main.traveltour.entity.*;
 import com.main.traveltour.repository.RoomTypesRepository;
+import com.main.traveltour.repository.RoomUtilitiesRepository;
 import com.main.traveltour.service.admin.RoomBedsServiceAD;
 import com.main.traveltour.service.agent.BedTypeService;
 import com.main.traveltour.service.agent.RoomImageService;
 import com.main.traveltour.service.agent.RoomTypeService;
+import com.main.traveltour.service.agent.RoomUtilitiesService;
+import com.main.traveltour.service.utils.FileUpload;
 import com.main.traveltour.service.utils.FileUploadResize;
 import com.main.traveltour.utils.GenerateNextID;
 import jakarta.persistence.EntityManager;
@@ -25,9 +28,8 @@ import java.io.IOException;
 import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.time.LocalTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class RoomTypeServiceImpl implements RoomTypeService {
@@ -42,6 +44,9 @@ public class RoomTypeServiceImpl implements RoomTypeService {
     private FileUploadResize fileUploadResize;
 
     @Autowired
+    private FileUpload fileUpload;
+
+    @Autowired
     private RoomTypeService roomTypeService;
 
     @Autowired
@@ -49,6 +54,9 @@ public class RoomTypeServiceImpl implements RoomTypeService {
 
     @Autowired
     private RoomBedsServiceAD roomBedsServiceAD;
+
+    @Autowired
+    private RoomUtilitiesRepository roomUtilitiesRepository;
     private static final Logger LOGGER = LoggerFactory.getLogger(RoomTypes.class);
 
     @Override
@@ -241,34 +249,44 @@ public class RoomTypeServiceImpl implements RoomTypeService {
     }
 
     @Override
-    public void registerRoomType(RoomTypes roomTypes, String hotelId, List<Integer> roomTypeUtilities, MultipartFile roomTypeAvatar, List<MultipartFile> listRoomTypeImg, LocalTime checkinTime, LocalTime checkoutTime, Integer bedTypeId) throws IOException {
+    public void registerRoomType(RoomTypes roomType, String hotelId, List<Integer> roomTypeUtilities, MultipartFile roomTypeAvatar, List<MultipartFile> listRoomTypeImg, LocalTime checkinTime, LocalTime checkoutTime, Integer bedTypeId) throws IOException {
         String roomTypeAvatarUpload = fileUploadResize.uploadFileResize(roomTypeAvatar);
         String roomTypeId = GenerateNextID.generateNextCode("RT", roomTypeService.findMaxId());
+        Collection<RoomImages> roomImages = new ArrayList<>();
 
-        roomTypes.setId(roomTypeId);
-        roomTypes.setHotelId(hotelId);
-        roomTypes.setRoomTypeAvatar(roomTypeAvatarUpload);
-        roomTypes.setCheckinTime(checkinTime);
-        roomTypes.setCheckoutTime(checkoutTime);
-        roomTypes.setIsDeleted(false);
-        roomTypesRepository.save(roomTypes);
-
-        listRoomTypeImg.stream().map(roomTypeImage -> {
-            RoomImages roomImages = new RoomImages();
-            roomImages.setRoomTypeId(roomTypes.getId());
-            try {
-                roomImages.setRoomTypeImg(fileUploadResize.uploadFileResizeAndReducedQuality(roomTypeImage));
-            } catch (IOException e) {
-                throw new RuntimeException(e);
+        if (listRoomTypeImg != null && !listRoomTypeImg.isEmpty()) {
+            for (MultipartFile roomTypeImage : listRoomTypeImg) {
+                if (roomTypeImage != null) {
+                    String roomTypeImageUpload = fileUpload.uploadFile(roomTypeImage);
+                    RoomImages roomImage = new RoomImages();
+                    roomImage.setRoomTypeId(roomType.getId());
+                    roomImage.setRoomTypeImg(roomTypeImageUpload);
+                    roomImages.add(roomImage);
+                }
             }
-            return roomImages;
-        }).forEach(roomImageService::save);
+        }
 
-        RoomBeds roomBeds = RoomBeds.builder()
-                .roomTypeId(roomTypes.getId())
+        Collection<RoomBeds> roomBeds = Collections.singleton(RoomBeds.builder()
+                .roomTypeId(roomType.getId())
                 .bedTypeId(bedTypeId)
-                .build();
-        roomBedsServiceAD.save(roomBeds);
+                .build());
+        List<RoomUtilities> roomUtilities = roomTypeUtilities.stream()
+                .map(utilId -> {
+                    return roomUtilitiesRepository.findById(utilId).orElseThrow(() -> new IllegalStateException("Không tìm thấy dịch vụ!"));
+                })
+                .toList();
+
+        roomType.setId(roomTypeId);
+        roomType.setHotelId(hotelId);
+        roomType.setRoomTypeAvatar(roomTypeAvatarUpload);
+        roomType.setCheckinTime(checkinTime);
+        roomType.setCheckoutTime(checkoutTime);
+        roomType.setRoomImagesById(roomImages);
+        roomType.setRoomBedsById(roomBeds);
+        roomType.setRoomUtilities(roomUtilities);
+
+        roomTypesRepository.save(roomType);
     }
+
 
 }

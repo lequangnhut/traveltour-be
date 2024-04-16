@@ -44,6 +44,10 @@ public class UserComments {
     @Column(name = "user_id")
     private int usersId;
 
+    @Basic
+    @Column(name = "order_id")
+    private String orderId;
+
     @ManyToOne
     @JsonBackReference
     @JoinColumn(name = "user_id", referencedColumnName = "id", nullable = false, insertable = false, updatable = false)

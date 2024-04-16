@@ -1,9 +1,11 @@
 package com.main.traveltour.restcontroller.customer.rating;
 
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.main.traveltour.dto.comment.UserCommentDto;
+import com.main.traveltour.dto.customer.rating.RatingResponseDto;
 import com.main.traveltour.entity.UserComments;
-import com.main.traveltour.enums.CategoryService;
 import com.main.traveltour.service.customer.UserCommentsService;
 import com.main.traveltour.utils.EntityDtoUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,6 +15,9 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.Objects;
+import java.util.Optional;
 
 @RestController
 @CrossOrigin(origins = "http://localhost:3000")
@@ -27,7 +32,7 @@ public class RatingCusAPI {
         try {
             UserComments userComments = EntityDtoUtils.convertToEntity(userCommentDto, UserComments.class);
             userCommentsService.insertUserComments(userComments);
-            return ResponseEntity.ok("Đánh giá dịch vụ thành công");
+            return ResponseEntity.ok("{\"message\": \"Bạn đã đánh giá dịch vụ thành công\"}");
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
@@ -38,7 +43,7 @@ public class RatingCusAPI {
         try {
             UserComments userComments = EntityDtoUtils.convertToEntity(userCommentDto, UserComments.class);
             userCommentsService.updateUserComments(userComments);
-            return ResponseEntity.ok("Đánh giá dịch vụ thành công");
+            return ResponseEntity.ok("{\"message\": \"Sửa đánh giá dịch vụ thành công\"}");
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
@@ -49,14 +54,14 @@ public class RatingCusAPI {
     public ResponseEntity<String> deleteUserComments(@RequestParam Integer id) {
         try {
             userCommentsService.deleteUserComments(id);
-            return ResponseEntity.ok("Xóa đánh giá thành công");
+            return ResponseEntity.ok("{\"message\": \"Xóa đánh giá dịch vụ thành công\"}");
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
 
     @GetMapping("customer/rating/rating-services/findCommentsByServiceId")
-    public ResponseEntity<Page<UserComments>> findCommentsByServiceId(
+    public ResponseEntity<RatingResponseDto> findCommentsByServiceId(
             @RequestParam String serviceId,
             @RequestParam(required = false, defaultValue = "DESC") String sortDirection,
             @RequestParam(required = false, defaultValue = "dateCreated") String sortBy,
@@ -73,6 +78,25 @@ public class RatingCusAPI {
             @RequestParam Integer id) {
         return ResponseEntity.ok(userCommentsService.findUserCommentsById(id));
 
+    }
+
+    @GetMapping("customer/rating/rating-services/findByOrderIdRating")
+    public ResponseEntity<String> findByOrderIdRating(
+            @RequestParam("orderId") String orderId) {
+        try {
+            Optional<UserComments> userCommentsOptional = userCommentsService.findByOrderIdRating(orderId);
+            ObjectMapper objectMapper = new ObjectMapper();
+
+            if (userCommentsOptional.isPresent()) {
+                UserComments userComments = userCommentsOptional.get();
+                String json = objectMapper.writeValueAsString(userComments);
+                return ResponseEntity.ok().body(json);
+            } else {
+                return ResponseEntity.ok().body("");
+            }
+        } catch (IllegalArgumentException | JsonProcessingException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
     }
 
 

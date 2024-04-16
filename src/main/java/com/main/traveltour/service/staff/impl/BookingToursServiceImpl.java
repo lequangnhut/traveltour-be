@@ -8,6 +8,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
+
 @Service
 public class BookingToursServiceImpl implements BookingTourService {
     @Autowired
@@ -36,5 +38,10 @@ public class BookingToursServiceImpl implements BookingTourService {
     @Override
     public Page<BookingTours> getAllByUserId(Integer orderStatus, String email, Pageable pageable) {
         return repo.findAllBookingToursByUserId(orderStatus, email, pageable);
+    }
+
+    @Override
+    public Optional<BookingTours> findByIdOptional(String id) {
+        return Optional.ofNullable(repo.findById(id));
     }
 }

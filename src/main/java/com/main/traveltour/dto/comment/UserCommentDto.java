@@ -13,4 +13,5 @@ public class UserCommentDto {
     private Integer star;
     private String content;
     private int usersId;
+    private String orderId;
 }

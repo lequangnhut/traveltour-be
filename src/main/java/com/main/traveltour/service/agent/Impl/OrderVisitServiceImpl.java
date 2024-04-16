@@ -8,6 +8,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
+
 @Service
 public class OrderVisitServiceImpl implements OrderVisitService {
 
@@ -37,5 +39,10 @@ public class OrderVisitServiceImpl implements OrderVisitService {
     @Override
     public Page<OrderVisits> findAllOrderVisitsWithSearch(String brandId, String searchTerm, Pageable pageable) {
         return orderVisitsRepository.findAllOrderVisitsWithSearch(brandId, searchTerm, pageable);
+    }
+
+    @Override
+    public Optional<OrderVisits> findByIdOptional(String id) {
+        return Optional.ofNullable(orderVisitsRepository.findById(id));
     }
 }

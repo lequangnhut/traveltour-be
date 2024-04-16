@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class HotelsTypeServiceImpl implements HotelsTypeService {
@@ -17,5 +18,10 @@ public class HotelsTypeServiceImpl implements HotelsTypeService {
     @Override
     public List<HotelTypes> findAllHotelType() {
         return hotelTypesRepository.findAll();
+    }
+
+    @Override
+    public Optional<HotelTypes> findById(Integer id) {
+        return hotelTypesRepository.findById(id);
     }
 }

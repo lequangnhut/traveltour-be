@@ -6,6 +6,8 @@ import com.main.traveltour.service.agent.AgenciesService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
+
 @Service
 public class AgenciesServiceImpl implements AgenciesService {
 
@@ -35,5 +37,10 @@ public class AgenciesServiceImpl implements AgenciesService {
     @Override
     public Agencies save(Agencies agencies) {
         return agenciesRepository.save(agencies);
+    }
+
+    @Override
+    public Optional<Agencies> findById(Integer id) {
+        return agenciesRepository.findById(id);
     }
 }
