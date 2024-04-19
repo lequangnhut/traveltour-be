@@ -1,5 +1,9 @@
 package com.main.traveltour.service.staff.impl;
 
+import com.main.traveltour.dto.agent.hotel.HotelRevenueDto;
+import com.main.traveltour.dto.agent.hotel.LastYearRevenueDto;
+import com.main.traveltour.dto.agent.hotel.RevenueThisYearDto;
+import com.main.traveltour.dto.agent.hotel.StatisticalBookingHotelDto;
 import com.main.traveltour.dto.customer.hotel.OrderDetailsHotelCustomerDto;
 import com.main.traveltour.entity.OrderHotels;
 import com.main.traveltour.enums.OrderStatus;
@@ -16,8 +20,8 @@ import org.springframework.stereotype.Service;
 import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class OrderHotelsServiceImpl implements OrderHotelsService {
@@ -101,6 +105,174 @@ public class OrderHotelsServiceImpl implements OrderHotelsService {
     @Override
     public Page<OrderHotels> findOrderByIds(List<String> orderIds, Pageable pageable) {
         return repo.findByIdIn(orderIds, pageable);
+    }
+
+    @Override
+    public List<Double> findStatisticalBookingHotel(Integer year, String hotelId) {
+        Objects.requireNonNull(year, "{\"message\": \"Không được bỏ trống dữ liệu\"}");
+        Objects.requireNonNull(hotelId, "{\"message\": \"Không được bỏ trống dữ liệu\"}");
+
+        List<Double> results = new ArrayList<>(Arrays.asList(0.0, 0.0, 0.0, 0.0, 0.0, 0.0));
+        List<Object[]> statisticalBookingHotelDtos = repo.findStatisticalBookingHotel(year, hotelId);
+
+        for (Object[] order : statisticalBookingHotelDtos) {
+            Integer orderStatus = (Integer) order[2];
+            BigDecimal orderCountPercentage = (BigDecimal) order[4];
+
+            if (orderStatus >= 0 && orderStatus <= 5) {
+                results.set(orderStatus, Double.valueOf(String.valueOf(orderCountPercentage)));
+            }
+        }
+
+        return results;
+    }
+
+
+    @Override
+    public List<StatisticalBookingHotelDto> findStatisticalRoomTypeHotel(Integer year, String hotelId) {
+        Objects.requireNonNull(year, "{\"message\": \"Không được bỏ trống dữ liệu\"}");
+        Objects.requireNonNull(hotelId, "{\"message\": \"Không được bỏ trống dữ liệu\"}");
+
+        List<StatisticalBookingHotelDto> result = new ArrayList<>();
+        List<Object[]> statisticalRoomTypeHotel = repo.statisticalRoomTypeHotel(year, hotelId);
+
+        // Tạo mảng 12 phần tử để lưu thông tin của từng tháng
+        StatisticalBookingHotelDto[] monthlyStats = new StatisticalBookingHotelDto[12];
+        Arrays.fill(monthlyStats, null);
+
+        for (Object[] object : statisticalRoomTypeHotel) {
+            String id = (String) object[0];
+            String roomTypeName = (String) object[1];
+            Integer years = (Integer) object[2];
+            Integer month = (Integer) object[3];
+            Integer orderStatus = (Integer) object[4];
+            Long countRoomType = (Long) object[5];
+
+            if (month >= 1 && month <= 12) {
+                if (monthlyStats[month - 1] == null) {
+                    monthlyStats[month - 1] = StatisticalBookingHotelDto.builder()
+                            .id(id)
+                            .roomTypeName(roomTypeName)
+                            .year(years)
+                            .month(month)
+                            .orderStatus(orderStatus)
+                            .countRoomType(Math.toIntExact(countRoomType))
+                            .build();
+                } else {
+                    StatisticalBookingHotelDto existingStat = monthlyStats[month - 1];
+                    existingStat.setCountRoomType(existingStat.getCountRoomType() + Math.toIntExact(countRoomType));
+                }
+            }
+        }
+
+        for (int i = 0; i < 12; i++) {
+            if (monthlyStats[i] == null) {
+                result.add(StatisticalBookingHotelDto.builder()
+                        .id("")
+                        .roomTypeName("")
+                        .year(year)
+                        .month(i + 1)
+                        .orderStatus(0)
+                        .countRoomType(0)
+                        .build());
+            } else {
+                result.add(monthlyStats[i]);
+            }
+        }
+
+        return result;
+    }
+
+    @Override
+    public HotelRevenueDto findHotelRevenueStatistics(Integer year, String hotelId) {
+        Objects.requireNonNull(year, "{\"message\": \"Không được bỏ trống dữ liệu\"}");
+        Objects.requireNonNull(hotelId, "{\"message\": \"Không được bỏ trống dữ liệu\"}");
+        HotelRevenueDto hotelRevenueDto = new HotelRevenueDto();
+
+        List<RevenueThisYearDto> revenueThisYearDtos = new ArrayList<>();
+        List<LastYearRevenueDto> lastYearRevenueDtos = new ArrayList<>();
+
+        RevenueThisYearDto[] monthlyRevenue = new RevenueThisYearDto[12];
+        LastYearRevenueDto[] monthlyLastRevenue = new LastYearRevenueDto[12];
+
+        Arrays.fill(monthlyRevenue, null);
+        Arrays.fill(monthlyLastRevenue, null);
+
+        List<Object[]> revenues = repo.findHotelRevenueStatistics(year, hotelId);
+        List<Object[]> lastRevenues = repo.findHotelRevenueStatistics(year - 1, hotelId);
+
+        for (Object[] object : revenues) {
+            Integer years = (Integer) object[0];
+            Integer month = (Integer) object[1];
+            BigDecimal totalRoomType = (BigDecimal) object[2];
+
+            if (month >= 1 && month <= 12) {
+                if (monthlyRevenue[month - 1] == null) {
+                    monthlyRevenue[month - 1] = RevenueThisYearDto.builder()
+                            .year(years)
+                            .month(month)
+                            .totalRoomType(totalRoomType)
+                            .build();
+                } else {
+                    RevenueThisYearDto existingStat = monthlyRevenue[month - 1];
+                    existingStat.setTotalRoomType(existingStat.getTotalRoomType().add(totalRoomType));
+                }
+            }
+        }
+
+        for (int i = 0; i < 12; i++) {
+            if (monthlyRevenue[i] == null) {
+                revenueThisYearDtos.add(RevenueThisYearDto.builder()
+                        .year(year)
+                        .month(i + 1)
+                        .totalRoomType(BigDecimal.valueOf(0.0))
+                        .build());
+            } else {
+                revenueThisYearDtos.add(monthlyRevenue[i]);
+            }
+        }
+
+        for (Object[] object : lastRevenues) {
+            Integer years = (Integer) object[0];
+            Integer month = (Integer) object[1];
+            BigDecimal totalRoomType = (BigDecimal) object[2];
+
+            if (month >= 1 && month <= 12) {
+                if (monthlyLastRevenue[month - 1] == null) {
+                    monthlyLastRevenue[month - 1] = LastYearRevenueDto.builder()
+                            .year(years)
+                            .month(month)
+                            .totalRoomType(totalRoomType)
+                            .build();
+                } else {
+                    LastYearRevenueDto existingStat = monthlyLastRevenue[month - 1];
+                    existingStat.setTotalRoomType(existingStat.getTotalRoomType().add(totalRoomType));
+                }
+            }
+        }
+
+        for (int i = 0; i < 12; i++) {
+            if (monthlyLastRevenue[i] == null) {
+                lastYearRevenueDtos.add(LastYearRevenueDto.builder()
+                        .year(year - 1)
+                        .month(i + 1)
+                        .totalRoomType(BigDecimal.valueOf(0.0))
+                        .build());
+            } else {
+                lastYearRevenueDtos.add(monthlyLastRevenue[i]);
+            }
+        }
+
+        List<BigDecimal> arrRevenue = revenueThisYearDtos.stream()
+                .map(RevenueThisYearDto::getTotalRoomType).collect(Collectors.toList());
+
+        List<BigDecimal> arrLastRevenue = lastYearRevenueDtos.stream()
+                .map(LastYearRevenueDto::getTotalRoomType).collect(Collectors.toList());
+
+        return HotelRevenueDto.builder()
+                .revenue(arrRevenue)
+                .lastYearRevenue(arrLastRevenue)
+                .build();
     }
 
 

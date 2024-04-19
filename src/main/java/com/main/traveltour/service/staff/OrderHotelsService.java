@@ -1,5 +1,7 @@
 package com.main.traveltour.service.staff;
 
+import com.main.traveltour.dto.agent.hotel.HotelRevenueDto;
+import com.main.traveltour.dto.agent.hotel.StatisticalBookingHotelDto;
 import com.main.traveltour.dto.customer.hotel.OrderDetailsHotelCustomerDto;
 import com.main.traveltour.dto.customer.hotel.OrderHotelCustomerDto;
 import com.main.traveltour.entity.BookingTours;
@@ -26,4 +28,9 @@ public interface OrderHotelsService {
     Optional<OrderHotels> findByIdOptional(String orderId);
     Page<OrderHotels> findOrderByIds(List<String> orderIds, Pageable pageable);
 
+    List<Double> findStatisticalBookingHotel(Integer year, String hotelId);
+
+    List<StatisticalBookingHotelDto> findStatisticalRoomTypeHotel(Integer year, String hotelId);
+
+    HotelRevenueDto findHotelRevenueStatistics(Integer year, String hotelId);
 }
