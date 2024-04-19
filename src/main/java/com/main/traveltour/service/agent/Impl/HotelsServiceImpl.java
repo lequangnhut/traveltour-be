@@ -55,7 +55,7 @@ public class HotelsServiceImpl implements HotelsService {
 
     @Override
     public List<Hotels> findAllByAgencyId(int agencyId) {
-        return hotelsRepository.findAllByAgenciesIdAndIsDeleted(agencyId, true);
+        return hotelsRepository.findAllByAgenciesIdAndIsDeleted(agencyId, false);
     }
 
     @Override
@@ -161,7 +161,7 @@ public class HotelsServiceImpl implements HotelsService {
                 .ward(hotels.getWard())
                 .address(hotels.getAddress())
                 .dateCreated(Timestamp.valueOf(LocalDateTime.now()))
-                .isAccepted(true)
+                .isAccepted(false   )
                 .isActive(true)
                 .isDeleted(false)
                 .hotelAvatar(fileUploadResize.uploadFileResize(avatarHotel))
@@ -191,6 +191,7 @@ public class HotelsServiceImpl implements HotelsService {
                 .checkinTime(checkinTime)
                 .checkoutTime(checkoutTime)
                 .isDeleted(false)
+                .isActive(1)
                 .roomTypeAvatar(roomTypeAvatar)
                 .roomTypeDescription(roomTypes.getRoomTypeDescription())
                 .hotelsByHotelId(hotel)
