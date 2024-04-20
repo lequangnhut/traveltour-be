@@ -1,5 +1,7 @@
 package com.main.traveltour.restcontroller.agent.hotel;
 
+import com.main.traveltour.dto.agent.hotel.order.OrderHotelDto;
+import com.main.traveltour.dto.customer.infomation.OrderHotelsDto;
 import com.main.traveltour.entity.OrderHotelDetails;
 import com.main.traveltour.entity.OrderHotels;
 import com.main.traveltour.entity.ResponseObject;
@@ -11,9 +13,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @CrossOrigin(origins = "http://localhost:3000")
@@ -62,5 +66,9 @@ public class OrderHotelAgentAPI {
         return new ResponseObject("200", "success", orderHotels);
     }
 
-
+    @GetMapping("agent/order-hotel/findOrderHotelById")
+    public ResponseEntity<OrderHotelDto> findOrderHotelById(@RequestParam("orderId") String orderId) {
+        OrderHotelDto orderHotelsDto = orderHotelsService.findByOrderHotelId(orderId);
+        return ResponseEntity.ok(orderHotelsDto);
+    }
 }

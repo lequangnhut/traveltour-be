@@ -7,6 +7,7 @@ import com.main.traveltour.service.agent.RoomImageService;
 import com.main.traveltour.service.agent.RoomTypeService;
 import com.main.traveltour.service.utils.FileUploadResize;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.DefaultTransactionDefinition;
@@ -74,6 +75,15 @@ public class RoomImageAPI {
         }
     }
 
+    @DeleteMapping("agent/room-images/deleteImageRoomTypes")
+    public ResponseEntity<String> deleteImageRoomTypes(
+            @RequestParam(required = false) List<MultipartFile> listImages,
+            @RequestParam(required = false) List<Integer> imageId,
+            @RequestParam(required = false) String roomTypeId
+    ) {
+        roomImageService.saveAndDeleteImage(listImages, imageId, roomTypeId);
+        return null;
+    }
     /**
      * Thêm hình ảnh cho phòng
      * @param roomTypeId id của phòng
@@ -94,7 +104,6 @@ public class RoomImageAPI {
             if (roomTypes.isPresent()) {
                 RoomTypes roomType = roomTypes.get();
 
-                // Lặp qua từng ảnh trong danh sách và thêm vào danh sách roomImagesById
                 for (MultipartFile roomTypeImage : listRoomTypeImg) {
                     RoomImages roomImages = new RoomImages();
                     roomImages.setRoomTypeId(roomTypeId);
