@@ -33,4 +33,6 @@ public interface OrderHotelsService {
     List<StatisticalBookingHotelDto> findStatisticalRoomTypeHotel(Integer year, String hotelId);
 
     HotelRevenueDto findHotelRevenueStatistics(Integer year, String hotelId);
+
+    List<Integer> getAllOrderHotelYear();
 }

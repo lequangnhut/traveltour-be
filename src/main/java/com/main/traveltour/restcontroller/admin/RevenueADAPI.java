@@ -95,7 +95,7 @@ public class RevenueADAPI {
 
     @GetMapping("/admin/revenue/get-all-year-columns")
     public ResponseObject getAllYearColumn() {
-        List<Integer> getAllYear = revenueServiceAD.getAllYear();
+        List<Integer> getAllYear = revenueServiceAD.getAllYearColumn();
         if (getAllYear.isEmpty()) {
             return new ResponseObject("404", "Không tìm thấy dữ liệu", null);
         } else {
@@ -104,7 +104,7 @@ public class RevenueADAPI {
     }
     @GetMapping("/admin/revenue/get-all-year-pie")
     public ResponseObject getAllYearPie() {
-        List<Integer> getAllYear = revenueServiceAD.getAllYear();
+        List<Integer> getAllYear = revenueServiceAD.getAllYearPie();
         if (getAllYear.isEmpty()) {
             return new ResponseObject("404", "Không tìm thấy dữ liệu", null);
         } else {
@@ -135,7 +135,8 @@ public class RevenueADAPI {
 
     private void addPercentageIfNotZero(Map<String, Double> percentages, String key, long value, long totalServices) {
         double percentage = totalServices != 0 ? ((double) value / totalServices) * 100 : 0;
-        percentages.put(key, percentage);
+        double roundedPercentage = Math.round(percentage * 10) / 10.0;
+        percentages.put(key, roundedPercentage);
     }
 
 }

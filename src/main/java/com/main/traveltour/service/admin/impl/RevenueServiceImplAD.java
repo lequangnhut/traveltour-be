@@ -19,7 +19,12 @@ public class RevenueServiceImplAD implements RevenueServiceAD {
     }
 
     @Override
-    public List<Integer> getAllYear() {
-        return repo.getAllYear();
+    public List<Integer> getAllYearColumn() {
+        return repo.getAllYearColumn();
+    }
+
+    @Override
+    public List<Integer> getAllYearPie() {
+        return repo.getAllYearPie();
     }
 }

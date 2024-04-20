@@ -275,5 +275,9 @@ public class OrderHotelsServiceImpl implements OrderHotelsService {
                 .build();
     }
 
+    @Override
+    public List<Integer> getAllOrderHotelYear() {
+        return repo.getAllOrderHotelYear();
+    }
 
 }

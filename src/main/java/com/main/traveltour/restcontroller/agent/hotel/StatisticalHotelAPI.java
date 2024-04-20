@@ -2,6 +2,7 @@ package com.main.traveltour.restcontroller.agent.hotel;
 
 import com.main.traveltour.dto.agent.hotel.HotelRevenueDto;
 import com.main.traveltour.dto.agent.hotel.StatisticalBookingHotelDto;
+import com.main.traveltour.entity.ResponseObject;
 import com.main.traveltour.service.staff.OrderHotelsService;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
@@ -45,5 +46,15 @@ public class StatisticalHotelAPI {
     ) {
         HotelRevenueDto hotelRevenueDto = orderHotelsService.findHotelRevenueStatistics(year, hotelId);
         return ResponseEntity.ok(hotelRevenueDto);
+    }
+
+    @GetMapping("agent/hotel/statistical/getAllHotelYearPie")
+    public ResponseObject getAllYear() {
+        List<Integer> getAllYear = orderHotelsService.getAllOrderHotelYear();
+        if (getAllYear.isEmpty()) {
+            return new ResponseObject("404", "Không tìm thấy dữ liệu", null);
+        } else {
+            return new ResponseObject("200", "Đã tìm thấy dữ liệu", getAllYear);
+        }
     }
 }

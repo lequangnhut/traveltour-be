@@ -74,4 +74,7 @@ public interface OrderHotelsRepository extends JpaRepository<OrderHotels, Intege
             "  AND order_status = 3\n" +
             "GROUP BY YEAR(o.date_created), MONTH(o.date_created), rt.id", nativeQuery = true)
     List<Object[]> findHotelRevenueStatistics(@Param("year") Integer year, @Param("hotelId") String hotelId);
+
+    @Query("SELECT DISTINCT YEAR(oh.dateCreated) FROM OrderHotels oh ORDER BY YEAR(oh.dateCreated) DESC")
+    List<Integer> getAllOrderHotelYear();
 }

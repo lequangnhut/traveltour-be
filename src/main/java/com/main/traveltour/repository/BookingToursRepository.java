@@ -77,8 +77,10 @@ public interface BookingToursRepository extends JpaRepository<BookingTours, Inte
         return revenues;
     }
 
-
     @Query("SELECT DISTINCT YEAR(bt.dateCreated) FROM BookingTours bt ORDER BY YEAR(bt.dateCreated) DESC")
-    List<Integer> getAllYear();
+    List<Integer> getAllYearColumn();
+
+    @Query("SELECT DISTINCT YEAR(a.dateCreated) FROM Agencies a ORDER BY YEAR(a.dateCreated) DESC")
+    List<Integer> getAllYearPie();
 
 }

@@ -7,5 +7,7 @@ import java.util.List;
 public interface RevenueServiceAD {
     List<BigDecimal> revenueOf12MonthsOfTheYearFromTourBooking(Integer year);
 
-    List<Integer> getAllYear();
+    List<Integer> getAllYearColumn();
+
+    List<Integer> getAllYearPie();
 }
