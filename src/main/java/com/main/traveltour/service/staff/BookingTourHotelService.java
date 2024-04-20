@@ -21,4 +21,7 @@ public interface BookingTourHotelService {
 
     Page<Hotels> findHotelByUserId(Integer userId, Integer orderHotelStatus, Pageable pageable);
 
+    Page<Hotels> findHotelByTourDetailIdForGuide(String tourDetailId, Pageable pageable, String searchTerm);
+
+
 }

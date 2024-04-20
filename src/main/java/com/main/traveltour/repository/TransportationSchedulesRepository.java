@@ -210,4 +210,23 @@ public interface TransportationSchedulesRepository extends JpaRepository<Transpo
 
     @Query("SELECT COUNT(ts) FROM TransportationSchedules ts")
     Long countTransportationSchedules();
+
+    @Query("SELECT ts FROM TransportationSchedules ts " +
+            "JOIN ts.transportationsByTransportationId t " +
+            "JOIN ts.orderTransportationsById ot " +
+            "JOIN ot.tourDetails td " +
+            "WHERE (td.id = :tourDetailId) AND " +
+            "((ot.orderStatus = 0) OR (ot.orderStatus = 1)) AND " +
+            "(:searchTerm IS NULL OR (UPPER(ts.fromLocation) LIKE %:searchTerm% OR " +
+            "UPPER(ts.toLocation) LIKE %:searchTerm% OR " +
+            "UPPER(ts.transportationsByTransportationId.licensePlate) LIKE %:searchTerm% OR " +
+            "CAST(ts.bookedSeat AS string) LIKE %:searchTerm% OR " +
+            "UPPER(ts.transportationsByTransportationId.transportationBrandsByTransportationBrandId.transportationBrandName) LIKE %:searchTerm% OR " +
+            "UPPER(ts.transportationsByTransportationId.transportationTypesByTransportationTypeId.transportationTypeName) LIKE %:searchTerm% OR " +
+            "CAST(ts.transportationsByTransportationId.amountSeat AS string) LIKE %:searchTerm% OR " +
+            "CAST(ts.unitPrice AS string) LIKE %:searchTerm%)) " +
+            "GROUP BY ts.id")
+    Page<TransportationSchedules> findTransportationSchedulesByTourDetailIdForGuide(@Param("tourDetailId") String tourDetailId,
+                                                                            @Param("searchTerm") String searchTerm,
+                                                                            Pageable pageable);
 }

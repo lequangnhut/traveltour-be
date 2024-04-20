@@ -136,4 +136,21 @@ public interface VisitLocationsRepository extends JpaRepository<VisitLocations, 
             "AND  vs.isActive = TRUE AND vs.isAccepted = TRUE " +
             "AND YEAR(vs.dateCreated) = :year ")
     Long countVisitLocationsChart(@Param("year") Integer year);
+
+    @Query("SELECT vl FROM VisitLocations vl " +
+            "JOIN vl.orderVisitsById ov " +
+            "JOIN ov.orderVisitDetailsById ovd " +
+            "JOIN ov.tourDetails td " +
+            "WHERE td.id = :tourDetailId AND " +
+            "((ov.orderStatus = 0) OR (ov.orderStatus = 1)) AND " +
+            "(:searchTerm IS NULL OR (UPPER(vl.visitLocationName) LIKE CONCAT('%', UPPER(:searchTerm), '%') OR " +
+            "UPPER(vl.province) LIKE CONCAT('%', UPPER(:searchTerm), '%') OR " +
+            "UPPER(vl.district) LIKE CONCAT('%', UPPER(:searchTerm), '%') OR " +
+            "UPPER(vl.ward) LIKE CONCAT('%', UPPER(:searchTerm), '%') OR " +
+            "UPPER(vl.address) LIKE CONCAT('%', UPPER(:searchTerm), '%') OR " +
+            "UPPER(vl.phone) LIKE CONCAT('%', UPPER(:searchTerm), '%'))) " +
+            "GROUP BY vl.id")
+    Page<VisitLocations> findVisitByTourDetailIdForGuide(@Param("tourDetailId") String tourDetailId,
+                                                 @Param("searchTerm") String searchTerm,
+                                                 Pageable pageable);
 }

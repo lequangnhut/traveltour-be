@@ -25,4 +25,7 @@ public interface BookingTourVisitService {
 
     void update(OrderVisits orderVisits);
 
+    Page<VisitLocations> findVisitByTourDetailIdGuide(String tourDetailId, String searchTerm, Pageable pageable);
+
+    List<OrderVisitDetails> findOrderVisitDetailByTourDetailIdAndVisitIdGuide(String tourDetailId, String visitId);
 }

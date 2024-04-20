@@ -1,5 +1,6 @@
 package com.main.traveltour.repository;
 
+import com.main.traveltour.entity.Hotels;
 import com.main.traveltour.entity.TourDetails;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -118,5 +119,16 @@ public interface TourDetailsRepository extends JpaRepository<TourDetails, Intege
             "   ON MONTHS.month = ToursCount.month " +
             "   ORDER BY MONTHS.month", nativeQuery = true)
     List<Integer> countCompletedToursByYearAndTourType(Integer tourTypeId, Integer year);
+
+    @Query("SELECT t FROM TourDetails t " +
+            "WHERE t.guideId = :guideId AND t.tourDetailStatus = :tourStatus " +
+            "AND (:searchTerm IS NULL OR " +
+            "(UPPER(t.toursByTourId.tourName) LIKE %:searchTerm% OR " +
+            "UPPER(t.toursByTourId.tourTypesByTourTypeId.tourTypeName) LIKE %:searchTerm% OR " +
+            "UPPER(t.tourDetailNotes) LIKE %:searchTerm% OR " +
+            "UPPER(t.fromLocation) LIKE %:searchTerm% OR " +
+            "UPPER(t.toLocation) LIKE %:searchTerm%))")
+    Page<TourDetails> findTourByGuideAndStatus(@Param("guideId") Integer guideId, @Param("tourStatus") Integer tourStatus, @Param("searchTerm") String searchTerm, Pageable pageable);
+
 
 }

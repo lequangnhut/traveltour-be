@@ -43,4 +43,14 @@ public class BookingTourVisitServiceImpl implements BookingTourVisitService {
     public void update(OrderVisits orderVisits) {
         orderVisitsRepository.save(orderVisits);
     }
+
+    @Override
+    public Page<VisitLocations> findVisitByTourDetailIdGuide(String tourDetailId, String searchTerm, Pageable pageable) {
+        return visitLocationsRepository.findVisitByTourDetailIdForGuide(tourDetailId, searchTerm, pageable);
+    }
+
+    @Override
+    public List<OrderVisitDetails> findOrderVisitDetailByTourDetailIdAndVisitIdGuide(String tourDetailId, String visitId) {
+        return orderVisitDetailsRepository.findOrderVisitDetailByTourDetailIdAndVisitIdForGuide(tourDetailId, visitId);
+    }
 }

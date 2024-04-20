@@ -11,11 +11,11 @@ import java.util.List;
 public interface BookingTourTransportationService {
 
     Page<TransportationSchedules> findTransportationSchedulesByTourDetailId
-            (String tourDetailId,
-             Integer orderStatus,
-             String searchTerm,
-             Pageable pageable);
+            (String tourDetailId, Integer orderStatus, String searchTerm, Pageable pageable);
 
     void update(OrderTransportations orderTransportations);
+
+    Page<TransportationSchedules> findTransportationSchedulesByTourDetailIdForGuide
+            (String tourDetailId, String searchTerm, Pageable pageable);
 
 }

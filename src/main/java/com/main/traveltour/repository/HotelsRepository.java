@@ -127,4 +127,21 @@ public interface HotelsRepository extends JpaRepository<Hotels, String> {
     Long countHotelsChart(@Param("year") Integer year);
 
     List<Hotels> findAllByAgenciesIdAndIsDeleted(Integer agentsId, boolean isDeleted);
+
+    @Query("SELECT h FROM Hotels h " +
+            "JOIN h.roomTypesById rt " +
+            "JOIN rt.orderHotelDetailsById ohd " +
+            "JOIN ohd.orderHotelsByOrderHotelId oh " +
+            "JOIN oh.tourDetails td " +
+            "WHERE (td.id = :tourDetailId) AND " +
+            "((oh.orderStatus = 0) OR (oh.orderStatus = 1)) AND " +
+            "(:searchTerm IS NULL OR (UPPER(h.hotelName) LIKE %:searchTerm% OR " +
+            "UPPER(h.province) LIKE %:searchTerm% OR " +
+            "UPPER(h.district) LIKE %:searchTerm% OR " +
+            "UPPER(h.ward) LIKE %:searchTerm% OR " +
+            "UPPER(h.address) LIKE %:searchTerm% OR " +
+            "UPPER(h.phone) LIKE %:searchTerm% )) " +
+            "GROUP BY h.id " +
+            "ORDER BY h.dateCreated DESC")
+    Page<Hotels> findHotelByTourDetailIdForGuide(@Param("tourDetailId") String tourDetailId, Pageable pageable, String searchTerm);
 }

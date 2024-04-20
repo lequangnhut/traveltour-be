@@ -50,4 +50,9 @@ public class BookingTourHotelServiceImpl implements BookingTourHotelService {
     public Page<Hotels> findHotelByUserId(Integer userId, Integer orderHotelStatus, Pageable pageable) {
         return hotelsRepository.findHotelByUserId(userId, orderHotelStatus, pageable);
     }
+
+    @Override
+    public Page<Hotels> findHotelByTourDetailIdForGuide(String tourDetailId, Pageable pageable, String searchTerm) {
+        return hotelsRepository.findHotelByTourDetailIdForGuide(tourDetailId, pageable, searchTerm);
+    }
 }

@@ -120,4 +120,10 @@ public class TourDetailsServiceImpl implements TourDetailsService {
         return tourDetailsRepository.countTourDetails();
     }
 
+    @Override
+    public Page<TourDetails> findTourGuide(Integer guideId, Integer tourStatus, String searchTerm, Pageable pageable) {
+        return tourDetailsRepository.findTourByGuideAndStatus(guideId, tourStatus, searchTerm, pageable);
+    }
+
+
 }
