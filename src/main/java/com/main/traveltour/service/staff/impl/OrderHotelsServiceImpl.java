@@ -4,13 +4,18 @@ import com.main.traveltour.dto.agent.hotel.HotelRevenueDto;
 import com.main.traveltour.dto.agent.hotel.LastYearRevenueDto;
 import com.main.traveltour.dto.agent.hotel.RevenueThisYearDto;
 import com.main.traveltour.dto.agent.hotel.StatisticalBookingHotelDto;
+import com.main.traveltour.dto.agent.hotel.order.OrderHotelDetailsDto;
+import com.main.traveltour.dto.agent.hotel.order.OrderHotelDto;
 import com.main.traveltour.dto.customer.hotel.OrderDetailsHotelCustomerDto;
+import com.main.traveltour.entity.OrderHotelDetails;
 import com.main.traveltour.entity.OrderHotels;
 import com.main.traveltour.enums.OrderStatus;
 import com.main.traveltour.entity.RoomTypes;
 import com.main.traveltour.repository.OrderHotelsRepository;
 import com.main.traveltour.service.agent.RoomTypeService;
+import com.main.traveltour.service.staff.OrderHotelDetailService;
 import com.main.traveltour.service.staff.OrderHotelsService;
+import com.main.traveltour.utils.EntityDtoUtils;
 import com.main.traveltour.utils.GenerateOrderCode;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -26,19 +31,20 @@ import java.util.stream.Collectors;
 @Service
 public class OrderHotelsServiceImpl implements OrderHotelsService {
     @Autowired
-    OrderHotelsRepository repo;
-
+    OrderHotelsRepository orderHotelsRepository;
+    @Autowired
+    OrderHotelDetailService orderHotelDetailService;
     @Autowired
     RoomTypeService roomTypeService;
 
     @Override
     public String maxCodeTourId() {
-        return repo.maxCodeTourId();
+        return orderHotelsRepository.maxCodeTourId();
     }
 
     @Override
     public OrderHotels save(OrderHotels orderHotels) {
-        return repo.save(orderHotels);
+        return orderHotelsRepository.save(orderHotels);
     }
 
     @Override
@@ -60,7 +66,7 @@ public class OrderHotelsServiceImpl implements OrderHotelsService {
         orderHotels.setOrderCode(orderHotels.getId());
         orderHotels.setOrderStatus(OrderStatus.PENDING.getValue()); // Đơn hàng chưa thanh toán
         orderHotels.setDateCreated(Timestamp.valueOf(LocalDateTime.now()));
-        repo.save(orderHotels);
+        orderHotelsRepository.save(orderHotels);
     }
 
     @Override
@@ -83,28 +89,28 @@ public class OrderHotelsServiceImpl implements OrderHotelsService {
         orderHotels.setOrderCode(orderHotels.getId());
         orderHotels.setOrderStatus(OrderStatus.PROCESSING.getValue()); // Đơn hàng chờ xác nhận
         orderHotels.setDateCreated(Timestamp.valueOf(LocalDateTime.now()));
-        repo.save(orderHotels);
+        orderHotelsRepository.save(orderHotels);
     }
 
 
     @Override
     public Page<OrderHotels> getAllByUserId(Integer orderStatus, String email, Pageable pageable) {
-        return repo.findAllBookingHotelsByUserId(orderStatus, email, pageable);
+        return orderHotelsRepository.findAllBookingHotelsByUserId(orderStatus, email, pageable);
     }
 
     @Override
     public OrderHotels findById(String id) {
-        return repo.findById(id);
+        return orderHotelsRepository.findById(id);
     }
 
     @Override
     public Optional<OrderHotels> findByIdOptional(String orderId) {
-        return Optional.ofNullable(repo.findById(orderId));
+        return Optional.ofNullable(orderHotelsRepository.findById(orderId));
     }
 
     @Override
     public Page<OrderHotels> findOrderByIds(List<String> orderIds, Pageable pageable) {
-        return repo.findByIdIn(orderIds, pageable);
+        return orderHotelsRepository.findByIdIn(orderIds, pageable);
     }
 
     @Override
@@ -113,7 +119,7 @@ public class OrderHotelsServiceImpl implements OrderHotelsService {
         Objects.requireNonNull(hotelId, "{\"message\": \"Không được bỏ trống dữ liệu\"}");
 
         List<Double> results = new ArrayList<>(Arrays.asList(0.0, 0.0, 0.0, 0.0, 0.0, 0.0));
-        List<Object[]> statisticalBookingHotelDtos = repo.findStatisticalBookingHotel(year, hotelId);
+        List<Object[]> statisticalBookingHotelDtos = orderHotelsRepository.findStatisticalBookingHotel(year, hotelId);
 
         for (Object[] order : statisticalBookingHotelDtos) {
             Integer orderStatus = (Integer) order[2];
@@ -127,6 +133,26 @@ public class OrderHotelsServiceImpl implements OrderHotelsService {
         return results;
     }
 
+    @Override
+    public OrderHotelDto findByOrderHotelId(String orderId) {
+        Objects.requireNonNull(orderId, "{\"message: \" \"Không được bỏ trống mã đơn hàng\"}");
+        OrderHotels orderHotels = orderHotelsRepository.findById(orderId);
+        List<OrderHotelDetails> orderHotelDetails = orderHotelDetailService.findByOrderHotelId(orderId);
+
+        OrderHotelDto orderHotelDto = EntityDtoUtils.convertToDto(orderHotels, OrderHotelDto.class);
+        List<OrderHotelDetailsDto> orderHotelDetailsDtos = EntityDtoUtils.convertToDtoList(orderHotelDetails, OrderHotelDetailsDto.class);
+        orderHotelDetailsDtos.stream()
+                .map(orderHotelDetail -> {
+                    RoomTypes roomTypes = roomTypeService.findRoomTypeById(orderHotelDetail.getRoomTypeId()).orElseThrow(() -> new IllegalStateException("{ \"message: \" \"Không tìm thấy loại phòng\"}"));
+                    orderHotelDetail.setRoomTypesByRoomTypeId(roomTypes);
+                    return orderHotelDetail;
+                });
+        orderHotelDto.setOrderHotelDetailsById(orderHotelDetails);
+
+
+        return orderHotelDto;
+    }
+
 
     @Override
     public List<StatisticalBookingHotelDto> findStatisticalRoomTypeHotel(Integer year, String hotelId) {
@@ -134,7 +160,7 @@ public class OrderHotelsServiceImpl implements OrderHotelsService {
         Objects.requireNonNull(hotelId, "{\"message\": \"Không được bỏ trống dữ liệu\"}");
 
         List<StatisticalBookingHotelDto> result = new ArrayList<>();
-        List<Object[]> statisticalRoomTypeHotel = repo.statisticalRoomTypeHotel(year, hotelId);
+        List<Object[]> statisticalRoomTypeHotel = orderHotelsRepository.statisticalRoomTypeHotel(year, hotelId);
 
         // Tạo mảng 12 phần tử để lưu thông tin của từng tháng
         StatisticalBookingHotelDto[] monthlyStats = new StatisticalBookingHotelDto[12];
@@ -198,8 +224,8 @@ public class OrderHotelsServiceImpl implements OrderHotelsService {
         Arrays.fill(monthlyRevenue, null);
         Arrays.fill(monthlyLastRevenue, null);
 
-        List<Object[]> revenues = repo.findHotelRevenueStatistics(year, hotelId);
-        List<Object[]> lastRevenues = repo.findHotelRevenueStatistics(year - 1, hotelId);
+        List<Object[]> revenues = orderHotelsRepository.findHotelRevenueStatistics(year, hotelId);
+        List<Object[]> lastRevenues = orderHotelsRepository.findHotelRevenueStatistics(year - 1, hotelId);
 
         for (Object[] object : revenues) {
             Integer years = (Integer) object[0];

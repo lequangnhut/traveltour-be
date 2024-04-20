@@ -2,6 +2,7 @@ package com.main.traveltour.service.staff;
 
 import com.main.traveltour.dto.agent.hotel.HotelRevenueDto;
 import com.main.traveltour.dto.agent.hotel.StatisticalBookingHotelDto;
+import com.main.traveltour.dto.agent.hotel.order.OrderHotelDto;
 import com.main.traveltour.dto.customer.hotel.OrderDetailsHotelCustomerDto;
 import com.main.traveltour.dto.customer.hotel.OrderHotelCustomerDto;
 import com.main.traveltour.entity.BookingTours;
@@ -35,4 +36,6 @@ public interface OrderHotelsService {
     HotelRevenueDto findHotelRevenueStatistics(Integer year, String hotelId);
 
     List<Integer> getAllOrderHotelYear();
+
+    OrderHotelDto findByOrderHotelId(String orderId);
 }
