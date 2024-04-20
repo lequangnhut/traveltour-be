@@ -303,7 +303,7 @@ public class OrderHotelsServiceImpl implements OrderHotelsService {
 
     @Override
     public List<Integer> getAllOrderHotelYear() {
-        return repo.getAllOrderHotelYear();
+        return orderHotelsRepository.getAllOrderHotelYear();
     }
 
 }

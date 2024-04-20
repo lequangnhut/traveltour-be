@@ -30,4 +30,9 @@ public class BookingTourTransportationServiceImpl implements BookingTourTranspor
     public void update(OrderTransportations orderTransportations) {
         orderTransportationsRepository.save(orderTransportations);
     }
+
+    @Override
+    public Page<TransportationSchedules> findTransportationSchedulesByTourDetailIdForGuide(String tourDetailId, String searchTerm, Pageable pageable) {
+        return transportationSchedulesRepository.findTransportationSchedulesByTourDetailIdForGuide(tourDetailId, searchTerm, pageable);
+    }
 }

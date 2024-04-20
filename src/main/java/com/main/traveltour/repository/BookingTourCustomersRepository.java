@@ -31,9 +31,10 @@ public interface BookingTourCustomersRepository extends JpaRepository<BookingTou
 
     @Query("SELECT btc FROM BookingTourCustomers btc " +
             "JOIN btc.bookingToursByBookingTourId bt " +
-            "WHERE (bt.tourDetailId = :tourDetailId)")
+            "WHERE (bt.tourDetailId = :tourDetailId) " +
+            "ORDER BY CASE WHEN LOCATE(' ', btc.customerName) > 0 THEN SUBSTRING(btc.customerName, LENGTH(btc.customerName) - LOCATE(' ', REVERSE(btc.customerName)) + 2) ELSE btc.customerName END ASC")
     List<BookingTourCustomers> findByTourDetailId(@Param("tourDetailId") String tourDetailId);
 
     @Query("SELECT COUNT(btc) FROM BookingTourCustomers btc")
-    Long countBookingTourCustomers ();
+    Long countBookingTourCustomers();
 }
