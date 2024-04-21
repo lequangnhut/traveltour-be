@@ -1,5 +1,7 @@
 package com.main.traveltour.service.agent.Impl;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.main.traveltour.dto.agent.hotel.RoomTypeCustomerDto;
 import com.main.traveltour.entity.*;
 import com.main.traveltour.repository.RoomTypesRepository;
@@ -27,6 +29,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -286,6 +289,60 @@ public class RoomTypeServiceImpl implements RoomTypeService {
         roomType.setRoomUtilities(roomUtilities);
 
         roomTypesRepository.save(roomType);
+    }
+
+    @Override
+    public void deleteAllRoomTypeByIds(List<String> roomTypeIds) throws JsonProcessingException {
+        ObjectMapper objectMapper = new ObjectMapper();
+
+        if (roomTypeIds == null || roomTypeIds.isEmpty()) {
+            throw new IllegalArgumentException(objectMapper.writeValueAsString(
+                    Collections.singletonMap("message", "Dữ liệu không tồn tại!")));
+        }
+
+        List<RoomTypes> roomTypes = roomTypeIds.stream()
+                .map(id -> roomTypesRepository.findById(id)
+                        .orElseThrow(() -> {
+                            try {
+                                return new IllegalArgumentException(objectMapper.writeValueAsString(
+                                        Collections.singletonMap("message", "Không có dữ liệu nào được tìm thấy")));
+                            } catch (JsonProcessingException e) {
+                                throw new RuntimeException(e);
+                            }
+                        })
+                )
+                .peek(roomType -> roomType.setIsDeleted(true))
+                .peek(roomType -> roomType.setDateDeleted(Timestamp.valueOf(LocalDateTime.now())))
+                .toList();
+        roomTypesRepository.saveAll(roomTypes);
+    }
+
+
+
+    @Override
+    public void restoreAllRoomTypeByIds(List<String> roomTypeIds) throws JsonProcessingException {
+        ObjectMapper objectMapper = new ObjectMapper();
+
+        if (roomTypeIds == null || roomTypeIds.isEmpty()) {
+            throw new IllegalArgumentException(objectMapper.writeValueAsString(
+                    Collections.singletonMap("message", "Dữ liệu không tồn tại!")));
+        }
+
+        List<RoomTypes> roomTypes = roomTypeIds.stream()
+                .map(id -> roomTypesRepository.findById(id)
+                        .orElseThrow(() -> {
+                            try {
+                                return new IllegalArgumentException(objectMapper.writeValueAsString(
+                                        Collections.singletonMap("message", "Không có dữ liệu nào được tìm thấy")));
+                            } catch (JsonProcessingException e) {
+                                throw new RuntimeException(e);
+                            }
+                        })
+                )
+                .peek(roomType -> roomType.setIsDeleted(false))
+                .peek(roomType -> roomType.setDateDeleted(null))
+                .toList();
+        roomTypesRepository.saveAll(roomTypes);
     }
 
 

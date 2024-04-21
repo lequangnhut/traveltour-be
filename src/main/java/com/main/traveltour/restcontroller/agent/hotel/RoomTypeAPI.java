@@ -1,5 +1,7 @@
 package com.main.traveltour.restcontroller.agent.hotel;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.main.traveltour.dto.agent.hotel.RoomTypeAddDto;
 import com.main.traveltour.dto.agent.hotel.RoomTypeDto;
 import com.main.traveltour.entity.*;
@@ -16,10 +18,12 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalTime;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -50,13 +54,14 @@ public class RoomTypeAPI {
 
     /**
      * Phương thức lấy toàn bộ thông tin loại phòng phân trang và sắp xếp
-     * @param page trang
-     * @param size kích thước
-     * @param sortBy sắp xếp
-     * @param sortDir trường sắp xếp
+     *
+     * @param page       trang
+     * @param size       kích thước
+     * @param sortBy     sắp xếp
+     * @param sortDir    trường sắp xếp
      * @param searchTerm thông tin tìm kiếm
-     * @param hotelId mã khách sạn
-     * @param isDeleted trang thái xóa
+     * @param hotelId    mã khách sạn
+     * @param isDeleted  trang thái xóa
      * @return kết quả
      */
     @GetMapping("agent/room-type/get-room-type")
@@ -83,6 +88,7 @@ public class RoomTypeAPI {
 
     /**
      * Phương thức tìm phòng bằng mã phòng
+     *
      * @param roomTypeId mã phòng
      * @return kết quả
      */
@@ -100,9 +106,10 @@ public class RoomTypeAPI {
 
     /**
      * Phương thức lưu thông tin phòng
-     * @param roomTypesAddDto thông tin phòng
-     * @param roomTypeAvatarData Ảnh đại diện phòng
-     * @param listRoomTypeImg Danh sách hình ảnh khách sạn
+     *
+     * @param roomTypesAddDto        thông tin phòng
+     * @param roomTypeAvatarData     Ảnh đại diện phòng
+     * @param listRoomTypeImg        Danh sách hình ảnh khách sạn
      * @param selectedCheckboxValues Danh sách dịch vụ khách sạn
      * @return kết quả
      */
@@ -161,6 +168,7 @@ public class RoomTypeAPI {
 
     /**
      * Phương thức tìm kiếm loại phòng dựa vào mã phòng
+     *
      * @param id mã phòng
      * @return kêt quả
      */
@@ -181,6 +189,7 @@ public class RoomTypeAPI {
 
     /**
      * Phương thức sửa thông tin của phòng
+     *
      * @param roomTypesAddDto thông tin phòng
      * @return kết quả
      */
@@ -221,7 +230,8 @@ public class RoomTypeAPI {
 
     /**
      * Phương thức cập nhật ảnh đại diện phòng
-     * @param roomTypeId mã phòng
+     *
+     * @param roomTypeId  mã phòng
      * @param roomTypeImg ảnh đại diện phòng
      * @return kết quả
      */
@@ -247,6 +257,7 @@ public class RoomTypeAPI {
 
     /**
      * Phương thức tìm phòng bằng mã phòng
+     *
      * @param roomTypeId mã phòng
      * @return kết quả
      */
@@ -260,6 +271,35 @@ public class RoomTypeAPI {
             return new ResponseObject("200", "OK", roomTypeDto);
         } else {
             return new ResponseObject("404", "Null", null);
+        }
+    }
+
+
+    @DeleteMapping("agent/room-type/deleteAllRoomTypeByIds")
+    public ResponseEntity deleteAllRoomTypeById(
+            @RequestParam(required = false) List<String> roomTypeIds
+    ) throws JsonProcessingException {
+        ObjectMapper objectMapper = new ObjectMapper();
+        try {
+
+            roomTypeService.deleteAllRoomTypeByIds(roomTypeIds);
+            return ResponseEntity.ok(objectMapper.writeValueAsString(Collections.singletonMap("message", "Xóa phòng thành công!")));
+        } catch (JsonProcessingException e) {
+            return ResponseEntity.badRequest().body(objectMapper.writeValueAsString(Collections.singletonMap("message", "Có lỗi xảy ra vui lòng thử lại sau!")));
+        }
+    }
+
+    @DeleteMapping("agent/room-type/restoreAllRoomTypeByIds")
+    public ResponseEntity restoreAllRoomTypeById(
+            @RequestParam(required = false) List<String> roomTypeIds
+    ) throws JsonProcessingException {
+        ObjectMapper objectMapper = new ObjectMapper();
+        try {
+
+            roomTypeService.restoreAllRoomTypeByIds(roomTypeIds);
+            return ResponseEntity.ok(objectMapper.writeValueAsString(Collections.singletonMap("message", "Khôi phục phòng thành công!")));
+        } catch (JsonProcessingException e) {
+            return ResponseEntity.badRequest().body(objectMapper.writeValueAsString(Collections.singletonMap("message", "Có lỗi xảy ra vui lòng thử lại sau!")));
         }
     }
 }
