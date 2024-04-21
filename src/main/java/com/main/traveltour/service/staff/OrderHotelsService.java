@@ -1,5 +1,6 @@
 package com.main.traveltour.service.staff;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.main.traveltour.dto.agent.hotel.HotelRevenueDto;
 import com.main.traveltour.dto.agent.hotel.StatisticalBookingHotelDto;
 import com.main.traveltour.dto.agent.hotel.order.OrderHotelDto;
@@ -38,4 +39,8 @@ public interface OrderHotelsService {
     List<Integer> getAllOrderHotelYear();
 
     OrderHotelDto findByOrderHotelId(String orderId);
+
+    void confirmInvoiceByIdOrder(String orderId) throws JsonProcessingException;
+
+    void cancelInvoiceByIdOrder(String orderId) throws JsonProcessingException;
 }

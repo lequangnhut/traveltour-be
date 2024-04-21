@@ -1,5 +1,7 @@
 package com.main.traveltour.restcontroller.agent.hotel;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.main.traveltour.dto.agent.hotel.order.OrderHotelDto;
 import com.main.traveltour.dto.customer.infomation.OrderHotelsDto;
 import com.main.traveltour.entity.OrderHotelDetails;
@@ -16,8 +18,11 @@ import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @RestController
 @CrossOrigin(origins = "http://localhost:3000")
@@ -70,5 +75,19 @@ public class OrderHotelAgentAPI {
     public ResponseEntity<OrderHotelDto> findOrderHotelById(@RequestParam("orderId") String orderId) {
         OrderHotelDto orderHotelsDto = orderHotelsService.findByOrderHotelId(orderId);
         return ResponseEntity.ok(orderHotelsDto);
+    }
+
+    @GetMapping("agent/order-hotel/confirmInvoiceByIdOrder")
+    public ResponseEntity confirmInvoiceByIdOrder(@RequestParam("orderId") String orderId) throws JsonProcessingException {
+        ObjectMapper objectMapper = new ObjectMapper();
+        orderHotelsService.confirmInvoiceByIdOrder(orderId);
+        return ResponseEntity.ok(objectMapper.writeValueAsString(Collections.singletonMap("message", "Xác nhận hóa đơn thành công, Vui lòng chuẩn bị phòng trước thời gian khách đến!")));
+    }
+
+    @GetMapping("agent/order-hotel/cancelInvoiceByIdOrder")
+    public ResponseEntity cancelInvoiceByIdOrder(@RequestParam("orderId") String orderId) throws JsonProcessingException {
+        ObjectMapper objectMapper = new ObjectMapper();
+        orderHotelsService.cancelInvoiceByIdOrder(orderId);
+        return ResponseEntity.ok(objectMapper.writeValueAsString(Collections.singletonMap("message", "Hủy hóa đơn hành công")));
     }
 }

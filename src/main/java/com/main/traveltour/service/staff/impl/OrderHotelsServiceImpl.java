@@ -1,5 +1,7 @@
 package com.main.traveltour.service.staff.impl;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.main.traveltour.dto.agent.hotel.HotelRevenueDto;
 import com.main.traveltour.dto.agent.hotel.LastYearRevenueDto;
 import com.main.traveltour.dto.agent.hotel.RevenueThisYearDto;
@@ -32,6 +34,8 @@ import java.util.stream.Collectors;
 public class OrderHotelsServiceImpl implements OrderHotelsService {
     @Autowired
     OrderHotelsRepository orderHotelsRepository;
+    @Autowired
+    OrderHotelsService orderHotelsService;
     @Autowired
     OrderHotelDetailService orderHotelDetailService;
     @Autowired
@@ -151,6 +155,40 @@ public class OrderHotelsServiceImpl implements OrderHotelsService {
 
 
         return orderHotelDto;
+    }
+
+    @Override
+    public void confirmInvoiceByIdOrder(String orderId) throws JsonProcessingException {
+        ObjectMapper objectMapper = new ObjectMapper();
+        Objects.requireNonNull(orderId, objectMapper.writeValueAsString(Collections.singletonMap("message", "Không có dữ liệu được tìm thấy")));
+
+        OrderHotels orderHotel = orderHotelsService.findByIdOptional(orderId)
+                .orElseThrow(() -> {
+                    try {
+                        return new IllegalStateException(objectMapper.writeValueAsString(Collections.singletonMap("message", "Không có dữ liệu")));
+                    } catch (JsonProcessingException e) {
+                        throw new RuntimeException(e);
+                    }
+                });
+        orderHotel.setOrderStatus(2);
+        orderHotelsService.save(orderHotel);
+    }
+
+    @Override
+    public void cancelInvoiceByIdOrder(String orderId) throws JsonProcessingException {
+        ObjectMapper objectMapper = new ObjectMapper();
+        Objects.requireNonNull(orderId, objectMapper.writeValueAsString(Collections.singletonMap("message", "Không có dữ liệu được tìm thấy")));
+
+        OrderHotels orderHotel = orderHotelsService.findByIdOptional(orderId)
+                .orElseThrow(() -> {
+                    try {
+                        return new IllegalStateException(objectMapper.writeValueAsString(Collections.singletonMap("message", "Không có dữ liệu")));
+                    } catch (JsonProcessingException e) {
+                        throw new RuntimeException(e);
+                    }
+                });
+        orderHotel.setOrderStatus(5);
+        orderHotelsService.save(orderHotel);
     }
 
 

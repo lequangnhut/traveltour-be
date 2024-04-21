@@ -77,4 +77,5 @@ public interface OrderHotelsRepository extends JpaRepository<OrderHotels, Intege
 
     @Query("SELECT DISTINCT YEAR(oh.dateCreated) FROM OrderHotels oh ORDER BY YEAR(oh.dateCreated) DESC")
     List<Integer> getAllOrderHotelYear();
+
 }

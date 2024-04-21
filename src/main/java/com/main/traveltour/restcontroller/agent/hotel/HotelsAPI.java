@@ -304,7 +304,7 @@ public class HotelsAPI {
         hotels.setLongitude(longitude);
         hotels.setLatitude(latitude);
         hotels.setIsActive(true);
-        hotels.setIsAccepted(true);
+        hotels.setIsAccepted(false);
         hotels.setIsDeleted(false);
 
         List<PlaceUtilities> placeUtilitiesList = selectHotelUtilities.stream()
@@ -357,7 +357,7 @@ public class HotelsAPI {
                 .collect(Collectors.toList());
         hotels.get().setDateCreated(Timestamp.valueOf(LocalDateTime.now()));
         hotels.get().setIsActive(true);
-        hotels.get().setIsAccepted(true);
+        hotels.get().setIsAccepted(false);
         hotels.get().setIsDeleted(false);
         hotels.get().setPlaceUtilities(placeUtilitiesList);
 
