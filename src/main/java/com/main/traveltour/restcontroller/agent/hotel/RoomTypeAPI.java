@@ -211,6 +211,7 @@ public class RoomTypeAPI {
         roomTypes.get().setFreeCancellation(roomTypesAddDto.getFreeCancellation());
         roomTypes.get().setCheckinTime(checkinTime);
         roomTypes.get().setCheckoutTime(checkoutTime);
+        roomTypes.get().setIsActive(1);
 
         roomTypeService.save(roomTypes.get());
 
