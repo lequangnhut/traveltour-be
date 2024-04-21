@@ -1,5 +1,6 @@
 package com.main.traveltour.service.agent;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.main.traveltour.dto.agent.hotel.RoomTypeCustomerDto;
 import com.main.traveltour.entity.RoomTypes;
 import org.springframework.data.domain.Page;
@@ -51,4 +52,8 @@ public interface RoomTypeService {
     List<RoomTypes> findAllRoomTypeByIds(List<String> ids);
 
     void registerRoomType(RoomTypes roomTypeDto, String hotelId, List<Integer> roomTypeUtilities, MultipartFile roomTypeAvatar, List<MultipartFile> listRoomTypeImg, LocalTime checkinTime, LocalTime checkoutTime, Integer bedTypeId) throws IOException;
+
+    void deleteAllRoomTypeByIds(List<String> roomTypeIds) throws JsonProcessingException;
+
+    void restoreAllRoomTypeByIds(List<String> roomTypeIds) throws JsonProcessingException;
 }
