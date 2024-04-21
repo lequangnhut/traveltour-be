@@ -59,7 +59,7 @@ public class OrderHotelAgentAPI {
         List<String> orderHotelDetails = orderHotelDetailService.findOrderHotelByRoomTypeIds(roomType).stream().map(OrderHotelDetails::getOrderHotelId).toList();
 
         // Xác định hướng sắp xếp mặc định nếu sortDirection là null
-        Sort.Direction defaultSortDirection = Sort.Direction.ASC;
+        Sort.Direction defaultSortDirection = Sort.Direction.DESC;
 
         // Xác định hướng sắp xếp cuối cùng
         Sort.Direction finalSortDirection = sortDirection != null ? sortDirection : defaultSortDirection;
