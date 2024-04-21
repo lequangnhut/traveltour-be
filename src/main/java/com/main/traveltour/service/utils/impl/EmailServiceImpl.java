@@ -62,6 +62,7 @@ public class EmailServiceImpl implements EmailService {
     private final Queue<OrderTransportationsDto> emailQueueCustomerBookingTrans = new LinkedList<>();
     private final Queue<BookingLocationCusDto> emailQueueCustomerBookingLocation = new LinkedList<>();
     private final Queue<ForgotPasswordDto> emailQueueForgotAdmin = new LinkedList<>();
+    private final Queue<AgenciesDto> emailQueueDeleteAgency = new LinkedList<>();
 
     @Autowired
     private JavaMailSender sender;
@@ -755,6 +756,39 @@ public class EmailServiceImpl implements EmailService {
     }
 
     @Override
+    public void queueEmailDeleteAgency(AgenciesDto agenciesDto) {
+        emailQueueDeleteAgency.add(agenciesDto);
+    }
+
+    @Override
+    public void sendMailDeleteAgency() {
+        while (!emailQueueDeleteAgency.isEmpty()) {
+            AgenciesDto agenciesDto = emailQueueDeleteAgency.poll();
+            Users users = userService.findById(agenciesDto.getUserId());
+            try {
+                MimeMessage message = sender.createMimeMessage();
+                MimeMessageHelper helper = new MimeMessageHelper(message, MimeMessageHelper.MULTIPART_MODE_MIXED_RELATED, StandardCharsets.UTF_8.name());
+
+                helper.setTo(users.getEmail());
+
+                Map<String, Object> variables = new HashMap<>();
+                variables.put("name_agency", agenciesDto.getNameAgency());
+                variables.put("note", agenciesDto.getNoted());
+                variables.put("dateBlocked", agenciesDto.getDateBlocked());
+                variables.put("domain", DomainURL.FRONTEND_URL);
+
+                helper.setFrom(email);
+                helper.setText(thymeleafService.createContent("agency-delete", variables), true);
+                helper.setSubject("TRAVELTOUR XIN THÔNG BÁO HỒ SƠ DOANH NGHIỆP BỊ TẠM KHÓA HOẠT ĐỘNG");
+
+                sender.send(message);
+            } catch (MessagingException e) {
+                throw new RuntimeException(e);
+            }
+        }
+    }
+
+    @Override
     public void sendMailOTPCus() {
         while (!emailQueueSendOTPRegisterAgencies.isEmpty()) {
             ForgotPasswordDto passwordDto = emailQueueSendOTPRegisterAgencies.poll();
@@ -1051,6 +1085,11 @@ public class EmailServiceImpl implements EmailService {
     @Scheduled(fixedDelay = 5000)
     public void processBookingLocation() {
         sendMailBookingLocation();
+    }
+
+    @Scheduled(fixedDelay = 5000)
+    public void processDeleteAgency() {
+        sendMailDeleteAgency();
     }
 
     private String convertRolesToVietnamese(List<String> roles) {

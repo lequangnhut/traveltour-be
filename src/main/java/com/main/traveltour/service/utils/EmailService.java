@@ -82,4 +82,8 @@ public interface EmailService {
     void sendMailForgotAdmin();
 
     void queueEmailForgotAdmin(ForgotPasswordDto passwordsDto);
+
+    void queueEmailDeleteAgency(AgenciesDto agenciesDto);
+
+    void sendMailDeleteAgency();
 }

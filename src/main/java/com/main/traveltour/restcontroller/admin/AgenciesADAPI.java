@@ -197,6 +197,9 @@ public class AgenciesADAPI {
             agencies.setDateBlocked(new Timestamp(System.currentTimeMillis()));
             agencyServiceAD.save(agencies);
 
+            AgenciesDto agenciesDto = EntityDtoUtils.convertToDto(agencies, AgenciesDto.class);
+            emailService.queueEmailDeleteAgency(agenciesDto);
+
             return new ResponseObject("200", "Thành công", null);
         } catch (Exception e) {
             return new ResponseObject("400", "Thất bại", null);
@@ -211,6 +214,10 @@ public class AgenciesADAPI {
             agencies.setNoted(null);
             agencies.setDateBlocked(null);
             agencyServiceAD.save(agencies);
+
+            // Gửi email sau khi xác nhận doanh nghiệp
+            AgenciesDto agenciesDto = EntityDtoUtils.convertToDto(agencies, AgenciesDto.class);
+            emailService.queueEmailAcceptedAgency(agenciesDto);
 
             return new ResponseObject("200", "Thành công", null);
         } catch (Exception e) {
