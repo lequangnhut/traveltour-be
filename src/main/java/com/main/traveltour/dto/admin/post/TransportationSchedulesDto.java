@@ -15,19 +15,38 @@ import java.sql.Timestamp;
 @Data
 public class TransportationSchedulesDto implements Serializable {
     String id;
+
     String transportationId;
+
     String fromLocation;
+
+    String fromAddress;
+
     String toLocation;
+
+    String toAddress;
+
     Timestamp departureTime;
+
     Timestamp arrivalTime;
+
     BigDecimal unitPrice;
+
     Timestamp dateCreated;
+
     Timestamp dateDeleted;
+
     Boolean isActive;
+
     Integer bookedSeat;
+
     Boolean tripType;
+
     Integer isStatus;
+
     String scheduleNote;
+
     Transportations transportations;
+
     TransportationBrands transportationsByTransportationId;
 }

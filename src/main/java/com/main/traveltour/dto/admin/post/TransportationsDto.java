@@ -1,6 +1,7 @@
 package com.main.traveltour.dto.admin.post;
 
 import com.main.traveltour.entity.TransportUtilities;
+import com.main.traveltour.entity.TransportationBrands;
 import com.main.traveltour.entity.TransportationImage;
 import com.main.traveltour.entity.TransportationTypes;
 import lombok.Data;
@@ -16,6 +17,7 @@ import java.util.List;
  */
 @Data
 public class TransportationsDto implements Serializable {
+
     String id;
 
     String transportationBrandId;
@@ -37,6 +39,8 @@ public class TransportationsDto implements Serializable {
     Integer columnSeat;
 
     TransportationTypes transportationTypes;
+
+    TransportationBrands transportationBrands;
 
     Collection<TransportationImage> transportationImagesById;
 

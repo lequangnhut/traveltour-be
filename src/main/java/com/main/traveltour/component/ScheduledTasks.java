@@ -44,9 +44,4 @@ public class ScheduledTasks {
     public void checkTimeBookingTransport() {
         transportScheduleSeatService.checkTimeBookingTransport();
     }
-
-    @Scheduled(fixedDelay = 1000)
-    public void updateRequestCar() {
-
-    }
 }

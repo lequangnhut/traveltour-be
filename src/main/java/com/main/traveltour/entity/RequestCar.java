@@ -57,6 +57,10 @@ public class RequestCar {
     private Timestamp dateCreated;
 
     @Basic
+    @Column(name = "date_accepted")
+    private Timestamp dateAccepted;
+
+    @Basic
     @Column(name = "is_accepted")
     private Boolean isAccepted; // false là yêu cầu đang chờ duyệt xe | true là yêu cầu đã duyệt xe
 

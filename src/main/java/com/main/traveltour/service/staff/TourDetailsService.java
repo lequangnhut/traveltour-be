@@ -47,6 +47,4 @@ public interface TourDetailsService {
     Long countTourDetails();
 
     Page<TourDetails> findTourGuide(Integer guideId, Integer tourStatus, String searchTerm, Pageable pageable);
-
-
 }

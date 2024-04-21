@@ -45,7 +45,6 @@ public class PostADAPI {
     @Autowired
     private TransportUtilityServiceAD transportUtilityServiceAD;
 
-
     @GetMapping("all-hotel-post")
     private ResponseObject findAllHotelPost(@RequestParam(defaultValue = "0") int page,
                                             @RequestParam(defaultValue = "10") int size,
@@ -139,12 +138,12 @@ public class PostADAPI {
                 ? transServiceAD.findAllTransPost(isActive, brandId, PageRequest.of(page, size, sort))
                 : transServiceAD.findAllTransPostByName(isActive, brandId, PageRequest.of(page, size, sort), searchTerm);
 
-        Page<TransportationsDto> transportationsDtos = items.map(transportations -> EntityDtoUtils.convertToDto(transportations, TransportationsDto.class));
+        Page<TransportationsDto> transportationsDto = items.map(transportations -> EntityDtoUtils.convertToDto(transportations, TransportationsDto.class));
 
-        if (transportationsDtos.isEmpty()) {
+        if (transportationsDto.isEmpty()) {
             return new ResponseObject("404", "Không tìm thấy dữ liệu", null);
         } else {
-            return new ResponseObject("200", "Đã tìm thấy dữ liệu", transportationsDtos);
+            return new ResponseObject("200", "Đã tìm thấy dữ liệu", transportationsDto);
         }
     }
 

@@ -178,6 +178,7 @@ public class RequestCarSTFAPI {
                 // cập nhật lại trạng thái request car detail
                 requestCarDetail.setIsAccepted(1); // duyệt xe
                 requestCarDetail.getRequestCarRequireCarById().setIsAccepted(Boolean.TRUE);
+                requestCarDetail.getRequestCarRequireCarById().setDateAccepted(new Timestamp(System.currentTimeMillis()));
                 requestCarDetailService.save(requestCarDetail);
 
                 // Thêm vào order transport để thêm xe đã duyệt vào tour

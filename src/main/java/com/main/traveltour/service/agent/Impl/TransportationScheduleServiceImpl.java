@@ -93,7 +93,7 @@ public class TransportationScheduleServiceImpl implements TransportationSchedule
     }
 
     public void saveTransportSchedules(TransportationSchedules schedules) {
-        String sql = "UPDATE transportation_schedules SET is_status = ? WHERE id = ?";
+        String sql = "UPDATE transportation_schedules SET is_status = ? WHERE id = ? AND trip_type = false";
         jdbcTemplate.update(sql, schedules.getIsStatus(), schedules.getId());
     }
 }

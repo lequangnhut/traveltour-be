@@ -31,6 +31,8 @@ public class RequestCarGetDataDto implements Serializable {
 
     Timestamp dateCreated;
 
+    Timestamp dateAccepted;
+
     Boolean isAccepted;
 
     Boolean isActive;
