@@ -33,6 +33,10 @@ public class AgenciesDto implements Serializable {
 
     private Timestamp dateCreated;
 
+    private String noted;
+
+    private Timestamp dateBlocked;
+
     private Boolean isActive;
 
     private int isAccepted;

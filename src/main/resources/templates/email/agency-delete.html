@@ -278,19 +278,24 @@
                                                 <td style="word-wrap:break-word;padding:0px;"
                                                     align="center">
                                                     <table role="presentation" cellpadding="0" cellspacing="0"
-                                                           style="width:100%; border-collapse:collapse;border-spacing:0px;" border="0">
+                                                           style="width:100%; border-collapse:collapse;border-spacing:0px;"
+                                                           border="0">
                                                         <tbody>
                                                         <tr>
-                                                            <td style="width:30%" align="left" >
-                                                                <img src="https://i.imgur.com/NDxqwA6.png" width="100%" editable="true" border="0" alt="" />
+                                                            <td style="width:30%" align="left">
+                                                                <img src="https://i.imgur.com/NDxqwA6.png" width="100%"
+                                                                     editable="true" border="0" alt=""/>
                                                             </td>
                                                             <td style="width:70%;" align="right">
                                                                 <p class="link" style="color:#000001; font-size:small; margin: 0; text-decoration:none;
-                                                                   font-family:TW-Averta-Regular, Averta, Helvetica, Arial, sans-serif !important;">Tourism and Travel services</p>
+                                                                   font-family:TW-Averta-Regular, Averta, Helvetica, Arial, sans-serif !important;">
+                                                                    Tourism and Travel services</p>
                                                                 <p class="link" style="color:#000001; font-size:small; margin: 0; text-decoration:none;
-                                                                    font-family:TW-Averta-Regular, Averta, Helvetica, Arial, sans-serif !important;">Website: traveltour.ser.com</p>
+                                                                    font-family:TW-Averta-Regular, Averta, Helvetica, Arial, sans-serif !important;">
+                                                                    Website: traveltour.ser.com</p>
                                                                 <p class="link" style="color:#000001; font-size:small; margin: 0; text-decoration:none;
-                                                                    font-family:TW-Averta-Regular, Averta, Helvetica, Arial, sans-serif !important;">Hotline: 1900 2000</p>
+                                                                    font-family:TW-Averta-Regular, Averta, Helvetica, Arial, sans-serif !important;">
+                                                                    Hotline: 1900 2000</p>
                                                             </td>
                                                         </tr>
                                                         </tbody>
@@ -302,7 +307,10 @@
                                     </div>
                                     <table width="100%" border="0" cellspacing="0" cellpadding="0">
                                         <tr>
-                                            <td class="separator" style="padding-top: 20px; border-bottom:2px solid #706f6f; font-size:0pt; line-height:0pt;">&nbsp;</td>
+                                            <td class="separator"
+                                                style="padding-top: 20px; border-bottom:2px solid #706f6f; font-size:0pt; line-height:0pt;">
+                                                &nbsp;
+                                            </td>
                                         </tr>
                                     </table>
                                     <!--[if mso | IE]>
@@ -383,25 +391,34 @@
                                                     <div style="cursor:auto;color:#5d7079;font-family:TW-Averta-Regular, Averta, Helvetica, Arial;font-size:16px;line-height:24px;letter-spacing:0.4px;text-align:left;">
                                                         <p></p>
                                                         <p style="color:#000000; font-family:TW-Averta-Regular, Averta, Helvetica, Arial; font-size:x-large;
-                                 line-height:28px; text-align:center; margin-bottom:10px;">Thông báo gửi từ <br />
+                                 line-height:28px; text-align:center; margin-bottom:10px;">Thông báo gửi từ <br/>
                                                             <strong style="color: #63ab45">Travel Tour</strong>
                                                         </p>
-                                                        <p style="text-align: justify; margin-bottom: 5px">Xin chào, doanh nghiệp <strong th:text="${name_agency}">!</strong></p>
+                                                        <p style="text-align: justify; margin-bottom: 5px">Xin chào,
+                                                            doanh nghiệp <strong th:text="${name_agency}">!</strong></p>
                                                         <p style="text-align: justify; margin-bottom: 5px">
-                                                            Chúng tôi mong rằng bạn đang có một ngày tốt lành. Chúng tôi xin thông báo rằng quá
-                                                            trình đăng ký kinh doanh trên trang web của chúng tôi không thành công lần này.
+                                                            Chúng tôi mong rằng bạn đang có một ngày tốt lành. Chúng tôi
+                                                            xin thông báo rằng dường như thông tin
+                                                            doanh nghiệp của bạn đang gặp một số vấn đề và buộc phải tạm
+                                                            khóa quyền hoạt động của doanh nghiệp từ lúc <strong
+                                                                th:text="${#dates.format(dateBlocked, 'dd/MM/yyyy HH:mm:ss')}"></strong>.
                                                         </p>
                                                         <p style="text-align: justify; margin-bottom: 5px">
-                                                            Chúng tôi rất tiếc về sự bất tiện này và xin lỗi về mọi phiền toái mà điều này có thể
-                                                            gây ra. Để hoàn tất quá trình đăng ký của bạn, vui lòng truy cập
-                                                            vào trang web và điền thông tin đăng ký một lần nữa.
+                                                            Chúng tôi rất tiếc về sự bất tiện này và xin lỗi về mọi
+                                                            phiền toái mà vào trang web và xem xét lại hồ sơ doanh
+                                                            nghiệp.
                                                         </p>
+                                                        <strong>Lý do: </strong>
+                                                        <p style="text-align: justify; margin-bottom: 5px; color: crimson; font-weight: 600;"
+                                                           th:text="${note}"></p>
                                                         <p style="text-align: justify; margin-bottom: 5px">
-                                                            Nếu bạn gặp bất kỳ vấn đề hoặc cần sự hỗ trợ, đừng ngần ngại liên hệ với
+                                                            Nếu bạn gặp bất kỳ vấn đề hoặc cần sự hỗ trợ, đừng ngần ngại
+                                                            liên hệ với
                                                             chúng tôi qua Hotline: <strong>1900 2000</strong>.
                                                         </p>
                                                         <p style="text-align: justify; margin-bottom: 5px">
-                                                            Chúng tôi rất trân trọng sự quan tâm của bạn và hy vọng nhận được đăng ký thành công từ bạn trong thời gian sớm nhất.
+                                                            Chúng tôi rất trân trọng sự quan tâm của bạn và hy vọng nhận
+                                                            được phản hồi từ bạn trong thời gian sớm nhất.
                                                         </p>
                                                         <p style="text-align: justify; margin-bottom: 5px; font-weight: bolder;padding-bottom: 15px;">
                                                             Trân trọng,
@@ -410,37 +427,59 @@
                                                         </p>
                                                         <p style="text-align: center;margin: 0;padding: 0;">
                                                             <a th:href="@{${domain} + '/home'}"
-                                                               class="btn" style="background-color: #63ab45; color: white">>> Truy cập website <<</a>
+                                                               class="btn"
+                                                               style="background-color: #63ab45; color: white">>> Truy
+                                                                cập website <<</a>
                                                         </p>
-                                                        <p class="separator" style="; border-bottom:2px solid #706f6f; font-size:0pt; line-height:0pt;">&nbsp;</p>
+                                                        <p class="separator"
+                                                           style="; border-bottom:2px solid #706f6f; font-size:0pt; line-height:0pt;">
+                                                            &nbsp;</p>
                                                         <table width="100%" border="0" cellspacing="0" cellpadding="0">
                                                             <tr>
-                                                                <td class="text-socials" style="color:#000000; font-family:system-ui; font-size:16px; line-height:22px; text-align:center; text-transform:uppercase;">
+                                                                <td class="text-socials"
+                                                                    style="color:#000000; font-family:system-ui; font-size:16px; line-height:22px; text-align:center; text-transform:uppercase;">
                                                                     <multiline>Theo dõi chúng tôi</multiline>
                                                                 </td>
                                                             </tr>
                                                             <tr>
                                                                 <td style="padding: 10px 0px 10px 0px;" align="center">
-                                                                    <table class="center" border="0" cellspacing="0" cellpadding="0" style="text-align:center;">
+                                                                    <table class="center" border="0" cellspacing="0"
+                                                                           cellpadding="0" style="text-align:center;">
                                                                         <tr>
-                                                                            <td class="img" width="52" style="font-size:0pt; line-height:0pt; text-align:left;">
+                                                                            <td class="img" width="52"
+                                                                                style="font-size:0pt; line-height:0pt; text-align:left;">
                                                                                 <a href="" target="_blank">
-                                                                                    <img src="https://i.imgur.com/877kqQV.jpg" width="42" height="42" editable="true" border="0" alt="" />
+                                                                                    <img src="https://i.imgur.com/877kqQV.jpg"
+                                                                                         width="42" height="42"
+                                                                                         editable="true" border="0"
+                                                                                         alt=""/>
                                                                                 </a>
                                                                             </td>
-                                                                            <td class="img" width="52" style="font-size:0pt; line-height:0pt; text-align:left;">
+                                                                            <td class="img" width="52"
+                                                                                style="font-size:0pt; line-height:0pt; text-align:left;">
                                                                                 <a href="" target="_blank">
-                                                                                    <img src="https://i.imgur.com/33AwFOF.jpg" width="42" height="42" editable="true" border="0" alt="" />
+                                                                                    <img src="https://i.imgur.com/33AwFOF.jpg"
+                                                                                         width="42" height="42"
+                                                                                         editable="true" border="0"
+                                                                                         alt=""/>
                                                                                 </a>
                                                                             </td>
-                                                                            <td class="img" width="52" style="font-size:0pt; line-height:0pt; text-align:left;">
+                                                                            <td class="img" width="52"
+                                                                                style="font-size:0pt; line-height:0pt; text-align:left;">
                                                                                 <a href="" target="_blank">
-                                                                                    <img src="https://i.imgur.com/U8ws7yM.jpg" width="42" height="42" editable="true" border="0" alt="" />
+                                                                                    <img src="https://i.imgur.com/U8ws7yM.jpg"
+                                                                                         width="42" height="42"
+                                                                                         editable="true" border="0"
+                                                                                         alt=""/>
                                                                                 </a>
                                                                             </td>
-                                                                            <td class="img" width="42" style="font-size:0pt; line-height:0pt; text-align:left;">
+                                                                            <td class="img" width="42"
+                                                                                style="font-size:0pt; line-height:0pt; text-align:left;">
                                                                                 <a href="" target="_blank">
-                                                                                    <img src="https://i.imgur.com/y7HcGhJ.jpg" width="42" height="42" editable="true" border="0" alt="" />
+                                                                                    <img src="https://i.imgur.com/y7HcGhJ.jpg"
+                                                                                         width="42" height="42"
+                                                                                         editable="true" border="0"
+                                                                                         alt=""/>
                                                                                 </a>
                                                                             </td>
                                                                         </tr>
