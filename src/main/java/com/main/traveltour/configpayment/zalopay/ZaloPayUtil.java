@@ -49,7 +49,7 @@ public class ZaloPayUtil {
             order.put("bankcode", "");
             order.put("item", new JSONObject(item).toString());
             order.put("embeddata", new JSONObject(embeddata).toString());
-            order.put("callback_url", DomainURL.BACKEND_URL + "/api/v1/customer/booking-location/zaloPay/success-payment");
+            order.put("callbackurl", DomainURL.BACKEND_URL + "/api/v1/customer/booking-location/zalopay/success-payment");
 
             String data = order.get("appid") + "|" + order.get("apptransid") + "|" + order.get("appuser") + "|" + order.get("amount")
                     + "|" + order.get("apptime") + "|" + order.get("embeddata") + "|" + order.get("item");
@@ -61,7 +61,6 @@ public class ZaloPayUtil {
     }
 
     public static String submitPayment(Map<String, Object> order) {
-        System.out.println(order);
         try {
             CloseableHttpClient client = HttpClients.createDefault();
             HttpPost post = new HttpPost(ZLConfig.config.get("endpoint"));
@@ -86,7 +85,6 @@ public class ZaloPayUtil {
             for (String key : result.keySet()) {
                 System.out.format("%s = %s\n", key, result.get(key));
             }
-            System.out.println("================================================");
             System.out.println(result);
             return result.get("orderurl").toString();
         } catch (Exception e) {
@@ -94,33 +92,4 @@ public class ZaloPayUtil {
             return null;
         }
     }
-//    public static String submitPayment(Map<String, Object> order) {
-//        System.out.println(order);
-//        try {
-//            CloseableHttpClient client = HttpClients.createDefault();
-//            HttpPost post = new HttpPost(ZLConfig.config.get("endpoint")); // Use the real endpoint for production
-//
-//            List<NameValuePair> params = new ArrayList<>();
-//            for (Map.Entry<String, Object> entry : order.entrySet()) {
-//                params.add(new BasicNameValuePair(entry.getKey(), entry.getValue().toString()));
-//            }
-//
-//            post.setEntity(new UrlEncodedFormEntity(params, "UTF-8"));
-//
-//            try (CloseableHttpResponse response = client.execute(post)) {
-//                BufferedReader reader = new BufferedReader(new InputStreamReader(response.getEntity().getContent()));
-//                StringBuilder jsonStr = new StringBuilder();
-//                String line;
-//                while ((line = reader.readLine()) != null) {
-//                    jsonStr.append(line);
-//                }
-//                JSONObject result = new JSONObject(jsonStr.toString());
-//                System.out.println(result.toString());
-//                return result.optString("order_url", null);
-//            }
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//            return null;
-//        }
-//    }
 }
