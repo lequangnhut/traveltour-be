@@ -32,7 +32,7 @@ public class ChatMessage {
     private String recipientId;
 
     @Basic
-    @Column(name = "content")
+    @Column(name = "content", columnDefinition = "LONGTEXT")
     private String content;
 
     @Basic
