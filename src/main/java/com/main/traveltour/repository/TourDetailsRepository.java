@@ -25,6 +25,23 @@ public interface TourDetailsRepository extends JpaRepository<TourDetails, Intege
     List<TourDetails> getAllTourDetail();
 
     @Query("SELECT td FROM TourDetails td " +
+            "LEFT JOIN td.bookingToursById bt " +
+            "WHERE td.tourDetailStatus != 4 " +
+            "GROUP BY td.id " +
+            "ORDER BY COUNT(bt.id) DESC")
+    List<TourDetails> findAllOrderByBookingCountDesc();
+
+    @Query("SELECT td FROM TourDetails td " +
+            "LEFT JOIN td.bookingToursById bt " +
+            "WHERE td.tourDetailStatus != 4 " +
+            "AND (:departureDate IS NULL OR DATE(td.departureDate) >= DATE(:departureDate)) " +
+            "AND (:price IS NULL OR td.unitPrice <= :price) " +
+            "GROUP BY td.id " +
+            "ORDER BY COUNT(bt.id) DESC")
+    List<TourDetails> getAListOfPopularTours(@Param("departureDate") Date departureDate,
+                                             @Param("price") BigDecimal price);
+
+    @Query("SELECT td FROM TourDetails td " +
             "WHERE td.tourDetailStatus = 1 ")
     List<TourDetails> findAllTourDetailUseRequestCar();
 
@@ -68,10 +85,10 @@ public interface TourDetailsRepository extends JpaRepository<TourDetails, Intege
             "WHERE (:departureArrives IS NULL OR " +
             "(UPPER(t.tourName) LIKE %:departureArrives% OR " +
             "UPPER(ty.tourTypeName) LIKE %:departureArrives% OR " +
-            "UPPER(td.fromLocation) LIKE %:departureArrives%)) " +
-            "AND (:departureFrom IS NULL OR td.toLocation LIKE :departureFrom) " +
+            "UPPER(td.toLocation) LIKE %:departureArrives%)) " +
+            "AND (:departureFrom IS NULL OR td.fromLocation LIKE :departureFrom) " +
             "AND (:numberOfPeople IS NULL OR :numberOfPeople <= (td.numberOfGuests - td.bookedSeat)) " +
-            "AND (:departureDate IS NULL OR td.departureDate >= :departureDate) " +
+            "AND (:departureDate IS NULL OR DATE(td.departureDate) >= DATE(:departureDate)) " +
             "AND (:price IS NULL OR td.unitPrice <= :price) " +
             "AND (:tourTypesByTourTypeId IS NULL OR ty.id IN (:tourTypesByTourTypeId))")
     Page<TourDetails> findTourDetailWithFilter(

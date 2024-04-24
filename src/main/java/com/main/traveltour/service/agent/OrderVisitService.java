@@ -3,7 +3,9 @@ package com.main.traveltour.service.agent;
 import com.main.traveltour.entity.OrderVisits;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.repository.query.Param;
 
+import java.util.List;
 import java.util.Optional;
 
 public interface OrderVisitService {
@@ -19,4 +21,6 @@ public interface OrderVisitService {
     Page<OrderVisits> findAllOrderVisitsWithSearch(String brandId, String searchTerm, Pageable pageable);
 
     Optional<OrderVisits> findByIdOptional(String id);
+
+    List<Double> getStatisticalBookingVisitLocation(Integer year, String visitId);
 }

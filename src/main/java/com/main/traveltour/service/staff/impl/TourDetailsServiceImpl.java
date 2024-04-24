@@ -6,6 +6,7 @@ import com.main.traveltour.service.staff.TourDetailsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.repository.query.Param;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 
@@ -31,6 +32,16 @@ public class TourDetailsServiceImpl implements TourDetailsService {
     @Override
     public List<TourDetails> findAll() {
         return tourDetailsRepository.getAllTourDetail();
+    }
+
+    @Override
+    public List<TourDetails> findAllOrderByBookingCountDesc() {
+        return tourDetailsRepository.findAllOrderByBookingCountDesc();
+    }
+
+    @Override
+    public List<TourDetails> getAListOfPopularTours(Date departureDate, BigDecimal price) {
+        return tourDetailsRepository.getAListOfPopularTours(departureDate, price);
     }
 
     @Override

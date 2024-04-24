@@ -1,6 +1,5 @@
 package com.main.traveltour.repository;
 
-import com.main.traveltour.entity.OrderHotels;
 import com.main.traveltour.entity.OrderVisits;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -50,5 +49,13 @@ public interface OrderVisitsRepository extends JpaRepository<OrderVisits, Intege
     @Query("SELECT ov FROM OrderVisits ov WHERE ov.orderStatus = :orderStatus AND ov.customerEmail = :email")
     Page<OrderVisits> findAllBookingVisitsByUserId(@Param("orderStatus") Integer orderStatus, @Param("email") String email, Pageable pageable);
 
+    @Query("SELECT COALESCE(COUNT(ov.orderStatus), 0) " +
+            "FROM OrderVisits ov " +
+            "WHERE YEAR(ov.dateCreated) = :year " +
+            "AND ov.orderStatus = :orderStatus " +
+            "AND ov.visitLocationId = :visitId")
+    Long getStatisticalBookingVisitLocation(@Param("year") Integer year,
+                                            @Param("orderStatus") Integer orderStatus,
+                                            @Param("visitId") String visitId);
 
 }
