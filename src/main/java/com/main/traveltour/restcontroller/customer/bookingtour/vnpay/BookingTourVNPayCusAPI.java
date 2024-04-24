@@ -93,7 +93,7 @@ public class BookingTourVNPayCusAPI {
                     bookingTourAPIService.createContracts(bookingTours.getId());
                     bookingTourAPIService.decreaseAmountTour(bookingTours.getTourDetailId(), totalAmountBook);
                 } else {
-                    bookingTourAPIService.createUser(bookingToursDto, bookingTourCustomersDto, totalAmountBook, 1, paymentStatus); // thành công
+                    bookingTourAPIService.createUser(bookingToursDto, bookingTourCustomersDto, totalAmountBook, 1); // thành công
                 }
                 orderStatus = 1;
                 emailService.queueEmailBookingTour(bookingDto);
@@ -107,7 +107,7 @@ public class BookingTourVNPayCusAPI {
                     bookingTourAPIService.createContracts(bookingTours.getId());
                     bookingTourAPIService.decreaseAmountTour(bookingTours.getTourDetailId(), totalAmountBook);
                 } else {
-                    bookingTourAPIService.createUser(bookingToursDto, bookingTourCustomersDto, totalAmountBook, 2, paymentStatus);
+                    bookingTourAPIService.createUser(bookingToursDto, bookingTourCustomersDto, totalAmountBook, 2);
                 }
                 orderStatus = 2;
             }

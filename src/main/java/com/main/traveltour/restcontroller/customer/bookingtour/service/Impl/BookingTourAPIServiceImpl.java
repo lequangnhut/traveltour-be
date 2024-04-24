@@ -32,7 +32,7 @@ public class BookingTourAPIServiceImpl implements BookingTourAPIService {
     private TourDetailsService tourDetailsService;
 
     @Override
-    public void createUser(BookingToursDto bookingToursDto, List<Map<String, String>> bookingTourCustomersDto, Integer totalAmountBook, Integer orderStatus, Integer paymentStatus) {
+    public void createUser(BookingToursDto bookingToursDto, List<Map<String, String>> bookingTourCustomersDto, Integer totalAmountBook, Integer orderStatus) {
         TourDetails tourDetails = tourDetailsService.findById(bookingToursDto.getTourDetailId());
 
         String email = bookingToursDto.getCustomerEmail();
@@ -74,7 +74,7 @@ public class BookingTourAPIServiceImpl implements BookingTourAPIService {
 
         createBookingTourCustomers(bookingTourDto.getId(), bookingTourCustomersDto); // tạo danh sách khách hàng
 
-        if (paymentStatus == 1) { // nếu bằng 1 thì thành công còn ngược lại thì thất bại
+        if (orderStatus != 0) { // nếu bằng 1 thì thành công còn ngược lại thì thất bại
             decreaseAmountTour(bookingTourDto.getTourDetailId(), totalAmountBook); // trừ số lượng tour detail
             createInvoices(bookingToursDto.getId()); // tạo hóa đơn
             createContracts(bookingToursDto.getId()); // tạo hợp đồng
@@ -82,7 +82,7 @@ public class BookingTourAPIServiceImpl implements BookingTourAPIService {
     }
 
     @Override
-    public void createBookingTour(BookingToursDto bookingToursDto, BookingTours bookingTours, List<Map<String, String>> bookingTourCustomersDto, int orderStatus) {
+    public void createBookingTour(BookingToursDto bookingToursDto, BookingTours bookingTours, List<Map<String, String>> bookingTourCustomersDto, Integer orderStatus) {
         String bookingTourId = bookingToursDto.getId();
 
         bookingTours.setOrderStatus(orderStatus);

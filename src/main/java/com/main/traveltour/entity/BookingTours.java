@@ -10,9 +10,7 @@ import lombok.Setter;
 
 import java.math.BigDecimal;
 import java.sql.Timestamp;
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
 
 @Getter
 @Setter
@@ -77,6 +75,10 @@ public class BookingTours {
     @Basic
     @Column(name = "date_created")
     private Timestamp dateCreated;
+
+    @Basic
+    @Column(name = "date_cancelled")
+    private Timestamp dateCancelled;
 
     @Basic
     @Column(name = "order_status")

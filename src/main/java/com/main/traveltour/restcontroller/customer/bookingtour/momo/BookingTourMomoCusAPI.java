@@ -109,7 +109,7 @@ public class BookingTourMomoCusAPI {
                     bookingTourAPIService.createContracts(bookingTours.getId());
                     bookingTourAPIService.decreaseAmountTour(bookingTours.getTourDetailId(), totalAmountBook);
                 } else {
-                    bookingTourAPIService.createUser(bookingToursDto, bookingTourCustomersDto, totalAmountBook, 1, paymentStatus); // thành công
+                    bookingTourAPIService.createUser(bookingToursDto, bookingTourCustomersDto, totalAmountBook, 1); // thành công
                 }
                 orderStatus = 1;
                 emailService.queueEmailBookingTour(bookingDto);
@@ -122,7 +122,7 @@ public class BookingTourMomoCusAPI {
                     bookingTourAPIService.createInvoices(bookingTours.getId());
                     bookingTourAPIService.createContracts(bookingTours.getId());
                 } else {
-                    bookingTourAPIService.createUser(bookingToursDto, bookingTourCustomersDto, totalAmountBook, 2, paymentStatus);
+                    bookingTourAPIService.createUser(bookingToursDto, bookingTourCustomersDto, totalAmountBook, 2);
                 }
                 orderStatus = 2;
             }

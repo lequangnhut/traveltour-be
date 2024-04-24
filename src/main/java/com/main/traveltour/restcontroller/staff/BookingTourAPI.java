@@ -2,29 +2,19 @@ package com.main.traveltour.restcontroller.staff;
 
 import com.main.traveltour.dto.customer.booking.BookingDto;
 import com.main.traveltour.dto.staff.BookingToursDto;
-import com.main.traveltour.dto.staff.TransportationSchedulesDto;
 import com.main.traveltour.entity.BookingTours;
-import com.main.traveltour.entity.Hotels;
 import com.main.traveltour.entity.ResponseObject;
-import com.main.traveltour.entity.TourDetails;
+import com.main.traveltour.restcontroller.customer.bookingtour.service.BookingTourAPIService;
 import com.main.traveltour.service.staff.BookingTourService;
-import com.main.traveltour.service.staff.HotelServiceService;
-import com.main.traveltour.service.staff.TourDetailsService;
 import com.main.traveltour.service.utils.EmailService;
 import com.main.traveltour.utils.EntityDtoUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
-import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.bind.annotation.*;
 
-import java.math.BigDecimal;
 import java.sql.Timestamp;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
 
 @RestController
 @CrossOrigin(origins = "http://localhost:3000")
@@ -35,7 +25,7 @@ public class BookingTourAPI {
     private BookingTourService bookingTourService;
 
     @Autowired
-    private TourDetailsService tourDetailsService;
+    private BookingTourAPIService bookingTourAPIService;
 
     @Autowired
     private EmailService emailService;
@@ -57,12 +47,12 @@ public class BookingTourAPI {
                 ? bookingTourService.findBySearchTerm(orderStatus, searchTerm, PageRequest.of(page, size, sort))
                 : bookingTourService.getAll(orderStatus, PageRequest.of(page, size, sort));
 
-        Page<BookingToursDto> bookingToursDtos = bookingTours.map(bookingTour -> EntityDtoUtils.convertToDto(bookingTour, BookingToursDto.class));
+        Page<BookingToursDto> bookingToursDto = bookingTours.map(bookingTour -> EntityDtoUtils.convertToDto(bookingTour, BookingToursDto.class));
 
-        if (bookingToursDtos.isEmpty()) {
+        if (bookingToursDto.isEmpty()) {
             return new ResponseObject("404", "Không tìm thấy dữ liệu", null);
         } else {
-            return new ResponseObject("200", "Đã tìm thấy dữ liệu", bookingToursDtos);
+            return new ResponseObject("200", "Đã tìm thấy dữ liệu", bookingToursDto);
         }
     }
 
@@ -72,6 +62,9 @@ public class BookingTourAPI {
             BookingTours bookingTour = bookingTourService.findById(id);
             bookingTour.setOrderStatus(1);
             bookingTourService.update(bookingTour);
+
+            bookingTourAPIService.createInvoices(bookingTour.getId());
+            bookingTourAPIService.createContracts(bookingTour.getId());
 
             com.main.traveltour.dto.customer.booking.BookingToursDto bookingToursDtos = EntityDtoUtils.convertToDto(bookingTour, com.main.traveltour.dto.customer.booking.BookingToursDto.class);
 
@@ -85,16 +78,17 @@ public class BookingTourAPI {
         }
     }
 
-    @DeleteMapping("/delete-booking-tour/{id}")
-    public ResponseObject delete(@PathVariable String id) {
+    @DeleteMapping("/delete-booking-tour")
+    public ResponseObject delete(@RequestParam String bookingTourId, @RequestParam String orderNoted) {
         try {
-            BookingTours bookingTour = bookingTourService.findById(id);
+            BookingTours bookingTour = bookingTourService.findById(bookingTourId);
+            bookingTour.setOrderNote(orderNoted);
             bookingTour.setOrderStatus(2);
+            bookingTour.setDateCancelled(new Timestamp(System.currentTimeMillis()));
             bookingTourService.update(bookingTour);
             return new ResponseObject("200", "Xóa thành công", null);
         } catch (Exception e) {
             return new ResponseObject("500", "Xóa thất bại", null);
         }
     }
-
 }

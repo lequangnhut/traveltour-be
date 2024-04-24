@@ -14,6 +14,8 @@ public interface InvoicesRepository extends JpaRepository<Invoices, Integer> {
     @Query("SELECT MAX(i.id) FROM Invoices i")
     String findMaxCode();
 
+    Invoices findById(String InvoiceId);
+
     @Query("SELECT i FROM Invoices i " +
             "JOIN i.bookingToursByBookingTourId bt " +
             "WHERE (:searchTerm IS NULL OR " +

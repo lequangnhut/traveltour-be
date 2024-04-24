@@ -1,11 +1,8 @@
 package com.main.traveltour.restcontroller.staff;
 
-import com.main.traveltour.dto.staff.BookingToursDto;
 import com.main.traveltour.dto.staff.InvoicesDto;
-import com.main.traveltour.entity.BookingTours;
 import com.main.traveltour.entity.Invoices;
 import com.main.traveltour.entity.ResponseObject;
-import com.main.traveltour.service.staff.BookingTourService;
 import com.main.traveltour.service.staff.InvoicesService;
 import com.main.traveltour.utils.EntityDtoUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,4 +42,15 @@ public class InvoicesAPI {
         }
     }
 
+    @GetMapping("find-by-invoice-id")
+    public ResponseObject findByInvoiceId(@RequestParam String invoiceId) {
+        try {
+            Invoices invoices = invoicesService.findByInvoiceId(invoiceId);
+            InvoicesDto invoicesDto = EntityDtoUtils.convertToDto(invoices, InvoicesDto.class);
+
+            return new ResponseObject("200", "Thành công", invoicesDto);
+        } catch (Exception e) {
+            return new ResponseObject("404", "Không tìm thấy dữ liệu", null);
+        }
+    }
 }

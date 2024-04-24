@@ -60,11 +60,9 @@ public class BookingTourCusAPI {
                 bookingTourService.saveBookingTour(bookingTourDto);
 
                 bookingTourAPIService.createBookingTourCustomers(bookingToursDto.getId(), bookingTourCustomersDto);
-                bookingTourAPIService.createInvoices(bookingTourDto.getId());
-                bookingTourAPIService.createContracts(bookingTourDto.getId());
                 bookingTourAPIService.decreaseAmountTour(bookingTourDto.getTourDetailId(), totalAmountBook);
             } else {
-                bookingTourAPIService.createUser(bookingToursDto, bookingTourCustomersDto, totalAmountBook, 0, 1); // chờ thanh toán
+                bookingTourAPIService.createUser(bookingToursDto, bookingTourCustomersDto, totalAmountBook, 0); // chờ thanh toán
             }
             emailService.queueEmailBookingTour(bookingDto);
             return new ResponseObject("200", "Thành công", bookingDto);

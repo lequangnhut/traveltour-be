@@ -18,4 +18,9 @@ public class InvoicesServiceImpl implements InvoicesService {
     public Page<Invoices> findAllBySearchTerm(String searchTerm, Pageable pageable) {
         return repo.findAllBySearchTerm(searchTerm, pageable);
     }
+
+    @Override
+    public Invoices findByInvoiceId(String invoiceId) {
+        return repo.findById(invoiceId);
+    }
 }

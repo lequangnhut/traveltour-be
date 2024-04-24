@@ -8,9 +8,9 @@ import java.util.Map;
 
 public interface BookingTourAPIService {
 
-    void createUser(BookingToursDto bookingToursDto, List<Map<String, String>> bookingTourCustomersDto, Integer totalAmountBook, Integer orderStatus, Integer paymentStatus);
+    void createUser(BookingToursDto bookingToursDto, List<Map<String, String>> bookingTourCustomersDto, Integer totalAmountBook, Integer orderStatus);
 
-    void createBookingTour(BookingToursDto bookingToursDto, BookingTours bookingTours, List<Map<String, String>> bookingTourCustomersDto, int orderStatus);
+    void createBookingTour(BookingToursDto bookingToursDto, BookingTours bookingTours, List<Map<String, String>> bookingTourCustomersDto, Integer orderStatus);
 
     void createBookingTourCustomers(String bookingTourId, List<Map<String, String>> bookingTourCustomersDto);
 
