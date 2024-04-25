@@ -52,12 +52,16 @@ public interface OrderTransportationsRepository extends JpaRepository<OrderTrans
     @Query(value = "SELECT YEAR(o.date_created)  AS year,\n" +
             "       MONTH(o.date_created) AS month,\n" +
             "       o.order_status,\n" +
-            "       COUNT(*),\n" +
-            "       ROUND((COUNT(*) / SUM(COUNT(*)) OVER (PARTITION BY YEAR(o.date_created), MONTH(o.date_created))) * 100, 1)\n" +
+            "       COUNT(*)              AS orderCount,\n" +
+            "       ROUND((COUNT(*) / SUM(COUNT(*)) OVER (PARTITION BY YEAR(o.date_created), MONTH(o.date_created))) * 100,\n" +
+            "             1)              AS orderCountPercentage\n" +
             "FROM order_transportations o\n" +
             "         INNER JOIN order_transportations_details od ON o.id = od.order_transportations_id\n" +
             "         INNER JOIN transportation_schedules ts ON o.transportation_schedule_id = ts.id\n" +
-            "WHERE YEAR(o.date_created) = :year AND o.transportation_schedule_id = :id\n" +
+            "         INNER JOIN transportations t ON ts.transportation_id = t.id\n" +
+            "         INNER JOIN transportation_brands tb ON t.transportation_brand_id = tb.id\n" +
+            "WHERE YEAR(o.date_created) = :year\n" +
+            "  AND t.transportation_brand_id = :id\n" +
             "GROUP BY YEAR(o.date_created), MONTH(o.date_created), o.order_status", nativeQuery = true)
     List<Object[]> findStatisticalBookingTransport(Integer year, String id);
 
@@ -73,7 +77,39 @@ public interface OrderTransportationsRepository extends JpaRepository<OrderTrans
             "FROM order_transportations o\n" +
             "         INNER JOIN order_transportations_details od ON o.id = od.order_transportations_id\n" +
             "         INNER JOIN transportation_schedules ts ON o.transportation_schedule_id = ts.id\n" +
-            "WHERE YEAR(o.date_created) = :year AND o.transportation_schedule_id = :id AND o.order_status = 1\n" +
+            "         INNER JOIN transportations t ON ts.transportation_id = t.id\n" +
+            "         INNER JOIN transportation_brands tb ON t.transportation_brand_id = tb.id\n" +
+            "WHERE YEAR(o.date_created) = :year\n" +
+            "  AND tb.id = :id\n" +
+            "  AND o.order_status = 1\n" +
             "GROUP BY YEAR(o.date_created), MONTH(o.date_created), o.order_status", nativeQuery = true)
     List<Object[]> findTransportRevenueStatistics(Integer year, String id);
+
+    /**
+     * Tìm kiếm chuyến xe có lượt khách hàng đi nhiều nhất trong 1 tháng
+     * @param year 2024
+     * @param id mã chuyến xe
+     * @return trả về danh sách chuyến xe được đi nhiều nhất trong tháng
+     */
+    @Query(value = "SELECT year,\n" +
+            "       month,\n" +
+            "       formLocations,\n" +
+            "       toLocations,\n" +
+            "       MAX(amount) AS maxAmount\n" +
+            "FROM (SELECT YEAR(o.date_created)  AS year,\n" +
+            "             MONTH(o.date_created) AS month,\n" +
+            "             ts.from_location      AS formLocations,\n" +
+            "             ts.to_location        AS toLocations,\n" +
+            "             COUNT(od.id)          AS amount\n" +
+            "      FROM order_transportations o\n" +
+            "               INNER JOIN order_transportations_details od ON o.id = od.order_transportations_id\n" +
+            "               INNER JOIN transportation_schedules ts ON o.transportation_schedule_id = ts.id\n" +
+            "               INNER JOIN transportations t ON ts.transportation_id = t.id\n" +
+            "               INNER JOIN transportation_brands tb ON t.transportation_brand_id = tb.id\n" +
+            "      WHERE YEAR(o.date_created) = :year\n" +
+            "        AND t.transportation_brand_id = :id\n" +
+            "        AND o.order_status = 1\n" +
+            "      GROUP BY YEAR(o.date_created), MONTH(o.date_created), ts.from_location, ts.to_location) AS subquery\n" +
+            "GROUP BY year, month, formLocations, toLocations;", nativeQuery = true)
+    List<Object[]> statisticalTransportBrand(Integer year, String id);
 }

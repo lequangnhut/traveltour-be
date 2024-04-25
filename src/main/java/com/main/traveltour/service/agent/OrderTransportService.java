@@ -1,6 +1,8 @@
 package com.main.traveltour.service.agent;
 
 import com.main.traveltour.dto.agent.hotel.HotelRevenueDto;
+import com.main.traveltour.dto.agent.hotel.StatisticalBookingHotelDto;
+import com.main.traveltour.dto.agent.transport.StatiscalTransportBrandDto;
 import com.main.traveltour.entity.OrderTransportations;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -24,4 +26,6 @@ public interface OrderTransportService {
     HotelRevenueDto findTransportRevenueStatistics(Integer year, String hotelId);
 
     List<Integer> findAllOrderHotelYear();
+
+    List<StatiscalTransportBrandDto> statisticalTransportBrand(Integer year, String id);
 }

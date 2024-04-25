@@ -2,6 +2,7 @@ package com.main.traveltour.restcontroller.agent.transport;
 
 import com.main.traveltour.dto.agent.hotel.HotelRevenueDto;
 import com.main.traveltour.dto.agent.hotel.StatisticalBookingHotelDto;
+import com.main.traveltour.dto.agent.transport.StatiscalTransportBrandDto;
 import com.main.traveltour.entity.ResponseObject;
 import com.main.traveltour.service.agent.OrderTransportService;
 import com.main.traveltour.service.staff.OrderHotelsService;
@@ -29,14 +30,14 @@ public class StatisticalTransportAPI {
         return ResponseEntity.ok(response);
     }
 
-//    @GetMapping("agent/hotel/statistical/statisticalTransportBrand")
-//    public ResponseEntity<List<StatisticalBookingHotelDto>> statisticalTransportBrand(
-//            @RequestParam(required = false) Integer year,
-//            @RequestParam(required = false) String id
-//    ) {
-//        List<StatisticalBookingHotelDto> response = orderTransportService.(year, id);
-//        return ResponseEntity.ok(null);
-//    }
+    @GetMapping("agent/hotel/statistical/statisticalTransportBrand")
+    public ResponseEntity<List<StatiscalTransportBrandDto>> statisticalTransportBrand(
+            @RequestParam(required = false) Integer year,
+            @RequestParam(required = false) String id
+    ) {
+        List<StatiscalTransportBrandDto> response = orderTransportService.statisticalTransportBrand(year, id);
+        return ResponseEntity.ok(response);
+    }
 
     @GetMapping("agent/hotel/statistical/findTransportRevenueStatistics")
     public ResponseEntity<HotelRevenueDto> getTransportRevenueStatistics(
