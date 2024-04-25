@@ -3,6 +3,7 @@ package com.main.traveltour.service.agent.Impl;
 import com.main.traveltour.dto.agent.hotel.HotelRevenueDto;
 import com.main.traveltour.dto.agent.hotel.LastYearRevenueDto;
 import com.main.traveltour.dto.agent.hotel.RevenueThisYearDto;
+import com.main.traveltour.dto.agent.transport.StatiscalTransportBrandDto;
 import com.main.traveltour.dto.agent.transport.TransportRevenueDto;
 import com.main.traveltour.entity.OrderTransportations;
 import com.main.traveltour.repository.OrderTransportationsRepository;
@@ -165,5 +166,56 @@ public class OrderTransportServiceImpl implements OrderTransportService {
     @Override
     public List<Integer> findAllOrderHotelYear() {
         return null;
+    }
+
+    @Override
+    public List<StatiscalTransportBrandDto> statisticalTransportBrand(Integer year, String id) {
+        Objects.requireNonNull(year, "{\"message\": \"Không được bỏ trống dữ liệu\"}");
+        Objects.requireNonNull(id, "{\"message\": \"Không được bỏ trống dữ liệu\"}");
+
+        List<StatiscalTransportBrandDto> result = new ArrayList<>();
+        List<Object[]> statisticalTransportBrand = repo.statisticalTransportBrand(year, id);
+
+        // Tạo mảng 12 phần tử để lưu thông tin của từng tháng
+        StatiscalTransportBrandDto[] monthlyStats = new StatiscalTransportBrandDto[12];
+        Arrays.fill(monthlyStats, null);
+
+        for (Object[] object : statisticalTransportBrand) {
+            Integer years = (Integer) object[0];
+            Integer month = (Integer) object[1];
+            String formLocation = (String) object[2];
+            String toLocation = (String) object[3];
+            Long maxAmount = (Long) object[4];
+
+            if (month >= 1 && month <= 12) {
+                if (monthlyStats[month - 1] == null) {
+                    monthlyStats[month - 1] = StatiscalTransportBrandDto.builder()
+                            .year(years)
+                            .month(month)
+                            .formLocation(formLocation)
+                            .toLocation(toLocation)
+                            .maxAmount(maxAmount)
+                            .build();
+                } else {
+                    StatiscalTransportBrandDto existingStat = monthlyStats[month - 1];
+                    existingStat.setMaxAmount(existingStat.getMaxAmount());
+                }
+            }
+        }
+
+        for (int i = 0; i < 12; i++) {
+            if (monthlyStats[i] == null) {
+                result.add(StatiscalTransportBrandDto.builder()
+                        .year(year)
+                        .month(i + 1)
+                        .formLocation("")
+                        .toLocation("")
+                        .maxAmount(0L)
+                        .build());
+            } else {
+                result.add(monthlyStats[i]);
+            }
+        }
+        return result;
     }
 }
