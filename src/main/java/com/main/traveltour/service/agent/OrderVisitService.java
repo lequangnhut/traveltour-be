@@ -5,6 +5,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.repository.query.Param;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
 
@@ -23,4 +24,10 @@ public interface OrderVisitService {
     Optional<OrderVisits> findByIdOptional(String id);
 
     List<Double> getStatisticalBookingVisitLocation(Integer year, String visitId);
+
+    List<Long[]> getNumberOfAdultTickets(Integer year, String visitId);
+
+    List<BigDecimal[]> getRevenueOfTouristAttractions(Integer year, String visitId);
+
+    List<Integer> getAllOrderVisitYear();
 }

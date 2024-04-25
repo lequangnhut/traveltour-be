@@ -8,6 +8,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -71,5 +72,47 @@ public class OrderVisitServiceImpl implements OrderVisitService {
         }
         return percentages;
     }
+
+    @Override
+    public List<Long[]> getNumberOfAdultTickets(Integer year, String visitId) {
+        List<Long[]> listNumberOfTickets = new ArrayList<>();
+
+        for (int i = 1; i <= 12; i++) {
+            Object[] numberOfTicketsThisYear = orderVisitsRepository.getNumberOfAdultTickets(year, i, visitId);
+            Object[] numberOfTicketsLastYear = orderVisitsRepository.getNumberOfAdultTickets(year - 1, i, visitId);
+            Long[] ticketCounts = new Long[4];
+            ticketCounts[0] = (Long) ((Object[]) numberOfTicketsThisYear[0])[0];
+            ticketCounts[1] = (Long) ((Object[]) numberOfTicketsThisYear[0])[1]; // Số vé trẻ em năm nay
+            ticketCounts[2] = (Long) ((Object[]) numberOfTicketsLastYear[0])[0]; // Số vé người lớn năm trước
+            ticketCounts[3] = (Long) ((Object[]) numberOfTicketsLastYear[0])[1]; // Số vé trẻ em năm trước
+
+            listNumberOfTickets.add(ticketCounts);
+        }
+
+        return listNumberOfTickets;
+    }
+
+    @Override
+    public List<BigDecimal[]> getRevenueOfTouristAttractions(Integer year, String visitId) {
+        List<BigDecimal[]> listNumberOfTickets = new ArrayList<>();
+
+        for (int i = 1; i <= 12; i++) {
+            BigDecimal revenueThisYear = orderVisitsRepository.getRevenueOfTouristAttractions(year, i, visitId);
+            BigDecimal revenueLastYear = orderVisitsRepository.getRevenueOfTouristAttractions(year - 1, i, visitId);
+            BigDecimal[] ticketCounts = new BigDecimal[2];
+            ticketCounts[0] = revenueThisYear;
+            ticketCounts[1] = revenueLastYear;
+
+            listNumberOfTickets.add(ticketCounts);
+        }
+
+        return listNumberOfTickets;
+    }
+
+    @Override
+    public List<Integer> getAllOrderVisitYear() {
+        return orderVisitsRepository.getAllOrderVisitYear();
+    }
+
 
 }
