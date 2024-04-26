@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
 import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -237,7 +238,7 @@ public class CustomerInformationAPI {
     }
 
     @DeleteMapping("delete-booking-tour-customer/{id}")
-    public ResponseObject delete(@PathVariable String id) {
+    public ResponseObject delete(@PathVariable String id, @RequestParam String noted) {
         try {
             int coc;
             BigDecimal moneyBack = null;
@@ -251,6 +252,8 @@ public class CustomerInformationAPI {
             int capacityKid = bookingTour.getCapacityKid();
             int unitPrice = unitPriceDecimal.intValue();
             BigDecimal orderTotal = BigDecimal.valueOf((capacityAdult * unitPrice) + (capacityKid * (unitPrice * 0.3)));
+
+            String oldNote = bookingTour.getOrderNote();
 
             //Tìm giá trị cọc theo ngày
             Date currentDate = new Date();
@@ -280,14 +283,23 @@ public class CustomerInformationAPI {
                     moneyBack = orderTotal;
                 }
             }
+
             BigDecimal cocPercentage = BigDecimal.valueOf(coc);
             BigDecimal cocAmount = orderTotal.multiply(cocPercentage).divide(BigDecimal.valueOf(100));
             moneyBack = orderTotal.subtract(cocAmount);
 
              //Trả ghế lại cho Tour Details
-            Integer totalAmountBook = bookingTour.getCapacityAdult() + bookingTour.getCapacityKid() + bookingTour.getCapacityBaby();
+            Integer totalAmountBook = bookingTour.getCapacityAdult() + bookingTour.getCapacityKid();
             Integer booked = tourDetails.getBookedSeat();
             //Lưu trạng thái mới đơn hàng
+
+            if(oldNote == null){
+                bookingTour.setOrderNote(" - Hủy đơn vì: " + noted);
+            }else{
+                //Đổi trạng thái order
+                bookingTour.setOrderNote(oldNote + " - Hủy đơn vì: " + noted);
+            }
+            bookingTour.setDateCancelled(Timestamp.valueOf(LocalDateTime.now()));
             bookingTour.setOrderStatus(2);
             bookingTourService.update(bookingTour);
             //Lưu ghế lại cho Tour Details
@@ -297,6 +309,7 @@ public class CustomerInformationAPI {
             CancelBookingTourDTO bookingToursDto = EntityDtoUtils.convertToDto(bookingTour, CancelBookingTourDTO.class);
             bookingToursDto.setCoc(coc);
             bookingToursDto.setMoneyBack(moneyBack);
+            bookingToursDto.setReasonNote(noted);
 
             //Entity của các đơn hủy
             CancelOrders cancelOrders = new CancelOrders();
@@ -308,9 +321,6 @@ public class CustomerInformationAPI {
             cancelOrders.setDateCreated(new Timestamp(System.currentTimeMillis()));
             cancelOrdersService.save(cancelOrders);
 
-            //System.out.println(diffInDays);
-            //System.out.println(bookingToursDto.getCoc());
-            //System.out.println(bookingToursDto.getMoneyBack());
             //Gửi mail
             emailService.queueEmailCustomerCancelTour(bookingToursDto);
 
@@ -321,7 +331,7 @@ public class CustomerInformationAPI {
         }
     }
     @DeleteMapping("delete-booking-hotel-customer/{id}")
-    public ResponseObject deleteHotelOrder(@PathVariable String id) {
+    public ResponseObject deleteHotelOrder(@PathVariable String id, @RequestParam String noted) {
         try {
             boolean notFree = false;
             String name = null;
@@ -331,6 +341,8 @@ public class CustomerInformationAPI {
             OrderHotels orderHotels = orderHotelsService.findById(id);
             List<OrderHotelDetails> orderHotelDetails = orderHotelDetailService.findByOrderHotelId(orderHotels.getId());
             List<OrderHotelDetailsDto> orderHotelDetailsDto = EntityDtoUtils.convertToDtoList(orderHotelDetails, OrderHotelDetailsDto.class);
+
+            String oldNote = orderHotels.getOrderNote();
 
             for (OrderHotelDetailsDto orderDetail : orderHotelDetailsDto) {
                 RoomTypes roomType = orderDetail.getRoomTypes();
@@ -348,7 +360,7 @@ public class CustomerInformationAPI {
             long departureDateTime = departureDate.getTime();
             long diffInDays = (departureDateTime - currentDateTime) / (1000 * 60 * 60 * 24);
 
-            if ((orderHotels.getPaymentMethod().equals("TTTT") && orderHotels.getOrderStatus() == 0) || notFree == false) {
+            if ((orderHotels.getPaymentMethod().equals("VPO") && orderHotels.getOrderStatus() == 0) || notFree == false) {
                 coc = 0;
                 moneyBack = orderHotels.getOrderTotal();
             } else {
@@ -366,12 +378,19 @@ public class CustomerInformationAPI {
             BigDecimal cocAmount = (orderHotels.getOrderTotal()).multiply(cocPercentage).divide(BigDecimal.valueOf(100)); // Tính số tiền tương ứng với phí hủy
             moneyBack = (orderHotels.getOrderTotal()).subtract(cocAmount); // Trừ số tiền phí hủy từ tổng tiền
 
-            orderHotels.setOrderStatus(2);
+            if(oldNote == null){
+                orderHotels.setOrderNote(" - Hủy đơn vì: " + noted);
+            }else{
+                //Đổi trạng thái order
+                orderHotels.setOrderNote(oldNote + " - Hủy đơn vì: " + noted);
+            }
+            orderHotels.setOrderStatus(4);
             orderHotelsService.save(orderHotels);
 
             CancelOrderHotelsDto cancelOrderHotelsDto = EntityDtoUtils.convertToDto(orderHotels, CancelOrderHotelsDto.class);
             cancelOrderHotelsDto.setCoc(coc);
             cancelOrderHotelsDto.setMoneyBack(moneyBack);
+            cancelOrderHotelsDto.setReasonNote(noted);
 
             //Entity của các đơn hủy
             CancelOrders cancelOrders = new CancelOrders();
@@ -383,11 +402,6 @@ public class CustomerInformationAPI {
             cancelOrders.setDateCreated(new Timestamp(System.currentTimeMillis()));
             cancelOrdersService.save(cancelOrders);
 
-
-            //System.out.println(diffInDays);
-            //System.out.println(cancelOrderHotelsDto.getCoc());
-            //System.out.println(cancelOrderHotelsDto.getMoneyBack());
-
             emailService.queueEmailCustomerCancelHotel(cancelOrderHotelsDto);
 
             return new ResponseObject("200", "Xóa thành công", cancelOrderHotelsDto);
@@ -397,7 +411,7 @@ public class CustomerInformationAPI {
     }
 
     @DeleteMapping("delete-booking-visit-customer/{id}")
-    public ResponseObject deleteVisitOrder(@PathVariable String id) {
+    public ResponseObject deleteVisitOrder(@PathVariable String id, @RequestParam String noted) {
         try {
             int coc;
             BigDecimal moneyBack = null;
@@ -405,6 +419,8 @@ public class CustomerInformationAPI {
             OrderVisits orderVisits = orderVisitLocationService.findById(id);
             List<OrderVisitDetails> orderVisitDetailsList = orderVisitLocationDetailService.findByOrderVisitId(orderVisits.getId());
             List<OrderVisitDetailsDto> orderVisitDetailsDtoList = EntityDtoUtils.convertToDtoList(orderVisitDetailsList, OrderVisitDetailsDto.class);
+
+            String oldNote = orderVisits.getOrderNote();
 
             Date currentDate = new Date();
             Date departureDate = orderVisits.getCheckIn();
@@ -430,8 +446,12 @@ public class CustomerInformationAPI {
             BigDecimal cocPercentage = BigDecimal.valueOf(coc);
             BigDecimal cocAmount = (orderVisits.getOrderTotal()).multiply(cocPercentage).divide(BigDecimal.valueOf(100));
             moneyBack = (orderVisits.getOrderTotal()).subtract(cocAmount);
-
-            //Đổi trạng thái order
+            if(oldNote == null){
+                orderVisits.setOrderNote(" - Hủy đơn vì: " + noted);
+            }else{
+                //Đổi trạng thái order
+                orderVisits.setOrderNote(oldNote + " - Hủy đơn vì: " + noted);
+            }
             orderVisits.setOrderStatus(2);
             orderVisitLocationService.save(orderVisits);
 
@@ -439,6 +459,7 @@ public class CustomerInformationAPI {
             CancelOrderVisitsDto cancelOrderVisitsDto = EntityDtoUtils.convertToDto(orderVisits, CancelOrderVisitsDto.class);
             cancelOrderVisitsDto.setCoc(coc);
             cancelOrderVisitsDto.setMoneyBack(moneyBack);
+            cancelOrderVisitsDto.setReasonNote(noted);
 
             //Entity của các đơn hủy
             CancelOrders cancelOrders = new CancelOrders();
@@ -450,10 +471,6 @@ public class CustomerInformationAPI {
             cancelOrders.setDateCreated(new Timestamp(System.currentTimeMillis()));
             cancelOrdersService.save(cancelOrders);
 
-            //System.out.println(diffInDays);
-            //System.out.println(cancelOrderVisitsDto.getCoc());
-            //System.out.println(cancelOrderVisitsDto.getMoneyBack());
-
             emailService.queueEmailCustomerCancelVisit(cancelOrderVisitsDto);
 
             return new ResponseObject("200", "Xóa thành công", cancelOrderVisitsDto);
@@ -463,7 +480,7 @@ public class CustomerInformationAPI {
     }
 
     @DeleteMapping("delete-booking-trans-customer/{id}")
-    public ResponseObject deleteTransOrder(@PathVariable String id) {
+    public ResponseObject deleteTransOrder(@PathVariable String id, @RequestParam String noted) {
         try {
             int coc;
             BigDecimal moneyBack = null;
@@ -471,6 +488,8 @@ public class CustomerInformationAPI {
             OrderTransportations orderTransportations = orderTransportationService.findById(id);
             List<OrderTransportationDetails> orderTransportationDetailsList = orderVehicleDetailsService.findByOrderId(orderTransportations.getId());
             List<OrderTransportationDetailsDto> orderTransportationDetailsDtos = EntityDtoUtils.convertToDtoList(orderTransportationDetailsList, OrderTransportationDetailsDto.class);
+
+            String oldNote = orderTransportations.getOrderNote();
 
             Date currentDate = new Date();
             Date departureDate = orderTransportations.getTransportationSchedulesByTransportationScheduleId().getDepartureTime();
@@ -496,6 +515,12 @@ public class CustomerInformationAPI {
             BigDecimal cocAmount = (orderTransportations.getOrderTotal()).multiply(cocPercentage).divide(BigDecimal.valueOf(100));
             moneyBack = (orderTransportations.getOrderTotal()).subtract(cocAmount);
 
+            if(oldNote == null){
+                orderTransportations.setOrderNote(" - Hủy đơn vì: " + noted);
+            }else{
+                //Đổi trạng thái order
+                orderTransportations.setOrderNote(oldNote + " - Hủy đơn vì: " + noted);
+            }
             //Đổi trạng thái order
             orderTransportations.setOrderStatus(2);
             orderTransportationService.save(orderTransportations);
@@ -518,6 +543,7 @@ public class CustomerInformationAPI {
             CancelOrderTransportationsDto cancelOrderTransportationsDto = EntityDtoUtils.convertToDto(orderTransportations, CancelOrderTransportationsDto.class);
             cancelOrderTransportationsDto.setCoc(coc);
             cancelOrderTransportationsDto.setMoneyBack(moneyBack);
+            cancelOrderTransportationsDto.setReasonNote(noted);
 
             //Entity của các đơn hủy
             CancelOrders cancelOrders = new CancelOrders();
@@ -528,10 +554,6 @@ public class CustomerInformationAPI {
             cancelOrders.setDepositPrice(price);
             cancelOrders.setDateCreated(new Timestamp(System.currentTimeMillis()));
             cancelOrdersService.save(cancelOrders);
-
-            //System.out.println(diffInDays);
-            //System.out.println(cancelOrderTransportationsDto.getCoc());
-            //System.out.println(cancelOrderTransportationsDto.getMoneyBack());
 
             emailService.queueEmailCustomerCancelTrans(cancelOrderTransportationsDto);
 

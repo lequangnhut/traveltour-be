@@ -1,7 +1,6 @@
 package com.main.traveltour.repository;
 
 import com.main.traveltour.entity.Hotels;
-import com.main.traveltour.entity.OrderHotels;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -147,4 +146,16 @@ public interface HotelsRepository extends JpaRepository<Hotels, String> {
             "GROUP BY h.id " +
             "ORDER BY h.dateCreated DESC")
     Page<Hotels> findHotelByTourDetailIdForGuide(@Param("tourDetailId") String tourDetailId, Pageable pageable, String searchTerm);
+
+    @Query(value="SELECT h.* " +
+            "FROM order_hotels oh " +
+            "JOIN order_hotel_details ohd ON oh.id = ohd.order_hotel_id " +
+            "JOIN room_types rt ON ohd.room_type_id = rt.id " +
+            "JOIN hotels h ON rt.hotel_id = h.id " +
+            "WHERE oh.order_status <> 2 AND  h.is_active = TRUE " +
+            "GROUP BY h.id " +
+            "ORDER BY COUNT(oh.id) DESC " +
+            "LIMIT 3;", nativeQuery = true)
+    List<Hotels> find3HotelMostOrder ();
+
 }

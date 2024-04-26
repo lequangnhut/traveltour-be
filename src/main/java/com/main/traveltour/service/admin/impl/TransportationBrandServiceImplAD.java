@@ -6,10 +6,17 @@ import com.main.traveltour.service.admin.TransportationBrandServiceAD;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 public class TransportationBrandServiceImplAD implements TransportationBrandServiceAD {
     @Autowired
     private TransportationBrandsRepository repo;
+
+    @Override
+    public List<TransportationBrands> findThreeVehicleMostOrder() {
+        return repo.find3BrandMostOrder();
+    }
 
     @Override
     public Long countTransportationBrandsChart(Integer year) {

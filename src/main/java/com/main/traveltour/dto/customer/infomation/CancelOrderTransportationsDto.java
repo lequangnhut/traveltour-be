@@ -32,6 +32,7 @@ public class CancelOrderTransportationsDto implements Serializable {
     Timestamp dateCreated;
     Integer orderStatus;
     String orderNote;
+    String reasonNote;
     int coc;
     BigDecimal moneyBack;
     Collection<OrderTransportationDetails> orderTransportationDetails;

@@ -21,4 +21,6 @@ public interface VisitLocationsServiceAD {
     VisitLocations save(VisitLocations visitLocations);
 
     Long countVisitLocationsChart(Integer year);
+
+    List<VisitLocations> findThreeVisitLocation();
 }

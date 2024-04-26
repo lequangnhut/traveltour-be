@@ -151,4 +151,24 @@ public class UsersServiceImpl implements UsersService {
     public Long countUsers() {
         return usersRepository.countUsers();
     }
+
+    @Override
+    public Integer countUserNow() {
+        return usersRepository.countUserNow();
+    }
+
+    @Override
+    public Integer countUserMonthAgo() {
+        return usersRepository.countUserMonthAgo();
+    }
+
+    @Override
+    public Integer countUserAgentNow() {
+        return usersRepository.countUserAgentNow();
+    }
+
+    @Override
+    public Integer countUserAgentMonthAgo() {
+        return usersRepository.countUserAgentMonthAgo();
+    }
 }

@@ -28,6 +28,7 @@ public class CancelOrderVisitsDto implements Serializable {
     BigDecimal orderTotal;
     Integer paymentMethod;
     String orderCode;
+    String reasonNote;
     Timestamp dateCreated;
     Integer orderStatus;
     String orderNote;

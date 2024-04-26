@@ -1,5 +1,6 @@
 package com.main.traveltour.repository;
 
+import com.main.traveltour.entity.Agencies;
 import com.main.traveltour.entity.TransportationBrands;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -95,5 +96,17 @@ public interface TransportationBrandsRepository extends JpaRepository<Transporta
             "AND tb.isActive = TRUE AND tb.isAccepted = TRUE " +
             "AND YEAR(tb.dateCreated) = :year ")
     Long countTransportationBrandsChart(@Param("year") Integer year);
+
+    @Query(value="SELECT tb.*" +
+            "FROM order_transportations ot " +
+            "JOIN order_transportations_details otd on ot.id = otd.order_transportations_id " +
+            "JOIN transportation_schedules ts on ot.transportation_schedule_id = ts.id " +
+            "JOIN transportations t on ts.transportation_id = t.id " +
+            "JOIN transportation_brands tb on t.transportation_brand_id = tb.id " +
+            "WHERE ot.order_status <> 2 AND tb.is_active = TRUE " +
+            "GROUP BY tb.id " +
+            "ORDER BY SUM(ot.id) DESC " +
+            "LIMIT 3;", nativeQuery = true)
+    List<TransportationBrands> find3BrandMostOrder ();
 
 }

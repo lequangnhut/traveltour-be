@@ -31,6 +31,7 @@ public class CancelOrderHotelsDto implements Serializable {
     Timestamp dateCreated;
     Integer orderStatus;
     String orderNote;
+    String reasonNote;
     Collection<OrderHotelDetails> orderHotelDetails;
     PaymentMethod method;
     int coc;

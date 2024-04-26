@@ -88,4 +88,40 @@ public interface UsersRepository extends JpaRepository<Users, Integer> {
             "JOIN u.roles r " +
             "WHERE r.nameRole IN ('ROLE_CUSTOMER')")
     Long countUsers ();
+
+    @Query(value="SELECT COUNT(u.id) " +
+            "FROM users u " +
+            "JOIN roles_users ru on u.id = ru.user_id " +
+            "JOIN roles r on ru.role_id = r.id " +
+            "WHERE r.name_role LIKE 'ROLE_CUSTOMER' " +
+            "AND MONTH(u.date_created) = MONTH(CURRENT_DATE()) " +
+            "AND YEAR(u.date_created) = YEAR(CURRENT_DATE());", nativeQuery = true)
+    Integer countUserNow();
+
+    @Query(value="SELECT COUNT(u.id) " +
+            "FROM users u " +
+            "JOIN roles_users ru on u.id = ru.user_id " +
+            "JOIN roles r on ru.role_id = r.id " +
+            "WHERE r.name_role LIKE 'ROLE_CUSTOMER' " +
+            "AND MONTH(u.date_created) = MONTH(CURRENT_DATE() - INTERVAL 1 MONTH) " +
+            "AND YEAR(u.date_created) = YEAR(CURRENT_DATE() - INTERVAL 1 MONTH);", nativeQuery = true)
+    Integer countUserMonthAgo();
+
+    @Query(value="SELECT COUNT(u.id) " +
+            "FROM users u " +
+            "JOIN roles_users ru on u.id = ru.user_id " +
+            "JOIN roles r on ru.role_id = r.id " +
+            "WHERE r.name_role IN ('ROLE_AGENT_HOTEL','ROLE_AGENT_TRANSPORT','ROLE_AGENT_PLACE') " +
+            "AND MONTH(u.date_created) = MONTH(CURRENT_DATE()) " +
+            "AND YEAR(u.date_created) = YEAR(CURRENT_DATE());", nativeQuery = true)
+    Integer countUserAgentNow();
+
+    @Query(value="SELECT COUNT(u.id) " +
+            "FROM users u " +
+            "JOIN roles_users ru on u.id = ru.user_id " +
+            "JOIN roles r on ru.role_id = r.id " +
+            "WHERE r.name_role IN ('ROLE_AGENT_HOTEL','ROLE_AGENT_TRANSPORT','ROLE_AGENT_PLACE') " +
+            "AND MONTH(u.date_created) = MONTH(CURRENT_DATE() - INTERVAL 1 MONTH) " +
+            "AND YEAR(u.date_created) = YEAR(CURRENT_DATE() - INTERVAL 1 MONTH);", nativeQuery = true)
+    Integer countUserAgentMonthAgo();
 }

@@ -4,6 +4,7 @@ import com.main.traveltour.dto.auth.LoginDto;
 import com.main.traveltour.entity.Users;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.Query;
 
 import java.util.List;
 
@@ -44,4 +45,12 @@ public interface UsersService {
     Users checkMailAdminForgot(String email);
 
     Long countUsers();
+
+    Integer countUserNow();
+
+    Integer countUserMonthAgo();
+
+    Integer countUserAgentNow();
+
+    Integer countUserAgentMonthAgo();
 }

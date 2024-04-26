@@ -41,6 +41,8 @@ public class CancelBookingTourDTO {
 
     String orderNote;
 
+    String reasonNote;
+
     int coc;
 
     BigDecimal moneyBack;
