@@ -35,13 +35,21 @@ public class BookingTourAPI {
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size,
             @RequestParam(defaultValue = "id") String sortBy,
-            @RequestParam(defaultValue = "asc") String sortDir,
+            @RequestParam(defaultValue = "desc") String sortDir,
+            @RequestParam(required = false) String dateSort,
             @RequestParam(required = false) Integer orderStatus,
             @RequestParam(required = false) String searchTerm) {
+        Sort sort;
 
-        Sort sort = sortDir.equalsIgnoreCase(Sort.Direction.ASC.name())
-                ? Sort.by(sortBy).ascending()
-                : Sort.by(sortBy).descending();
+        if (dateSort != null && !dateSort.isEmpty()) {
+            sort = sortDir.equalsIgnoreCase(Sort.Direction.ASC.name())
+                    ? Sort.by(dateSort).ascending()
+                    : Sort.by(dateSort).descending();
+        } else {
+            sort = sortDir.equalsIgnoreCase(Sort.Direction.ASC.name())
+                    ? Sort.by(sortBy).ascending()
+                    : Sort.by(sortBy).descending();
+        }
 
         Page<BookingTours> bookingTours = searchTerm != null && !searchTerm.isEmpty()
                 ? bookingTourService.findBySearchTerm(orderStatus, searchTerm, PageRequest.of(page, size, sort))

@@ -18,17 +18,24 @@ public interface BookingToursRepository extends JpaRepository<BookingTours, Inte
 
     BookingTours findById(String bookingTourId);
 
-    @Query("SELECT bt FROM BookingTours bt WHERE bt.orderStatus = :orderStatus")
-    Page<BookingTours> findAllBookingTours(@Param("orderStatus") Integer orderStatus, Pageable pageable);
+    @Query("SELECT bt FROM BookingTours bt " +
+            "LEFT JOIN bt.invoicesById inv " +
+            "WHERE bt.orderStatus = :orderStatus")
+    Page<BookingTours> findAllBookingTours(@Param("orderStatus") Integer orderStatus,
+                                           Pageable pageable);
 
     @Query("SELECT bt FROM BookingTours bt " +
+            "LEFT JOIN bt.invoicesById inv " +
             "WHERE bt.orderStatus = :orderStatus AND " +
             "(UPPER(bt.customerName) LIKE %:searchTerm% OR " +
             "UPPER(bt.customerCitizenCard) LIKE %:searchTerm% OR " +
+            "UPPER(bt.id) LIKE %:searchTerm% OR " +
             "UPPER(bt.customerPhone) LIKE %:searchTerm% OR " +
             "UPPER(bt.customerEmail) LIKE %:searchTerm% OR " +
             "CAST(bt.orderTotal AS string) LIKE %:searchTerm%)")
-    Page<BookingTours> findBySearchTerm(@Param("orderStatus") Integer orderStatus, @Param("searchTerm") String searchTerm, Pageable pageable);
+    Page<BookingTours> findBySearchTerm(@Param("orderStatus") Integer orderStatus,
+                                        @Param("searchTerm") String searchTerm,
+                                        Pageable pageable);
 
     @Query("SELECT bt FROM BookingTours bt WHERE bt.orderStatus = :orderStatus AND bt.customerEmail = :email")
     Page<BookingTours> findAllBookingToursByUserId(@Param("orderStatus") Integer orderStatus, @Param("email") String email, Pageable pageable);
@@ -66,6 +73,7 @@ public interface BookingToursRepository extends JpaRepository<BookingTours, Inte
             "AND YEAR(bt.dateCreated) = :year " +
             "AND bt.orderStatus = 1")
     BigDecimal getRevenueForMonth(@Param("year") Integer year, @Param("month") Integer month);
+
     default List<BigDecimal> revenueOf12MonthsOfTheYearFromTourBooking(Integer year) {
         List<BigDecimal> revenues = new ArrayList<>();
         for (int i = 1; i <= 12; i++) {

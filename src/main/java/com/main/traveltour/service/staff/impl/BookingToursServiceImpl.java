@@ -12,6 +12,7 @@ import java.util.Optional;
 
 @Service
 public class BookingToursServiceImpl implements BookingTourService {
+
     @Autowired
     private BookingToursRepository repo;
 

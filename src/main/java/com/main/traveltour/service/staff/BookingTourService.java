@@ -8,6 +8,7 @@ import java.util.Optional;
 
 
 public interface BookingTourService {
+
     Page<BookingTours> getAll(Integer orderStatus, Pageable pageable);
 
     BookingTours findById(String bookingTourId);

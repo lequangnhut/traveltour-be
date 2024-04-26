@@ -1,18 +1,11 @@
 package com.main.traveltour.dto.staff;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.main.traveltour.entity.*;
-import jakarta.persistence.*;
 import lombok.Data;
-import lombok.Value;
 
-import java.io.Serializable;
 import java.math.BigDecimal;
 import java.sql.Timestamp;
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
 
 /**
  * DTO for {@link com.main.traveltour.entity.BookingTours}
@@ -57,6 +50,8 @@ public class BookingToursDto {
     Collection<BookingTourCustomers> bookingTourCustomersById;
 
     Collection<Invoices> invoicesById;
+
+    Collection<Contracts> contractsById;
 
     Users usersByUserId;
 

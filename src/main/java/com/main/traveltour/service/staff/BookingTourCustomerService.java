@@ -11,6 +11,7 @@ public interface BookingTourCustomerService {
     Page<BookingTourCustomers> findBySearchTermAndTourDetailId(String tourDetailId, String searchTerm, Pageable pageable);
 
     Optional<BookingTourCustomers> findById(Integer id);
+
     BookingTourCustomers findByCustomerPhone(String customerPhone);
 
     List<BookingTourCustomers> findByTourDetailId(String tourDetailId);

@@ -100,13 +100,13 @@ public class BookingTourAPIServiceImpl implements BookingTourAPIService {
                 String key = entry.getKey();
                 String value = entry.getValue();
 
-                if (key.startsWith("NameKH")) {
-                    int index = Integer.parseInt(key.substring(6));
+                if (key.startsWith("Name") && key.length() == 5) {
+                    int index = Integer.parseInt(key.substring(4));
 
                     bookingTourCustomers.setBookingTourId(bookingTourId);
                     bookingTourCustomers.setCustomerName(value);
-                    bookingTourCustomers.setCustomerBirth(Date.valueOf(data.get("BirthKH" + index)));
-                    bookingTourCustomers.setCustomerPhone(data.get("PhoneKH" + index));
+                    bookingTourCustomers.setCustomerBirth(Date.valueOf(data.get("Birth" + index)));
+                    bookingTourCustomers.setCustomerPhone(data.get("Phone" + index));
 
                     bookingTourService.saveBookingTourCustomer(bookingTourCustomers);
                 }

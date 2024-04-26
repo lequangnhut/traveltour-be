@@ -109,5 +109,4 @@ public class BookingTours {
     @JoinColumn(name = "tour_detail_id", referencedColumnName = "id", nullable = false, insertable = false, updatable = false)
     @JsonBackReference
     private TourDetails tourDetailsByTourDetailId;
-
 }
