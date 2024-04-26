@@ -7,7 +7,6 @@ import java.util.List;
 
 public interface ChatMessageRepository extends JpaRepository<ChatMessage, String>{
     List<ChatMessage> findByChatId(String chatId);
-
     Integer countByChatIdAndRecipientIdAndStatusIs(String chatId, String recipient, boolean isRead);
     Integer countBySenderIdAndRecipientIdIs(String senderId, String recipient);
     List<ChatMessage> findByChatIdOrderByTimestampDesc(String chatId);

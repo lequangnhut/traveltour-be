@@ -43,7 +43,6 @@ public class ChatController {
 
     @MessageMapping("/{userId}/chat")
     public void processMessage(@Payload ChatMessage chatMessage) {
-        System.out.println("Message: " + chatMessage.toString());
         ChatMessage savedMsg = chatMessageService.saveChatRoom(chatMessage);
         messagingTemplate.convertAndSendToUser(
                 chatMessage.getRecipientId(), "/queue/messages",
