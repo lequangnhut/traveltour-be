@@ -29,6 +29,7 @@ public interface BookingToursRepository extends JpaRepository<BookingTours, Inte
             "WHERE bt.orderStatus = :orderStatus AND " +
             "(UPPER(bt.customerName) LIKE %:searchTerm% OR " +
             "UPPER(bt.customerCitizenCard) LIKE %:searchTerm% OR " +
+            "UPPER(bt.tourDetailsByTourDetailId.toursByTourId.tourName) LIKE %:searchTerm% OR " +
             "UPPER(bt.id) LIKE %:searchTerm% OR " +
             "UPPER(bt.customerPhone) LIKE %:searchTerm% OR " +
             "UPPER(bt.customerEmail) LIKE %:searchTerm% OR " +

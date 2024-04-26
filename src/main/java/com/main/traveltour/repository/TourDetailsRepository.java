@@ -1,6 +1,5 @@
 package com.main.traveltour.repository;
 
-import com.main.traveltour.entity.Hotels;
 import com.main.traveltour.entity.TourDetails;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -16,24 +15,33 @@ import java.util.List;
 @Repository
 public interface TourDetailsRepository extends JpaRepository<TourDetails, Integer> {
 
+    @Query("SELECT COALESCE(MAX(td.id), 'TD0000') FROM TourDetails td")
+    String getMaxCodeTourDetailId();
+
     TourDetails findById(String id);
 
     TourDetails getById(String id);
 
     @Query("SELECT td FROM TourDetails td " +
-            "WHERE td.tourDetailStatus != 4 ")
+            "WHERE td.tourDetailStatus != 2 " +
+            "AND td.tourDetailStatus != 3 " +
+            "AND td.tourDetailStatus != 4")
     List<TourDetails> getAllTourDetail();
 
     @Query("SELECT td FROM TourDetails td " +
             "LEFT JOIN td.bookingToursById bt " +
-            "WHERE td.tourDetailStatus != 4 " +
+            "WHERE td.tourDetailStatus != 2 " +
+            "AND td.tourDetailStatus != 3 " +
+            "AND td.tourDetailStatus != 4 " +
             "GROUP BY td.id " +
             "ORDER BY COUNT(bt.id) DESC")
     List<TourDetails> findAllOrderByBookingCountDesc();
 
     @Query("SELECT td FROM TourDetails td " +
             "LEFT JOIN td.bookingToursById bt " +
-            "WHERE td.tourDetailStatus != 4 " +
+            "WHERE td.tourDetailStatus != 2 " +
+            "AND td.tourDetailStatus != 3 " +
+            "AND td.tourDetailStatus != 4 " +
             "AND (:departureArrives IS NULL OR " +
             "(UPPER(td.toursByTourId.tourName) LIKE %:departureArrives% OR " +
             "UPPER(td.toursByTourId.tourTypesByTourTypeId.tourTypeName) LIKE %:departureArrives% OR " +
@@ -66,32 +74,41 @@ public interface TourDetailsRepository extends JpaRepository<TourDetails, Intege
     @Query("SELECT td FROM TourDetails td " +
             "JOIN td.bookingToursById bt " +
             "JOIN bt.bookingTourCustomersById btc " +
-            "WHERE td.tourDetailStatus != 4 " +
+            "WHERE td.tourDetailStatus != 2 " +
+            "AND td.tourDetailStatus != 3 " +
+            "AND td.tourDetailStatus != 4 " +
             "GROUP BY td.id " +
             "ORDER BY td.id ASC")
     List<TourDetails> getAllJoinBooking();
 
     @Query("SELECT td FROM TourDetails td " +
-            "WHERE td.tourDetailStatus != 4")
+            "WHERE td.tourDetailStatus != 2 " +
+            "AND td.tourDetailStatus != 3 " +
+            "AND td.tourDetailStatus != 4")
     Page<TourDetails> findAllTourDetail(Pageable pageable);
 
-    @Query("SELECT td FROM TourDetails td WHERE " +
+    @Query("SELECT td FROM TourDetails td " +
+            "WHERE td.tourDetailStatus = :tourDetailStatus")
+    Page<TourDetails> findAllTourDetailStaff(@Param("tourDetailStatus") Integer tourDetailStatus,
+                                             Pageable pageable);
+
+    @Query("SELECT td FROM TourDetails td " +
+            "WHERE td.tourDetailStatus = :tourDetailStatus AND " +
+            "UPPER(td.id) LIKE %:searchTerm% OR " +
             "UPPER(td.id) LIKE %:searchTerm% OR " +
             "UPPER(td.toursByTourId.tourName) LIKE %:searchTerm% OR " +
             "UPPER(td.fromLocation) LIKE %:searchTerm% OR " +
             "UPPER(td.toLocation) LIKE %:searchTerm%")
-    Page<TourDetails> findTourDetailsByTourNameOrFromLocationOrToLocationContainingIgnoreCase(
-            @Param("searchTerm") String searchTerm, Pageable pageable);
-
-
-    @Query("SELECT COALESCE(MAX(td.id), 'TD0000') FROM TourDetails td")
-    String getMaxCodeTourDetailId();
+    Page<TourDetails> findTourDetailsByTourNameOrFromLocationOrToLocationContainingIgnoreCase(@Param("tourDetailStatus") Integer tourDetailStatus,
+                                                                                              @Param("searchTerm") String searchTerm,
+                                                                                              Pageable pageable);
 
     @Query("SELECT td " +
             "FROM TourDetails td " +
             "JOIN td.toursByTourId t " +
             "JOIN t.tourTypesByTourTypeId ty " +
-            "WHERE (:departureArrives IS NULL OR " +
+            "WHERE td.tourDetailStatus != 2 AND td.tourDetailStatus != 3 AND td.tourDetailStatus != 4" +
+            "AND (:departureArrives IS NULL OR " +
             "(UPPER(t.tourName) LIKE %:departureArrives% OR " +
             "UPPER(t.id) LIKE %:departureArrives% OR " +
             "UPPER(td.id) LIKE %:departureArrives% OR " +

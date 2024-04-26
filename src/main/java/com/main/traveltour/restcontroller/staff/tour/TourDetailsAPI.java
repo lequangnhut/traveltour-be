@@ -47,8 +47,9 @@ public class TourDetailsAPI {
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size,
             @RequestParam(defaultValue = "id") String sortBy,
-            @RequestParam(defaultValue = "asc") String sortDir,
-            @RequestParam(required = false) String searchTerm) {
+            @RequestParam(defaultValue = "desc") String sortDir,
+            @RequestParam(required = false) String searchTerm,
+            @RequestParam(required = false) Integer tourDetailStatus) {
 
         Sort sort = sortDir.equalsIgnoreCase(Sort.Direction.ASC.name())
                 ? Sort.by(sortBy).ascending()
@@ -56,8 +57,8 @@ public class TourDetailsAPI {
 
         // Sử dụng phương thức tìm kiếm mới trong service
         Page<TourDetails> tourDetailsPage = searchTerm == null || searchTerm.isEmpty()
-                ? tourDetailsService.findAll(PageRequest.of(page, size, sort))
-                : tourDetailsService.findAllWithSearch(searchTerm, PageRequest.of(page, size, sort));
+                ? tourDetailsService.findAllTourDetailStaff(tourDetailStatus, PageRequest.of(page, size, sort))
+                : tourDetailsService.findAllTourDetailWithSearchStaff(tourDetailStatus, searchTerm, PageRequest.of(page, size, sort));
 
         Page<TourDetailsGetDataDto> tourDetailsDtoPage = tourDetailsPage.map(tourDetails -> EntityDtoUtils.convertToDto(tourDetails, TourDetailsGetDataDto.class));
 
@@ -169,15 +170,18 @@ public class TourDetailsAPI {
         }
     }
 
-    @DeleteMapping("/delete-tourDetail/{id}")
-    public ResponseObject deleteTourDetail(@PathVariable String id) {
+    @DeleteMapping("/delete-tourDetail")
+    public ResponseObject deleteTourDetail(@RequestParam String tourDetail,
+                                           @RequestParam String tourDetailNotes) {
         try {
-            TourDetails tourDetails = tourDetailsService.getById(id);
+            TourDetails tourDetails = tourDetailsService.getById(tourDetail);
             tourDetails.setTourDetailStatus(4);
+            tourDetails.setDateDeleted(new Timestamp(System.currentTimeMillis()));
+            tourDetails.setTourDetailNotes(tourDetailNotes);
             tourDetailsService.save(tourDetails);
             return new ResponseObject("204", "Xóa thành công", null);
         } catch (Exception e) {
-            return new ResponseObject("500", "Xó    a thất bại", null);
+            return new ResponseObject("500", "Xóa thất bại", null);
         }
     }
 

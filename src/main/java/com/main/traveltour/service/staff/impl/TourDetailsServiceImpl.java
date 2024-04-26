@@ -6,67 +6,70 @@ import com.main.traveltour.service.staff.TourDetailsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.repository.query.Param;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.util.Date;
-import java.sql.Timestamp;
 import java.util.List;
 
 @Service
 public class TourDetailsServiceImpl implements TourDetailsService {
 
     @Autowired
-    private TourDetailsRepository tourDetailsRepository;
+    private TourDetailsRepository repo;
 
     @Autowired
     private JdbcTemplate jdbcTemplate;
 
     @Override
     public String getMaxCodeTourDetailId() {
-        return tourDetailsRepository.getMaxCodeTourDetailId();
+        return repo.getMaxCodeTourDetailId();
     }
 
     @Override
     public List<TourDetails> findAll() {
-        return tourDetailsRepository.getAllTourDetail();
+        return repo.getAllTourDetail();
     }
 
     @Override
     public List<TourDetails> findAllOrderByBookingCountDesc() {
-        return tourDetailsRepository.findAllOrderByBookingCountDesc();
+        return repo.findAllOrderByBookingCountDesc();
     }
 
     @Override
     public List<TourDetails> getAListOfPopularTours(String departureArrives, String departureFrom, Date departureDate, BigDecimal price) {
-        return tourDetailsRepository.getAListOfPopularTours(departureArrives, departureFrom, departureDate, price);
+        return repo.getAListOfPopularTours(departureArrives, departureFrom, departureDate, price);
     }
 
     @Override
     public List<TourDetails> getAllJoinBooking() {
-        return tourDetailsRepository.getAllJoinBooking();
+        return repo.getAllJoinBooking();
     }
 
     @Override
     public List<TourDetails> findAllTourDetailUseRequestCar() {
-        return tourDetailsRepository.findAllTourDetailUseRequestCar();
+        return repo.findAllTourDetailUseRequestCar();
     }
 
     @Override
     public Page<TourDetails> getAllTourDetailByStatusIs2AndSearchTerm(String searchTerm, Pageable pageable) {
-        return tourDetailsRepository.getAllTourDetailByStatusIs2AndSearchTerm(searchTerm, pageable);
+        return repo.getAllTourDetailByStatusIs2AndSearchTerm(searchTerm, pageable);
     }
 
     @Override
     public List<Object[]> findTourTrend() {
-        return tourDetailsRepository.findTourDetailTrend();
+        return repo.findTourDetailTrend();
     }
 
     @Override
     public Page<TourDetails> findAll(Pageable pageable) {
-        return tourDetailsRepository.findAllTourDetail(pageable);
+        return repo.findAllTourDetail(pageable);
+    }
+
+    @Override
+    public Page<TourDetails> findAllTourDetailStaff(Integer tourDetailStatus, Pageable pageable) {
+        return repo.findAllTourDetailStaff(tourDetailStatus, pageable);
     }
 
     @Override
@@ -77,39 +80,39 @@ public class TourDetailsServiceImpl implements TourDetailsService {
                                                       BigDecimal price,
                                                       List<Integer> tourTypesByTourTypeId,
                                                       Pageable pageable) {
-        return tourDetailsRepository.findTourDetailWithFilter(departureArrives, departureFrom, numberOfPeople, departureDate, price, tourTypesByTourTypeId, pageable);
+        return repo.findTourDetailWithFilter(departureArrives, departureFrom, numberOfPeople, departureDate, price, tourTypesByTourTypeId, pageable);
     }
 
 
     @Override
-    public Page<TourDetails> findAllWithSearch(String searchTerm, Pageable pageable) {
-        return tourDetailsRepository.findTourDetailsByTourNameOrFromLocationOrToLocationContainingIgnoreCase(searchTerm, pageable);
+    public Page<TourDetails> findAllTourDetailWithSearchStaff(Integer tourDetailStatus, String searchTerm, Pageable pageable) {
+        return repo.findTourDetailsByTourNameOrFromLocationOrToLocationContainingIgnoreCase(tourDetailStatus, searchTerm, pageable);
     }
 
     @Override
     public TourDetails findById(String id) {
-        return tourDetailsRepository.findById(id);
+        return repo.findById(id);
     }
 
     @Override
     public TourDetails getById(String id) {
-        return tourDetailsRepository.getById(id);
+        return repo.getById(id);
     }
 
     @Override
     public TourDetails save(TourDetails tourDetails) {
-        return tourDetailsRepository.save(tourDetails);
+        return repo.save(tourDetails);
     }
 
     @Override
     public void delete(TourDetails tourDetails) {
-        tourDetailsRepository.delete(tourDetails);
+        repo.delete(tourDetails);
     }
 
     @Override
     public void updateStatusAndActive() {
-        List<TourDetails> tourDetails1 = tourDetailsRepository.findTourInProgress();
-        List<TourDetails> tourDetails2 = tourDetailsRepository.findTourCompleted();
+        List<TourDetails> tourDetails1 = repo.findTourInProgress();
+        List<TourDetails> tourDetails2 = repo.findTourCompleted();
 
         for (TourDetails tourDetails : tourDetails1) {
             tourDetails.setTourDetailStatus(2);
@@ -128,13 +131,11 @@ public class TourDetailsServiceImpl implements TourDetailsService {
 
     @Override
     public Long countTourDetails() {
-        return tourDetailsRepository.countTourDetails();
+        return repo.countTourDetails();
     }
 
     @Override
     public Page<TourDetails> findTourGuide(Integer guideId, Integer tourStatus, String searchTerm, Pageable pageable) {
-        return tourDetailsRepository.findTourByGuideAndStatus(guideId, tourStatus, searchTerm, pageable);
+        return repo.findTourByGuideAndStatus(guideId, tourStatus, searchTerm, pageable);
     }
-
-
 }

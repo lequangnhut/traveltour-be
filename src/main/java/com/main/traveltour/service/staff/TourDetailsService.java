@@ -37,7 +37,9 @@ public interface TourDetailsService {
                                                List<Integer> tourTypesByTourTypeId,
                                                Pageable pageable);
 
-    Page<TourDetails> findAllWithSearch(String searchTerm, Pageable pageable);
+    Page<TourDetails> findAllTourDetailStaff(Integer tourDetailStatus, Pageable pageable);
+
+    Page<TourDetails> findAllTourDetailWithSearchStaff(Integer tourDetailStatus, String searchTerm, Pageable pageable);
 
     TourDetails findById(String id);
 
