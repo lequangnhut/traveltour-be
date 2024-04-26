@@ -61,7 +61,7 @@ public class UserChatController {
 
                     userChatDto.setUserId(String.valueOf(agencies.getUserId()));
                     userChatDto.setFullName(agencies.getNameAgency());
-
+                    userChatDto.setAvatar(userChatDto.getAvatar());
                     userChatService.insertUserStatus(userChatDto);
                 }
             }
@@ -99,7 +99,7 @@ public class UserChatController {
                 try {
                     UserChat getSender = userChatService.findByUserId(room.getSenderId()).orElse(null);
                     if (getSender == null) {
-                        continue; // Bỏ qua nếu không tìm thấy thông tin người gửi
+                        continue;
                     }
 
                     ChatMessage chatNewMessage = chatMessageRepository.findFirstByChatIdOrderByTimestampDesc(room.getChatId());
@@ -137,9 +137,7 @@ public class UserChatController {
                     }
                     userChatResponseDto.add(user);
                 } catch (Exception e) {
-                    // Xử lý ngoại lệ nếu có
                     e.printStackTrace();
-                    // Bỏ qua và tiếp tục với cuộc trò chuyện tiếp theo
                 }
             }
 
@@ -159,6 +157,30 @@ public class UserChatController {
                 }
             });
 
+            boolean checkStaff = false;
+            for(var user : userChatResponseDto){
+                if(user.getUserId().equals("66")) {
+                    checkStaff = true;
+                    break;
+                }
+            }
+            if(!checkStaff) {
+                UserChat staff = userChatService.findByUserId(String.valueOf(66)).orElse(null);
+
+                userChatResponseDto.add(0,UserChatResponseDto.builder()
+                        .id(staff.getId())
+                        .userId(staff.getUserId())
+                        .avatar(staff.getAvatar())
+                        .fullName(staff.getFullName())
+                        .status(staff.getStatus())
+                        .lastUpdated(staff.getLastUpdated())
+                        .role(staff.getRole())
+                        .countMessageUnread(0)
+                        .newMessage(null)
+                        .timeMessage(null)
+                        .statusMessage(true)
+                        .build());
+            }
             // Gửi danh sách người dùng tới người dùng
             messagingTemplate.convertAndSendToUser(
                     userDataDto.getUserId(), "/chat/findUsersChat",
