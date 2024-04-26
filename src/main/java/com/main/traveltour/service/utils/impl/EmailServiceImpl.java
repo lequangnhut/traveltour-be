@@ -428,6 +428,7 @@ public class EmailServiceImpl implements EmailService {
                 variables.put("orderTotal", ReplaceUtils.formatPrice(orderTotal) + " VNĐ");
                 variables.put("refund", bookingToursDto.getCoc() + "%");
                 variables.put("moneyback", ReplaceUtils.formatPrice(bookingToursDto.getMoneyBack()) + " VNĐ");
+                variables.put("reasonNote", bookingToursDto.getReasonNote());
                 helper.setFrom(email);
                 helper.setText(thymeleafService.createContent("customer-cancel-tour", variables), true);
                 helper.setSubject("XÁC NHẬN HỦY TOUR.");
@@ -849,11 +850,11 @@ public class EmailServiceImpl implements EmailService {
                 variables.put("customerCitizenCard", cancelOrderHotelsDto.getCustomerCitizenCard());
                 variables.put("customerPhone", cancelOrderHotelsDto.getCustomerPhone());
 
-                if (cancelOrderHotelsDto.getPaymentMethod() == "Momo") {
+                if (cancelOrderHotelsDto.getPaymentMethod() == "MOMO") {
                     variables.put("paymentMethod", "VÍ MOMO");
-                } else if (cancelOrderHotelsDto.getPaymentMethod() == "VNPay") {
+                } else if (cancelOrderHotelsDto.getPaymentMethod() == "VNPAY") {
                     variables.put("paymentMethod", "VNPAY");
-                } else if (cancelOrderHotelsDto.getPaymentMethod() == "ZaloPay") {
+                } else if (cancelOrderHotelsDto.getPaymentMethod() == "ZALOPAY") {
                     variables.put("paymentMethod", "VÍ ZALOPAY");
                 } else {
                     variables.put("paymentMethod", "Thanh toán tại quầy");
@@ -866,6 +867,7 @@ public class EmailServiceImpl implements EmailService {
                 variables.put("orderTotal", ReplaceUtils.formatPrice(orderTotal) + " VNĐ");
                 variables.put("refund", cancelOrderHotelsDto.getCoc() + "%");
                 variables.put("moneyback", ReplaceUtils.formatPrice(cancelOrderHotelsDto.getMoneyBack()) + " VNĐ");
+                variables.put("reasonNote", cancelOrderHotelsDto.getReasonNote());
                 helper.setFrom(email);
                 helper.setText(thymeleafService.createContent("customer-cancel-hotel", variables), true);
                 helper.setSubject("XÁC NHẬN HỦY PHÒNG.");
@@ -925,6 +927,7 @@ public class EmailServiceImpl implements EmailService {
                 variables.put("orderDetails", orderVisitDetailsDtoList);
                 variables.put("orderTotal", ReplaceUtils.formatPrice(orderTotal) + " VNĐ");
                 variables.put("refund", cancelOrderVisitsDto.getCoc() + "%");
+                variables.put("reasonNote", cancelOrderVisitsDto.getReasonNote());
                 variables.put("moneyback", ReplaceUtils.formatPrice(cancelOrderVisitsDto.getMoneyBack()) + " VNĐ");
                 helper.setFrom(email);
                 helper.setText(thymeleafService.createContent("customer-cancel-visit", variables), true);
@@ -991,6 +994,7 @@ public class EmailServiceImpl implements EmailService {
                 variables.put("orderTotal", ReplaceUtils.formatPrice(orderTotal) + " VNĐ");
                 variables.put("refund", cancelOrderTransportationsDto.getCoc() + "%");
                 variables.put("moneyback", ReplaceUtils.formatPrice(cancelOrderTransportationsDto.getMoneyBack()) + " VNĐ");
+                variables.put("reasonNote", cancelOrderTransportationsDto.getReasonNote());
                 helper.setFrom(email);
                 helper.setText(thymeleafService.createContent("customer-cancel-trans", variables), true);
                 helper.setSubject("XÁC NHẬN HỦY VÉ XE.");

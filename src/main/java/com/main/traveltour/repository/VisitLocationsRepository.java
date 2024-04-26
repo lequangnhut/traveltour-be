@@ -1,6 +1,7 @@
 package com.main.traveltour.repository;
 
 import com.main.traveltour.dto.customer.visit.VisitLocationTrendDTO;
+import com.main.traveltour.entity.TransportationBrands;
 import com.main.traveltour.entity.VisitLocations;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -153,4 +154,15 @@ public interface VisitLocationsRepository extends JpaRepository<VisitLocations, 
     Page<VisitLocations> findVisitByTourDetailIdForGuide(@Param("tourDetailId") String tourDetailId,
                                                  @Param("searchTerm") String searchTerm,
                                                  Pageable pageable);
+
+    @Query(value="SELECT vl.* " +
+            "FROM order_visits ov " +
+            "JOIN order_visit_details ovd on ov.id = ovd.order_visit_id " +
+            "JOIN visit_location_tickets vlt on ovd.visit_location_ticket_id = vlt.id " +
+            "JOIN visit_locations vl on ov.visit_location_id = vl.id " +
+            "WHERE ov.order_status <> 2 AND vl.is_active = TRUE " +
+            "GROUP BY vl.id " +
+            "ORDER BY SUM(ov.id) DESC " +
+            "LIMIT 3;", nativeQuery = true)
+    List<VisitLocations> find3PlaceMostOrder ();
 }

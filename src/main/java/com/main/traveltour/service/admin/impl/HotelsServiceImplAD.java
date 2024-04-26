@@ -15,8 +15,11 @@ public class HotelsServiceImplAD implements HotelsServiceAD {
 
     @Autowired
     private HotelsRepository hotelsRepository;
+
     @Override
-    public List<Hotels> findByHotelTypeId(int typeId) {return hotelsRepository.findByHotelTypeId(typeId);}
+    public List<Hotels> findByHotelTypeId(int typeId) {
+        return hotelsRepository.findByHotelTypeId(typeId);
+    }
 
     @Override
     public List<Hotels> findByUtility(int typeId) {
@@ -46,6 +49,11 @@ public class HotelsServiceImplAD implements HotelsServiceAD {
     @Override
     public Long countHotelsChart(Integer year) {
         return hotelsRepository.countHotelsChart(year);
+    }
+
+    @Override
+    public List<Hotels> findThreeHotelMostOrder() {
+        return hotelsRepository.find3HotelMostOrder();
     }
 
 }

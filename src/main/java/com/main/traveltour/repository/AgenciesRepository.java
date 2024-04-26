@@ -42,4 +42,17 @@ public interface AgenciesRepository extends JpaRepository<Agencies, Integer> {
     @Query("SELECT a FROM Agencies a WHERE (a.isAccepted = :isAccepted) and (a.isActive = true) and LOWER(a.nameAgency) " +
             "LIKE LOWER(CONCAT('%', :searchTerm, '%'))")
     Page<Agencies> findAllAgenciesByIsAcceptedWithSearchAD(String searchTerm, Pageable pageable, @Param("isAccepted") Integer isAccepted);
+
+    @Query(value="SELECT ag.* " +
+            "FROM agencies ag " +
+            "JOIN users u on ag.user_id = u.id " +
+            "JOIN roles_users ru on u.id = ru.user_id " +
+            "JOIN roles r on ru.role_id = r.id " +
+            "WHERE r.name_role IN ('ROLE_AGENT_HOTEL','ROLE_AGENT_TRANSPORT','ROLE_AGENT_PLACE') " +
+            "AND ag.is_accepted = 2 AND ag.is_active = TRUE " +
+            "GROUP BY ag.id " +
+            "ORDER BY u.date_created ASC " +
+            "LIMIT 5;", nativeQuery = true)
+    List<Agencies> find5AgenciesNewest ();
+
 }

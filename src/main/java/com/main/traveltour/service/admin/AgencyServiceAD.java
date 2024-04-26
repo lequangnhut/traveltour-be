@@ -29,4 +29,6 @@ public interface AgencyServiceAD {
     Page<Agencies> findAllAgenciesWaitingByIsAccepted(Pageable pageable, Integer isActive);
 
     Page<Agencies> findAllAgenciesWaitingByIsAcceptedWithSearch(String searchTerm, Pageable pageable, Integer isActive);
+
+    List<Agencies> findFiveAgenciesNewest ();
 }

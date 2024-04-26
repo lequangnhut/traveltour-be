@@ -70,4 +70,9 @@ public class AgencyServiceImplAD implements AgencyServiceAD {
     public Page<Agencies> findAllAgenciesWaitingByIsAcceptedWithSearch(String searchTerm, Pageable pageable, Integer isAccepted) {
         return agenciesRepository.findAllAgenciesByIsAcceptedWithSearchAD(searchTerm, pageable, isAccepted);
     }
+
+    @Override
+    public List<Agencies> findFiveAgenciesNewest() {
+        return agenciesRepository.find5AgenciesNewest();
+    }
 }

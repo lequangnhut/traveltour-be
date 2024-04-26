@@ -45,4 +45,9 @@ public class VisitLocationsServiceImplAD implements VisitLocationsServiceAD {
     public Long countVisitLocationsChart(Integer year) {
         return visitLocationsRepository.countVisitLocationsChart(year);
     }
+
+    @Override
+    public List<VisitLocations> findThreeVisitLocation() {
+        return visitLocationsRepository.find3PlaceMostOrder();
+    }
 }
