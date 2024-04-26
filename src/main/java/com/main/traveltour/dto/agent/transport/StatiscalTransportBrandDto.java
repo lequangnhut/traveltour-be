@@ -13,5 +13,5 @@ public class StatiscalTransportBrandDto {
     private Integer month;
     private String formLocation;
     private String toLocation;
-    private Long maxAmount;
+    private BigDecimal maxAmount;
 }

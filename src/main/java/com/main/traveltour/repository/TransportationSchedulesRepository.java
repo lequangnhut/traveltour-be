@@ -78,6 +78,7 @@ public interface TransportationSchedulesRepository extends JpaRepository<Transpo
             "JOIN tp.transportationSchedulesById sc " +
             "WHERE (br.isAccepted = true AND br.isActive = true AND sc.tripType = false) AND " +
             "(:searchTerm IS NULL OR (UPPER(br.agenciesByAgenciesId.nameAgency) LIKE %:searchTerm% OR " +
+            "UPPER(br.id) LIKE %:searchTerm% OR " +
             "UPPER(br.transportationBrandName) LIKE %:searchTerm% OR " +
             "UPPER(br.agenciesByAgenciesId.phone) LIKE %:searchTerm% OR " +
             "UPPER(br.agenciesByAgenciesId.province) LIKE %:searchTerm% OR " +

@@ -185,7 +185,7 @@ public class OrderTransportServiceImpl implements OrderTransportService {
             Integer month = (Integer) object[1];
             String formLocation = (String) object[2];
             String toLocation = (String) object[3];
-            Long maxAmount = (Long) object[4];
+            BigDecimal maxAmount = (BigDecimal) object[4];
 
             if (month >= 1 && month <= 12) {
                 if (monthlyStats[month - 1] == null) {
@@ -210,12 +210,17 @@ public class OrderTransportServiceImpl implements OrderTransportService {
                         .month(i + 1)
                         .formLocation("")
                         .toLocation("")
-                        .maxAmount(0L)
+                        .maxAmount(BigDecimal.valueOf(0))
                         .build());
             } else {
                 result.add(monthlyStats[i]);
             }
         }
         return result;
+    }
+
+    @Override
+    public List<Integer> findAllOrderTransportYear() {
+        return repo.findAllOrderTransportYear();
     }
 }

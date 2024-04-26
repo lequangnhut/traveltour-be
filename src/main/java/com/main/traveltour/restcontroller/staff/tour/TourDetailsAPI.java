@@ -68,6 +68,20 @@ public class TourDetailsAPI {
         }
     }
 
+    @GetMapping("/find-all-tourDetail-select")
+    private ResponseObject findAllTourDetailSelect() {
+        // Sử dụng phương thức tìm kiếm mới trong service
+        List<TourDetails> tourDetailsList = tourDetailsService.findAll();
+
+        List<TourDetailsGetDataDto> tourDetailsDtoList = EntityDtoUtils.convertToDtoList(tourDetailsList, TourDetailsGetDataDto.class);
+
+        if (tourDetailsDtoList.isEmpty()) {
+            return new ResponseObject("404", "Không tìm thấy dữ liệu", null);
+        } else {
+            return new ResponseObject("200", "Đã tìm thấy dữ liệu", tourDetailsDtoList);
+        }
+    }
+
 
     @GetMapping("/find-by-id/{id}")
     public ResponseObject findById(@PathVariable String id) {

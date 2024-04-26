@@ -56,10 +56,9 @@ public interface OrderTransportationsRepository extends JpaRepository<OrderTrans
             "       ROUND((COUNT(*) / SUM(COUNT(*)) OVER (PARTITION BY YEAR(o.date_created), MONTH(o.date_created))) * 100,\n" +
             "             1)              AS orderCountPercentage\n" +
             "FROM order_transportations o\n" +
-            "         INNER JOIN order_transportations_details od ON o.id = od.order_transportations_id\n" +
-            "         INNER JOIN transportation_schedules ts ON o.transportation_schedule_id = ts.id\n" +
-            "         INNER JOIN transportations t ON ts.transportation_id = t.id\n" +
-            "         INNER JOIN transportation_brands tb ON t.transportation_brand_id = tb.id\n" +
+            "          INNER JOIN  transportation_schedules ts ON o.transportation_schedule_id = ts.id\n" +
+            "          INNER JOIN  transportations t ON ts.transportation_id = t.id\n" +
+            "          INNER JOIN  transportation_brands tb ON t.transportation_brand_id = tb.id\n" +
             "WHERE YEAR(o.date_created) = :year\n" +
             "  AND t.transportation_brand_id = :id\n" +
             "GROUP BY YEAR(o.date_created), MONTH(o.date_created), o.order_status", nativeQuery = true)
@@ -75,10 +74,9 @@ public interface OrderTransportationsRepository extends JpaRepository<OrderTrans
             "       MONTH(o.date_created) AS month,\n" +
             "       SUM(o.order_total) AS amount\n" +
             "FROM order_transportations o\n" +
-            "         INNER JOIN order_transportations_details od ON o.id = od.order_transportations_id\n" +
-            "         INNER JOIN transportation_schedules ts ON o.transportation_schedule_id = ts.id\n" +
-            "         INNER JOIN transportations t ON ts.transportation_id = t.id\n" +
-            "         INNER JOIN transportation_brands tb ON t.transportation_brand_id = tb.id\n" +
+            "         LEFT JOIN transportation_schedules ts ON o.transportation_schedule_id = ts.id\n" +
+            "         LEFT JOIN transportations t ON ts.transportation_id = t.id\n" +
+            "         LEFT JOIN transportation_brands tb ON t.transportation_brand_id = tb.id\n" +
             "WHERE YEAR(o.date_created) = :year\n" +
             "  AND tb.id = :id\n" +
             "  AND o.order_status = 1\n" +
@@ -93,23 +91,29 @@ public interface OrderTransportationsRepository extends JpaRepository<OrderTrans
      */
     @Query(value = "SELECT year,\n" +
             "       month,\n" +
-            "       formLocations,\n" +
-            "       toLocations,\n" +
-            "       MAX(amount) AS maxAmount\n" +
-            "FROM (SELECT YEAR(o.date_created)  AS year,\n" +
-            "             MONTH(o.date_created) AS month,\n" +
-            "             ts.from_location      AS formLocations,\n" +
-            "             ts.to_location        AS toLocations,\n" +
-            "             COUNT(od.id)          AS amount\n" +
-            "      FROM order_transportations o\n" +
-            "               INNER JOIN order_transportations_details od ON o.id = od.order_transportations_id\n" +
-            "               INNER JOIN transportation_schedules ts ON o.transportation_schedule_id = ts.id\n" +
-            "               INNER JOIN transportations t ON ts.transportation_id = t.id\n" +
-            "               INNER JOIN transportation_brands tb ON t.transportation_brand_id = tb.id\n" +
-            "      WHERE YEAR(o.date_created) = :year\n" +
-            "        AND t.transportation_brand_id = :id\n" +
-            "        AND o.order_status = 1\n" +
-            "      GROUP BY YEAR(o.date_created), MONTH(o.date_created), ts.from_location, ts.to_location) AS subquery\n" +
-            "GROUP BY year, month, formLocations, toLocations;", nativeQuery = true)
+            "       fromLocation,\n" +
+            "       toLocation,\n" +
+            "       amountTicket\n" +
+            "FROM (\n" +
+            "         SELECT YEAR(o.date_created) AS year,\n" +
+            "                MONTH(o.date_created) AS month,\n" +
+            "                ts.from_location AS fromLocation,\n" +
+            "                ts.to_location AS toLocation,\n" +
+            "                SUM(o.amount_ticket) AS amountTicket,\n" +
+            "                ROW_NUMBER() OVER (PARTITION BY YEAR(o.date_created), MONTH(o.date_created) ORDER BY SUM(o.amount_ticket) DESC) AS row_num\n" +
+            "         FROM order_transportations o\n" +
+            "                  INNER JOIN transportation_schedules ts ON o.transportation_schedule_id = ts.id\n" +
+            "                  INNER JOIN transportations t ON ts.transportation_id = t.id\n" +
+            "                  INNER JOIN transportation_brands tb ON t.transportation_brand_id = tb.id\n" +
+            "         WHERE YEAR(o.date_created) = :year\n" +
+            "           AND o.order_status = 1\n" +
+            "           AND t.transportation_brand_id = :id\n" +
+            "         GROUP BY YEAR(o.date_created), MONTH(o.date_created), ts.from_location, ts.to_location\n" +
+            "     ) AS subquery\n" +
+            "WHERE row_num = 1", nativeQuery = true)
     List<Object[]> statisticalTransportBrand(Integer year, String id);
+
+    @Query("SELECT DISTINCT YEAR(ot.dateCreated) FROM OrderTransportations ot ORDER BY YEAR(ot.dateCreated) DESC")
+    List<Integer> findAllOrderTransportYear();
+    
 }

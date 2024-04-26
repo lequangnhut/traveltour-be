@@ -76,6 +76,8 @@ public class TourCusAPI {
             @RequestParam(defaultValue = "10") int size,
             @RequestParam(defaultValue = "id") String sortBy,
             @RequestParam(defaultValue = "asc") String sortDir,
+            @RequestParam(required = false) String departureArrives,
+            @RequestParam(required = false) String departureFrom,
             @RequestParam(required = false) BigDecimal price,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) Date departure
     ) {
@@ -83,18 +85,39 @@ public class TourCusAPI {
                 ? Sort.by(sortBy).ascending()
                 : Sort.by(sortBy).descending();
 
-        List<TourDetails> tourDetailsList = tourDetailsService.getAListOfPopularTours(departure, price);
+        List<TourDetails> tourDetailsList = tourDetailsService.getAListOfPopularTours(departureArrives, departureFrom, departure, price);
 
-        List<TourDetails> tourDetailsList2 = tourDetailsService.getAListOfPopularTours(departure, null);
+        List<TourDetails> tourDetailsList1 = tourDetailsService.getAListOfPopularTours(departureArrives, null, departure, price);
+        tourDetailsList1.removeAll(tourDetailsList);
+
+        List<TourDetails> tourDetailsList2 = tourDetailsService.getAListOfPopularTours(null, departureFrom, departure, price);
         tourDetailsList2.removeAll(tourDetailsList);
+        tourDetailsList2.removeAll(tourDetailsList1);
 
-        List<TourDetails> tourDetailsList3 = tourDetailsService.getAListOfPopularTours(null, null);
+        List<TourDetails> tourDetailsList3 = tourDetailsService.getAListOfPopularTours(null, null, departure, price);
         tourDetailsList3.removeAll(tourDetailsList);
+        tourDetailsList3.removeAll(tourDetailsList1);
         tourDetailsList3.removeAll(tourDetailsList2);
 
+        List<TourDetails> tourDetailsList4 = tourDetailsService.getAListOfPopularTours(null,null,departure, null);
+        tourDetailsList4.removeAll(tourDetailsList);
+        tourDetailsList4.removeAll(tourDetailsList1);
+        tourDetailsList4.removeAll(tourDetailsList2);
+        tourDetailsList4.removeAll(tourDetailsList3);
+
+        List<TourDetails> tourDetailsList5 = tourDetailsService.getAListOfPopularTours(null,null,null, null);
+        tourDetailsList5.removeAll(tourDetailsList);
+        tourDetailsList5.removeAll(tourDetailsList1);
+        tourDetailsList5.removeAll(tourDetailsList2);
+        tourDetailsList5.removeAll(tourDetailsList3);
+        tourDetailsList5.removeAll(tourDetailsList3);
+
         Set<TourDetails> filteredSet = new LinkedHashSet<>(tourDetailsList);
+        filteredSet.addAll(tourDetailsList1);
         filteredSet.addAll(tourDetailsList2);
         filteredSet.addAll(tourDetailsList3);
+        filteredSet.addAll(tourDetailsList4);
+        filteredSet.addAll(tourDetailsList5);
 
         List<TourDetails> filteredList = new ArrayList<>(filteredSet);
 

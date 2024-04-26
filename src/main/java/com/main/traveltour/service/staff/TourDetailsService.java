@@ -17,7 +17,7 @@ public interface TourDetailsService {
 
     List<TourDetails> findAllOrderByBookingCountDesc();
 
-    List<TourDetails> getAListOfPopularTours(Date departureDate, BigDecimal price);
+    List<TourDetails> getAListOfPopularTours(String departureArrives, String departureFrom, Date departureDate, BigDecimal price);
 
     List<TourDetails> getAllJoinBooking();
 

@@ -39,6 +39,9 @@ public interface TransportationBrandsRepository extends JpaRepository<Transporta
             "JOIN tp.transportationSchedulesById sc " +
             "WHERE (br.isAccepted = true AND br.isActive = true AND sc.tripType = false) AND " +
             "(:searchTerm IS NULL OR (UPPER(br.agenciesByAgenciesId.nameAgency) LIKE %:searchTerm% OR " +
+            "UPPER(br.id) LIKE %:searchTerm% OR " +
+            "UPPER(tp.id) LIKE %:searchTerm% OR " +
+            "UPPER(sc.id) LIKE %:searchTerm% OR " +
             "UPPER(br.transportationBrandName) LIKE %:searchTerm% OR " +
             "UPPER(br.agenciesByAgenciesId.phone) LIKE %:searchTerm% OR " +
             "UPPER(br.agenciesByAgenciesId.province) LIKE %:searchTerm% OR " +
@@ -84,7 +87,7 @@ public interface TransportationBrandsRepository extends JpaRepository<Transporta
             "WHERE (ag.isAccepted = 2) and (ag.isActive = true) " +
             "and br.isAccepted = :isAccepted AND br.isActive = true " +
             " and LOWER(br.transportationBrandName) LIKE LOWER(CONCAT('%', :searchTerm, '%'))")
-    Page<TransportationBrands> findAllBrandPostByName(@Param("isAccepted") Boolean isAccepted,Pageable pageable, String searchTerm);
+    Page<TransportationBrands> findAllBrandPostByName(@Param("isAccepted") Boolean isAccepted, Pageable pageable, String searchTerm);
 
     @Query("SELECT COALESCE(COUNT(tb), 0) FROM TransportationBrands tb " +
             "JOIN tb.agenciesByAgenciesId a " +

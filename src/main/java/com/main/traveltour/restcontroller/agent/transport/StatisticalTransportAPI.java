@@ -21,40 +21,40 @@ public class StatisticalTransportAPI {
     @Autowired
     OrderTransportService orderTransportService;
 
-    @GetMapping("agent/hotel/statistical/findStatisticalBookingTransport")
+    @GetMapping("agent/transport/statistical/findStatisticalBookingTransport")
     public ResponseEntity<List<Double>> findStatisticalBookingTransport(
             @RequestParam(required = false) Integer year,
-            @RequestParam(required = false) String id
+            @RequestParam(required = false) String transportId
     ) {
-        List<Double> response = orderTransportService.findStatisticalBookingTransport(year, id);
+        List<Double> response = orderTransportService.findStatisticalBookingTransport(year, transportId);
         return ResponseEntity.ok(response);
     }
 
-    @GetMapping("agent/hotel/statistical/statisticalTransportBrand")
+    @GetMapping("agent/transport/statistical/statisticalTransportBrand")
     public ResponseEntity<List<StatiscalTransportBrandDto>> statisticalTransportBrand(
             @RequestParam(required = false) Integer year,
-            @RequestParam(required = false) String id
+            @RequestParam(required = false) String transportId
     ) {
-        List<StatiscalTransportBrandDto> response = orderTransportService.statisticalTransportBrand(year, id);
+        List<StatiscalTransportBrandDto> response = orderTransportService.statisticalTransportBrand(year, transportId);
         return ResponseEntity.ok(response);
     }
 
-    @GetMapping("agent/hotel/statistical/findTransportRevenueStatistics")
+    @GetMapping("agent/transport/statistical/findTransportRevenueStatistics")
     public ResponseEntity<HotelRevenueDto> getTransportRevenueStatistics(
             @RequestParam(required = false) Integer year,
-            @RequestParam(required = false) String id
+            @RequestParam(required = false) String transportId
     ) {
-        HotelRevenueDto hotelRevenueDto = orderTransportService.findTransportRevenueStatistics(year, id);
+        HotelRevenueDto hotelRevenueDto = orderTransportService.findTransportRevenueStatistics(year, transportId);
         return ResponseEntity.ok(hotelRevenueDto);
     }
 
-//    @GetMapping("agent/hotel/statistical/findAllOrderHotelYear")
-//    public ResponseObject findAllOrderYearPie() {
-//        List<Integer> getAllYear = orderTransportService.findAllOrderHotelYear();
-//        if (getAllYear.isEmpty()) {
-//            return new ResponseObject("404", "Không tìm thấy dữ liệu", null);
-//        } else {
-//            return new ResponseObject("200", "Đã tìm thấy dữ liệu", getAllYear);
-//        }
-//    }
+    @GetMapping("agent/transport/statistical/findAllOrderTransportYear")
+    public ResponseObject findAllOrderTransportYear() {
+        List<Integer> getAllYear = orderTransportService.findAllOrderTransportYear();
+        if (getAllYear.isEmpty()) {
+            return new ResponseObject("404", "Không tìm thấy dữ liệu", null);
+        } else {
+            return new ResponseObject("200", "Đã tìm thấy dữ liệu", getAllYear);
+        }
+    }
 }

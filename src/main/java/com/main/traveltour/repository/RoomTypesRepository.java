@@ -36,6 +36,7 @@ public interface RoomTypesRepository extends JpaRepository<RoomTypes, String>, J
 
     @Query("SELECT rt FROM RoomTypes rt " +
             "WHERE rt.hotelId = :hotelId AND rt.isDeleted = false AND (" +
+            " rt.id LIKE %:searchTerm% OR " +
             " rt.roomTypeName LIKE %:searchTerm% OR " +
             " CAST(rt.capacityAdults AS string) LIKE %:searchTerm% OR " +
             " CAST(rt.capacityChildren AS string) LIKE %:searchTerm% OR " +

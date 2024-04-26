@@ -40,8 +40,8 @@ public class TourDetailsServiceImpl implements TourDetailsService {
     }
 
     @Override
-    public List<TourDetails> getAListOfPopularTours(Date departureDate, BigDecimal price) {
-        return tourDetailsRepository.getAListOfPopularTours(departureDate, price);
+    public List<TourDetails> getAListOfPopularTours(String departureArrives, String departureFrom, Date departureDate, BigDecimal price) {
+        return tourDetailsRepository.getAListOfPopularTours(departureArrives, departureFrom, departureDate, price);
     }
 
     @Override

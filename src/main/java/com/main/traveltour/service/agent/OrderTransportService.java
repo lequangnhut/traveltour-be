@@ -28,4 +28,6 @@ public interface OrderTransportService {
     List<Integer> findAllOrderHotelYear();
 
     List<StatiscalTransportBrandDto> statisticalTransportBrand(Integer year, String id);
+
+    List<Integer> findAllOrderTransportYear();
 }

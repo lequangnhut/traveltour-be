@@ -35,6 +35,7 @@ public interface HotelsRepository extends JpaRepository<Hotels, String> {
             "JOIN h.roomTypesById r " +
             "WHERE (h.isAccepted = TRUE AND h.isActive = TRUE AND h.isDeleted = FALSE) AND " +
             "((:searchTerm IS NULL) OR (UPPER(h.hotelName) LIKE %:searchTerm% OR " +
+            "UPPER(h.id) LIKE %:searchTerm% OR " +
             "UPPER(h.phone) LIKE %:searchTerm% OR " +
             "UPPER(h.province) LIKE %:searchTerm% OR " +
             "UPPER(h.district) LIKE %:searchTerm% OR " +
@@ -81,6 +82,7 @@ public interface HotelsRepository extends JpaRepository<Hotels, String> {
             "WHERE (td.id = :tourDetailId) AND " +
             "(oh.orderStatus = :orderHotelStatus) AND " +
             "(:searchTerm IS NULL OR (UPPER(h.hotelName) LIKE %:searchTerm% OR " +
+            "UPPER(h.id) LIKE %:searchTerm% OR " +
             "UPPER(h.province) LIKE %:searchTerm% OR " +
             "UPPER(h.district) LIKE %:searchTerm% OR " +
             "UPPER(h.ward) LIKE %:searchTerm% OR " +
@@ -136,6 +138,7 @@ public interface HotelsRepository extends JpaRepository<Hotels, String> {
             "WHERE (td.id = :tourDetailId) AND " +
             "((oh.orderStatus = 0) OR (oh.orderStatus = 1)) AND " +
             "(:searchTerm IS NULL OR (UPPER(h.hotelName) LIKE %:searchTerm% OR " +
+            "UPPER(h.id) LIKE %:searchTerm% OR " +
             "UPPER(h.province) LIKE %:searchTerm% OR " +
             "UPPER(h.district) LIKE %:searchTerm% OR " +
             "UPPER(h.ward) LIKE %:searchTerm% OR " +

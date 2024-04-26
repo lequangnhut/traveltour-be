@@ -34,11 +34,18 @@ public interface TourDetailsRepository extends JpaRepository<TourDetails, Intege
     @Query("SELECT td FROM TourDetails td " +
             "LEFT JOIN td.bookingToursById bt " +
             "WHERE td.tourDetailStatus != 4 " +
+            "AND (:departureArrives IS NULL OR " +
+            "(UPPER(td.toursByTourId.tourName) LIKE %:departureArrives% OR " +
+            "UPPER(td.toursByTourId.tourTypesByTourTypeId.tourTypeName) LIKE %:departureArrives% OR " +
+            "UPPER(td.toLocation) LIKE %:departureArrives%)) " +
+            "AND (:departureFrom IS NULL OR td.fromLocation LIKE :departureFrom) " +
             "AND (:departureDate IS NULL OR DATE(td.departureDate) >= DATE(:departureDate)) " +
             "AND (:price IS NULL OR td.unitPrice <= :price) " +
             "GROUP BY td.id " +
             "ORDER BY COUNT(bt.id) DESC")
-    List<TourDetails> getAListOfPopularTours(@Param("departureDate") Date departureDate,
+    List<TourDetails> getAListOfPopularTours(@Param("departureArrives") String departureArrives,
+                                             @Param("departureFrom") String departureFrom,
+                                             @Param("departureDate") Date departureDate,
                                              @Param("price") BigDecimal price);
 
     @Query("SELECT td FROM TourDetails td " +
@@ -47,6 +54,7 @@ public interface TourDetailsRepository extends JpaRepository<TourDetails, Intege
 
     @Query("SELECT td FROM TourDetails td " +
             "WHERE (:searchTerm IS NULL OR " +
+            "UPPER(td.id) LIKE %:searchTerm% OR " +
             "(UPPER(td.toursByTourId.tourName) LIKE %:searchTerm% OR " +
             "UPPER(td.toursByTourId.tourTypesByTourTypeId.tourTypeName) LIKE %:searchTerm% OR " +
             "UPPER(td.tourDetailNotes) LIKE %:searchTerm% OR " +
@@ -68,6 +76,7 @@ public interface TourDetailsRepository extends JpaRepository<TourDetails, Intege
     Page<TourDetails> findAllTourDetail(Pageable pageable);
 
     @Query("SELECT td FROM TourDetails td WHERE " +
+            "UPPER(td.id) LIKE %:searchTerm% OR " +
             "UPPER(td.toursByTourId.tourName) LIKE %:searchTerm% OR " +
             "UPPER(td.fromLocation) LIKE %:searchTerm% OR " +
             "UPPER(td.toLocation) LIKE %:searchTerm%")
@@ -84,6 +93,8 @@ public interface TourDetailsRepository extends JpaRepository<TourDetails, Intege
             "JOIN t.tourTypesByTourTypeId ty " +
             "WHERE (:departureArrives IS NULL OR " +
             "(UPPER(t.tourName) LIKE %:departureArrives% OR " +
+            "UPPER(t.id) LIKE %:departureArrives% OR " +
+            "UPPER(td.id) LIKE %:departureArrives% OR " +
             "UPPER(ty.tourTypeName) LIKE %:departureArrives% OR " +
             "UPPER(td.toLocation) LIKE %:departureArrives%)) " +
             "AND (:departureFrom IS NULL OR td.fromLocation LIKE :departureFrom) " +
@@ -140,7 +151,8 @@ public interface TourDetailsRepository extends JpaRepository<TourDetails, Intege
     @Query("SELECT t FROM TourDetails t " +
             "WHERE t.guideId = :guideId AND t.tourDetailStatus = :tourStatus " +
             "AND (:searchTerm IS NULL OR " +
-            "(UPPER(t.toursByTourId.tourName) LIKE %:searchTerm% OR " +
+            "(UPPER(t.id) LIKE %:searchTerm% OR " +
+            "UPPER(t.toursByTourId.tourName) LIKE %:searchTerm% OR " +
             "UPPER(t.toursByTourId.tourTypesByTourTypeId.tourTypeName) LIKE %:searchTerm% OR " +
             "UPPER(t.tourDetailNotes) LIKE %:searchTerm% OR " +
             "UPPER(t.fromLocation) LIKE %:searchTerm% OR " +
