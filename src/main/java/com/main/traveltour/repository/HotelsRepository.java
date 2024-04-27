@@ -97,7 +97,7 @@ public interface HotelsRepository extends JpaRepository<Hotels, String> {
 
     @Query("SELECT h FROM Hotels h JOIN h.roomTypesById rt JOIN rt.orderHotelDetailsById ohd" +
             " JOIN ohd.orderHotelsByOrderHotelId oh WHERE (oh.userId = :userId) AND" +
-            "(oh.orderStatus = :orderHotelStatus) ")
+            "(:orderHotelStatus IS NULL OR oh.orderStatus = :orderHotelStatus) ")
     Page<Hotels> findHotelByUserId(@Param("userId") Integer userId,
                                    @Param("orderHotelStatus") Integer orderHotelStatus,
                                    Pageable pageable);
