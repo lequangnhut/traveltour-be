@@ -1,5 +1,5 @@
 <!doctype html>
-<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<html xmlns="http://www.w3.org/1999/xhtml">
 
 <head>
     <title></title>
@@ -49,6 +49,10 @@
         p {
             display: block;
             margin: 13px 0;
+        }
+
+        strong, span, li, p {
+            color: #5d7079;
         }
     </style>
     <!--[if !mso]>
@@ -278,24 +282,19 @@
                                                 <td style="word-wrap:break-word;padding:0px;"
                                                     align="center">
                                                     <table role="presentation" cellpadding="0" cellspacing="0"
-                                                           style="width:100%; border-collapse:collapse;border-spacing:0px;"
-                                                           border="0">
+                                                           style="width:100%; border-collapse:collapse;border-spacing:0px;" border="0">
                                                         <tbody>
                                                         <tr>
-                                                            <td style="width:30%" align="left">
-                                                                <img src="https://i.imgur.com/NDxqwA6.png" width="100%"
-                                                                     editable="true" border="0" alt=""/>
+                                                            <td style="width:30%" align="left" >
+                                                                <img src="https://i.imgur.com/NDxqwA6.png" width="100%" editable="true" border="0" alt="" />
                                                             </td>
                                                             <td style="width:70%;" align="right">
                                                                 <p class="link" style="color:#000001; font-size:small; margin: 0; text-decoration:none;
-                                                                   font-family:TW-Averta-Regular, Averta, Helvetica, Arial, sans-serif !important;">
-                                                                    Tourism and Travel services</p>
+                                                                   font-family:TW-Averta-Regular, Averta, Helvetica, Arial, sans-serif !important;">Tourism and Travel services</p>
                                                                 <p class="link" style="color:#000001; font-size:small; margin: 0; text-decoration:none;
-                                                                    font-family:TW-Averta-Regular, Averta, Helvetica, Arial, sans-serif !important;">
-                                                                    Website: traveltour.ser.com</p>
+                                                                    font-family:TW-Averta-Regular, Averta, Helvetica, Arial, sans-serif !important;">Website: traveltour.ser.com</p>
                                                                 <p class="link" style="color:#000001; font-size:small; margin: 0; text-decoration:none;
-                                                                    font-family:TW-Averta-Regular, Averta, Helvetica, Arial, sans-serif !important;">
-                                                                    Hotline: 1900 2000</p>
+                                                                    font-family:TW-Averta-Regular, Averta, Helvetica, Arial, sans-serif !important;">Hotline: 1900 2000</p>
                                                             </td>
                                                         </tr>
                                                         </tbody>
@@ -307,10 +306,7 @@
                                     </div>
                                     <table width="100%" border="0" cellspacing="0" cellpadding="0">
                                         <tr>
-                                            <td class="separator"
-                                                style="padding-top: 20px; border-bottom:2px solid #706f6f; font-size:0pt; line-height:0pt;">
-                                                &nbsp;
-                                            </td>
+                                            <td class="separator" style="padding-top: 20px; border-bottom:2px solid #706f6f; font-size:0pt; line-height:0pt;">&nbsp;</td>
                                         </tr>
                                     </table>
                                     <!--[if mso | IE]>
@@ -391,114 +387,141 @@
                                                     <div style="cursor:auto;color:#5d7079;font-family:TW-Averta-Regular, Averta, Helvetica, Arial;font-size:16px;line-height:24px;letter-spacing:0.4px;text-align:left;">
                                                         <p></p>
                                                         <p style="color:#000000; font-family:TW-Averta-Regular, Averta, Helvetica, Arial; font-size:x-large;
-                                                            line-height:30px; text-align:center; margin-bottom:20px;">Travel Tour <br/>
-                                                            <strong style="color: #63ab45"> Thông báo hủy tour</strong>
+                                 line-height:28px; text-align:center; margin-bottom:10px;">
+                                                            <strong style="color: #63ab45">XÁC NHẬN HỦY BOOKING</strong>
                                                         </p>
-                                                        <p style="text-align: justify; margin-bottom: 5px">Kính gửi người dùng [tên người dùng],</strong></p>
+                                                        <p style="text-align: justify; margin-bottom: 5px">Xin chào, <strong th:text="${customerName}"></strong>!</p>
 
                                                         <p style="text-align: justify; margin-bottom: 5px">
-                                                            Chúng tôi xin gửi lời chào trân trọng và cảm ơn sự tin tưởng
-                                                            mà Quý khách đã dành cho <strong>Travel Tour</strong> . Chúng tôi
-                                                            đặc biệt đánh giá cao quan tâm và sự hợp tác của Quý khách
-                                                            trong việc chọn lựa dịch vụ du lịch của chúng tôi.
+                                                            Chúng tôi chân thành xin lỗi khi phải thông báo với khách hàng là đơn hàng tour
+                                                            có mã booking là <strong th:text="${bookingId}"></strong> đã bị hủy do nhân viên của Travel Tour
+                                                            vào lúc <strong th:text="${#dates.format(timeDelete, 'dd/MM/yyyy HH:mm:ss')}"></strong>.
                                                         </p>
                                                         <p style="text-align: justify; margin-bottom: 5px">
-                                                            Với sự trách nhiệm cao, chúng tôi muốn thông báo rằng
-                                                            do một số vấn đề không thể kiểm soát được, chúng tôi phải hủy
-                                                            bỏ chuyến du lịch có thông tin như sau:
+                                                            Dưới đây là chi tiết thông tin được hủy.
+                                                        </p>
+
+                                                        <p style="color: #ed0000; font-family:TW-Averta-Regular, Averta, Helvetica, Arial;
+                                                                  line-height:28px; font-weight: bolder; margin: 0;">
+                                                            Thông tin người mua:
+                                                        </p>
+                                                        <table role="presentation" cellpadding="0" cellspacing="0"
+                                                               style="width:100%; border-collapse:collapse;border-spacing:0px;"
+                                                               border="0">
+                                                            <tbody>
+                                                            <tr>
+                                                                <td style="text-align:justify; width:80%;" align="left">
+                                                                    <strong>Họ tên: </strong><span th:text="${customerName}"></span>
+                                                                </td>
+
+                                                            </tr>
+                                                            <tr>
+                                                                <td style="width:80%;" align="left">
+                                                                    <strong>CMND / CCCD: </strong><span th:text="${customerCitizenCard}"></span>
+                                                                </td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td style="text-align:justify; width:100%;" align="left" colspan="2">
+                                                                    <strong>Số điện thoại: </strong><span th:text="${customerPhone}"></span>
+                                                                </td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td style="text-align:justify; width:100%;" align="left" colspan="2">
+                                                                    <strong>Hình thức thanh toán: </strong><span th:text="${paymentMethod}"></span>
+                                                                </td>
+                                                            </tr>
+                                                            </tbody>
+                                                        </table>
+                                                        <p style="color: #ed0000; font-family:TW-Averta-Regular, Averta, Helvetica, Arial;
+                                                                  line-height:28px; font-weight: bolder; margin: 0;">
+                                                            Thông tin đơn hàng:
+                                                        </p>
+                                                        <ul style="margin: 0; padding-left: 20px;">
+                                                            <li><strong>Mã Booking: </strong><span th:text="${bookingId}"></span>
+                                                            </li>
+                                                            <li><strong>Ngày booking: </strong><span th:text="${#dates.format(dateTimeBooking, 'dd/MM/yyyy HH:mm:ss')}"></span>
+                                                            </li>
+                                                            <li><strong>Tên Tour: </strong><span th:text="${tourName}"></span>
+                                                            </li>
+                                                            <li><strong>Số lượng khách: </strong><span th:text="${totalCapacity}"></span>
+                                                            </li>
+                                                            <li><strong>Thời gian khởi hành: </strong><span th:text="${#dates.format(departureDate, 'dd/MM/yyyy HH:mm:ss')}" ></span>
+                                                            </li>
+                                                            <li><strong>Thời gian trở về: </strong><span th:text="${#dates.format(arrivalDate, 'dd/MM/yyyy HH:mm:ss')}"></span>
+                                                            </li>
+                                                            <li><strong>Giá tour: </strong><span th:text="${unitPrice}"></span>
+                                                            </li>
+                                                            <li>
+                                                                <strong>Chi tiết dịch vụ: </strong>
+                                                                <ul style="margin: 0; padding-left: 20px;">
+                                                                    <li><strong>Giá người lớn ( > 18 tuổi ): </strong><span>100% giá tour</span>
+                                                                    </li>
+                                                                    <li><strong>Giá trẻ em ( 3 - 12 tuổi ): </strong><span> 30% giá tour</span>
+                                                                    </li>
+                                                                    <li><strong>Giá em bé ( < 2 tuổi ): </strong><span> Miễn phí</span>
+                                                                    </li>
+                                                                </ul>
+                                                            </li>
+                                                            <li><strong>Thành tiền: </strong> <br> <span th:text="${orderTotal}"></span>
+                                                            </li>
+                                                            <li><strong>Thuế VAT (8%): </strong> <br> Đã bao gồm trong giá tour.</li>
+                                                        </ul>
+
+                                                        <p style="text-align: justify; margin-bottom: 5px">
+                                                            <strong>Lý do hủy tour: </strong> <span th:text="${refund}"></span>
                                                         </p>
                                                         <p style="text-align: justify; margin-bottom: 5px">
-                                                            <strong>Mã booking: </strong>
+                                                            <strong>Chi phí hủy (trên tổng giá trị đơn): </strong> <span th:text="${refund}"></span>
                                                         </p>
                                                         <p style="text-align: justify; margin-bottom: 5px">
-                                                            <strong>Tên tour: </strong>
+                                                            <strong>Chí phí nhận lại: </strong> <span th:text="${moneyback}"></span>
+                                                        </p>
                                                         </p>
                                                         <p style="text-align: justify; margin-bottom: 5px">
-                                                            <strong>Ngày xuất phátr: </strong>
+                                                            Trên đây là thông tin cho hoạt động hủy booking của bạn, về thông báo nhận
+                                                            hoàn trả sẽ được cập nhật trên giao diện người dùng của bạn tại
+                                                            <strong>Travel Tour</strong>. Nếu có bất kì thắc mắc nào, hay liên hệ với
+                                                            chúng tôi.
                                                         </p>
                                                         <p style="text-align: justify; margin-bottom: 5px">
-                                                            Chúng tôi rất tiếc vì sự phiền lòng mà quyết định này có thể
-                                                            mang lại và chúng tôi hiểu rằng nó có thể gây thất vọng. Đồng
-                                                            thời, chúng tôi cam kết hoàn trả toàn bộ số tiền đã thanh toán
-                                                            cho chuyến du lịch này và sẽ liên hệ với Quý khách để thực hiện
-                                                            các thủ tục hoàn trả một cách thuận lợi nhất.
-                                                        </p>
-                                                        <p style="text-align: justify; margin-bottom: 5px; font-weight: bolder">
-                                                            <a href="" style=" text-decoration: none; color: crimson">
-                                                                Nhấn vào đây để truy cập đơn booking.
-                                                            </a>
-                                                        </p>
-                                                        <p style="text-align: justify; margin-bottom: 5px">
-                                                            Nếu có bất kỳ thắc mắc hoặc yêu cầu nào, đừng ngần ngại liên
-                                                            hệ trực tiếp với chúng tôi.
-                                                            Chúng tôi sẽ luôn sẵn lòng hỗ trợ quý khách.
-                                                        </p>
-                                                        <p style="text-align: justify; margin-bottom: 5px">
-                                                            Một lần nữa, xin cảm ơn quý khách vì đã tin tưởng và chọn <strong>Travel
-                                                            Tour</strong> làm đối tác kinh doanh của mình.
-                                                            Chúng tôi mong chờ một hành trình thành công và có ý nghĩa
-                                                            cùng quý khách.
+                                                            Chúng tôi rất tiếc vì lần booking này của bạn không thành công.
+                                                            <strong>Travel Tour</strong> hy vọng sẽ được phục vụ quý khách
+                                                            trong một tương lai gần. Chúc quý khách một ngày tốt lành!.
                                                         </p>
                                                         <p style="text-align: justify; margin-bottom: 5px; font-weight: bolder;padding-bottom: 15px;">
                                                             Trân trọng,
                                                             <br/>
                                                             <span style="font-weight: bolder; font-family: TW-Averta-Regular, Averta, Helvetica, Arial; color: #63ab45">Dịch vụ du lịch Travel Tour</span>
                                                         </p>
-                                                        <p style="text-align: center;margin: 0;padding: 0;">
-                                                            <a th:href="@{${domain} + '/home'}"
-                                                               class="btn"
-                                                               style="background-color: #63ab45; color: white">>> Truy
-                                                                cập website <<</a>
-                                                        </p>
-                                                        <p class="separator"
-                                                           style="; border-bottom:2px solid #706f6f; font-size:0pt; line-height:0pt;">
-                                                            &nbsp;</p>
+                                                        <p class="separator" style="; border-bottom:2px solid #706f6f; font-size:0pt; line-height:0pt;">&nbsp;</p>
                                                         <table width="100%" border="0" cellspacing="0" cellpadding="0">
                                                             <tr>
-                                                                <td class="text-socials"
-                                                                    style="color:#000000; font-family:system-ui; font-size:16px; line-height:22px; text-align:center; text-transform:uppercase;">
+                                                                <td class="text-socials" style="color:#000000; font-family:system-ui; font-size:16px; line-height:22px; text-align:center; text-transform:uppercase;">
                                                                     <multiline>Theo dõi chúng tôi</multiline>
                                                                 </td>
                                                             </tr>
                                                             <tr>
                                                                 <td style="padding: 10px 0px 10px 0px;" align="center">
-                                                                    <table class="center" border="0" cellspacing="0"
-                                                                           cellpadding="0" style="text-align:center;">
+                                                                    <table class="center" border="0" cellspacing="0" cellpadding="0" style="text-align:center;">
                                                                         <tr>
-                                                                            <td class="img" width="52"
-                                                                                style="font-size:0pt; line-height:0pt; text-align:left;">
+                                                                            <td class="img" width="52" style="font-size:0pt; line-height:0pt; text-align:left;">
                                                                                 <a href="" target="_blank">
-                                                                                    <img src="https://i.imgur.com/877kqQV.jpg"
-                                                                                         width="42" height="42"
-                                                                                         editable="true" border="0"
-                                                                                         alt=""/>
+                                                                                    <img src="https://i.imgur.com/877kqQV.jpg" width="42" height="42" editable="true" border="0" alt="" />
                                                                                 </a>
                                                                             </td>
-                                                                            <td class="img" width="52"
-                                                                                style="font-size:0pt; line-height:0pt; text-align:left;">
+                                                                            <td class="img" width="52" style="font-size:0pt; line-height:0pt; text-align:left;">
                                                                                 <a href="" target="_blank">
-                                                                                    <img src="https://i.imgur.com/33AwFOF.jpg"
-                                                                                         width="42" height="42"
-                                                                                         editable="true" border="0"
-                                                                                         alt=""/>
+                                                                                    <img src="https://i.imgur.com/33AwFOF.jpg" width="42" height="42" editable="true" border="0" alt="" />
                                                                                 </a>
                                                                             </td>
-                                                                            <td class="img" width="52"
-                                                                                style="font-size:0pt; line-height:0pt; text-align:left;">
+                                                                            <td class="img" width="52" style="font-size:0pt; line-height:0pt; text-align:left;">
                                                                                 <a href="" target="_blank">
-                                                                                    <img src="https://i.imgur.com/U8ws7yM.jpg"
-                                                                                         width="42" height="42"
-                                                                                         editable="true" border="0"
-                                                                                         alt=""/>
+                                                                                    <img src="https://i.imgur.com/U8ws7yM.jpg" width="42" height="42" editable="true" border="0" alt="" />
                                                                                 </a>
                                                                             </td>
-                                                                            <td class="img" width="42"
-                                                                                style="font-size:0pt; line-height:0pt; text-align:left;">
+                                                                            <td class="img" width="42" style="font-size:0pt; line-height:0pt; text-align:left;">
                                                                                 <a href="" target="_blank">
-                                                                                    <img src="https://i.imgur.com/y7HcGhJ.jpg"
-                                                                                         width="42" height="42"
-                                                                                         editable="true" border="0"
-                                                                                         alt=""/>
+                                                                                    <img src="https://i.imgur.com/y7HcGhJ.jpg" width="42" height="42" editable="true" border="0" alt="" />
                                                                                 </a>
                                                                             </td>
                                                                         </tr>

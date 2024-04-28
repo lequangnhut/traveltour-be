@@ -50,17 +50,48 @@ public class TourCusAPI {
                                                       @RequestParam(defaultValue = "asc") String sortDir,
                                                       @RequestParam(required = false) BigDecimal price,
                                                       @RequestParam(required = false) List<Integer> tourTypeList,
+                                                      @RequestParam(required = false) List<String> cleanArrives,
+                                                      @RequestParam(required = false) List<String> cleanFrom,
                                                       @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) Date departure,
                                                       @RequestParam(required = false) String departureArrives,
                                                       @RequestParam(required = false) String departureFrom,
                                                       @RequestParam(required = false) Integer numberOfPeople
     ) {
-
-        Sort sort = sortDir.equalsIgnoreCase(Sort.Direction.ASC.name())
-                ? Sort.by(sortBy).ascending()
-                : Sort.by(sortBy).descending();
+        Sort sort = Sort.unsorted();
+        if (!sortBy.equals("dateCreated")) {
+            sort = sortDir.equalsIgnoreCase(Sort.Direction.ASC.name())
+                    ? Sort.by(sortBy).ascending()
+                    : Sort.by(sortBy).descending();
+        }
 
         Page<TourDetails> tourDetailsPage = tourDetailsService.findTourDetailWithFilter(departureArrives, departureFrom, numberOfPeople, departure, price, tourTypeList, PageRequest.of(page, size, sort));
+
+        if (tourDetailsPage.isEmpty()) {
+            List<String> tourDetailIdList = new ArrayList<>();
+            if (cleanArrives != null) {
+                List<String> combinations = generateCombinations(cleanArrives);
+                for (String combination : combinations) {
+                    List<String> ids = tourDetailsService.findTourDetailIdList(combination, null, tourDetailIdList.isEmpty() ? null : tourDetailIdList);
+                    if (!ids.isEmpty()) {
+                        tourDetailIdList.addAll(ids);
+                    }
+                }
+            }
+            if (cleanFrom != null) {
+                List<String> combinations = generateCombinations(cleanFrom);
+                for (String combination : combinations) {
+                    List<String> ids = tourDetailsService.findTourDetailIdList(combination, null, tourDetailIdList.isEmpty() ? null : tourDetailIdList);
+                    if (!ids.isEmpty()) {
+                        tourDetailIdList.addAll(ids);
+                    }
+                }
+            }
+            if (tourDetailIdList.isEmpty()) {
+                tourDetailIdList = null;
+            }
+            tourDetailsPage = tourDetailsService.findTourDetailWithInFilter(tourDetailIdList, numberOfPeople, departure, price, tourTypeList, PageRequest.of(page, size, sort));
+        }
+
         Page<TourDetailsGetDataDto> tourDetailsDtoPage = tourDetailsPage.map(tourDetails -> EntityDtoUtils.convertToDto(tourDetails, TourDetailsGetDataDto.class));
 
         if (tourDetailsDtoPage.isEmpty()) {
@@ -68,6 +99,28 @@ public class TourCusAPI {
         } else {
             return new ResponseObject("200", "Đã tìm thấy dữ liệu", tourDetailsDtoPage);
         }
+    }
+
+    // Hàm này tạo ra tất cả các kết hợp có thể của các từ trong danh sách đầu vào
+    private static List<String> generateCombinations(List<String> input) {
+        List<String> combinations = new ArrayList<>();
+        generateCombinationsRecursive(input, 0, "", combinations);
+        return combinations;
+    }
+
+    // Hàm đệ quy tạo ra tất cả các kết hợp có thể của các từ trong danh sách input
+    private static void generateCombinationsRecursive(List<String> input, int index, String current, List<String> combinations) {
+        if (index == input.size()) {
+            if (!current.isEmpty()) {
+                combinations.add(current.trim());
+            }
+            return;
+        }
+
+        // Chọn từ hiện tại
+        generateCombinationsRecursive(input, index + 1, current + input.get(index) + " ", combinations);
+        // Bỏ qua từ hiện tại
+        generateCombinationsRecursive(input, index + 1, current, combinations);
     }
 
     @GetMapping("customer/tour/getAListOfPopularTours")
@@ -85,27 +138,35 @@ public class TourCusAPI {
                 ? Sort.by(sortBy).ascending()
                 : Sort.by(sortBy).descending();
 
-        List<TourDetails> tourDetailsList = tourDetailsService.getAListOfPopularTours(departureArrives, departureFrom, departure, price);
+        List<Integer> listOfIdsOfTourTypes = null;
+        if (departureArrives != null) {
+            listOfIdsOfTourTypes = tourDetailsService.getListOfIdsOfTourTypes(departureArrives);
+            if (listOfIdsOfTourTypes.isEmpty()) {
+                listOfIdsOfTourTypes = null;
+            }
+        }
 
-        List<TourDetails> tourDetailsList1 = tourDetailsService.getAListOfPopularTours(departureArrives, null, departure, price);
+        List<TourDetails> tourDetailsList = tourDetailsService.getAListOfPopularTours(departureArrives, departureFrom, departure, price, null);
+
+        List<TourDetails> tourDetailsList1 = tourDetailsService.getAListOfPopularTours(departureArrives, null, departure, price, listOfIdsOfTourTypes);
         tourDetailsList1.removeAll(tourDetailsList);
 
-        List<TourDetails> tourDetailsList2 = tourDetailsService.getAListOfPopularTours(null, departureFrom, departure, price);
+        List<TourDetails> tourDetailsList2 = tourDetailsService.getAListOfPopularTours(null, departureFrom, departure, price, listOfIdsOfTourTypes);
         tourDetailsList2.removeAll(tourDetailsList);
         tourDetailsList2.removeAll(tourDetailsList1);
 
-        List<TourDetails> tourDetailsList3 = tourDetailsService.getAListOfPopularTours(null, null, departure, price);
+        List<TourDetails> tourDetailsList3 = tourDetailsService.getAListOfPopularTours(null, null, departure, price, listOfIdsOfTourTypes);
         tourDetailsList3.removeAll(tourDetailsList);
         tourDetailsList3.removeAll(tourDetailsList1);
         tourDetailsList3.removeAll(tourDetailsList2);
 
-        List<TourDetails> tourDetailsList4 = tourDetailsService.getAListOfPopularTours(null,null,departure, null);
+        List<TourDetails> tourDetailsList4 = tourDetailsService.getAListOfPopularTours(null, null, departure, null, null);
         tourDetailsList4.removeAll(tourDetailsList);
         tourDetailsList4.removeAll(tourDetailsList1);
         tourDetailsList4.removeAll(tourDetailsList2);
         tourDetailsList4.removeAll(tourDetailsList3);
 
-        List<TourDetails> tourDetailsList5 = tourDetailsService.getAListOfPopularTours(null,null,null, null);
+        List<TourDetails> tourDetailsList5 = tourDetailsService.getAListOfPopularTours(null, null, null, price, null);
         tourDetailsList5.removeAll(tourDetailsList);
         tourDetailsList5.removeAll(tourDetailsList1);
         tourDetailsList5.removeAll(tourDetailsList2);

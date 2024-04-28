@@ -17,7 +17,9 @@ public interface TourDetailsService {
 
     List<TourDetails> findAllOrderByBookingCountDesc();
 
-    List<TourDetails> getAListOfPopularTours(String departureArrives, String departureFrom, Date departureDate, BigDecimal price);
+    List<TourDetails> getAListOfPopularTours(String departureArrives, String departureFrom, Date departureDate, BigDecimal price, List<Integer> listOfIdsOfTourTypes);
+
+    List<Integer> getListOfIdsOfTourTypes(String departureArrives);
 
     List<TourDetails> getAllJoinBooking();
 
@@ -36,6 +38,15 @@ public interface TourDetailsService {
                                                BigDecimal price,
                                                List<Integer> tourTypesByTourTypeId,
                                                Pageable pageable);
+
+    Page<TourDetails> findTourDetailWithInFilter(List<String> tourDetailIdList,
+                                                 Integer numberOfPeople,
+                                                 Date departureDate,
+                                                 BigDecimal price,
+                                                 List<Integer> tourTypesByTourTypeId,
+                                                 Pageable pageable);
+
+    List<String> findTourDetailIdList(String cleanArrives, String cleanFrom, List<String> tourDetailIdList);
 
     Page<TourDetails> findAllTourDetailStaff(Integer tourDetailStatus, Pageable pageable);
 

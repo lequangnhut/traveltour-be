@@ -38,8 +38,13 @@ public class TourDetailsServiceImpl implements TourDetailsService {
     }
 
     @Override
-    public List<TourDetails> getAListOfPopularTours(String departureArrives, String departureFrom, Date departureDate, BigDecimal price) {
-        return repo.getAListOfPopularTours(departureArrives, departureFrom, departureDate, price);
+    public List<TourDetails> getAListOfPopularTours(String departureArrives, String departureFrom, Date departureDate, BigDecimal price, List<Integer> listOfIdsOfTourTypes) {
+        return repo.getAListOfPopularTours(departureArrives, departureFrom, departureDate, price, listOfIdsOfTourTypes);
+    }
+
+    @Override
+    public List<Integer> getListOfIdsOfTourTypes(String departureArrives) {
+        return repo.getListOfIdsOfTourTypes(departureArrives);
     }
 
     @Override
@@ -83,6 +88,15 @@ public class TourDetailsServiceImpl implements TourDetailsService {
         return repo.findTourDetailWithFilter(departureArrives, departureFrom, numberOfPeople, departureDate, price, tourTypesByTourTypeId, pageable);
     }
 
+    @Override
+    public Page<TourDetails> findTourDetailWithInFilter(List<String> tourDetailIdList, Integer numberOfPeople, Date departureDate, BigDecimal price, List<Integer> tourTypesByTourTypeId, Pageable pageable) {
+        return repo.findTourDetailWithInFilter(tourDetailIdList, numberOfPeople, departureDate, price, tourTypesByTourTypeId, pageable);
+    }
+
+    @Override
+    public List<String> findTourDetailIdList(String cleanArrives, String cleanFrom, List<String> tourDetailIdList) {
+        return repo.findTourDetailIdList(cleanArrives, cleanFrom, tourDetailIdList);
+    }
 
     @Override
     public Page<TourDetails> findAllTourDetailWithSearchStaff(Integer tourDetailStatus, String searchTerm, Pageable pageable) {

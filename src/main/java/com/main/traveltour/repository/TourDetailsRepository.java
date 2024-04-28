@@ -49,12 +49,24 @@ public interface TourDetailsRepository extends JpaRepository<TourDetails, Intege
             "AND (:departureFrom IS NULL OR td.fromLocation LIKE :departureFrom) " +
             "AND (:departureDate IS NULL OR DATE(td.departureDate) >= DATE(:departureDate)) " +
             "AND (:price IS NULL OR td.unitPrice <= :price) " +
+            "AND (:listOfIdsOfTourTypes IS NULL OR td.toursByTourId.tourTypesByTourTypeId.id IN :listOfIdsOfTourTypes) " +
             "GROUP BY td.id " +
             "ORDER BY COUNT(bt.id) DESC")
     List<TourDetails> getAListOfPopularTours(@Param("departureArrives") String departureArrives,
                                              @Param("departureFrom") String departureFrom,
                                              @Param("departureDate") Date departureDate,
-                                             @Param("price") BigDecimal price);
+                                             @Param("price") BigDecimal price,
+                                             @Param("listOfIdsOfTourTypes") List<Integer> listOfIdsOfTourTypes);
+
+    @Query("SELECT tt.id FROM TourTypes tt " +
+            "jOIN tt.toursById t " +
+            "jOIN t.tourDetailsById td " +
+            "WHERE t.tourName LIKE %:departureArrives% " +
+            "OR td.toLocation LIKE %:departureArrives% " +
+            "OR tt.tourTypeName LIKE %:departureArrives% " +
+            "GROUP BY tt.id")
+    List<Integer> getListOfIdsOfTourTypes(@Param("departureArrives") String departureArrives);
+
 
     @Query("SELECT td FROM TourDetails td " +
             "WHERE td.tourDetailStatus = 1 ")
@@ -127,6 +139,39 @@ public interface TourDetailsRepository extends JpaRepository<TourDetails, Intege
             @Param("price") BigDecimal price,
             @Param("tourTypesByTourTypeId") List<Integer> tourTypesByTourTypeId,
             Pageable pageable);
+
+    @Query("SELECT td " +
+            "FROM TourDetails td " +
+            "JOIN td.toursByTourId t " +
+            "JOIN t.tourTypesByTourTypeId ty " +
+            "WHERE td.tourDetailStatus != 2 AND td.tourDetailStatus != 3 AND td.tourDetailStatus != 4 " +
+            "AND (:tourDetailIdList IS NULL OR td.id IN :tourDetailIdList) " +
+            "AND (:numberOfPeople IS NULL OR :numberOfPeople <= (td.numberOfGuests - td.bookedSeat)) " +
+            "AND (:departureDate IS NULL OR DATE(td.departureDate) >= DATE(:departureDate)) " +
+            "AND (:price IS NULL OR td.unitPrice <= :price) " +
+            "AND (:tourTypesByTourTypeId IS NULL OR ty.id IN :tourTypesByTourTypeId)")
+    Page<TourDetails> findTourDetailWithInFilter(
+            @Param("tourDetailIdList") List<String> tourDetailIdList,
+            @Param("numberOfPeople") Integer numberOfPeople,
+            @Param("departureDate") Date departureDate,
+            @Param("price") BigDecimal price,
+            @Param("tourTypesByTourTypeId") List<Integer> tourTypesByTourTypeId,
+            Pageable pageable);
+
+    @Query("SELECT td.id " +
+            "FROM TourDetails td " +
+            "WHERE td.tourDetailStatus != 2 AND td.tourDetailStatus != 3 AND td.tourDetailStatus != 4 " +
+            "AND (:cleanArrives IS NULL OR UPPER(td.toursByTourId.tourName) LIKE %:cleanArrives% " +
+            "OR UPPER(td.toLocation) LIKE %:cleanArrives%) " +
+            "AND (:cleanFrom IS NULL OR UPPER(td.fromLocation) LIKE %:cleanFrom%) " +
+            "AND (:tourDetailIdList IS NULL OR td.id NOT IN :tourDetailIdList)" +
+            "GROUP BY td.id")
+    List<String> findTourDetailIdList(
+            @Param("cleanArrives") String cleanArrives,
+            @Param("cleanFrom") String cleanFrom,
+            @Param("tourDetailIdList") List<String> tourDetailIdList
+    );
+
 
     @Query(value = "SELECT td.id as tour_id, t.tour_name, t.tour_img, td.unit_price, COUNT(td.id) as tour_detail_count " +
             "FROM tours t LEFT JOIN tour_details td ON t.id = td.tour_id " +
