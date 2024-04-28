@@ -29,6 +29,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -194,11 +195,11 @@ public class RoomTypeServiceImpl implements RoomTypeService {
 
         if (checkInDateFiller != null && checkOutDateFiller != null) {
             List<Object[]> resultListAmountRoom = entityManager.createNativeQuery(
-                            "SELECT DISTINCT room_types.id, COUNT(order_hotel_details.amount) AS totalBooked " +
+                            "SELECT DISTINCT room_types.id, COUNT(DISTINCT order_hotels.id) AS totalBooked " +
                                     "FROM room_types " +
                                     "INNER JOIN order_hotel_details ON room_types.id = order_hotel_details.room_type_id " +
                                     "INNER JOIN order_hotels ON order_hotel_details.order_hotel_id = order_hotels.id " +
-                                    "WHERE order_hotels.check_out > :checkInDate AND order_hotels.check_in  < :checkOutDate " +
+                                    "WHERE order_hotels.check_out > :checkInDate AND order_hotels.check_in < :checkOutDate " +
                                     "GROUP BY room_types.id")
                     .setParameter("checkInDate", newCheckIn)
                     .setParameter("checkOutDate", newCheckOut)
@@ -207,11 +208,11 @@ public class RoomTypeServiceImpl implements RoomTypeService {
 
             for (Object[] result : resultListAmountRoom) {
                 String roomId = (String) result[0];
-                BigDecimal numberOfRoomsBookedBigDecimal = (BigDecimal) result[1];
-                Long numberOfRoomsBooked = numberOfRoomsBookedBigDecimal.longValue(); // Chuyển đổi từ BigDecimal sang Long
+                Long numberOfRoomsBookedBigInteger = (Long) result[1];
+                long numberOfRoomsBooked = numberOfRoomsBookedBigInteger != null ? numberOfRoomsBookedBigInteger.longValue() : 0L; // Chuyển đổi từ BigInteger sang long, nếu null thì gán số lượng là 0
                 RoomTypes roomType = entityManager.find(RoomTypes.class, roomId);
                 if (roomType != null) {
-                    Integer remainingRooms = roomType.getAmountRoom() - numberOfRoomsBooked.intValue();
+                    int remainingRooms = roomType.getAmountRoom() - (int) numberOfRoomsBooked;
                     if (remainingRooms < 0) {
                         remainingRooms = 0;
                     }
@@ -220,7 +221,6 @@ public class RoomTypeServiceImpl implements RoomTypeService {
                     entityManager.merge(roomType);
                 }
             }
-
         }
 
         if (sort != null && !sort.isEmpty()) {
