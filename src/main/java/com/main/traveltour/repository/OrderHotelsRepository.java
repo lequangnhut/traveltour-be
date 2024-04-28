@@ -8,6 +8,8 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -26,7 +28,7 @@ public interface OrderHotelsRepository extends JpaRepository<OrderHotels, Intege
     List<OrderHotels> findOrderHotelByTourDetailIdAndHotelId(@Param("tourDetailId") String tourDetailId,
                                                              @Param("hotelId") String hotelId);
 
-    @Query("SELECT oh FROM OrderHotels oh WHERE oh.orderStatus = :orderStatus AND oh.customerEmail = :email")
+    @Query("SELECT oh FROM OrderHotels oh WHERE (:orderStatus IS NULL OR oh.orderStatus = :orderStatus) AND oh.customerEmail = :email ORDER BY oh.dateCreated DESC")
     Page<OrderHotels> findAllBookingHotelsByUserId(@Param("orderStatus") Integer orderStatus, @Param("email") String email, Pageable pageable);
 
     OrderHotels findById(String id);
@@ -77,5 +79,11 @@ public interface OrderHotelsRepository extends JpaRepository<OrderHotels, Intege
 
     @Query("SELECT DISTINCT YEAR(oh.dateCreated) FROM OrderHotels oh ORDER BY YEAR(oh.dateCreated) DESC")
     List<Integer> getAllOrderHotelYear();
+
+    @Query("SELECT DISTINCT oh FROM OrderHotels oh WHERE oh.id IN :orderHotelDetails AND (oh.checkIn > CURRENT_TIMESTAMP() OR (DATE(oh.checkIn) = CURRENT_DATE() AND HOUR(oh.checkIn) > HOUR(CURRENT_TIMESTAMP()))) AND oh.checkIn < :targetDate AND oh.orderStatus = 2 ORDER BY YEAR(oh.dateCreated) DESC")
+    Page<OrderHotels> findOrderHotelsAfter12Hours(@Param("orderHotelDetails") List<String> orderHotelDetails, @Param("targetDate") Timestamp targetDate, Pageable pageable);
+
+
+
 
 }

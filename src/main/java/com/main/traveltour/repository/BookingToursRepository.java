@@ -38,7 +38,7 @@ public interface BookingToursRepository extends JpaRepository<BookingTours, Inte
                                         @Param("searchTerm") String searchTerm,
                                         Pageable pageable);
 
-    @Query("SELECT bt FROM BookingTours bt WHERE bt.orderStatus = :orderStatus AND bt.customerEmail = :email")
+    @Query("SELECT bt FROM BookingTours bt WHERE (:orderStatus IS NULL OR bt.orderStatus = :orderStatus) AND bt.customerEmail = :email ORDER BY bt.dateCreated DESC")
     Page<BookingTours> findAllBookingToursByUserId(@Param("orderStatus") Integer orderStatus, @Param("email") String email, Pageable pageable);
 
     //doanh thu cùa dashboard

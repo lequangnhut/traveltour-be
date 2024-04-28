@@ -13,6 +13,7 @@ import com.main.traveltour.service.agent.RoomTypeService;
 import com.main.traveltour.service.agent.RoomUtilitiesService;
 import com.main.traveltour.service.utils.FileUpload;
 import com.main.traveltour.service.utils.FileUploadResize;
+import com.main.traveltour.utils.ChangeCheckInTimeService;
 import com.main.traveltour.utils.GenerateNextID;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.Query;
@@ -28,6 +29,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -60,6 +62,8 @@ public class RoomTypeServiceImpl implements RoomTypeService {
 
     @Autowired
     private RoomUtilitiesRepository roomUtilitiesRepository;
+    @Autowired
+    ChangeCheckInTimeService changeCheckInTimeService;
     private static final Logger LOGGER = LoggerFactory.getLogger(RoomTypes.class);
 
     @Override
@@ -111,6 +115,10 @@ public class RoomTypeServiceImpl implements RoomTypeService {
             Integer capacityChildrenFilter, Boolean isDeletedHotelFilter, Boolean isDeletedRoomTypeFilter,
             Timestamp checkInDateFiller, Timestamp checkOutDateFiller,
             String hotelIdFilter, int page, int size, String sort) {
+
+        Timestamp newCheckIn = changeCheckInTimeService.changeCheckInTimeSearch(checkInDateFiller);
+        Timestamp newCheckOut = changeCheckInTimeService.changeCheckOutTimeSearch(checkOutDateFiller);
+        System.out.println("new checkin: " + newCheckIn);
 
         CriteriaBuilder builder = entityManager.getCriteriaBuilder();
         CriteriaQuery<RoomTypes> query = builder.createQuery(RoomTypes.class);
@@ -187,24 +195,24 @@ public class RoomTypeServiceImpl implements RoomTypeService {
 
         if (checkInDateFiller != null && checkOutDateFiller != null) {
             List<Object[]> resultListAmountRoom = entityManager.createNativeQuery(
-                            "SELECT DISTINCT room_types.id, SUM(order_hotel_details.amount) AS totalBooked " +
+                            "SELECT DISTINCT room_types.id, COUNT(DISTINCT order_hotels.id) AS totalBooked " +
                                     "FROM room_types " +
                                     "INNER JOIN order_hotel_details ON room_types.id = order_hotel_details.room_type_id " +
                                     "INNER JOIN order_hotels ON order_hotel_details.order_hotel_id = order_hotels.id " +
-                                    "WHERE order_hotels.check_in <= :checkOutDate AND order_hotels.check_out >= :checkInDate " +
+                                    "WHERE order_hotels.check_out > :checkInDate AND order_hotels.check_in < :checkOutDate " +
                                     "GROUP BY room_types.id")
-                    .setParameter("checkInDate", checkInDateFiller)
-                    .setParameter("checkOutDate", checkOutDateFiller)
+                    .setParameter("checkInDate", newCheckIn)
+                    .setParameter("checkOutDate", newCheckOut)
                     .getResultList();
 
 
             for (Object[] result : resultListAmountRoom) {
                 String roomId = (String) result[0];
-                BigDecimal numberOfRoomsBookedBigDecimal = (BigDecimal) result[1];
-                Long numberOfRoomsBooked = numberOfRoomsBookedBigDecimal.longValue(); // Chuyển đổi từ BigDecimal sang Long
+                Long numberOfRoomsBookedBigInteger = (Long) result[1];
+                long numberOfRoomsBooked = numberOfRoomsBookedBigInteger != null ? numberOfRoomsBookedBigInteger.longValue() : 0L; // Chuyển đổi từ BigInteger sang long, nếu null thì gán số lượng là 0
                 RoomTypes roomType = entityManager.find(RoomTypes.class, roomId);
                 if (roomType != null) {
-                    Integer remainingRooms = roomType.getAmountRoom() - numberOfRoomsBooked.intValue();
+                    int remainingRooms = roomType.getAmountRoom() - (int) numberOfRoomsBooked;
                     if (remainingRooms < 0) {
                         remainingRooms = 0;
                     }
@@ -213,7 +221,6 @@ public class RoomTypeServiceImpl implements RoomTypeService {
                     entityManager.merge(roomType);
                 }
             }
-
         }
 
         if (sort != null && !sort.isEmpty()) {
@@ -225,7 +232,18 @@ public class RoomTypeServiceImpl implements RoomTypeService {
                 query.orderBy(builder.asc(root.get("amountRoom")));
             } else if ("04".equalsIgnoreCase(sort)) {
                 query.orderBy(builder.desc(root.get("amountRoom")));
+            } else if ("05".equalsIgnoreCase(sort)) {
+                query.orderBy(builder.desc(root.get("capacityAdults")));
             }
+        } else {
+            // Sắp xếp theo số lượng hóa đơn lớn nhất
+            Subquery<Long> subquery = query.subquery(Long.class);
+            Root<OrderHotelDetails> subRoot = subquery.from(OrderHotelDetails.class);
+            subquery.select(builder.count(subRoot.get("id")));
+            subquery.where(builder.equal(subRoot.get("roomTypeId"), root.get("id")));
+
+            query.orderBy(builder.desc(subquery.getSelection()));
+
         }
 
         if (hotelIdFilter != null && !hotelIdFilter.isEmpty()) {
@@ -316,7 +334,6 @@ public class RoomTypeServiceImpl implements RoomTypeService {
                 .toList();
         roomTypesRepository.saveAll(roomTypes);
     }
-
 
 
     @Override
