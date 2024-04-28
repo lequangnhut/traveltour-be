@@ -47,7 +47,7 @@ public interface OrderVisitsRepository extends JpaRepository<OrderVisits, Intege
                                                              @Param("visitId") String visitId,
                                                              @Param("orderVisitStatus") Integer orderVisitStatus);
 
-    @Query("SELECT ov FROM OrderVisits ov WHERE (:orderStatus IS NULL OR ov.orderStatus = :orderStatus) AND ov.customerEmail = :email")
+    @Query("SELECT ov FROM OrderVisits ov WHERE (:orderStatus IS NULL OR ov.orderStatus = :orderStatus) AND ov.customerEmail = :email ORDER BY ov.dateCreated DESC")
     Page<OrderVisits> findAllBookingVisitsByUserId(@Param("orderStatus") Integer orderStatus, @Param("email") String email, Pageable pageable);
 
     //biểu đồ tròn
