@@ -14,6 +14,7 @@ public enum OrderStatus {
     CONFIRMED(2), // Đơn hàng đã được xác nhận (Được xác nhận từ phía đối tác)
     SUCCESSFUL(3), // Đơn hàng hoàn thành
     CANCELLED(4), // Đơn hàng đã bị hủy
-    CANCELLED_BY_ME(5); // Đơn hàng bị hủy bởi tôi
+    CANCELLED_BY_ME(5), // Đơn hàng bị hủy bởi tôi
+    BOOKING_BY_HOTEL(6); // Đơn hàng được đặt bởi khách của khách sạn
     private int value;
 }

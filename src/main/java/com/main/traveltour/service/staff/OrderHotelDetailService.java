@@ -15,5 +15,9 @@ public interface OrderHotelDetailService {
 
     Boolean getTotalBookedRooms(String roomTypeId, Timestamp checkInDate, Timestamp checkOutDate, Integer amount);
 
-    List<OrderHotelDetails> findOrderHotelByRoomTypeIds(List<String> roomTypeIds);
+    List<OrderHotelDetails> findOrderHotelDetailsByRoomTypeIds(List<String> roomTypeIds);
+
+    OrderHotelDetails findOrderHotelDetailsByRoomTypeId(String roomTypeId);
+
+    List<String> findOrderHotelByIdsAfterTimestamp(List<String> orderHotelIds, long l);
 }

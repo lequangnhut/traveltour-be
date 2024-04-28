@@ -12,9 +12,11 @@ public interface UserCommentsService {
     RatingResponseDto findCommentsByServiceId(String serviceId, Pageable pageable);
     UserComments findUserCommentsById(Integer id);
     Optional<UserComments> findByOrderIdRating(String orderId);
-    Page<UserComments> findUserCommentsByDateCreate(Timestamp dateCreate, Pageable pageable);
+    Double findScoreRatingByRoomTypeId(String serviceId);
     Page<UserComments> findUserCommentsByStarAndServiceId(Integer start, String serviceId, Pageable pageable);
     void insertUserComments(UserComments userComments);
     void updateUserComments(UserComments userComments);
     void deleteUserComments(Integer commentId);
+
+    Integer findCountRatingByRoomTypeId(String id);
 }

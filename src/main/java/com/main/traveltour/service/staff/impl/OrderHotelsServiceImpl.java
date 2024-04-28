@@ -17,6 +17,7 @@ import com.main.traveltour.repository.OrderHotelsRepository;
 import com.main.traveltour.service.agent.RoomTypeService;
 import com.main.traveltour.service.staff.OrderHotelDetailService;
 import com.main.traveltour.service.staff.OrderHotelsService;
+import com.main.traveltour.utils.ChangeCheckInTimeService;
 import com.main.traveltour.utils.EntityDtoUtils;
 import com.main.traveltour.utils.GenerateOrderCode;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,6 +41,8 @@ public class OrderHotelsServiceImpl implements OrderHotelsService {
     OrderHotelDetailService orderHotelDetailService;
     @Autowired
     RoomTypeService roomTypeService;
+    @Autowired
+    ChangeCheckInTimeService changeCheckInTimeService;
 
     @Override
     public String maxCodeTourId() {
@@ -53,13 +56,16 @@ public class OrderHotelsServiceImpl implements OrderHotelsService {
 
     @Override
     public void saveOrderHotelCustomer(OrderHotels orderHotels, List<OrderDetailsHotelCustomerDto> orderDetailsHotel) {
+        Timestamp newCheckIn = changeCheckInTimeService.changeCheckInTime(orderHotels.getCheckIn());
+        Timestamp newCheckOut = changeCheckInTimeService.changeCheckInTime(orderHotels.getCheckOut());
+
         BigDecimal orderTotal = orderDetailsHotel.stream()
                 .map(orderDetails -> {
                     Optional<RoomTypes> roomTypes = roomTypeService.findRoomTypeById(orderDetails.getRoomTypeId());
                     if (roomTypes.isPresent()) {
                         BigDecimal roomPrice = roomTypes.get().getPrice();
                         BigDecimal amount = BigDecimal.valueOf(orderDetails.getAmount());
-                        return roomPrice.multiply(amount);
+                        return roomPrice.multiply(BigDecimal.valueOf(changeCheckInTimeService.getDaysDifference(newCheckIn, newCheckOut))).multiply(amount);
                     } else {
                         return BigDecimal.ZERO;
                     }
@@ -68,20 +74,24 @@ public class OrderHotelsServiceImpl implements OrderHotelsService {
 
         orderHotels.setOrderTotal(orderTotal);
         orderHotels.setOrderCode(orderHotels.getId());
-        orderHotels.setOrderStatus(OrderStatus.PENDING.getValue()); // Đơn hàng chưa thanh toán
+        orderHotels.setOrderStatus(OrderStatus.PENDING.getValue());
         orderHotels.setDateCreated(Timestamp.valueOf(LocalDateTime.now()));
+        orderHotels.setCheckIn(newCheckIn);
+        orderHotels.setCheckOut(newCheckOut);
         orderHotelsRepository.save(orderHotels);
     }
 
     @Override
     public void saveOrderHotelPaymentOnlineCustomer(OrderHotels orderHotels, List<OrderDetailsHotelCustomerDto> orderDetailsHotel) {
+        Timestamp newCheckIn = changeCheckInTimeService.changeCheckInTime(orderHotels.getCheckIn());
+        Timestamp newCheckOut = changeCheckInTimeService.changeCheckInTime(orderHotels.getCheckOut());
         BigDecimal orderTotal = orderDetailsHotel.stream()
                 .map(orderDetails -> {
                     Optional<RoomTypes> roomTypes = roomTypeService.findRoomTypeById(orderDetails.getRoomTypeId());
                     if (roomTypes.isPresent()) {
                         BigDecimal roomPrice = roomTypes.get().getPrice();
                         BigDecimal amount = BigDecimal.valueOf(orderDetails.getAmount());
-                        return roomPrice.multiply(amount);
+                        return roomPrice.multiply(BigDecimal.valueOf(changeCheckInTimeService.getDaysDifference(newCheckIn, newCheckOut))).multiply(amount);
                     } else {
                         return BigDecimal.ZERO;
                     }
@@ -91,8 +101,10 @@ public class OrderHotelsServiceImpl implements OrderHotelsService {
         orderHotels.setOrderTotal(orderTotal);
         orderHotels.setId(GenerateOrderCode.generateCodePayment(orderHotels.getPaymentMethod()));
         orderHotels.setOrderCode(orderHotels.getId());
-        orderHotels.setOrderStatus(OrderStatus.PROCESSING.getValue()); // Đơn hàng chờ xác nhận
+        orderHotels.setOrderStatus(OrderStatus.PROCESSING.getValue());
         orderHotels.setDateCreated(Timestamp.valueOf(LocalDateTime.now()));
+        orderHotels.setCheckIn(newCheckIn);
+        orderHotels.setCheckOut(newCheckOut);
         orderHotelsRepository.save(orderHotels);
     }
 
@@ -189,6 +201,11 @@ public class OrderHotelsServiceImpl implements OrderHotelsService {
                 });
         orderHotel.setOrderStatus(5);
         orderHotelsService.save(orderHotel);
+    }
+
+    @Override
+    public Page<OrderHotels> findOrderHotelsAfter12Hours(List<String> orderHotelDetails, Timestamp targetTimestamp, Pageable pageable) {
+        return orderHotelsRepository.findOrderHotelsAfter12Hours(orderHotelDetails, targetTimestamp, pageable);
     }
 
 
@@ -343,5 +360,6 @@ public class OrderHotelsServiceImpl implements OrderHotelsService {
     public List<Integer> getAllOrderHotelYear() {
         return orderHotelsRepository.getAllOrderHotelYear();
     }
+
 
 }

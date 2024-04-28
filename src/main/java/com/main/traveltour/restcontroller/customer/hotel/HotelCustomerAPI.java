@@ -8,7 +8,9 @@ import com.main.traveltour.entity.*;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 
+import com.main.traveltour.repository.UserCommentsRepository;
 import com.main.traveltour.service.agent.*;
+import com.main.traveltour.service.customer.UserCommentsService;
 import com.main.traveltour.utils.EntityDtoUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -28,21 +30,18 @@ import java.util.Map;
 public class HotelCustomerAPI {
     @Autowired
     private HotelsService hotelsService;
-
     @Autowired
     private HotelsTypeService hotelsTypeService;
-
     @Autowired
     private PlaceUtilitiesService placeUtilitiesService;
-
     @Autowired
     private BedTypeService bedTypeService;
-
     @Autowired
     private RoomUtilitiesService roomUtilitiesService;
-
     @Autowired
     private RoomTypeService roomTypeService;
+    @Autowired
+    private UserCommentsService userCommentsService;
 
     /**
      * Phương thức tìm kiếm tất cả khách sạn
@@ -115,6 +114,8 @@ public class HotelCustomerAPI {
                 sort);
 
         List<RoomTypeDto> roomTypeDto = EntityDtoUtils.convertToDtoList(hotel.getRoomTypes(), RoomTypeDto.class);
+        roomTypeDto.forEach(roomType -> roomType.setRate(userCommentsService.findScoreRatingByRoomTypeId(roomType.getId())));
+        roomTypeDto.forEach(roomType -> roomType.setCountRating(userCommentsService.findCountRatingByRoomTypeId(roomType.getId())));
         return new ResponseObjectAndPages("200", "OK", roomTypeDto, hotel.getTotalCount());
     }
 

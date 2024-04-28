@@ -12,12 +12,15 @@ import com.main.traveltour.service.agent.RoomTypeService;
 import com.main.traveltour.service.staff.OrderHotelDetailService;
 import com.main.traveltour.service.staff.OrderHotelsService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.*;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.sql.Timestamp;
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.temporal.ChronoUnit;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -49,14 +52,15 @@ public class OrderHotelAgentAPI {
     public ResponseObject findAllOrderHotel(
             @RequestParam("hotelId") String hotelId,
             @RequestParam(value = "page", defaultValue = "0", required = false) Integer page,
-            @RequestParam(value = "size", defaultValue = "10", required = false) Integer size,
+            @RequestParam(value = "size", defaultValue = "5", required = false) Integer size,
             @RequestParam(value = "sortField", defaultValue = "id", required = false) String sortField,
             @RequestParam(value = "sortDirection", required = false) Sort.Direction sortDirection,
-            @RequestParam(value = "searchTerm", required = false) String searchTerm
+            @RequestParam(value = "searchTerm", required = false) String searchTerm,
+            @RequestParam(value = "filter", required = false) Integer filter
 
     ) {
         List<String> roomType = roomTypeService.findAllByHotelId(hotelId).stream().map(RoomTypes::getId).toList();
-        List<String> orderHotelDetails = orderHotelDetailService.findOrderHotelByRoomTypeIds(roomType).stream().map(OrderHotelDetails::getOrderHotelId).toList();
+        List<String> orderHotelDetails = orderHotelDetailService.findOrderHotelDetailsByRoomTypeIds(roomType).stream().map(OrderHotelDetails::getOrderHotelId).toList();
 
         // Xác định hướng sắp xếp mặc định nếu sortDirection là null
         Sort.Direction defaultSortDirection = Sort.Direction.DESC;
@@ -66,9 +70,31 @@ public class OrderHotelAgentAPI {
 
         Sort sort = sortField != null ? Sort.by(finalSortDirection, sortField) : null;
         assert sort != null;
+        System.out.println(size);
+        LocalDateTime targetDateTime;
 
-        Page<OrderHotels> orderHotels = orderHotelsService.findOrderByIds(orderHotelDetails, PageRequest.of(page, size, sort));
-        return new ResponseObject("200", "success", orderHotels);
+        switch (filter) {
+            case 0:
+                return new ResponseObject("200", "success", orderHotelsService.findOrderByIds(orderHotelDetails, PageRequest.of(page, size, sort)));
+            case 1:
+                targetDateTime = LocalDateTime.now().plusHours(12);
+                break;
+            case 2:
+                targetDateTime = LocalDateTime.now().plusHours(24);
+                break;
+            case 3:
+                targetDateTime = LocalDateTime.now().plusHours(36);
+                break;
+            default:
+                throw new IllegalStateException("Unexpected value: " + filter);
+        }
+
+// Tạo Pageable sau khi có giá trị targetDateTime
+        Pageable pageable = PageRequest.of(page, size);
+
+// Gọi service method dựa trên filter
+        return new ResponseObject("200", "success", orderHotelsService.findOrderHotelsAfter12Hours(orderHotelDetails, Timestamp.valueOf(targetDateTime), pageable));
+
     }
 
     @GetMapping("agent/order-hotel/findOrderHotelById")

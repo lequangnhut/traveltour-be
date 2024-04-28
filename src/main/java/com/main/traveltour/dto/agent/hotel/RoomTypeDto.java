@@ -38,4 +38,6 @@ public class RoomTypeDto {
     private Collection<RoomImages> roomImagesById;
     private Hotels hotelsByHotelId;
     private List<RoomUtilities> roomUtilities = new ArrayList<>();
+    private Double rate;
+    private Integer countRating;
 }
