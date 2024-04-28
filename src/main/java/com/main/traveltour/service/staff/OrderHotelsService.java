@@ -5,12 +5,11 @@ import com.main.traveltour.dto.agent.hotel.HotelRevenueDto;
 import com.main.traveltour.dto.agent.hotel.StatisticalBookingHotelDto;
 import com.main.traveltour.dto.agent.hotel.order.OrderHotelDto;
 import com.main.traveltour.dto.customer.hotel.OrderDetailsHotelCustomerDto;
-import com.main.traveltour.dto.customer.hotel.OrderHotelCustomerDto;
-import com.main.traveltour.entity.BookingTours;
 import com.main.traveltour.entity.OrderHotels;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
+import java.sql.Timestamp;
 import java.util.List;
 import java.util.Optional;
 
@@ -43,4 +42,6 @@ public interface OrderHotelsService {
     void confirmInvoiceByIdOrder(String orderId) throws JsonProcessingException;
 
     void cancelInvoiceByIdOrder(String orderId) throws JsonProcessingException;
+
+    Page<OrderHotels> findOrderHotelsAfter12Hours(List<String> orderHotelDetails, Timestamp targetTimestamp, Pageable pageable);
 }

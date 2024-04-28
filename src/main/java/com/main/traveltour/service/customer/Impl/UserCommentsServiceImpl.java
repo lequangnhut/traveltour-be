@@ -23,6 +23,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.sql.Timestamp;
+import java.text.DecimalFormat;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
@@ -105,10 +106,27 @@ public class UserCommentsServiceImpl implements UserCommentsService {
     }
 
 
+
     @Override
-    public Page<UserComments> findUserCommentsByDateCreate(Timestamp dateCreate, Pageable pageable) {
-        return userCommentsRepository.findAllByDateCreated(dateCreate, pageable);
+    public Double findScoreRatingByRoomTypeId(String serviceId) {
+        List<UserComments> userComments = userCommentsRepository.findAllByServiceId(serviceId);
+        double ratingScore = 0.0;
+
+        if (userComments.isEmpty()) {
+            return ratingScore;
+        } else {
+            for (var user : userComments) {
+                ratingScore += user.getStar();
+            }
+
+            double averageRating = ratingScore / userComments.size();
+
+            DecimalFormat df = new DecimalFormat("#.#");
+            return Double.valueOf(df.format(averageRating));
+        }
     }
+
+
 
     @Override
     public Page<UserComments> findUserCommentsByStarAndServiceId(Integer start, String serviceId, Pageable pageable) {
@@ -175,6 +193,12 @@ public class UserCommentsServiceImpl implements UserCommentsService {
                 .orElseThrow(() -> new IllegalArgumentException("{\"message\": \"Đánh giá không tồn tại " + commentId + "\"}"));
 
         userCommentsRepository.delete(userComment);
+    }
+
+    @Override
+    public Integer findCountRatingByRoomTypeId(String id) {
+        List<UserComments> userComments = userCommentsRepository.findAllByServiceId(id);
+        return userComments == null ? 0 : userComments.size();
     }
 
     private void validateServiceExistence(int categoryId, String serviceId) {

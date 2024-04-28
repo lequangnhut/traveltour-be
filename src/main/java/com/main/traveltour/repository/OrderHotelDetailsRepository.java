@@ -2,6 +2,7 @@ package com.main.traveltour.repository;
 
 import com.main.traveltour.entity.OrderHotelDetails;
 import com.main.traveltour.entity.OrderHotels;
+import jakarta.persistence.criteria.Order;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -21,6 +22,7 @@ public interface OrderHotelDetailsRepository extends JpaRepository<OrderHotelDet
 
     @Query("SELECT ohd FROM OrderHotelDetails ohd join ohd.roomTypesByRoomTypeId rt where ohd.orderHotelId = :orderHotelId")
     List<OrderHotelDetails> findOrderHotelDetailByOrderHotelId(@Param("orderHotelId") String orderHotelId);
+    List<OrderHotelDetails> findOrderHotelDetailsByRoomTypeIdIn(List<String> roomTypeIds);
 
-    List<OrderHotelDetails> findByRoomTypeIdIn(List<String> roomTypeIds);
+    OrderHotelDetails findByRoomTypeId(String roomTypeId);
 }

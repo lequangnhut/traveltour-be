@@ -75,8 +75,18 @@ public class OrderHotelDetailServiceImpl implements OrderHotelDetailService {
     }
 
     @Override
-    public List<OrderHotelDetails> findOrderHotelByRoomTypeIds(List<String> roomTypeIds) {
-        return repo.findByRoomTypeIdIn(roomTypeIds);
+    public List<OrderHotelDetails> findOrderHotelDetailsByRoomTypeIds(List<String> roomTypeIds) {
+        return repo.findOrderHotelDetailsByRoomTypeIdIn(roomTypeIds);
+    }
+
+    @Override
+    public OrderHotelDetails findOrderHotelDetailsByRoomTypeId(String roomTypeId) {
+        return repo.findByRoomTypeId(roomTypeId);
+    }
+
+    @Override
+    public List<String> findOrderHotelByIdsAfterTimestamp(List<String> orderHotelIds, long l) {
+        return null;
     }
 
 }
