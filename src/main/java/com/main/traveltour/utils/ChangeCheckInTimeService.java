@@ -40,6 +40,19 @@ public class ChangeCheckInTimeService {
         // Chuyển đổi lại thành Timestamp và trả về
         return new Timestamp(calendar.getTimeInMillis());
     }
+    public Timestamp changeCheckOutTimeSearch(Timestamp checkIn) {
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(checkIn);
+
+        // Thiết lập giờ và phút thành 12:00:00
+        calendar.set(Calendar.HOUR_OF_DAY, 11);
+        calendar.set(Calendar.MINUTE, 0);
+        calendar.set(Calendar.SECOND, 0);
+        calendar.set(Calendar.MILLISECOND, 0);
+
+        // Chuyển đổi lại thành Timestamp và trả về
+        return new Timestamp(calendar.getTimeInMillis());
+    }
 
     public int getDaysDifference(Timestamp checkIn, Timestamp checkOut) {
         // Chuyển đổi Timestamp thành LocalDate
