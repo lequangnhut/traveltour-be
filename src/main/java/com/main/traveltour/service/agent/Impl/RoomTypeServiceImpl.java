@@ -195,39 +195,24 @@ public class RoomTypeServiceImpl implements RoomTypeService {
 
         if (checkInDateFiller != null && checkOutDateFiller != null) {
             List<Object[]> resultListAmountRoom = entityManager.createNativeQuery(
-                            "SELECT DISTINCT room_types.id, DATE(order_hotels.check_in), SUM(order_hotel_details.amount) AS totalBooked " +
+                            "SELECT DISTINCT room_types.id, COUNT(DISTINCT order_hotels.id) AS totalBooked " +
                                     "FROM room_types " +
                                     "INNER JOIN order_hotel_details ON room_types.id = order_hotel_details.room_type_id " +
                                     "INNER JOIN order_hotels ON order_hotel_details.order_hotel_id = order_hotels.id " +
                                     "WHERE order_hotels.check_out > :checkInDate AND order_hotels.check_in < :checkOutDate " +
-                                    "GROUP BY room_types.id, DATE(order_hotels.check_in)")
+                                    "GROUP BY room_types.id")
                     .setParameter("checkInDate", newCheckIn)
                     .setParameter("checkOutDate", newCheckOut)
                     .getResultList();
 
+
             for (Object[] result : resultListAmountRoom) {
                 String roomId = (String) result[0];
-                Date checkInDate = (Date) result[1];
-                BigDecimal numberOfRoomsBookedBigDecimal = (BigDecimal) result[2];
-                long numberOfRoomsBooked = numberOfRoomsBookedBigDecimal != null ? numberOfRoomsBookedBigDecimal.longValue() : 0L;
+                Long numberOfRoomsBookedBigInteger = (Long) result[1];
+                long numberOfRoomsBooked = numberOfRoomsBookedBigInteger != null ? numberOfRoomsBookedBigInteger.longValue() : 0L; // Chuyển đổi từ BigInteger sang long, nếu null thì gán số lượng là 0
                 RoomTypes roomType = entityManager.find(RoomTypes.class, roomId);
                 if (roomType != null) {
-                    int remainingRooms = roomType.getAmountRoom();
-                    List<OrderHotels> orderHotelsList = entityManager.createQuery(
-                                    "SELECT oh FROM OrderHotels oh " +
-                                            "INNER JOIN oh.orderHotelDetailsById ohd " +
-                                            "WHERE oh.checkIn < :checkOutDate AND oh.checkOut > :checkInDate AND ohd.roomTypeId = :roomId", OrderHotels.class)
-                            .setParameter("checkInDate", checkInDate)
-                            .setParameter("checkOutDate", newCheckOut)
-                            .setParameter("roomId", roomId)
-                            .getResultList();
-
-                    for (OrderHotels orderHotels : orderHotelsList) {
-                        for (OrderHotelDetails detail : orderHotels.getOrderHotelDetailsById()) {
-                            remainingRooms -= detail.getAmount();
-                        }
-                    }
-
+                    int remainingRooms = roomType.getAmountRoom() - (int) numberOfRoomsBooked;
                     if (remainingRooms < 0) {
                         remainingRooms = 0;
                     }
@@ -237,8 +222,6 @@ public class RoomTypeServiceImpl implements RoomTypeService {
                 }
             }
         }
-
-
 
         if (sort != null && !sort.isEmpty()) {
             if ("01".equalsIgnoreCase(sort)) {
