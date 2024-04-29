@@ -45,13 +45,12 @@ public class BookingTourTransportationAPI {
                 : Sort.by(sortBy).descending();
 
         Page<TransportationSchedules> transportationSchedules = bookingTourTransportationService.findTransportationSchedulesByTourDetailId(tourDetailId, orderStatus, searchTerm, PageRequest.of(page, size, sort));
+        Page<TransportationSchedulesDto> transportationSchedulesDto = transportationSchedules.map(transportationSchedule -> EntityDtoUtils.convertToDto(transportationSchedule, TransportationSchedulesDto.class));
 
-        Page<TransportationSchedulesDto> transportationSchedulesDtos = transportationSchedules.map(transportationSchedule -> EntityDtoUtils.convertToDto(transportationSchedule, TransportationSchedulesDto.class));
-
-        if (transportationSchedulesDtos.isEmpty()) {
+        if (transportationSchedulesDto.isEmpty()) {
             return new ResponseObject("500", "Không tìm thấy dữ liệu", null);
         } else {
-            return new ResponseObject("200", "Đã tìm thấy dữ liệu", transportationSchedulesDtos);
+            return new ResponseObject("200", "Đã tìm thấy dữ liệu", transportationSchedulesDto);
         }
     }
 

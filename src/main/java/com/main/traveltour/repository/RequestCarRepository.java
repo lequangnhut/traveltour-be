@@ -18,6 +18,8 @@ public interface RequestCarRepository extends JpaRepository<RequestCar, Integer>
 
     Page<RequestCar> findAllByOrderByIsAcceptedAsc(Pageable pageable);
 
+    List<RequestCar> findAllByTourDetailId(String tourDetailId);
+
     @Query("SELECT rqc FROM RequestCar rqc " +
             "JOIN rqc.requestCarDetailsById rqcd " +
             "JOIN rqcd.transportationSchedulesByTransportationScheduleId tsc " +

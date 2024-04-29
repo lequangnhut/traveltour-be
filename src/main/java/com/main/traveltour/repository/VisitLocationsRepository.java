@@ -1,7 +1,6 @@
 package com.main.traveltour.repository;
 
 import com.main.traveltour.dto.customer.visit.VisitLocationTrendDTO;
-import com.main.traveltour.entity.TransportationBrands;
 import com.main.traveltour.entity.VisitLocations;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -103,7 +102,8 @@ public interface VisitLocationsRepository extends JpaRepository<VisitLocations, 
             "JOIN ov.orderVisitDetailsById ovd " +
             "JOIN ov.tourDetails td " +
             "WHERE td.id = :tourDetailId AND " +
-            "ov.orderStatus = :orderVisitStatus AND " +
+            "(:orderVisitStatus IS NULL OR " +
+            "ov.orderStatus = :orderVisitStatus) AND " +
             "(:searchTerm IS NULL OR (UPPER(vl.visitLocationName) LIKE CONCAT('%', UPPER(:searchTerm), '%') OR " +
             "UPPER(vl.province) LIKE CONCAT('%', UPPER(:searchTerm), '%') OR " +
             "UPPER(vl.district) LIKE CONCAT('%', UPPER(:searchTerm), '%') OR " +
@@ -152,10 +152,10 @@ public interface VisitLocationsRepository extends JpaRepository<VisitLocations, 
             "UPPER(vl.phone) LIKE CONCAT('%', UPPER(:searchTerm), '%'))) " +
             "GROUP BY vl.id")
     Page<VisitLocations> findVisitByTourDetailIdForGuide(@Param("tourDetailId") String tourDetailId,
-                                                 @Param("searchTerm") String searchTerm,
-                                                 Pageable pageable);
+                                                         @Param("searchTerm") String searchTerm,
+                                                         Pageable pageable);
 
-    @Query(value="SELECT vl.* " +
+    @Query(value = "SELECT vl.* " +
             "FROM order_visits ov " +
             "JOIN order_visit_details ovd on ov.id = ovd.order_visit_id " +
             "JOIN visit_location_tickets vlt on ovd.visit_location_ticket_id = vlt.id " +
@@ -164,5 +164,5 @@ public interface VisitLocationsRepository extends JpaRepository<VisitLocations, 
             "GROUP BY vl.id " +
             "ORDER BY SUM(ov.id) DESC " +
             "LIMIT 3;", nativeQuery = true)
-    List<VisitLocations> find3PlaceMostOrder ();
+    List<VisitLocations> find3PlaceMostOrder();
 }

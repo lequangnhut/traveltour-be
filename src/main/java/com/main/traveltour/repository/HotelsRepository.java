@@ -15,8 +15,6 @@ public interface HotelsRepository extends JpaRepository<Hotels, String> {
     @Query(value = "SELECT MAX(hl.id) FROM Hotels hl")
     String findMaxCode();
 
-    List<Hotels> findAllByAgenciesId(int agencyId);
-
     Hotels findByAgenciesId(int agencyId);
 
     List<Hotels> findByHotelTypeId(int id);
@@ -79,7 +77,8 @@ public interface HotelsRepository extends JpaRepository<Hotels, String> {
             "JOIN ohd.orderHotelsByOrderHotelId oh " +
             "JOIN oh.tourDetails td " +
             "WHERE (td.id = :tourDetailId) AND " +
-            "(oh.orderStatus = :orderHotelStatus) AND " +
+            "(:orderHotelStatus IS NULL OR " +
+            "(oh.orderStatus = :orderHotelStatus)) AND " +
             "(:searchTerm IS NULL OR (UPPER(h.hotelName) LIKE %:searchTerm% OR " +
             "UPPER(h.id) LIKE %:searchTerm% OR " +
             "UPPER(h.province) LIKE %:searchTerm% OR " +
@@ -88,8 +87,7 @@ public interface HotelsRepository extends JpaRepository<Hotels, String> {
             "UPPER(h.address) LIKE %:searchTerm% OR " +
             "UPPER(h.phone) LIKE %:searchTerm% OR " +
             "CAST(h.floorNumber AS string) LIKE %:searchTerm%)) " +
-            "GROUP BY h.id " +
-            "ORDER BY h.dateCreated DESC")
+            "GROUP BY h.id ")
     Page<Hotels> findHotelByTourDetailId(@Param("tourDetailId") String tourDetailId,
                                          @Param("orderHotelStatus") Integer orderHotelStatus,
                                          @Param("searchTerm") String searchTerm,
@@ -109,16 +107,16 @@ public interface HotelsRepository extends JpaRepository<Hotels, String> {
             " WHERE (h.isAccepted = :isAccepted) and " +
             "(h.isActive = true) and (h.isDeleted = false) " +
             "and (ag.isActive) = true and (ag.isAccepted) = 2")
-    Page<Hotels> findAllHotelByAcceptedAndTrueActive(@Param("isAccepted") Boolean isAccepted,Pageable pageable);
+    Page<Hotels> findAllHotelByAcceptedAndTrueActive(@Param("isAccepted") Boolean isAccepted, Pageable pageable);
 
     @Query("SELECT h FROM Hotels h  join h.agenciesByAgenciesId ag " +
             "WHERE (h.isAccepted = :isAccepted) and (h.isActive = true) " +
             "and (h.isDeleted = false) and LOWER(h.hotelName) " +
             "LIKE LOWER(CONCAT('%', :searchTerm, '%')) and (ag.isActive) = true and (ag.isAccepted) = 2")
-    Page<Hotels> findAllHotelByAcceptedAndTrueActiveByName(@Param("isAccepted") Boolean isAccepted,Pageable pageable, String searchTerm);
+    Page<Hotels> findAllHotelByAcceptedAndTrueActiveByName(@Param("isAccepted") Boolean isAccepted, Pageable pageable, String searchTerm);
 
     @Query("SELECT COUNT(ht) FROM Hotels ht")
-    Long countHotels ();
+    Long countHotels();
 
     @Query("SELECT COALESCE(COUNT(ht), 0) FROM Hotels ht " +
             "JOIN ht.agenciesByAgenciesId a " +
@@ -147,7 +145,7 @@ public interface HotelsRepository extends JpaRepository<Hotels, String> {
             "ORDER BY h.dateCreated DESC")
     Page<Hotels> findHotelByTourDetailIdForGuide(@Param("tourDetailId") String tourDetailId, Pageable pageable, String searchTerm);
 
-    @Query(value="SELECT h.* " +
+    @Query(value = "SELECT h.* " +
             "FROM order_hotels oh " +
             "JOIN order_hotel_details ohd ON oh.id = ohd.order_hotel_id " +
             "JOIN room_types rt ON ohd.room_type_id = rt.id " +
@@ -156,6 +154,6 @@ public interface HotelsRepository extends JpaRepository<Hotels, String> {
             "GROUP BY h.id " +
             "ORDER BY COUNT(oh.id) DESC " +
             "LIMIT 3;", nativeQuery = true)
-    List<Hotels> find3HotelMostOrder ();
+    List<Hotels> find3HotelMostOrder();
 
 }

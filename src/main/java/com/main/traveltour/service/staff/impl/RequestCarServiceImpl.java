@@ -26,6 +26,11 @@ public class RequestCarServiceImpl implements RequestCarService {
     }
 
     @Override
+    public List<RequestCar> checkExitsTourDetail(String tourDetailId) {
+        return repo.findAllByTourDetailId(tourDetailId);
+    }
+
+    @Override
     public Optional<RequestCar> findRequestCarById(Integer requestCarId) {
         return repo.findById(requestCarId);
     }

@@ -19,12 +19,8 @@ import org.springframework.data.domain.Sort;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.bind.annotation.*;
 
-import java.math.BigDecimal;
 import java.sql.Timestamp;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @RestController
 @RequestMapping("api/v1/staff/request-car/")
@@ -119,6 +115,16 @@ public class RequestCarSTFAPI {
             List<TourDetailsGetDataDto> tourDetailsGetDataDto = EntityDtoUtils.convertToDtoList(tourDetails, TourDetailsGetDataDto.class);
 
             return new ResponseObject("200", "Thành công", tourDetailsGetDataDto);
+        } catch (Exception e) {
+            return new ResponseObject("400", "Thất bại", null);
+        }
+    }
+
+    @GetMapping("check-exits-tour-detail")
+    private ResponseObject checkExitsTourDetail(@RequestParam String tourDetailId) {
+        try {
+            List<RequestCar> requestCars = requestCarService.checkExitsTourDetail(tourDetailId);
+            return new ResponseObject("200", "Thành công", requestCars.size());
         } catch (Exception e) {
             return new ResponseObject("400", "Thất bại", null);
         }

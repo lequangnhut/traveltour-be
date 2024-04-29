@@ -182,7 +182,8 @@ public interface TransportationSchedulesRepository extends JpaRepository<Transpo
             "JOIN ts.orderTransportationsById ot " +
             "JOIN ot.tourDetails td " +
             "WHERE (td.id = :tourDetailId) AND " +
-            "(ot.orderStatus = :orderStatus) AND " +
+            "(:orderStatus IS NULL OR " +
+            "(ot.orderStatus = :orderStatus)) AND " +
             "(:searchTerm IS NULL OR (UPPER(ts.fromLocation) LIKE %:searchTerm% OR " +
             "UPPER(ts.toLocation) LIKE %:searchTerm% OR " +
             "UPPER(ts.transportationsByTransportationId.licensePlate) LIKE %:searchTerm% OR " +
@@ -193,7 +194,8 @@ public interface TransportationSchedulesRepository extends JpaRepository<Transpo
             "CAST(ts.unitPrice AS string) LIKE %:searchTerm%)) " +
             "GROUP BY ts.id")
     Page<TransportationSchedules> findTransportationSchedulesByTourDetailId(@Param("tourDetailId") String tourDetailId,
-                                                                            @Param("orderStatus") Integer orderStatus, @Param("searchTerm") String searchTerm,
+                                                                            @Param("orderStatus") Integer orderStatus,
+                                                                            @Param("searchTerm") String searchTerm,
                                                                             Pageable pageable);
 
     @Query("SELECT ts FROM TransportationSchedules ts " +
@@ -228,6 +230,6 @@ public interface TransportationSchedulesRepository extends JpaRepository<Transpo
             "CAST(ts.unitPrice AS string) LIKE %:searchTerm%)) " +
             "GROUP BY ts.id")
     Page<TransportationSchedules> findTransportationSchedulesByTourDetailIdForGuide(@Param("tourDetailId") String tourDetailId,
-                                                                            @Param("searchTerm") String searchTerm,
-                                                                            Pageable pageable);
+                                                                                    @Param("searchTerm") String searchTerm,
+                                                                                    Pageable pageable);
 }

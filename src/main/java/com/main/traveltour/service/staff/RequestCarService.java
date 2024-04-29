@@ -14,6 +14,8 @@ public interface RequestCarService {
 
     Page<RequestCar> findAllRequestCarPage(Pageable pageable);
 
+    List<RequestCar> checkExitsTourDetail(String tourDetailId);
+
     Optional<RequestCar> findRequestCarById(Integer requestCarId);
 
     RequestCar findTransportBrandSubmitted(Integer requestCarId, String transportBrandId);
