@@ -2,6 +2,7 @@ package com.main.traveltour.service.agent.Impl;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.main.traveltour.data.RoomOrder;
 import com.main.traveltour.dto.agent.hotel.RoomTypeCustomerDto;
 import com.main.traveltour.entity.*;
 import com.main.traveltour.repository.RoomTypesRepository;
@@ -195,32 +196,91 @@ public class RoomTypeServiceImpl implements RoomTypeService {
 
         if (checkInDateFiller != null && checkOutDateFiller != null) {
             List<Object[]> resultListAmountRoom = entityManager.createNativeQuery(
-                            "SELECT DISTINCT room_types.id, COUNT(DISTINCT order_hotels.id) AS totalBooked " +
-                                    "FROM room_types " +
-                                    "INNER JOIN order_hotel_details ON room_types.id = order_hotel_details.room_type_id " +
-                                    "INNER JOIN order_hotels ON order_hotel_details.order_hotel_id = order_hotels.id " +
-                                    "WHERE order_hotels.check_out > :checkInDate AND order_hotels.check_in < :checkOutDate " +
-                                    "GROUP BY room_types.id")
+                            "SELECT REPLACE(GROUP_CONCAT(DISTINCT oh.id ORDER BY oh.id), CONCAT(oh.id, ', ', oh.id), oh.id) AS order_ids,\n" +
+                                    "       rt.id,\n" +
+                                    "       oh.check_in,\n" +
+                                    "       oh.check_out\n" +
+                                    "FROM room_types rt\n" +
+                                    "         INNER JOIN\n" +
+                                    "     order_hotel_details ohd ON rt.id = ohd.room_type_id\n" +
+                                    "         INNER JOIN\n" +
+                                    "     order_hotels oh ON ohd.order_hotel_id = oh.id\n" +
+                                    "WHERE oh.check_out > :checkInDate\n" +
+                                    "  AND oh.check_in < :checkOutDate\n" +
+                                    "GROUP BY oh.id, rt.id, oh.check_in, oh.check_out;")
                     .setParameter("checkInDate", newCheckIn)
                     .setParameter("checkOutDate", newCheckOut)
                     .getResultList();
 
+            List<RoomOrder> roomOrders = new ArrayList<RoomOrder>();
 
             for (Object[] result : resultListAmountRoom) {
-                String roomId = (String) result[0];
-                Long numberOfRoomsBookedBigInteger = (Long) result[1];
-                long numberOfRoomsBooked = numberOfRoomsBookedBigInteger != null ? numberOfRoomsBookedBigInteger.longValue() : 0L; // Chuyển đổi từ BigInteger sang long, nếu null thì gán số lượng là 0
-                RoomTypes roomType = entityManager.find(RoomTypes.class, roomId);
-                if (roomType != null) {
-                    int remainingRooms = roomType.getAmountRoom() - (int) numberOfRoomsBooked;
-                    if (remainingRooms < 0) {
-                        remainingRooms = 0;
-                    }
+                String orderIds = (String) result[0];
+                String roomId = (String) result[1];
+                Timestamp checkIn = (Timestamp) result[2];
+                Timestamp checkOut = (Timestamp) result[3];
 
-                    roomType.setAmountRoom(remainingRooms);
-                    entityManager.merge(roomType);
+                roomOrders.add(RoomOrder.builder()
+                        .orderIds(orderIds)
+                        .roomId(roomId)
+                        .checkIn(checkIn)
+                        .checkOut(checkOut)
+                        .build());
+            }
+
+            List<String> uniqueRoomTypeId = roomOrders.stream()
+                    .map(RoomOrder::getRoomId)
+                    .distinct()
+                    .toList();
+
+            for(String uniqueRoomType : uniqueRoomTypeId) {
+                for (RoomOrder roomOrder : roomOrders) {
+                    if(roomOrder.getRoomId().equals(uniqueRoomType)){
+                        int numberOfRoomsBooked = 0;
+                        if(roomOrders.size() == 1) {
+                            numberOfRoomsBooked ++;
+                        } else {
+                            for (RoomOrder room : roomOrders) {
+                                if (!roomOrder.getOrderIds().equals(room.getOrderIds())) {
+                                    if (
+                                            room.getCheckIn().before(roomOrder.getCheckOut()) &&
+                                                    room.getCheckOut().after(roomOrder.getCheckIn())
+                                    ) {
+                                        numberOfRoomsBooked ++;
+                                    }
+                                }
+                            }
+                        }
+
+                        RoomTypes roomType = entityManager.find(RoomTypes.class, roomOrder.getRoomId());
+                        if (roomType != null) {
+                            int remainingRooms = roomType.getAmountRoom() - numberOfRoomsBooked;
+                            if (remainingRooms < 0) {
+                                remainingRooms = 0;
+                            }
+
+                            roomType.setAmountRoom(remainingRooms);
+                            entityManager.merge(roomType);
+                        }
+                    }
                 }
             }
+
+//            for (Object[] result : resultListAmountRoom) {
+//                String roomId = (String) result[0];
+//                Long numberOfRoomsBookedBigInteger = (Long) result[1];
+//                long numberOfRoomsBooked = numberOfRoomsBookedBigInteger != null ? numberOfRoomsBookedBigInteger : 0L;
+//                RoomTypes roomType = entityManager.find(RoomTypes.class, roomId);
+//                if (roomType != null) {
+//                    int remainingRooms = roomType.getAmountRoom() - (int) numberOfRoomsBooked;
+//                    if (remainingRooms < 0) {
+//                        remainingRooms = 0;
+//                    }
+//
+//                    roomType.setAmountRoom(remainingRooms);
+//                    entityManager.merge(roomType);
+//                }
+//            }
         }
 
         if (sort != null && !sort.isEmpty()) {
