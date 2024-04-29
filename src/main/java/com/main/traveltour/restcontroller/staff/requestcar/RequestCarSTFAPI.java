@@ -16,10 +16,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.bind.annotation.*;
 
+import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -53,6 +56,32 @@ public class RequestCarSTFAPI {
                     : Sort.by(sortBy).descending();
 
             Page<RequestCar> requestCars = requestCarService.findAllRequestCarPage(PageRequest.of(page, size, sort));
+            Page<RequestCarGetDataDto> requestCarGetDataDto = requestCars.map(
+                    requestCar -> EntityDtoUtils.convertToDto(requestCar, RequestCarGetDataDto.class));
+
+            return new ResponseObject("200", "Thành công", requestCarGetDataDto);
+        } catch (Exception e) {
+            return new ResponseObject("400", "Thất bại", null);
+        }
+    }
+
+    @GetMapping("find-all-request-car-filters")
+    private ResponseObject findAllRequestCarFilters(@RequestParam(defaultValue = "0") int page,
+                                                    @RequestParam(defaultValue = "10") int size,
+                                                    @RequestParam(defaultValue = "id") String sortBy,
+                                                    @RequestParam(defaultValue = "desc") String sortDir,
+                                                    @RequestParam(required = false) List<Integer> mediaTypeList,
+                                                    @RequestParam(required = false) List<String> listOfVehicleManufacturers,
+                                                    @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) Date dateOfDepartment,
+                                                    @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) Date returnDay,
+                                                    @RequestParam(required = false) String fromLocation,
+                                                    @RequestParam(required = false) String toLocation) {
+        try {
+            Sort sort = sortDir.equalsIgnoreCase(Sort.Direction.ASC.name())
+                    ? Sort.by(sortBy).ascending()
+                    : Sort.by(sortBy).descending();
+
+            Page<RequestCar> requestCars = requestCarService.findAllRequestCarsFilters(fromLocation, toLocation, dateOfDepartment, returnDay, mediaTypeList, listOfVehicleManufacturers, PageRequest.of(page, size, sort));
             Page<RequestCarGetDataDto> requestCarGetDataDto = requestCars.map(
                     requestCar -> EntityDtoUtils.convertToDto(requestCar, RequestCarGetDataDto.class));
 

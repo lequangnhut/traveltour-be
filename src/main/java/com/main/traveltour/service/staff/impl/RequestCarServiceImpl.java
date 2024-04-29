@@ -8,7 +8,10 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.sql.Timestamp;
+import java.util.Date;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -35,5 +38,10 @@ public class RequestCarServiceImpl implements RequestCarService {
     @Override
     public RequestCar save(RequestCar requestCar) {
         return repo.save(requestCar);
+    }
+
+    @Override
+    public Page<RequestCar> findAllRequestCarsFilters(String fromLocation, String toLocation, Date dateOfDepartment, Date returnDay, List<Integer> mediaTypeList, List<String> listOfVehicleManufacturers, Pageable pageable) {
+        return repo.findAllRequestCarsFilters(fromLocation, toLocation, dateOfDepartment, returnDay, mediaTypeList, listOfVehicleManufacturers, pageable);
     }
 }
