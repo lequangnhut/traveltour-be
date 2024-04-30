@@ -36,17 +36,15 @@ public interface RequestCarRepository extends JpaRepository<RequestCar, Integer>
             "LEFT JOIN t.transportationTypesByTransportationTypeId tt " +
             "WHERE (:fromLocation IS NULL OR rc.fromLocation LIKE %:fromLocation%) " +
             "AND (:toLocation IS NULL OR rc.toLocation LIKE %:toLocation%) " +
-            "AND (:dateOfDepartment IS NULL OR DATE(rc.departureDate) = DATE(:dateOfDepartment)) " +
-            "AND (:returnDay IS NULL OR DATE(rc.arrivalDate) = DATE(:returnDay)) " +
             "AND (:listOfVehicleManufacturers IS NULL OR tb.id IN (:listOfVehicleManufacturers)) " +
-            "AND (:mediaTypeList IS NULL OR tt.id IN (:mediaTypeList))")
+            "AND (:mediaTypeList IS NULL OR tt.id IN (:mediaTypeList))" +
+            "AND (:seatTypeList IS NULL OR rc.isTransportBed IN (:seatTypeList))")
     Page<RequestCar> findAllRequestCarsFilters(
             @Param("fromLocation") String fromLocation,
             @Param("toLocation") String toLocation,
-            @Param("dateOfDepartment") Date dateOfDepartment,
-            @Param("returnDay") Date returnDay,
             @Param("mediaTypeList") List<Integer> mediaTypeList,
             @Param("listOfVehicleManufacturers") List<String> listOfVehicleManufacturers,
+            @Param("seatTypeList") List<Boolean> seatTypeList,
             Pageable pageable);
 
 }

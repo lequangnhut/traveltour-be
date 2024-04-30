@@ -7,6 +7,7 @@ import com.main.traveltour.entity.Roles;
 import com.main.traveltour.entity.TourDetails;
 import com.main.traveltour.service.staff.OrderHotelsService;
 import com.main.traveltour.service.staff.TourDetailsService;
+import com.main.traveltour.utils.ChangeCheckInTimeService;
 import com.main.traveltour.utils.EntityDtoUtils;
 import com.main.traveltour.utils.GenerateNextID;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,6 +28,9 @@ public class OrderHotelAPI {
     @Autowired
     private TourDetailsService tourDetailsService;
 
+    @Autowired
+    private ChangeCheckInTimeService changeCheckInTimeService;
+
     @PostMapping(value = "create-order-hotel")
     public ResponseObject createOrderHotel(@RequestPart OrderHotelsDto orderHotelsDto, @RequestPart String tourDetailId) {
         try {
@@ -37,6 +41,8 @@ public class OrderHotelAPI {
             tourDetailsList.add(tourDetails);
 
             orderHotels.setTourDetails(tourDetailsList);
+            orderHotels.setCheckIn(changeCheckInTimeService.changeCheckInTime(orderHotels.getCheckIn()));
+            orderHotels.setCheckOut(changeCheckInTimeService.changeCheckInTime(orderHotels.getCheckOut()));
 
             orderHotelsService.save(orderHotels);
 

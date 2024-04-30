@@ -66,31 +66,31 @@ public class TourCusAPI {
 
         Page<TourDetails> tourDetailsPage = tourDetailsService.findTourDetailWithFilter(departureArrives, departureFrom, numberOfPeople, departure, price, tourTypeList, PageRequest.of(page, size, sort));
 
-        if (tourDetailsPage.isEmpty()) {
-            List<String> tourDetailIdList = new ArrayList<>();
-            if (cleanArrives != null) {
-                List<String> combinations = generateCombinations(cleanArrives);
-                for (String combination : combinations) {
-                    List<String> ids = tourDetailsService.findTourDetailIdList(combination, null, tourDetailIdList.isEmpty() ? null : tourDetailIdList);
-                    if (!ids.isEmpty()) {
-                        tourDetailIdList.addAll(ids);
-                    }
-                }
-            }
-            if (cleanFrom != null) {
-                List<String> combinations = generateCombinations(cleanFrom);
-                for (String combination : combinations) {
-                    List<String> ids = tourDetailsService.findTourDetailIdList(combination, null, tourDetailIdList.isEmpty() ? null : tourDetailIdList);
-                    if (!ids.isEmpty()) {
-                        tourDetailIdList.addAll(ids);
-                    }
-                }
-            }
-            if (tourDetailIdList.isEmpty()) {
-                tourDetailIdList = null;
-            }
-            tourDetailsPage = tourDetailsService.findTourDetailWithInFilter(tourDetailIdList, numberOfPeople, departure, price, tourTypeList, PageRequest.of(page, size, sort));
-        }
+//        if (tourDetailsPage.isEmpty()) {
+//            List<String> tourDetailIdList = new ArrayList<>();
+//            if (cleanArrives != null) {
+//                List<String> combinations = generateCombinations(cleanArrives);
+//                for (String combination : combinations) {
+//                    List<String> ids = tourDetailsService.findTourDetailIdList(combination, null, tourDetailIdList.isEmpty() ? null : tourDetailIdList);
+//                    if (!ids.isEmpty()) {
+//                        tourDetailIdList.addAll(ids);
+//                    }
+//                }
+//            }
+//            if (cleanFrom != null) {
+//                List<String> combinations = generateCombinations(cleanFrom);
+//                for (String combination : combinations) {
+//                    List<String> ids = tourDetailsService.findTourDetailIdList(combination, null, tourDetailIdList.isEmpty() ? null : tourDetailIdList);
+//                    if (!ids.isEmpty()) {
+//                        tourDetailIdList.addAll(ids);
+//                    }
+//                }
+//            }
+//            if (tourDetailIdList.isEmpty()) {
+//                tourDetailIdList = null;
+//            }
+//            tourDetailsPage = tourDetailsService.findTourDetailWithInFilter(tourDetailIdList, numberOfPeople, departure, price, tourTypeList, PageRequest.of(page, size, sort));
+//        }
 
         Page<TourDetailsGetDataDto> tourDetailsDtoPage = tourDetailsPage.map(tourDetails -> EntityDtoUtils.convertToDto(tourDetails, TourDetailsGetDataDto.class));
 

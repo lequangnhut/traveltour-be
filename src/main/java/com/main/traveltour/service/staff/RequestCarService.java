@@ -25,9 +25,8 @@ public interface RequestCarService {
     Page<RequestCar> findAllRequestCarsFilters(
             String fromLocation,
             String toLocation,
-            Date dateOfDepartment,
-            Date returnDay,
             List<Integer> mediaTypeList,
             List<String> listOfVehicleManufacturers,
+            List<Boolean> seatTypeList,
             Pageable pageable);
 }

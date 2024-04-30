@@ -52,12 +52,12 @@ public interface RoomTypesRepository extends JpaRepository<RoomTypes, String>, J
 
     Page<RoomTypes> findByHotelIdAndIsDeleted(String hotelId, Boolean isDeleted, Pageable pageable);
 
-    @Query("SELECT SUM(ohd.amount) FROM OrderHotelDetails ohd " +
+    @Query("SELECT MAX(ohd.amount) FROM OrderHotelDetails ohd " +
             "JOIN ohd.orderHotelsByOrderHotelId oh " +
             "WHERE ohd.roomTypesByRoomTypeId.id = :roomTypeId " +
-            "AND ((oh.checkIn <= :checkOut AND oh.checkOut > :checkOut) OR  " +
-            "(oh.checkIn < :checkIn AND oh.checkOut >= :checkIn) OR  " +
-            "(oh.checkIn >= :checkOut AND oh.checkOut <= :checkIn)) " +
+            "AND (oh.checkIn BETWEEN :checkIn AND :checkOut " +
+            "OR (oh.checkOut BETWEEN :checkIn AND :checkOut) " +
+            "AND oh.checkOut != :checkIn) " +
             "AND oh.orderStatus <> 4")
     Integer calculateBookedRooms(@Param("roomTypeId") String roomTypeId,
                                  @Param("checkIn") Timestamp checkIn,

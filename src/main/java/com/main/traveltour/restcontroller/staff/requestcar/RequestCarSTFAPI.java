@@ -68,8 +68,7 @@ public class RequestCarSTFAPI {
                                                     @RequestParam(defaultValue = "desc") String sortDir,
                                                     @RequestParam(required = false) List<Integer> mediaTypeList,
                                                     @RequestParam(required = false) List<String> listOfVehicleManufacturers,
-                                                    @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) Date dateOfDepartment,
-                                                    @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) Date returnDay,
+                                                    @RequestParam(required = false) List<Boolean> seatTypeList,
                                                     @RequestParam(required = false) String fromLocation,
                                                     @RequestParam(required = false) String toLocation) {
         try {
@@ -77,7 +76,7 @@ public class RequestCarSTFAPI {
                     ? Sort.by(sortBy).ascending()
                     : Sort.by(sortBy).descending();
 
-            Page<RequestCar> requestCars = requestCarService.findAllRequestCarsFilters(fromLocation, toLocation, dateOfDepartment, returnDay, mediaTypeList, listOfVehicleManufacturers, PageRequest.of(page, size, sort));
+            Page<RequestCar> requestCars = requestCarService.findAllRequestCarsFilters(fromLocation, toLocation, mediaTypeList, listOfVehicleManufacturers,seatTypeList, PageRequest.of(page, size, sort));
             Page<RequestCarGetDataDto> requestCarGetDataDto = requestCars.map(
                     requestCar -> EntityDtoUtils.convertToDto(requestCar, RequestCarGetDataDto.class));
 

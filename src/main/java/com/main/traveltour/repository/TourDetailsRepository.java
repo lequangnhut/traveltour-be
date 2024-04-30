@@ -86,9 +86,6 @@ public interface TourDetailsRepository extends JpaRepository<TourDetails, Intege
     @Query("SELECT td FROM TourDetails td " +
             "JOIN td.bookingToursById bt " +
             "JOIN bt.bookingTourCustomersById btc " +
-            "WHERE td.tourDetailStatus != 2 " +
-            "AND td.tourDetailStatus != 3 " +
-            "AND td.tourDetailStatus != 4 " +
             "GROUP BY td.id " +
             "ORDER BY td.id ASC")
     List<TourDetails> getAllJoinBooking();

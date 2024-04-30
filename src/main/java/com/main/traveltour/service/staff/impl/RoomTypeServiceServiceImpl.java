@@ -96,7 +96,7 @@ public class RoomTypeServiceServiceImpl implements RoomTypeServiceService {
 
     private int calculateBookedRooms(String roomTypeId, Timestamp checkIn, Timestamp checkOut) {
         Integer bookedRooms = repo.calculateBookedRooms(roomTypeId, checkIn, checkOut);
-        return bookedRooms != null ? bookedRooms : 0;
+            return bookedRooms != null ? bookedRooms : 0;
     }
 
 }

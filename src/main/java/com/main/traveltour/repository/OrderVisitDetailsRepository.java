@@ -15,7 +15,7 @@ public interface OrderVisitDetailsRepository extends JpaRepository<OrderVisitDet
             "JOIN vl.visitLocationTicketsById vlt " +
             "WHERE (td.id = :tourDetailId) AND " +
             "(vl.id = :visitId) AND " +
-            "(ov.orderStatus = :orderVisitStatus)")
+            "(:orderVisitStatus IS NULL OR ov.orderStatus = :orderVisitStatus)")
     List<OrderVisitDetails> findOrderVisitDetailByTourDetailIdAndVisitId(@Param("tourDetailId") String tourDetailId,
                                                                          @Param("visitId") String visitId,
                                                                          @Param("orderVisitStatus") Integer orderVisitStatus);

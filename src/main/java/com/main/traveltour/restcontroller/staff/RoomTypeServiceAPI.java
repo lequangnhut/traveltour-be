@@ -5,6 +5,7 @@ import com.main.traveltour.entity.ResponseObject;
 import com.main.traveltour.entity.RoomTypes;
 import com.main.traveltour.service.admin.BedTypesServiceAD;
 import com.main.traveltour.service.staff.RoomTypeServiceService;
+import com.main.traveltour.utils.ChangeCheckInTimeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -27,6 +28,9 @@ public class RoomTypeServiceAPI {
     @Autowired
     private BedTypesServiceAD bedTypesServiceAD;
 
+    @Autowired
+    private ChangeCheckInTimeService changeCheckInTimeService;
+
     @GetMapping("find-room-type-by-hotelId")
     public ResponseObject findRoomTypeByHotelId(
             @RequestParam(defaultValue = "0") int page,
@@ -41,8 +45,8 @@ public class RoomTypeServiceAPI {
         Sort sort = sortDir.equalsIgnoreCase(Sort.Direction.ASC.name()) ? Sort.by(sortBy).ascending() : Sort.by(sortBy).descending();
 
         Page<RoomTypeAvailabilityDto> availableRoomTypes = searchTerm != null && !searchTerm.isEmpty()
-                ? roomTypeService.findByHotelIdWithUtilitiesAndSearchTerm(searchTerm, hotelId, new Timestamp(checkIn.getTime()), new Timestamp(checkOut.getTime()), PageRequest.of(page, size, sort))
-                : roomTypeService.findRoomAvailabilityByHotelIdAndDateRange(hotelId, new Timestamp(checkIn.getTime()), new Timestamp(checkOut.getTime()), PageRequest.of(page, size, sort));
+                ? roomTypeService.findByHotelIdWithUtilitiesAndSearchTerm(searchTerm, hotelId, changeCheckInTimeService.changeCheckInTime(new Timestamp(checkIn.getTime())), changeCheckInTimeService.changeCheckInTime(new Timestamp(checkOut.getTime())), PageRequest.of(page, size, sort))
+                : roomTypeService.findRoomAvailabilityByHotelIdAndDateRange(hotelId, changeCheckInTimeService.changeCheckInTime(new Timestamp(checkIn.getTime())), changeCheckInTimeService.changeCheckInTime(new Timestamp(checkOut.getTime())), PageRequest.of(page, size, sort));
 
         if (availableRoomTypes.isEmpty()) {
             return new ResponseObject("404", "Không tìm thấy dữ liệu", null);

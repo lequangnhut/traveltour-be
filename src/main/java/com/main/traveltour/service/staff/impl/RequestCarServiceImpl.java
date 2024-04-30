@@ -46,7 +46,7 @@ public class RequestCarServiceImpl implements RequestCarService {
     }
 
     @Override
-    public Page<RequestCar> findAllRequestCarsFilters(String fromLocation, String toLocation, Date dateOfDepartment, Date returnDay, List<Integer> mediaTypeList, List<String> listOfVehicleManufacturers, Pageable pageable) {
-        return repo.findAllRequestCarsFilters(fromLocation, toLocation, dateOfDepartment, returnDay, mediaTypeList, listOfVehicleManufacturers, pageable);
+    public Page<RequestCar> findAllRequestCarsFilters(String fromLocation, String toLocation, List<Integer> mediaTypeList, List<String> listOfVehicleManufacturers, List<Boolean> seatTypeList, Pageable pageable) {
+        return repo.findAllRequestCarsFilters(fromLocation, toLocation, mediaTypeList, listOfVehicleManufacturers, seatTypeList, pageable);
     }
 }
