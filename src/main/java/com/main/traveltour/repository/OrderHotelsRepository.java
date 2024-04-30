@@ -1,6 +1,5 @@
 package com.main.traveltour.repository;
 
-import com.main.traveltour.dto.agent.hotel.StatisticalBookingHotelDto;
 import com.main.traveltour.entity.OrderHotels;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -8,10 +7,8 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
-import java.sql.Timestamp;
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.util.List;
-import java.util.Optional;
 
 public interface OrderHotelsRepository extends JpaRepository<OrderHotels, Integer> {
     @Query("SELECT COALESCE(MAX(oh.id), 'OH0000') FROM OrderHotels oh")
@@ -80,10 +77,28 @@ public interface OrderHotelsRepository extends JpaRepository<OrderHotels, Intege
     @Query("SELECT DISTINCT YEAR(oh.dateCreated) FROM OrderHotels oh ORDER BY YEAR(oh.dateCreated) DESC")
     List<Integer> getAllOrderHotelYear();
 
-    @Query("SELECT DISTINCT oh FROM OrderHotels oh WHERE oh.id IN :orderHotelDetails AND (oh.checkIn > CURRENT_TIMESTAMP() OR (DATE(oh.checkIn) = CURRENT_DATE() AND HOUR(oh.checkIn) > HOUR(CURRENT_TIMESTAMP()))) AND oh.checkIn < :targetDate AND oh.orderStatus = 2 ORDER BY YEAR(oh.dateCreated) DESC")
-    Page<OrderHotels> findOrderHotelsAfter12Hours(@Param("orderHotelDetails") List<String> orderHotelDetails, @Param("targetDate") Timestamp targetDate, Pageable pageable);
+    @Query("SELECT DISTINCT oh " +
+            "FROM OrderHotels oh " +
+            "INNER JOIN OrderHotelDetails ohd ON oh.id = ohd.orderHotelId " +
+            "INNER JOIN RoomTypes rt ON ohd.roomTypeId = rt.id " +
+            "WHERE rt.hotelId = :hotelId " +
+            "AND (:targetDate IS NULL OR DATE(oh.checkIn) = :targetDate) " +
+            "AND (:targetDate IS NULL OR MONTH(oh.checkIn) = MONTH(CURRENT_DATE)) " +
+            "AND (:targetDate IS NULL OR YEAR(oh.checkIn) = YEAR(CURRENT_DATE)) " +
+            "AND (:searchTerm IS NULL OR (COALESCE(CONCAT('', oh.id), '') LIKE %:searchTerm% OR COALESCE(CONCAT('', oh.customerEmail), '') LIKE %:searchTerm%) OR COALESCE(CONCAT('', oh.customerPhone), '') LIKE %:searchTerm%)  " +
+            "AND (:orderStatus IS NULL OR oh.orderStatus = :orderStatus) " +
+            "ORDER BY YEAR(oh.dateCreated) DESC")
+    Page<OrderHotels> findOrderHotelsByFilter(
+            @Param("hotelId") String hotelId,
+            @Param("targetDate") LocalDate targetDate,
+            @Param("searchTerm") String searchTerm,
+            @Param("orderStatus") Integer orderStatus,
+            Pageable pageable);
 
 
-
-
+    @Query("SELECT DISTINCT oh FROM OrderHotels oh\n" +
+            "INNER JOIN OrderHotelDetails ohd ON oh.id = ohd.orderHotelId\n" +
+            "INNER JOIN RoomTypes rt ON ohd.roomTypeId = rt.id\n" +
+            "WHERE rt.hotelId = :hotelId")
+    Page<OrderHotels> findOrderHotelsByHotelId(@Param("hotelId") String hotelId, Pageable pageable);
 }

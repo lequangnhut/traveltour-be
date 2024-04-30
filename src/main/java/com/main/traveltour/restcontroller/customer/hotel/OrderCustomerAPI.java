@@ -57,6 +57,39 @@ public class OrderCustomerAPI {
                 orderHotelDetailService.saveOrderHotelDetailsCustomer(orderHotelDetail);
             });
             String orderStatusBase64 = Base64.getEncoder().encodeToString("1".getBytes());
+            String paymentMethodBase64 = Base64.getEncoder().encodeToString("VPO".getBytes());
+            String orderIdBase64 = Base64.getEncoder().encodeToString(orderHotel.getId().getBytes());
+
+            emailService.sendEmailBookingHotel(orderHotel, orderDetailsHotel);
+            String redirectUrl = "hotel/hotel-details/payment/payment-successful/" + orderStatusBase64 + "/" + paymentMethodBase64 + "/" + orderIdBase64;
+            return new ResponseObject("200", "OK", redirectUrl);
+        } else {
+            return new ResponseObject("400", "Phòng này đã hết, vui lòng đặt phòng khác!", null);
+        }
+    }
+
+    @PostMapping("customer/booking-hotel/createOrderHotelAG")
+    public ResponseObject createOrderHotelAG(
+            @RequestPart(value = "orderHotel") OrderHotelCustomerDto orderHotel,
+            @RequestPart(value = "orderDetailsHotel") List<OrderDetailsHotelCustomerDto> orderDetailsHotel) {
+
+        // Kiểm tra số lượng phòng đặt có vượt quá số lượng phòng khả dụng hay không
+        boolean isAnyRoomExceeding = orderDetailsHotel.stream()
+                .anyMatch(orderDetail -> orderHotelDetailService.getTotalBookedRooms(orderDetail.getRoomTypeId(), orderHotel.getCheckIn(), orderHotel.getCheckOut(), orderDetail.getAmount()));
+
+        if (isAnyRoomExceeding) {
+            // Thêm hóa đơn khách sạn
+            OrderHotels orderHotels = EntityDtoUtils.convertToEntity(orderHotel, OrderHotels.class);
+            orderHotelsService.saveOrderHotelAgent(orderHotels, orderDetailsHotel);
+
+            // Thêm chi tiết hóa đơn khách sạn
+            List<OrderHotelDetails> orderHotelDetails = EntityDtoUtils.convertToDtoList(orderDetailsHotel, OrderHotelDetails.class);
+
+            orderHotelDetails.forEach(orderHotelDetail -> {
+                orderHotelDetail.setOrderHotelId(orderHotels.getId());
+                orderHotelDetailService.saveOrderHotelDetailsCustomer(orderHotelDetail);
+            });
+            String orderStatusBase64 = Base64.getEncoder().encodeToString("1".getBytes());
             String paymentMethodBase64 = Base64.getEncoder().encodeToString("TTTT".getBytes());
             String orderIdBase64 = Base64.getEncoder().encodeToString(orderHotel.getId().getBytes());
 

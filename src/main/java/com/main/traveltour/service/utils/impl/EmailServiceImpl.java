@@ -665,57 +665,61 @@ public class EmailServiceImpl implements EmailService {
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
 
         try {
-            MimeMessage message = sender.createMimeMessage();
-            MimeMessageHelper helper = new MimeMessageHelper(message, MimeMessageHelper.MULTIPART_MODE_MIXED_RELATED, StandardCharsets.UTF_8.name());
+            if (customerEmail != null) {
 
-            helper.setTo(customerEmail);
 
-            Map<String, Object> variables = new HashMap<>();
+                MimeMessage message = sender.createMimeMessage();
+                MimeMessageHelper helper = new MimeMessageHelper(message, MimeMessageHelper.MULTIPART_MODE_MIXED_RELATED, StandardCharsets.UTF_8.name());
 
-            variables.put("paymentMethod", paymentMethod.getDescription());
+                helper.setTo(customerEmail);
 
-            variables.put("id", orderHotels.getId());
-            variables.put("dateCreate", orderHotels.getDateCreated());
-            variables.put("customerEmail", orderHotels.getCustomerEmail());
-            variables.put("customerName", orderHotels.getCustomerName());
-            variables.put("customerPhone", orderHotels.getCustomerPhone());
-            variables.put("checkIn", DateUtils.formatTimestamp(String.valueOf(orderHotels.getCheckIn())));
-            variables.put("orderTotal", orderHotels.getOrderTotal());
-            variables.put("capacityAdult", orderHotels.getCapacityAdult());
-            variables.put("capacityKid", orderHotels.getCapacityKid());
-            variables.put("rooms", orderHotels.getOrderHotelDetailsById());
-            variables.put("totalAmount", totalAmount);
+                Map<String, Object> variables = new HashMap<>();
 
-            helper.setFrom(email);
-            helper.setText(thymeleafService.createContent("order-hotel-verify", variables), true);
-            helper.setSubject("DỊCH VỤ LỮ HÀNH TRAVELTOUR XIN CHÂN THÀNH CẢM ƠN QUÝ KHÁCH ĐÃ ĐẶT VÉ THAM QUAN CỦA CHÚNG TÔI.");
+                variables.put("paymentMethod", paymentMethod.getDescription());
 
-            sender.send(message);
+                variables.put("id", orderHotels.getId());
+                variables.put("dateCreate", orderHotels.getDateCreated());
+                variables.put("customerEmail", orderHotels.getCustomerEmail());
+                variables.put("customerName", orderHotels.getCustomerName());
+                variables.put("customerPhone", orderHotels.getCustomerPhone());
+                variables.put("checkIn", DateUtils.formatTimestamp(String.valueOf(orderHotels.getCheckIn())));
+                variables.put("orderTotal", orderHotels.getOrderTotal());
+                variables.put("capacityAdult", orderHotels.getCapacityAdult());
+                variables.put("capacityKid", orderHotels.getCapacityKid());
+                variables.put("rooms", orderHotels.getOrderHotelDetailsById());
+                variables.put("totalAmount", totalAmount);
 
-            for (var emailCustomer : orderDetailsHotelCustomerDtos) {
-                if (emailCustomer.getCustomerEmail() != null) {
+                helper.setFrom(email);
+                helper.setText(thymeleafService.createContent("order-hotel-verify", variables), true);
+                helper.setSubject("DỊCH VỤ LỮ HÀNH TRAVELTOUR XIN CHÂN THÀNH CẢM ƠN QUÝ KHÁCH ĐÃ ĐẶT VÉ THAM QUAN CỦA CHÚNG TÔI.");
 
-                    helper.setTo(emailCustomer.getCustomerEmail());
+                sender.send(message);
 
-                    variables.put("paymentMethod", paymentMethod.getDescription());
+                for (var emailCustomer : orderDetailsHotelCustomerDtos) {
+                    if (emailCustomer.getCustomerEmail() != null) {
 
-                    variables.put("id", orderHotels.getId());
-                    variables.put("dateCreate", orderHotels.getDateCreated());
-                    variables.put("customerEmail", orderHotels.getCustomerEmail());
-                    variables.put("customerName", orderHotels.getCustomerName());
-                    variables.put("customerPhone", orderHotels.getCustomerPhone());
-                    variables.put("checkIn", DateUtils.formatTimestamp(String.valueOf(orderHotels.getCheckIn())));
-                    variables.put("orderTotal", orderHotels.getOrderTotal());
-                    variables.put("capacityAdult", orderHotels.getCapacityAdult());
-                    variables.put("capacityKid", orderHotels.getCapacityKid());
-                    variables.put("rooms", orderHotels.getOrderHotelDetailsById());
-                    variables.put("totalAmount", totalAmount);
+                        helper.setTo(emailCustomer.getCustomerEmail());
 
-                    helper.setFrom(email);
-                    helper.setText(thymeleafService.createContent("order-hotel-verify", variables), true);
-                    helper.setSubject("DỊCH VỤ LỮ HÀNH TRAVELTOUR XIN CHÂN THÀNH CẢM ƠN QUÝ KHÁCH ĐÃ ĐẶT VÉ THAM QUAN CỦA CHÚNG TÔI.");
+                        variables.put("paymentMethod", paymentMethod.getDescription());
 
-                    sender.send(message);
+                        variables.put("id", orderHotels.getId());
+                        variables.put("dateCreate", orderHotels.getDateCreated());
+                        variables.put("customerEmail", orderHotels.getCustomerEmail());
+                        variables.put("customerName", orderHotels.getCustomerName());
+                        variables.put("customerPhone", orderHotels.getCustomerPhone());
+                        variables.put("checkIn", DateUtils.formatTimestamp(String.valueOf(orderHotels.getCheckIn())));
+                        variables.put("orderTotal", orderHotels.getOrderTotal());
+                        variables.put("capacityAdult", orderHotels.getCapacityAdult());
+                        variables.put("capacityKid", orderHotels.getCapacityKid());
+                        variables.put("rooms", orderHotels.getOrderHotelDetailsById());
+                        variables.put("totalAmount", totalAmount);
+
+                        helper.setFrom(email);
+                        helper.setText(thymeleafService.createContent("order-hotel-verify", variables), true);
+                        helper.setSubject("DỊCH VỤ LỮ HÀNH TRAVELTOUR XIN CHÂN THÀNH CẢM ƠN QUÝ KHÁCH ĐÃ ĐẶT VÉ THAM QUAN CỦA CHÚNG TÔI.");
+
+                        sender.send(message);
+                    }
                 }
             }
         } catch (MessagingException e) {
