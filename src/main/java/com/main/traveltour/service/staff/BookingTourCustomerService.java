@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Optional;
 
 public interface BookingTourCustomerService {
+
     Page<BookingTourCustomers> findBySearchTermAndTourDetailId(String tourDetailId, String searchTerm, Pageable pageable);
 
     Optional<BookingTourCustomers> findById(Integer id);

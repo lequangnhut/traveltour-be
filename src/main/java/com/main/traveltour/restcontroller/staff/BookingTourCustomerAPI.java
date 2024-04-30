@@ -1,11 +1,9 @@
 package com.main.traveltour.restcontroller.staff;
 
 
-import com.main.traveltour.dto.UsersDto;
 import com.main.traveltour.dto.staff.BookingTourCustomersDto;
 import com.main.traveltour.entity.BookingTourCustomers;
 import com.main.traveltour.entity.ResponseObject;
-import com.main.traveltour.entity.Users;
 import com.main.traveltour.service.staff.BookingTourCustomerService;
 import com.main.traveltour.utils.EntityDtoUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,13 +40,12 @@ public class BookingTourCustomerAPI {
                     : Sort.by(sortBy).descending();
 
             Page<BookingTourCustomers> bookingTourCustomers = bookingTourCustomerService.findBySearchTermAndTourDetailId(tourDetailId, searchTerm, PageRequest.of(page, size, sort));
+            Page<BookingTourCustomersDto> bookingTourCustomersDto = bookingTourCustomers.map(bookingTourCustomer -> EntityDtoUtils.convertToDto(bookingTourCustomer, BookingTourCustomersDto.class));
 
-            Page<BookingTourCustomersDto> bookingTourCustomersDtos = bookingTourCustomers.map(bookingTourCustomer -> EntityDtoUtils.convertToDto(bookingTourCustomer, BookingTourCustomersDto.class));
-
-            if (bookingTourCustomersDtos.isEmpty()) {
+            if (bookingTourCustomersDto.isEmpty()) {
                 return new ResponseObject("204", "Không tìm thấy dữ liệu", null);
             } else {
-                return new ResponseObject("200", "Đã tìm thấy dữ liệu", bookingTourCustomersDtos);
+                return new ResponseObject("200", "Đã tìm thấy dữ liệu", bookingTourCustomersDto);
             }
         } catch (Exception e) {
             e.printStackTrace();

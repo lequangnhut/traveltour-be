@@ -1,11 +1,16 @@
 package com.main.traveltour.restcontroller.staff;
 
 import com.main.traveltour.dto.customer.booking.BookingDto;
+import com.main.traveltour.dto.customer.infomation.CancelBookingTourDTO;
 import com.main.traveltour.dto.staff.BookingToursDto;
 import com.main.traveltour.entity.BookingTours;
+import com.main.traveltour.entity.CancelOrders;
 import com.main.traveltour.entity.ResponseObject;
+import com.main.traveltour.entity.TourDetails;
 import com.main.traveltour.restcontroller.customer.bookingtour.service.BookingTourAPIService;
+import com.main.traveltour.service.customer.CancelOrdersService;
 import com.main.traveltour.service.staff.BookingTourService;
+import com.main.traveltour.service.staff.TourDetailsService;
 import com.main.traveltour.service.utils.EmailService;
 import com.main.traveltour.utils.EntityDtoUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,7 +19,9 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.web.bind.annotation.*;
 
+import java.math.BigDecimal;
 import java.sql.Timestamp;
+import java.util.Date;
 
 @RestController
 @CrossOrigin(origins = "http://localhost:3000")
@@ -26,6 +33,12 @@ public class BookingTourAPI {
 
     @Autowired
     private BookingTourAPIService bookingTourAPIService;
+
+    @Autowired
+    private TourDetailsService tourDetailsService;
+
+    @Autowired
+    private CancelOrdersService cancelOrdersService;
 
     @Autowired
     private EmailService emailService;
@@ -89,11 +102,81 @@ public class BookingTourAPI {
     @DeleteMapping("/delete-booking-tour")
     public ResponseObject delete(@RequestParam String bookingTourId, @RequestParam String orderNoted) {
         try {
+            int deposit;
+            BigDecimal moneyBack = null;
+
             BookingTours bookingTour = bookingTourService.findById(bookingTourId);
             bookingTour.setOrderNote(orderNoted);
             bookingTour.setOrderStatus(2);
             bookingTour.setDateCancelled(new Timestamp(System.currentTimeMillis()));
             bookingTourService.update(bookingTour);
+
+            TourDetails tourDetails = tourDetailsService.findById(bookingTour.getTourDetailId());
+
+            //Tìm ra số lượng khách và total
+            BigDecimal unitPriceDecimal = tourDetails.getUnitPrice();
+            int capacityAdult = bookingTour.getCapacityAdult();
+            int capacityKid = bookingTour.getCapacityKid();
+            int unitPrice = unitPriceDecimal.intValue();
+            BigDecimal orderTotal = BigDecimal.valueOf((capacityAdult * unitPrice) + (capacityKid * (unitPrice * 0.3)));
+
+            //Tìm giá trị cọc theo ngày
+            Date currentDate = new Date();
+            Date departureDate = tourDetails.getDepartureDate();
+            long currentDateTime = currentDate.getTime();
+            long departureDateTime = departureDate.getTime();
+            long diffInDays = (departureDateTime / (1000 * 60 * 60 * 24)) - (currentDateTime / (1000 * 60 * 60 * 24));
+
+            if (bookingTour.getPaymentMethod() == 0 && bookingTour.getOrderStatus() == 0) {
+                deposit = 0;
+                moneyBack = orderTotal;
+            } else {
+                if (diffInDays >= 30) {
+                    deposit = 1;
+                } else if (diffInDays >= 26 && diffInDays <= 29) {
+                    deposit = 5;
+                } else if (diffInDays >= 15 && diffInDays <= 25) {
+                    deposit = 30;
+                } else if (diffInDays >= 8 && diffInDays <= 14) {
+                    deposit = 50;
+                } else if (diffInDays >= 2 && diffInDays <= 7) {
+                    deposit = 80;
+                } else if (diffInDays <= 1) {
+                    deposit = 100;
+                } else {
+                    deposit = 0;
+                    moneyBack = orderTotal;
+                }
+            }
+
+            BigDecimal cocPercentage = BigDecimal.valueOf(deposit);
+            BigDecimal cocAmount = orderTotal.multiply(cocPercentage).divide(BigDecimal.valueOf(100));
+            moneyBack = orderTotal.subtract(cocAmount);
+
+            //Trả ghế lại cho Tour Details
+            Integer totalAmountBook = bookingTour.getCapacityAdult() + bookingTour.getCapacityKid();
+            Integer booked = tourDetails.getBookedSeat();
+            tourDetails.setBookedSeat(booked - totalAmountBook);
+            tourDetailsService.save(tourDetails);
+
+            CancelBookingTourDTO bookingToursDto = EntityDtoUtils.convertToDto(bookingTour, CancelBookingTourDTO.class);
+            bookingToursDto.setCoc(deposit);
+            bookingToursDto.setMoneyBack(moneyBack);
+            bookingToursDto.setReasonNote(orderNoted);
+
+            //Entity của các đơn hủy
+            CancelOrders cancelOrders = new CancelOrders();
+            cancelOrders.setOrderId(bookingToursDto.getId());
+            cancelOrders.setCategogy(0);
+            cancelOrders.setDepositValue(bookingToursDto.getCoc());
+            BigDecimal price = bookingToursDto.getOrderTotal().subtract(bookingToursDto.getMoneyBack());
+            cancelOrders.setDepositPrice(price);
+            cancelOrders.setDateCreated(new Timestamp(System.currentTimeMillis()));
+            cancelOrdersService.save(cancelOrders);
+
+            //Gửi mail
+            emailService.queueEmailCustomerCancelTour(bookingToursDto);
+
             return new ResponseObject("200", "Xóa thành công", null);
         } catch (Exception e) {
             return new ResponseObject("500", "Xóa thất bại", null);
