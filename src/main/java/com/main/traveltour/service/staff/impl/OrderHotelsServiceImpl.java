@@ -22,11 +22,13 @@ import com.main.traveltour.utils.EntityDtoUtils;
 import com.main.traveltour.utils.GenerateOrderCode;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.sql.Timestamp;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -75,6 +77,33 @@ public class OrderHotelsServiceImpl implements OrderHotelsService {
         orderHotels.setOrderTotal(orderTotal);
         orderHotels.setOrderCode(orderHotels.getId());
         orderHotels.setOrderStatus(OrderStatus.PENDING.getValue());
+        orderHotels.setDateCreated(Timestamp.valueOf(LocalDateTime.now()));
+        orderHotels.setCheckIn(newCheckIn);
+        orderHotels.setCheckOut(newCheckOut);
+        orderHotelsRepository.save(orderHotels);
+    }
+
+    @Override
+    public void saveOrderHotelAgent(OrderHotels orderHotels, List<OrderDetailsHotelCustomerDto> orderDetailsHotel) {
+        Timestamp newCheckIn = changeCheckInTimeService.changeCheckInTime(orderHotels.getCheckIn());
+        Timestamp newCheckOut = changeCheckInTimeService.changeCheckInTime(orderHotels.getCheckOut());
+
+        BigDecimal orderTotal = orderDetailsHotel.stream()
+                .map(orderDetails -> {
+                    Optional<RoomTypes> roomTypes = roomTypeService.findRoomTypeById(orderDetails.getRoomTypeId());
+                    if (roomTypes.isPresent()) {
+                        BigDecimal roomPrice = roomTypes.get().getPrice();
+                        BigDecimal amount = BigDecimal.valueOf(orderDetails.getAmount());
+                        return roomPrice.multiply(BigDecimal.valueOf(changeCheckInTimeService.getDaysDifference(newCheckIn, newCheckOut))).multiply(amount);
+                    } else {
+                        return BigDecimal.ZERO;
+                    }
+                })
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+
+        orderHotels.setOrderTotal(orderTotal);
+        orderHotels.setOrderCode(orderHotels.getId());
+        orderHotels.setOrderStatus(OrderStatus.SUCCESSFUL.getValue());
         orderHotels.setDateCreated(Timestamp.valueOf(LocalDateTime.now()));
         orderHotels.setCheckIn(newCheckIn);
         orderHotels.setCheckOut(newCheckOut);
@@ -187,7 +216,7 @@ public class OrderHotelsServiceImpl implements OrderHotelsService {
     }
 
     @Override
-    public void cancelInvoiceByIdOrder(String orderId) throws JsonProcessingException {
+    public void cancelInvoiceByIdOrder(String orderId, String cancelReason) throws JsonProcessingException {
         ObjectMapper objectMapper = new ObjectMapper();
         Objects.requireNonNull(orderId, objectMapper.writeValueAsString(Collections.singletonMap("message", "Không có dữ liệu được tìm thấy")));
 
@@ -199,13 +228,14 @@ public class OrderHotelsServiceImpl implements OrderHotelsService {
                         throw new RuntimeException(e);
                     }
                 });
+        orderHotel.setOrderNote(cancelReason);
         orderHotel.setOrderStatus(5);
         orderHotelsService.save(orderHotel);
     }
 
     @Override
-    public Page<OrderHotels> findOrderHotelsAfter12Hours(List<String> orderHotelDetails, Timestamp targetTimestamp, Pageable pageable) {
-        return orderHotelsRepository.findOrderHotelsAfter12Hours(orderHotelDetails, targetTimestamp, pageable);
+    public Page<OrderHotels> findOrderHotelsByFilter(String hotelId, LocalDate targetTimestamp,  String searchTerm, Integer orderStatus, Pageable pageable) {
+        return orderHotelsRepository.findOrderHotelsByFilter(hotelId, targetTimestamp, searchTerm, orderStatus, pageable);
     }
 
 

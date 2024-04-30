@@ -117,8 +117,8 @@ public class RoomTypeServiceImpl implements RoomTypeService {
             Timestamp checkInDateFiller, Timestamp checkOutDateFiller,
             String hotelIdFilter, int page, int size, String sort) {
 
-        Timestamp newCheckIn = changeCheckInTimeService.changeCheckInTimeSearch(checkInDateFiller);
-        Timestamp newCheckOut = changeCheckInTimeService.changeCheckOutTimeSearch(checkOutDateFiller);
+        Timestamp newCheckIn = changeCheckInTimeService.changeCheckInTime(checkInDateFiller);
+        Timestamp newCheckOut = changeCheckInTimeService.changeCheckInTime(checkOutDateFiller);
         System.out.println("new checkin: " + newCheckIn);
 
         CriteriaBuilder builder = entityManager.getCriteriaBuilder();
@@ -163,7 +163,9 @@ public class RoomTypeServiceImpl implements RoomTypeService {
                     builder.like(hotelsJoin.get("hotelName"), "%" + locationFilter + "%"),
                     builder.like(hotelsJoin.get("province"), "%" + locationFilter + "%"),
                     builder.like(hotelsJoin.get("district"), "%" + locationFilter + "%"),
-                    builder.like(hotelsJoin.get("ward"), "%" + locationFilter + "%")
+                    builder.like(hotelsJoin.get("ward"), "%" + locationFilter + "%"),
+                    builder.like(hotelsJoin.get("address"), "%" + locationFilter + "%"),
+                    builder.like(hotelsJoin.get("hotelDescription"), "%" + locationFilter + "%")
             );
             predicates.add(locationPredicate);
         }
@@ -196,18 +198,22 @@ public class RoomTypeServiceImpl implements RoomTypeService {
 
         if (checkInDateFiller != null && checkOutDateFiller != null) {
             List<Object[]> resultListAmountRoom = entityManager.createNativeQuery(
-                            "SELECT REPLACE(GROUP_CONCAT(DISTINCT oh.id ORDER BY oh.id), CONCAT(oh.id, ', ', oh.id), oh.id) AS order_ids,\n" +
-                                    "       rt.id,\n" +
-                                    "       oh.check_in,\n" +
-                                    "       oh.check_out\n" +
-                                    "FROM room_types rt\n" +
-                                    "         INNER JOIN\n" +
-                                    "     order_hotel_details ohd ON rt.id = ohd.room_type_id\n" +
-                                    "         INNER JOIN\n" +
-                                    "     order_hotels oh ON ohd.order_hotel_id = oh.id\n" +
-                                    "WHERE oh.check_out > :checkInDate\n" +
-                                    "  AND oh.check_in < :checkOutDate\n" +
-                                    "GROUP BY oh.id, rt.id, oh.check_in, oh.check_out;")
+                            "SELECT\n" +
+                                    "    MAX(total_amount) AS max_amount,\n" +
+                                    "    subquery.room_type_id\n" +
+                                    "FROM (\n" +
+                                    "         SELECT\n" +
+                                    "             SUM(ohd.amount) AS total_amount,\n" +
+                                    "             rt.id AS room_type_id\n" +
+                                    "         FROM room_types rt\n" +
+                                    "                  INNER JOIN order_hotel_details ohd ON rt.id = ohd.room_type_id\n" +
+                                    "                  INNER JOIN order_hotels oh ON ohd.order_hotel_id = oh.id\n" +
+                                    "         WHERE (oh.check_in BETWEEN :checkInDate AND :checkOutDate)\n" +
+                                    "            OR (oh.check_out BETWEEN :checkInDate AND :checkOutDate)\n" +
+                                    "             AND oh.check_out != :checkInDate\n" +
+                                    "         GROUP BY rt.id\n" +
+                                    "     ) AS subquery\n" +
+                                    "GROUP BY subquery.room_type_id;")
                     .setParameter("checkInDate", newCheckIn)
                     .setParameter("checkOutDate", newCheckOut)
                     .getResultList();
@@ -215,71 +221,44 @@ public class RoomTypeServiceImpl implements RoomTypeService {
             List<RoomOrder> roomOrders = new ArrayList<RoomOrder>();
 
             for (Object[] result : resultListAmountRoom) {
-                String orderIds = (String) result[0];
+                BigDecimal maxCount = (BigDecimal) result[0];
                 String roomId = (String) result[1];
-                Timestamp checkIn = (Timestamp) result[2];
-                Timestamp checkOut = (Timestamp) result[3];
 
                 roomOrders.add(RoomOrder.builder()
-                        .orderIds(orderIds)
+                        .maxCount(maxCount.intValue())
                         .roomId(roomId)
-                        .checkIn(checkIn)
-                        .checkOut(checkOut)
                         .build());
             }
 
-            List<String> uniqueRoomTypeId = roomOrders.stream()
-                    .map(RoomOrder::getRoomId)
-                    .distinct()
-                    .toList();
+            List<String> roomTypeIds = roomOrders.stream().map(RoomOrder::getRoomId).distinct().toList();
+            for (String roomTypeId : roomTypeIds) {
 
-            for(String uniqueRoomType : uniqueRoomTypeId) {
-                for (RoomOrder roomOrder : roomOrders) {
-                    if(roomOrder.getRoomId().equals(uniqueRoomType)){
-                        int numberOfRoomsBooked = 0;
-                        if(roomOrders.size() == 1) {
-                            numberOfRoomsBooked ++;
-                        } else {
-                            for (RoomOrder room : roomOrders) {
-                                if (!roomOrder.getOrderIds().equals(room.getOrderIds())) {
-                                    if (
-                                            room.getCheckIn().before(roomOrder.getCheckOut()) &&
-                                                    room.getCheckOut().after(roomOrder.getCheckIn())
-                                    ) {
-                                        numberOfRoomsBooked ++;
-                                    }
-                                }
-                            }
+                RoomTypes roomType = entityManager.find(RoomTypes.class, roomTypeId);
+
+                List<Integer> maxCounts = roomOrders.stream()
+                        .filter(order -> order.getRoomId().equals(roomTypeId))
+                        .map(RoomOrder::getMaxCount).toList();
+
+                Optional<Integer> max = maxCounts.stream().max(Integer::compareTo);
+                if (roomType != null) {
+                    if(max.isPresent()) {
+                        int remainingRooms = roomType.getAmountRoom() - max.get();
+                        if (remainingRooms < 0) {
+                            remainingRooms = 0;
                         }
-
-                        RoomTypes roomType = entityManager.find(RoomTypes.class, roomOrder.getRoomId());
-                        if (roomType != null) {
-                            int remainingRooms = roomType.getAmountRoom() - numberOfRoomsBooked;
-                            if (remainingRooms < 0) {
-                                remainingRooms = 0;
-                            }
-
-                            roomType.setAmountRoom(remainingRooms);
-                            entityManager.merge(roomType);
-                        }
+                        roomType.setAmountRoom(remainingRooms);
+                        entityManager.merge(roomType);
                     }
                 }
             }
 
-//            for (Object[] result : resultListAmountRoom) {
-//                String roomId = (String) result[0];
-//                Long numberOfRoomsBookedBigInteger = (Long) result[1];
-//                long numberOfRoomsBooked = numberOfRoomsBookedBigInteger != null ? numberOfRoomsBookedBigInteger : 0L;
-//                RoomTypes roomType = entityManager.find(RoomTypes.class, roomId);
-//                if (roomType != null) {
-//                    int remainingRooms = roomType.getAmountRoom() - (int) numberOfRoomsBooked;
-//                    if (remainingRooms < 0) {
-//                        remainingRooms = 0;
-//                    }
+//            List<String> uniqueRoomTypeId = roomOrders.stream()
+//                    .map(RoomOrder::getRoomId)
+//                    .distinct()
+//                    .toList();
 //
-//                    roomType.setAmountRoom(remainingRooms);
-//                    entityManager.merge(roomType);
-//                }
+//            for(String uniqueRoomType : uniqueRoomTypeId) {
+//
 //            }
         }
 
@@ -313,12 +292,22 @@ public class RoomTypeServiceImpl implements RoomTypeService {
 
         query.where(predicates.toArray(new Predicate[0]));
 
-        roomTypeCustomerResult.setTotalCount(entityManager.createQuery(query).getResultList().size());
+        roomTypeCustomerResult.setTotalCount(entityManager.createQuery(query).
+
+                getResultList().
+
+                size());
         roomTypeCustomerResult.setRoomTypes(
                 entityManager.createQuery(query)
-                        .setFirstResult(page * size)
-                        .setMaxResults(size)
-                        .getResultList()
+                                .
+
+                        setFirstResult(page * size)
+                                .
+
+                        setMaxResults(size)
+                                .
+
+                        getResultList()
         );
 
         return roomTypeCustomerResult;

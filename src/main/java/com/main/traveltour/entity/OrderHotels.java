@@ -86,6 +86,9 @@ public class OrderHotels {
     @Basic
     @Column(name = "order_note")
     private String orderNote;
+    @Basic
+    @Column(name = "order_reason")
+    private String orderReason;
 
     @OneToMany(mappedBy = "orderHotelsByOrderHotelId")
     @JsonManagedReference

@@ -10,7 +10,7 @@ import java.sql.Timestamp;
 @Builder
 @ToString
 public class RoomOrder {
-    private String orderIds;
+    private Integer maxCount;
     private String roomId;
     private Timestamp checkIn;
     private Timestamp checkOut;
