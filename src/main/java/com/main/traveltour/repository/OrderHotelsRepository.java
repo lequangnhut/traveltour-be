@@ -101,4 +101,7 @@ public interface OrderHotelsRepository extends JpaRepository<OrderHotels, Intege
             "INNER JOIN RoomTypes rt ON ohd.roomTypeId = rt.id\n" +
             "WHERE rt.hotelId = :hotelId")
     Page<OrderHotels> findOrderHotelsByHotelId(@Param("hotelId") String hotelId, Pageable pageable);
+
+    @Query("SELECT distinct oh FROM OrderHotels oh WHERE oh.checkIn < NOW()")
+    List<OrderHotels> findOrderHotelsExpires();
 }

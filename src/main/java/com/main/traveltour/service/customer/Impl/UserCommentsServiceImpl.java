@@ -196,6 +196,11 @@ public class UserCommentsServiceImpl implements UserCommentsService {
     }
 
     @Override
+    public List<UserComments> findAllUsersComments() {
+        return userCommentsRepository.findAll();
+    }
+
+    @Override
     public Integer findCountRatingByRoomTypeId(String id) {
         List<UserComments> userComments = userCommentsRepository.findAllByServiceId(id);
         return userComments == null ? 0 : userComments.size();
