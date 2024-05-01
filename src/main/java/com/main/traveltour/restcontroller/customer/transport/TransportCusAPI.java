@@ -173,11 +173,13 @@ public class TransportCusAPI {
                 : Sort.by(sortBy).descending();
 
         Page<TransportationBrands> brandsPage = transportationBrandsService.findAllCustomerWithFilter(searchTerm, price, fromLocation, toLocation, checkInDateFiller, mediaTypeList, listOfVehicleManufacturers, PageRequest.of(page, size, sort));
-        Page<TransportationBrandsDto> brandsDto = brandsPage.map(brands -> EntityDtoUtils.convertToDto(brands, TransportationBrandsDto.class));
+        Page<TransportationBrandsRatingDto> brandsDto = brandsPage.map(brands -> EntityDtoUtils.convertToDto(brands, TransportationBrandsRatingDto.class));
 
         if (brandsDto.isEmpty()) {
             return new ResponseObject("204", "Không tìm thấy dữ liệu", null);
         } else {
+            brandsDto.getContent().forEach(trans -> trans.setRate(userCommentsService.findScoreRatingByRoomTypeId(trans.getId())));
+            brandsDto.forEach(trans -> trans.setCountRating(userCommentsService.findCountRatingByRoomTypeId(trans.getId())));
             return new ResponseObject("200", "Đã tìm thấy dữ liệu", brandsDto);
         }
     }
