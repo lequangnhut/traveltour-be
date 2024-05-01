@@ -198,22 +198,22 @@ public class RoomTypeServiceImpl implements RoomTypeService {
 
         if (checkInDateFiller != null && checkOutDateFiller != null) {
             List<Object[]> resultListAmountRoom = entityManager.createNativeQuery(
-                            "SELECT\n" +
-                                    "    MAX(total_amount) AS max_amount,\n" +
-                                    "    subquery.room_type_id\n" +
-                                    "FROM (\n" +
-                                    "         SELECT\n" +
-                                    "             SUM(ohd.amount) AS total_amount,\n" +
-                                    "             rt.id AS room_type_id\n" +
-                                    "         FROM room_types rt\n" +
-                                    "                  INNER JOIN order_hotel_details ohd ON rt.id = ohd.room_type_id\n" +
-                                    "                  INNER JOIN order_hotels oh ON ohd.order_hotel_id = oh.id\n" +
-                                    "         WHERE (oh.check_in BETWEEN :checkInDate AND :checkOutDate)\n" +
-                                    "            OR (oh.check_out BETWEEN :checkInDate AND :checkOutDate)\n" +
-                                    "             AND oh.check_out != :checkInDate\n" +
-                                    "         GROUP BY rt.id\n" +
-                                    "     ) AS subquery\n" +
-                                    "GROUP BY subquery.room_type_id;")
+                            "SELECT MAX(total_amount) AS max_amount,\n" +
+                                    "       subquery.room_type_id,\n" +
+                                    "       subquery.checkIn,\n" +
+                                    "       subquery.checkOut\n" +
+                                    "FROM (SELECT SUM(ohd.amount) AS total_amount,\n" +
+                                    "             rt.id           AS room_type_id,\n" +
+                                    "             oh.check_in AS checkIn,\n" +
+                                    "             oh.check_out AS checkOut\n" +
+                                    "      FROM room_types rt\n" +
+                                    "               INNER JOIN order_hotel_details ohd ON rt.id = ohd.room_type_id\n" +
+                                    "               INNER JOIN order_hotels oh ON ohd.order_hotel_id = oh.id\n" +
+                                    "      WHERE (oh.check_in BETWEEN :checkInDate AND :checkOutDate)\n" +
+                                    "         OR (oh.check_out BETWEEN :checkInDate AND :checkOutDate)\n" +
+                                    "          AND oh.check_out != :checkInDate\n" +
+                                    "      GROUP BY rt.id, oh.check_in, oh.check_out) AS subquery\n" +
+                                    "GROUP BY subquery.room_type_id, subquery.checkIn, subquery.checkOut;")
                     .setParameter("checkInDate", newCheckIn)
                     .setParameter("checkOutDate", newCheckOut)
                     .getResultList();
@@ -240,6 +240,7 @@ public class RoomTypeServiceImpl implements RoomTypeService {
                         .map(RoomOrder::getMaxCount).toList();
 
                 Optional<Integer> max = maxCounts.stream().max(Integer::compareTo);
+
                 if (roomType != null) {
                     if(max.isPresent()) {
                         int remainingRooms = roomType.getAmountRoom() - max.get();
@@ -248,18 +249,11 @@ public class RoomTypeServiceImpl implements RoomTypeService {
                         }
                         roomType.setAmountRoom(remainingRooms);
                         entityManager.merge(roomType);
+                    } else {
+                        entityManager.merge(roomType);
                     }
                 }
             }
-
-//            List<String> uniqueRoomTypeId = roomOrders.stream()
-//                    .map(RoomOrder::getRoomId)
-//                    .distinct()
-//                    .toList();
-//
-//            for(String uniqueRoomType : uniqueRoomTypeId) {
-//
-//            }
         }
 
         if (sort != null && !sort.isEmpty()) {
