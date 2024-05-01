@@ -40,7 +40,7 @@ public interface OrderTransportationsRepository extends JpaRepository<OrderTrans
 
     List<OrderTransportations> findAllByTransportationScheduleId(String transportationScheduleId);
 
-    @Query("SELECT otr FROM OrderTransportations otr WHERE (:orderStatus IS NULL OR otr.orderStatus = :orderStatus) AND otr.customerEmail = :email ORDER BY otr.dateCreated DESC")
+    @Query("SELECT otr FROM OrderTransportations otr WHERE (:orderStatus IS NULL OR otr.orderStatus = :orderStatus) AND otr.customerEmail = :email")
     Page<OrderTransportations> findAllBookingTransByUserId(@Param("orderStatus") Integer orderStatus, @Param("email") String email, Pageable pageable);
 
     /**

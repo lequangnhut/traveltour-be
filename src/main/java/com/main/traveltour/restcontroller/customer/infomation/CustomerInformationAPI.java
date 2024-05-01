@@ -84,7 +84,6 @@ public class CustomerInformationAPI {
         Sort sort = sortDir.equalsIgnoreCase(Sort.Direction.ASC.name())
                 ? Sort.by(sortBy).ascending()
                 : Sort.by(sortBy).descending();
-
         Page<BookingTours> bookingTours = bookingTourService.getAllByUserId(orderStatus, email, PageRequest.of(page, size, sort));
 
         Page<com.main.traveltour.dto.staff.BookingToursDto> bookingToursDtos = bookingTours.map(bookingTour -> EntityDtoUtils.convertToDto(bookingTour, com.main.traveltour.dto.staff.BookingToursDto.class));
