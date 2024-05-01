@@ -91,14 +91,7 @@ public class BookingLocationMomoCusAPI {
 
         Environment environment = Environment.selectEnv("dev");
 
-        PaymentResponse captureWalletMoMoResponse;
-        BigDecimal limitAmount = BigDecimal.valueOf(1000000);
-
-        if (orderTotal.compareTo(limitAmount) < 0) {
-            captureWalletMoMoResponse = CreateOrderMoMo.process(environment, orderId, requestId, Long.toString(orderTotal.intValue()), orderInfo, returnURL, notifyURL, "", RequestType.CAPTURE_WALLET, Boolean.TRUE);
-        } else {
-            captureWalletMoMoResponse = CreateOrderMoMo.process(environment, orderId, requestId, Long.toString(orderTotal.intValue()), orderInfo, returnURL, notifyURL, "", RequestType.PAY_WITH_ATM, Boolean.TRUE);
-        }
+        PaymentResponse captureWalletMoMoResponse = CreateOrderMoMo.process(environment, orderId, requestId, Long.toString(orderTotal.intValue()), orderInfo, returnURL, notifyURL, "", RequestType.CAPTURE_WALLET, Boolean.TRUE);
 
         assert captureWalletMoMoResponse != null;
         response.put("redirectUrl", captureWalletMoMoResponse.getPayUrl());

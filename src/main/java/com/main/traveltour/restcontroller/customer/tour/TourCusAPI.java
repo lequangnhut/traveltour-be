@@ -101,14 +101,12 @@ public class TourCusAPI {
         }
     }
 
-    // Hàm này tạo ra tất cả các kết hợp có thể của các từ trong danh sách đầu vào
     private static List<String> generateCombinations(List<String> input) {
         List<String> combinations = new ArrayList<>();
         generateCombinationsRecursive(input, 0, "", combinations);
         return combinations;
     }
 
-    // Hàm đệ quy tạo ra tất cả các kết hợp có thể của các từ trong danh sách input
     private static void generateCombinationsRecursive(List<String> input, int index, String current, List<String> combinations) {
         if (index == input.size()) {
             if (!current.isEmpty()) {
@@ -116,10 +114,7 @@ public class TourCusAPI {
             }
             return;
         }
-
-        // Chọn từ hiện tại
         generateCombinationsRecursive(input, index + 1, current + input.get(index) + " ", combinations);
-        // Bỏ qua từ hiện tại
         generateCombinationsRecursive(input, index + 1, current, combinations);
     }
 
