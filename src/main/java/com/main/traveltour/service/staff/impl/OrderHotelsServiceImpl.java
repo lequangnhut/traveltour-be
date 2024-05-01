@@ -9,14 +9,14 @@ import com.main.traveltour.dto.agent.hotel.StatisticalBookingHotelDto;
 import com.main.traveltour.dto.agent.hotel.order.OrderHotelDetailsDto;
 import com.main.traveltour.dto.agent.hotel.order.OrderHotelDto;
 import com.main.traveltour.dto.customer.hotel.OrderDetailsHotelCustomerDto;
-import com.main.traveltour.entity.OrderHotelDetails;
-import com.main.traveltour.entity.OrderHotels;
+import com.main.traveltour.dto.customer.infomation.CancelOrderHotelsDto;
+import com.main.traveltour.entity.*;
 import com.main.traveltour.enums.OrderStatus;
-import com.main.traveltour.entity.RoomTypes;
 import com.main.traveltour.repository.OrderHotelsRepository;
 import com.main.traveltour.service.agent.RoomTypeService;
 import com.main.traveltour.service.staff.OrderHotelDetailService;
 import com.main.traveltour.service.staff.OrderHotelsService;
+import com.main.traveltour.service.utils.EmailService;
 import com.main.traveltour.utils.ChangeCheckInTimeService;
 import com.main.traveltour.utils.EntityDtoUtils;
 import com.main.traveltour.utils.GenerateOrderCode;
@@ -24,6 +24,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -45,6 +46,10 @@ public class OrderHotelsServiceImpl implements OrderHotelsService {
     RoomTypeService roomTypeService;
     @Autowired
     ChangeCheckInTimeService changeCheckInTimeService;
+    @Autowired
+    private JdbcTemplate jdbcTemplate;
+    @Autowired
+    private EmailService emailService;
 
     @Override
     public String maxCodeTourId() {
@@ -237,6 +242,40 @@ public class OrderHotelsServiceImpl implements OrderHotelsService {
     public Page<OrderHotels> findOrderHotelsByFilter(String hotelId, LocalDate targetTimestamp,  String searchTerm, Integer orderStatus, Pageable pageable) {
         return orderHotelsRepository.findOrderHotelsByFilter(hotelId, targetTimestamp, searchTerm, orderStatus, pageable);
     }
+
+    @Override
+    public void checkOrderHotelExpires() {
+        List<OrderHotels> orderHotelsExpires = orderHotelsRepository.findOrderHotelsExpires();
+
+        for (OrderHotels orderHotels : orderHotelsExpires) {
+            int orderStatus = orderHotels.getOrderStatus();
+            String orderNote = null;
+
+            if (orderStatus == 0) {
+                orderStatus = 4;
+                orderNote = "Bạn chưa thanh toán";
+
+            } else if (orderStatus == 1) {
+                orderStatus = 5;
+                orderNote = "Khách sạn chưa chuẩn bị phòng";
+            } else if (orderStatus == 2) {
+                orderStatus = 4;
+            }
+
+            if (orderHotels.getOrderStatus() != orderStatus || orderNote != null) {
+                orderHotels.setOrderStatus(orderStatus);
+                orderHotels.setOrderNote(orderNote);
+                saveOrderHotels(orderHotels);
+            }
+        }
+    }
+
+    public void saveOrderHotels(OrderHotels orderHotels) {
+        String sql = "UPDATE order_hotels SET order_status = ?, order_note = ? WHERE id = ?";
+        jdbcTemplate.update(sql, orderHotels.getOrderStatus(), orderHotels.getOrderNote(), orderHotels.getId());
+    }
+
+
 
 
     @Override

@@ -48,4 +48,5 @@ public interface OrderHotelsService {
 
     Page<OrderHotels> findOrderHotelsByFilter(String hotelId, LocalDate targetTimestamp, String searchTerm, Integer orderStatus, Pageable pageable);
 
+    void checkOrderHotelExpires();
 }

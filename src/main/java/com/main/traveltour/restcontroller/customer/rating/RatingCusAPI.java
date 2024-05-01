@@ -16,6 +16,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -97,6 +98,18 @@ public class RatingCusAPI {
         } catch (IllegalArgumentException | JsonProcessingException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
+    }
+
+    @GetMapping("customer/rating/rating-services/findScoreRatingByTourId")
+    public ResponseEntity<Double> findScoreRatingByTourId(@RequestParam("tourId") String tourId) {
+        Double ratingScore = userCommentsService.findScoreRatingByRoomTypeId(tourId);
+        return ResponseEntity.ok(ratingScore);
+    }
+
+    @GetMapping("customer/rating/rating-services/findCountRatingByTourId")
+    public ResponseEntity<Integer> findCountRatingByTourId(@RequestParam("tourId") String tourId) {
+        Integer countRating = userCommentsService.findCountRatingByRoomTypeId(tourId);
+        return ResponseEntity.ok(countRating);
     }
 
 

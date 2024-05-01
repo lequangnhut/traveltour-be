@@ -1,6 +1,7 @@
 package com.main.traveltour.restcontroller.customer.transport;
 
 import com.main.traveltour.dto.customer.TransportationBrandsDto;
+import com.main.traveltour.dto.customer.transport.TransportationBrandsRatingDto;
 import com.main.traveltour.dto.customer.transport.TransportationSchedulesDto;
 import com.main.traveltour.entity.ResponseObject;
 import com.main.traveltour.entity.TransportationBrands;
@@ -9,6 +10,7 @@ import com.main.traveltour.entity.TransportationSchedules;
 import com.main.traveltour.service.agent.TransportScheduleSeatService;
 import com.main.traveltour.service.agent.TransportationBrandsService;
 import com.main.traveltour.service.agent.TransportationScheduleService;
+import com.main.traveltour.service.customer.UserCommentsService;
 import com.main.traveltour.utils.EntityDtoUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -36,16 +38,20 @@ public class TransportCusAPI {
 
     @Autowired
     private TransportationBrandsService transportationBrandsService;
+    @Autowired
+    private UserCommentsService userCommentsService;
 
     @GetMapping("customer/transport/find-all-transport-brand")
     public ResponseObject findAllTransportCus(@RequestParam(defaultValue = "0") int page,
                                               @RequestParam(defaultValue = "9") int size) {
         Page<TransportationBrands> brandsPage = transportationBrandsService.findAllCus(PageRequest.of(page, size));
-        Page<TransportationBrandsDto> brandsDto = brandsPage.map(brands -> EntityDtoUtils.convertToDto(brands, TransportationBrandsDto.class));
+        Page<TransportationBrandsRatingDto> brandsDto = brandsPage.map(brands -> EntityDtoUtils.convertToDto(brands, TransportationBrandsRatingDto.class));
 
         if (brandsDto.isEmpty()) {
             return new ResponseObject("404", "Không tìm thấy dữ liệu", null);
         } else {
+            brandsDto.getContent().forEach(trans -> trans.setRate(userCommentsService.findScoreRatingByRoomTypeId(trans.getId())));
+            brandsDto.forEach(trans -> trans.setCountRating(userCommentsService.findCountRatingByRoomTypeId(trans.getId())));
             return new ResponseObject("200", "Đã tìm thấy dữ liệu", brandsDto);
         }
     }
@@ -167,11 +173,13 @@ public class TransportCusAPI {
                 : Sort.by(sortBy).descending();
 
         Page<TransportationBrands> brandsPage = transportationBrandsService.findAllCustomerWithFilter(searchTerm, price, fromLocation, toLocation, checkInDateFiller, mediaTypeList, listOfVehicleManufacturers, PageRequest.of(page, size, sort));
-        Page<TransportationBrandsDto> brandsDto = brandsPage.map(brands -> EntityDtoUtils.convertToDto(brands, TransportationBrandsDto.class));
+        Page<TransportationBrandsRatingDto> brandsDto = brandsPage.map(brands -> EntityDtoUtils.convertToDto(brands, TransportationBrandsRatingDto.class));
 
         if (brandsDto.isEmpty()) {
             return new ResponseObject("204", "Không tìm thấy dữ liệu", null);
         } else {
+            brandsDto.getContent().forEach(trans -> trans.setRate(userCommentsService.findScoreRatingByRoomTypeId(trans.getId())));
+            brandsDto.forEach(trans -> trans.setCountRating(userCommentsService.findCountRatingByRoomTypeId(trans.getId())));
             return new ResponseObject("200", "Đã tìm thấy dữ liệu", brandsDto);
         }
     }

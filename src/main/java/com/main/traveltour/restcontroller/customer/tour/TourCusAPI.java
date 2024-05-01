@@ -1,9 +1,11 @@
 package com.main.traveltour.restcontroller.customer.tour;
 
 import com.main.traveltour.dto.staff.tour.TourDetailsGetDataDto;
+import com.main.traveltour.dto.staff.tour.TourDetailsRatingDto;
 import com.main.traveltour.entity.ResponseObject;
 import com.main.traveltour.entity.TourDetails;
 import com.main.traveltour.entity.TourTypes;
+import com.main.traveltour.service.customer.UserCommentsService;
 import com.main.traveltour.service.staff.TourDetailsService;
 import com.main.traveltour.service.staff.TourTypesService;
 import com.main.traveltour.utils.EntityDtoUtils;
@@ -28,6 +30,8 @@ public class TourCusAPI {
 
     @Autowired
     private TourDetailsService tourDetailsService;
+    @Autowired
+    private UserCommentsService userCommentsService;
 
     @GetMapping("customer/tour/find-tour-detail-customer")
     private ResponseObject findAllTourDetail(@RequestParam(defaultValue = "0") int page,
@@ -98,11 +102,13 @@ public class TourCusAPI {
 //            tourDetailsPage = tourDetailsService.findTourDetailWithInFilter(tourDetailIdList, numberOfPeople, departure, price, tourTypeList, PageRequest.of(page, size, sort));
 //        }
 
-        Page<TourDetailsGetDataDto> tourDetailsDtoPage = tourDetailsPage.map(tourDetails -> EntityDtoUtils.convertToDto(tourDetails, TourDetailsGetDataDto.class));
+        Page<TourDetailsRatingDto> tourDetailsDtoPage = tourDetailsPage.map(tourDetails -> EntityDtoUtils.convertToDto(tourDetails, TourDetailsRatingDto.class));
 
         if (tourDetailsDtoPage.isEmpty()) {
             return new ResponseObject("204", "Không tìm thấy dữ liệu", null);
         } else {
+            tourDetailsDtoPage.getContent().forEach(tour -> tour.setRate(userCommentsService.findScoreRatingByRoomTypeId(tour.getTourId())));
+            tourDetailsDtoPage.forEach(tour -> tour.setCountRating(userCommentsService.findCountRatingByRoomTypeId(tour.getTourId())));
             return new ResponseObject("200", "Đã tìm thấy dữ liệu", tourDetailsDtoPage);
         }
     }
@@ -198,12 +204,14 @@ public class TourCusAPI {
         List<TourDetails> pageContent = filteredList.subList(start, end);
         Page<TourDetails> tourDetailsPage = new PageImpl<>(pageContent, PageRequest.of(page, size, sort), totalElements);
 
-        Page<TourDetailsGetDataDto> tourDetailsDtoPage = tourDetailsPage.map(
-                tourDetails -> EntityDtoUtils.convertToDto(tourDetails, TourDetailsGetDataDto.class));
+        Page<TourDetailsRatingDto> tourDetailsDtoPage = tourDetailsPage.map(
+                tourDetails -> EntityDtoUtils.convertToDto(tourDetails, TourDetailsRatingDto.class));
 
         if (tourDetailsDtoPage.isEmpty()) {
             return new ResponseObject("204", "Không tìm thấy dữ liệu", null);
         } else {
+            tourDetailsDtoPage.getContent().forEach(tour -> tour.setRate(userCommentsService.findScoreRatingByRoomTypeId(tour.getTourId())));
+            tourDetailsDtoPage.forEach(tour -> tour.setCountRating(userCommentsService.findCountRatingByRoomTypeId(tour.getTourId())));
             return new ResponseObject("200", "Đã tìm thấy dữ liệu", tourDetailsDtoPage);
         }
     }
