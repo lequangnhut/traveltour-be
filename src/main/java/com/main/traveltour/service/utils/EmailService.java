@@ -9,9 +9,6 @@ import com.main.traveltour.dto.customer.hotel.OrderHotelCustomerDto;
 import com.main.traveltour.dto.customer.infomation.*;
 import com.main.traveltour.dto.customer.visit.BookingLocationCusDto;
 import com.main.traveltour.dto.superadmin.DataAccountDto;
-import com.main.traveltour.entity.OrderVisitDetails;
-import com.main.traveltour.entity.OrderVisits;
-import com.main.traveltour.entity.VisitLocations;
 
 import java.util.List;
 
@@ -48,6 +45,10 @@ public interface EmailService {
     void sendMailCustomerCancelTour();
 
     void queueEmailCustomerCancelTour(CancelBookingTourDTO bookingToursDto);
+
+    void sendMailStaffCancelTour();
+
+    void queueEmailStaffCancelTour(CancelBookingTourDTO bookingToursDto);
 
     void sendMailOTPCus();
 

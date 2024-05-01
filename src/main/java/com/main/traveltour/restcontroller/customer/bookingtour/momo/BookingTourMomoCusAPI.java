@@ -75,7 +75,7 @@ public class BookingTourMomoCusAPI {
 
         Environment environment = Environment.selectEnv("dev");
 
-        PaymentResponse captureWalletMoMoResponse = CreateOrderMoMo.process(environment, orderId, requestId, Long.toString(orderTotal.intValue()), orderInfo, returnURL, notifyURL, "", RequestType.PAY_WITH_ATM, Boolean.TRUE);
+        PaymentResponse captureWalletMoMoResponse = CreateOrderMoMo.process(environment, orderId, requestId, Long.toString(orderTotal.intValue()), orderInfo, returnURL, notifyURL, "", RequestType.CAPTURE_WALLET, Boolean.TRUE);
 
         assert captureWalletMoMoResponse != null;
         response.put("redirectUrl", captureWalletMoMoResponse.getPayUrl());
@@ -88,7 +88,7 @@ public class BookingTourMomoCusAPI {
     @GetMapping("momo/success-payment")
     private String successBookingMomo(HttpServletRequest request) {
         String payType = request.getParameter("payType");
-        int paymentStatus = payType.equals("napas") ? 1 : 0;
+        int paymentStatus = payType.equals("qr") ? 1 : 0;
 
         BookingDto bookingDto = SessionAttr.BOOKING_DTO;
         BookingToursDto bookingToursDto = bookingDto.getBookingToursDto();
