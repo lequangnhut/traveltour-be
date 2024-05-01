@@ -3,6 +3,7 @@ package com.main.traveltour.component;
 import com.main.traveltour.service.agent.TransportScheduleSeatService;
 import com.main.traveltour.service.agent.TransportationScheduleService;
 import com.main.traveltour.service.customer.PassOTPService;
+import com.main.traveltour.service.staff.OrderHotelsService;
 import com.main.traveltour.service.staff.TourDetailsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.EnableScheduling;
@@ -25,6 +26,9 @@ public class ScheduledTasks {
     @Autowired
     private PassOTPService passOTPService;
 
+    @Autowired
+    private OrderHotelsService orderHotelsService;
+
     @Scheduled(fixedDelay = 5000)
     public void checkTransportSchedulesStatus() {
         transportationScheduleService.updateStatusAndActive();
@@ -43,5 +47,10 @@ public class ScheduledTasks {
     @Scheduled(fixedDelay = 1000)
     public void checkTimeBookingTransport() {
         transportScheduleSeatService.checkTimeBookingTransport();
+    }
+
+    @Scheduled(fixedDelay = 5000)
+    public void checkOrderHotelExpires() {
+        orderHotelsService.checkOrderHotelExpires();
     }
 }

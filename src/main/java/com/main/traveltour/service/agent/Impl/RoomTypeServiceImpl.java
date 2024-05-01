@@ -204,21 +204,26 @@ public class RoomTypeServiceImpl implements RoomTypeService {
                                     "       subquery.checkOut\n" +
                                     "FROM (SELECT SUM(ohd.amount) AS total_amount,\n" +
                                     "             rt.id           AS room_type_id,\n" +
-                                    "             oh.check_in AS checkIn,\n" +
-                                    "             oh.check_out AS checkOut\n" +
+                                    "             oh.check_in     AS checkIn,\n" +
+                                    "             oh.check_out    AS checkOut\n" +
                                     "      FROM room_types rt\n" +
                                     "               INNER JOIN order_hotel_details ohd ON rt.id = ohd.room_type_id\n" +
                                     "               INNER JOIN order_hotels oh ON ohd.order_hotel_id = oh.id\n" +
-                                    "      WHERE (oh.check_in BETWEEN :checkInDate AND :checkOutDate)\n" +
-                                    "         OR (oh.check_out BETWEEN :checkInDate AND :checkOutDate)\n" +
-                                    "          AND oh.check_out != :checkInDate\n" +
-                                    "      GROUP BY rt.id, oh.check_in, oh.check_out) AS subquery\n" +
+                                    "      WHERE ((oh.check_in BETWEEN :checkInDate AND :checkOutDate)\n" +
+                                    "          OR (oh.check_out BETWEEN :checkInDate AND :checkOutDate))\n" +
+                                    "        AND oh.check_out != :checkInDate\n" +
+                                    "        AND oh.id NOT IN (\n" +
+                                    "          SELECT oh2.id\n" +
+                                    "          FROM order_hotels oh2\n" +
+                                    "          WHERE oh2.order_status = 4\n" +
+                                    "      )\n" +
+                                    "      GROUP BY rt.id, oh.check_in, oh.check_out, oh.id, oh.order_status) AS subquery\n" +
                                     "GROUP BY subquery.room_type_id, subquery.checkIn, subquery.checkOut;")
                     .setParameter("checkInDate", newCheckIn)
                     .setParameter("checkOutDate", newCheckOut)
                     .getResultList();
 
-            List<RoomOrder> roomOrders = new ArrayList<RoomOrder>();
+            List<RoomOrder> roomOrders = new ArrayList<>();
 
             for (Object[] result : resultListAmountRoom) {
                 BigDecimal maxCount = (BigDecimal) result[0];
