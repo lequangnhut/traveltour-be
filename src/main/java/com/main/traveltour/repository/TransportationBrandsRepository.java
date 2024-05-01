@@ -54,7 +54,7 @@ public interface TransportationBrandsRepository extends JpaRepository<Transporta
             "AND (:price IS NULL OR sc.unitPrice <= (:price)) " +
             "AND (:fromLocation IS NULL OR sc.fromLocation LIKE %:fromLocation%) " +
             "AND (:toLocation IS NULL OR sc.toLocation LIKE %:toLocation%) " +
-            "AND ((sc.departureTime) >= (:checkInDateFiller)) " +
+            "AND (DATE(sc.departureTime) >= DATE(:checkInDateFiller)) " +
             "AND (:listOfVehicleManufacturers IS NULL OR br.id IN (:listOfVehicleManufacturers)) " +
             "AND (:mediaTypeList IS NULL OR ty.id IN (:mediaTypeList))" +
             "GROUP BY br")
