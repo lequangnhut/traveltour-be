@@ -212,6 +212,7 @@ public class RoomTypeServiceImpl implements RoomTypeService {
                                     "      WHERE ((oh.check_in BETWEEN :checkInDate AND :checkOutDate)\n" +
                                     "          OR (oh.check_out BETWEEN :checkInDate AND :checkOutDate))\n" +
                                     "        AND oh.check_out != :checkInDate\n" +
+                                    "        AND oh.check_in != :checkOutDate\n" +
                                     "        AND oh.id NOT IN (SELECT oh2.id\n" +
                                     "                          FROM order_hotels oh2\n" +
                                     "                          WHERE oh2.order_status = 4)\n" +
