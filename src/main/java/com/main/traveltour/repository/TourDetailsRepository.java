@@ -91,9 +91,7 @@ public interface TourDetailsRepository extends JpaRepository<TourDetails, Intege
     List<TourDetails> getAllJoinBooking();
 
     @Query("SELECT td FROM TourDetails td " +
-            "WHERE td.tourDetailStatus != 2 " +
-            "AND td.tourDetailStatus != 3 " +
-            "AND td.tourDetailStatus != 4")
+            "WHERE td.tourDetailStatus = 1")
     Page<TourDetails> findAllTourDetail(Pageable pageable);
 
     @Query("SELECT td FROM TourDetails td " +

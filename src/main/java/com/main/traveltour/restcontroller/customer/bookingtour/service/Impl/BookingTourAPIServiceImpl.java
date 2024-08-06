@@ -74,7 +74,7 @@ public class BookingTourAPIServiceImpl implements BookingTourAPIService {
 
         createBookingTourCustomers(bookingTourDto.getId(), bookingTourCustomersDto); // tạo danh sách khách hàng
 
-        if (orderStatus != 0) { // nếu bằng 1 thì thành công còn ngược lại thì thất bại
+        if (orderStatus != 2) { // nếu khác 2 thì thành công còn lại thì thất bại
             decreaseAmountTour(bookingTourDto.getTourDetailId(), totalAmountBook); // trừ số lượng tour detail
             createInvoices(bookingToursDto.getId()); // tạo hóa đơn
             createContracts(bookingToursDto.getId()); // tạo hợp đồng

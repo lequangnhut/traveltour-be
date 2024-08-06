@@ -35,10 +35,16 @@ public class TourCusAPI {
 
     @GetMapping("customer/tour/find-tour-detail-customer")
     private ResponseObject findAllTourDetail(@RequestParam(defaultValue = "0") int page,
-                                             @RequestParam(defaultValue = "10") int size) {
+                                             @RequestParam(defaultValue = "10") int size,
+                                             @RequestParam(defaultValue = "departureDate") String sortBy,
+                                             @RequestParam(defaultValue = "asc") String sortDir) {
+        Sort sort = sortDir.equalsIgnoreCase(Sort.Direction.ASC.name())
+                ? Sort.by(sortBy).ascending()
+                : Sort.by(sortBy).descending();
 
-        Page<TourDetails> tourDetailsPage = tourDetailsService.findAll(PageRequest.of(page, size));
-        Page<TourDetailsGetDataDto> tourDetailsDtoPage = tourDetailsPage.map(tourDetails -> EntityDtoUtils.convertToDto(tourDetails, TourDetailsGetDataDto.class));
+        Page<TourDetails> tourDetailsPage = tourDetailsService.findAll(PageRequest.of(page, size, sort));
+        Page<TourDetailsGetDataDto> tourDetailsDtoPage =
+                tourDetailsPage.map(tourDetails -> EntityDtoUtils.convertToDto(tourDetails, TourDetailsGetDataDto.class));
 
         if (tourDetailsDtoPage.isEmpty()) {
             return new ResponseObject("404", "Không tìm thấy dữ liệu", null);
@@ -129,7 +135,7 @@ public class TourCusAPI {
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size,
             @RequestParam(defaultValue = "id") String sortBy,
-            @RequestParam(defaultValue = "asc") String sortDir,
+            @RequestParam(defaultValue = "desc") String sortDir,
             @RequestParam(required = false) String departureArrives,
             @RequestParam(required = false) String departureFrom,
             @RequestParam(required = false) BigDecimal price,
