@@ -1,4 +1,4 @@
-package com.main.traveltour.restcontroller.customer.bookingLocation.vnpay;
+package com.main.traveltour.restcontroller.customer.bookinglocation.vnpay;
 
 import com.main.traveltour.config.DomainURL;
 import com.main.traveltour.configpayment.vnpay.VNPayService;

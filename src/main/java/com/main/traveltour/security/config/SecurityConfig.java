@@ -8,6 +8,8 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.client.endpoint.DefaultAuthorizationCodeTokenResponseClient;
@@ -43,20 +45,24 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-        http.csrf()
-                .disable()
+        http.csrf(AbstractHttpConfigurer::disable)
+                .sessionManagement(session -> session
+                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                )
                 .authorizeHttpRequests(
                         authorize -> authorize
                                 .requestMatchers("/api/v1/**").permitAll()
+                                .anyRequest().authenticated()
                 ).oauth2Login(
                         oauth2 -> oauth2
                                 .defaultSuccessUrl("/api/v1/auth/login/google/success")
-                                .authorizationEndpoint()
-                                .baseUri("/oauth2/authorization")
-                                .authorizationRequestRepository(getRepository())
-                                .and()
-                                .tokenEndpoint()
-                                .accessTokenResponseClient(getToken())
+                                .authorizationEndpoint(authorization -> authorization
+                                        .baseUri("/oauth2/authorization")
+                                        .authorizationRequestRepository(getRepository())
+                                )
+                                .tokenEndpoint(token -> token
+                                        .accessTokenResponseClient(getToken())
+                                )
                 );
         http.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
         return http.build();
