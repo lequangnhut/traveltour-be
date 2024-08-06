@@ -9,7 +9,7 @@
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
     <groupId>com.main</groupId>
-    <artifactId>TravelTourBackEnd</artifactId>
+    <artifactId>traveltour-be</artifactId>
     <version>0.0.1-SNAPSHOT</version>
     <name>TravelTour</name>
     <description>TravelTour</description>
